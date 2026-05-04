@@ -7,6 +7,7 @@ import 'package:lms_mobile_app/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/presentation/bloc/course/course_event.dart';
 import 'package:lms_mobile_app/presentation/bloc/course/course_state.dart';
 import 'package:lms_mobile_app/presentation/widgets/course_card.dart';
+import 'package:lms_mobile_app/presentation/widgets/statistics_card.dart';
 import 'package:lms_mobile_app/utils/constants.dart';
 import 'package:lms_mobile_app/data/mappers/course_mapper.dart';
 
@@ -152,83 +153,80 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               SizedBox(height: AppConstants.paddingLarge),
-              // Subject Section
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppConstants.paddingLarge,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      AppConstants.subject,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.text,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushReplacementNamed(context, '/courses');
-                      },
-                      child: Text(
-                        AppConstants.viewAll,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 12),
-              // Subject Courses - Horizontal Scroll
+              // Subject Courses - Grid Layout (2x2)
               BlocBuilder<CourseBloc, CourseState>(
                 builder: (context, state) {
                   if (state is CourseLoading) {
-                    return SizedBox(
-                      height: 280,
-                      child: Center(child: CircularProgressIndicator()),
+                    return Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: AppConstants.paddingLarge,
+                      ),
+                      child: SizedBox(
+                        height: 400,
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
                     );
                   } else if (state is CourseLoaded) {
-                    final subjectCourses =
-                        state.courses.take(3).toList();
-                    return SizedBox(
-                      height: 280,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: AppConstants.paddingLarge,
+                    final statsItems = [
+                      {
+                        'icon': '👥📚',
+                        'title': 'KURSUS DIIKUTI',
+                        'number': '5,109',
+                        'description': '5091 Peserta • 15 Instruktur',
+                        'borderColor': Color(0xFF6366F1), // Blue
+                        'backgroundColor': Color(0xFFF0F3FF),
+                      },
+                      {
+                        'icon': '📚',
+                        'title': 'TOTAL KURSUS',
+                        'number': '56',
+                        'description': '53 Published • 3 Draft',
+                        'borderColor': Color(0xFF14B8A6), // Teal
+                        'backgroundColor': Color(0xFFF0FFFE),
+                      },
+                      {
+                        'icon': '📋',
+                        'title': 'TOTAL KUIS',
+                        'number': '446',
+                        'description': '23226/23321 percobaan selesai',
+                        'borderColor': Color(0xFFA855F7), // Purple
+                        'backgroundColor': Color(0xFFFAF5FF),
+                      },
+                      {
+                        'icon': '📢',
+                        'title': 'PENGUMUMAN',
+                        'number': '0',
+                        'description': '0 aktif dari 0 total',
+                        'borderColor': Color(0xFFFB923C), // Orange
+                        'backgroundColor': Color(0xFFFFF7ED),
+                      },
+                    ];
+                    
+                    return Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: AppConstants.paddingLarge,
+                      ),
+                      child: GridView.count(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        crossAxisCount: 2,
+                        childAspectRatio: 0.9,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        children: List.generate(
+                          statsItems.length,
+                          (index) {
+                            final item = statsItems[index];
+                            return StatisticsCard(
+                              icon: item['icon'] as String,
+                              title: item['title'] as String,
+                              number: item['number'] as String,
+                              description: item['description'] as String,
+                              borderColor: item['borderColor'] as Color,
+                              backgroundColor: item['backgroundColor'] as Color,
+                            );
+                          },
                         ),
-                        itemCount: subjectCourses.length,
-                        itemBuilder: (context, index) {
-                          final courseEntity = subjectCourses[index];
-                          final course = CourseMapper.fromDomain(courseEntity);
-                          return Container(
-                            width: 200,
-                            margin: EdgeInsets.only(right: 12),
-                            child: CourseCard(
-                              course: course,
-                              isSaved: courseEntity.isSaved,
-                              onTap: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  '/course-detail',
-                                  arguments: course,
-                                );
-                              },
-                              onSavePressed: () {
-                                context.read<CourseBloc>().add(
-                                      ToggleSaveCourseEvent(
-                                          courseId: courseEntity.id),
-                                    );
-                              },
-                            ),
-                          );
-                        },
                       ),
                     );
                   }
