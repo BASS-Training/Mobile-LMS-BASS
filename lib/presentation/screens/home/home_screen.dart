@@ -166,7 +166,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Center(child: CircularProgressIndicator()),
                       ),
                     );
-                  } else if (state is CourseLoaded) {
+                  }
+                  
+                  // Show cards for both CourseInitial and CourseLoaded states
+                  if (state is CourseLoaded || state is CourseInitial) {
                     final statsItems = [
                       {
                         'icon': '👥📚',
@@ -230,8 +233,126 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     );
                   }
+                  
+                  // Show error message for CourseFailure
+                  if (state is CourseFailure) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: AppConstants.paddingLarge,
+                      ),
+                      child: SizedBox(
+                        height: 200,
+                        child: Center(
+                          child: Text(
+                            state.message,
+                            style: TextStyle(
+                              color: AppColors.error,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                  
                   return SizedBox.shrink();
                 },
+              ),
+              SizedBox(height: AppConstants.paddingLarge),
+              // User Guide Card
+              Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppConstants.paddingLarge,
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Color(0xFFF3F0FF),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Color(0xFF9333EA).withOpacity(0.2),
+                      width: 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Color(0xFF9333EA).withOpacity(0.08),
+                        blurRadius: 12,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Stack(
+                    children: [
+                      // Left accent bar
+                      Positioned(
+                        left: 0,
+                        top: 0,
+                        bottom: 0,
+                        child: Container(
+                          width: 6,
+                          decoration: BoxDecoration(
+                            color: Color(0xFF9333EA),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(16),
+                              bottomLeft: Radius.circular(16),
+                            ),
+                          ),
+                        ),
+                      ),
+                      // Content
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(20, 16, 16, 16),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  width: 48,
+                                  height: 48,
+                                  decoration: BoxDecoration(
+                                    color: Color(0xFF9333EA).withOpacity(0.12),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Center(
+                                    child: Text('📖', style: TextStyle(fontSize: 24)),
+                                  ),
+                                ),
+                                SizedBox(width: 12),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'User Guide',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.text,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      'Panduan penggunaan aplikasi',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: AppColors.textLight,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              color: Color(0xFF9333EA),
+                              size: 16,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
               SizedBox(height: AppConstants.paddingLarge),
               // Recommended Section
@@ -240,7 +361,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   horizontal: AppConstants.paddingLarge,
                 ),
                 child: Text(
-                  AppConstants.recommendedForYou,
+                  AppConstants.kursusSaya,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,

@@ -26,79 +26,103 @@ class StatisticsCard extends StatelessWidget {
         color: backgroundColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: borderColor,
-          width: 2,
+          color: borderColor.withOpacity(0.2),
+          width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: borderColor.withOpacity(0.1),
+            color: borderColor.withOpacity(0.08),
             blurRadius: 12,
             offset: Offset(0, 4),
           ),
         ],
       ),
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header with Icon and Title
-            Row(
+      child: Stack(
+        children: [
+          // Left accent bar
+          Positioned(
+            left: 0,
+            top: 0,
+            bottom: 0,
+            child: Container(
+              width: 6,
+              decoration: BoxDecoration(
+                color: borderColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  bottomLeft: Radius.circular(16),
+                ),
+              ),
+            ),
+          ),
+          // Content
+          Padding(
+            padding: EdgeInsets.fromLTRB(20, 16, 16, 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (icon.isNotEmpty)
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: borderColor.withOpacity(0.15),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Center(
+                // Title
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textLight,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                SizedBox(height: 8),
+                // Icon and Number Row
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (icon.isNotEmpty)
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: borderColor.withOpacity(0.12),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Center(
+                          child: Text(
+                            icon,
+                            style: TextStyle(fontSize: 24),
+                          ),
+                        ),
+                      ),
+                    if (icon.isNotEmpty) SizedBox(width: 12),
+                    Expanded(
                       child: Text(
-                        icon,
-                        style: TextStyle(fontSize: 20),
+                        number,
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.text,
+                        ),
                       ),
                     ),
+                  ],
+                ),
+                SizedBox(height: 8),
+                // Description
+                Text(
+                  description,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: AppColors.textLight,
+                    height: 1.4,
                   ),
-                if (icon.isNotEmpty) SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: borderColor,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
-            SizedBox(height: 12),
-            // Number
-            Text(
-              number,
-              style: TextStyle(
-                fontSize: 36,
-                fontWeight: FontWeight.bold,
-                color: AppColors.text,
-              ),
-            ),
-            SizedBox(height: 8),
-            // Description
-            Text(
-              description,
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.textLight,
-                height: 1.5,
-              ),
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
+      );
+    
   }
 }

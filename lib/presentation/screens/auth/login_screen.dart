@@ -75,7 +75,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Header
                     Column(
                       children: [
-                        Text('📚', style: TextStyle(fontSize: 80)),
+                        Image.asset(
+                          'assets/images/BassLogo.webp',
+                          height: 80,
+                          width: 80,
+                          fit: BoxFit.contain,
+                          semanticLabel: AppConstants.appName,
+                          errorBuilder: (context, error, stackTrace) => SizedBox(
+                            width: 80,
+                            height: 80,
+                            child: Center(child: Text('📚', style: TextStyle(fontSize: 80),),),
+                          ),
+                        ),
                         SizedBox(height: 24),
                         Text(
                           AppConstants.appName,

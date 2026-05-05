@@ -28,7 +28,7 @@ class AppConstants {
   static const String searchCourses = 'Search courses...';
   static const String subject = 'Subject';
   static const String viewAll = 'View All';
-  static const String recommendedForYou = 'Recommended for you';
+  static const String kursusSaya = 'Kursus Saya';
 
   // Auth related
   static const String loginTitle = 'Login';
