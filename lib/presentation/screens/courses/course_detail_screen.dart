@@ -252,12 +252,12 @@ class CourseDetailScreen extends StatelessWidget {
                         showPercentage: true,
                       ),
                       SizedBox(height: 24),
-                      // Lessons header
+                      // Sections header
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Lessons',
+                            'Sections',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -285,35 +285,14 @@ class CourseDetailScreen extends StatelessWidget {
                         ],
                       ),
                       SizedBox(height: 12),
-                      // Lessons list
-                      ...currentCourse.lessons.asMap().entries.map((entry) {
-                        final index = entry.key;
-                        final lesson = entry.value;
-                        return LessonTile(
-                          lesson: lesson,
-                          index: index,
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              '/lesson-detail',
-                              arguments: {
-                                'lesson': lesson,
-                                'course': currentCourse,
-                                'lessonIndex': index,
-                              },
-                            );
-                          },
-                          onCompletionChanged: (isCompleted) {
-                            context.read<LessonBloc>().add(
-                                  ToggleLessonCompletionEvent(
-                                      lessonId: lesson.id),
-                                );
-                            context
-                                .read<CourseBloc>()
-                                .add(const RefreshCoursesEvent());
-                          },
+                      // Sections list
+                      ...currentCourse.sections.map((section) {
+                        return _buildSectionWidget(
+                          context,
+                          section,
+                          currentCourse,
                         );
-                      }),
+                      }).toList(),
                       SizedBox(height: 24),
                     ],
                   ),
@@ -325,4 +304,270 @@ class CourseDetailScreen extends StatelessWidget {
       },
     );
   }
+
+  Widget _buildSectionWidget(
+    BuildContext context,
+    dynamic section,
+    Course course,
+  ) {
+    final sectionLessons = section.lessons;
+    final completedCount = sectionLessons.where((l) => l.isCompleted).length;
+    final totalCount = sectionLessons.length;
+    final progressPercent = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
+
+    return Container(
+      margin: EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: ExpansionTile(
+          title: Row(
+            children: [
+              // Section number
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.primary,
+                ),
+                child: Center(
+                  child: Text(
+                    '${section.sectionNumber}',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: 12),
+              // Section info
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      section.title,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.text,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      section.description,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textLight,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          subtitle: Padding(
+            padding: EdgeInsets.only(top: 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Progress bar
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: LinearProgressIndicator(
+                    value: progressPercent / 100,
+                    minHeight: 4,
+                    backgroundColor: AppColors.border,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.primary,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 4),
+                Text(
+                  '$completedCount/$totalCount lessons',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: AppColors.textLight,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          initiallyExpanded: true,
+          children: [
+            Padding(
+              padding: EdgeInsets.all(12),
+              child: Column(
+                children: sectionLessons.asMap().entries.map((entry) {
+                  final lessonIndexInSection = entry.key;
+                  final lesson = entry.value;
+                  final overallLessonIndex =
+                      course.lessons.indexOf(lesson);
+
+                  return Container(
+                    margin: EdgeInsets.only(bottom: 8),
+                    decoration: BoxDecoration(
+                      color: AppColors.background,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColors.border),
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            '/lesson-detail',
+                            arguments: {
+                              'lesson': lesson,
+                              'course': course,
+                              'lessonIndex': overallLessonIndex,
+                            },
+                          );
+                        },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 10,
+                          ),
+                          child: Row(
+                            children: [
+                              // Lesson completion indicator
+                              Container(
+                                width: 28,
+                                height: 28,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: lesson.isCompleted
+                                      ? AppColors.primary
+                                      : AppColors.border,
+                                ),
+                                child: Center(
+                                  child: lesson.isCompleted
+                                      ? Icon(
+                                          Icons.check,
+                                          color: Colors.white,
+                                          size: 14,
+                                        )
+                                      : Text(
+                                          '${lessonIndexInSection + 1}',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: AppColors.text,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              // Lesson info
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      lesson.title,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                        color: lesson.isCompleted
+                                            ? AppColors.textLight
+                                            : AppColors.text,
+                                        decoration: lesson.isCompleted
+                                            ? TextDecoration.lineThrough
+                                            : null,
+                                      ),
+                                    ),
+                                    SizedBox(height: 2),
+                                    Row(
+                                      children: [
+                                        Icon(Icons.timer,
+                                            size: 12,
+                                            color: AppColors.textLight),
+                                        SizedBox(width: 3),
+                                        Text(
+                                          lesson.duration,
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            color: AppColors.textLight,
+                                          ),
+                                        ),
+                                        SizedBox(width: 8),
+                                        // Lesson type badge
+                                        Container(
+                                          padding: EdgeInsets.symmetric(
+                                            horizontal: 6,
+                                            vertical: 2,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: _getLessonTypeColor(
+                                                lesson.type),
+                                            borderRadius:
+                                                BorderRadius.circular(4),
+                                          ),
+                                          child: Text(
+                                            lesson.type
+                                                .toUpperCase(),
+                                            style: TextStyle(
+                                              fontSize: 9,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _getLessonTypeColor(String type) {
+    switch (type.toLowerCase()) {
+      case 'video':
+        return Colors.blue;
+      case 'quiz':
+        return Colors.orange;
+      case 'document':
+        return Colors.green;
+      default:
+        return AppColors.primary;
+    }
+  }
 }
+

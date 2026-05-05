@@ -4,6 +4,9 @@ import 'lesson_mapper.dart';
 
 class CourseMapper {
   static CourseEntity toDomain(Course model) {
+    // Flatten all lessons from all sections
+    final allLessons = model.lessons;
+    
     return CourseEntity(
       id: model.id,
       title: model.title,
@@ -13,12 +16,14 @@ class CourseMapper {
       icon: model.icon,
       chaptersCount: model.chaptersCount,
       duration: model.duration,
-      lessons: model.lessons.map((l) => LessonMapper.toDomain(l)).toList(),
+      lessons: allLessons.map((l) => LessonMapper.toDomain(l)).toList(),
       isSaved: model.isSaved,
     );
   }
 
   static Course fromDomain(CourseEntity entity) {
+    // For now, just reconstruct with empty sections since entity doesn't have section info
+    // This is a simplified approach for backward compatibility
     return Course(
       id: entity.id,
       title: entity.title,
@@ -28,7 +33,7 @@ class CourseMapper {
       icon: entity.icon,
       chaptersCount: entity.chaptersCount,
       duration: entity.duration,
-      lessons: entity.lessons.map((l) => LessonMapper.fromDomain(l)).toList(),
+      sections: [],
       isSaved: entity.isSaved,
     );
   }

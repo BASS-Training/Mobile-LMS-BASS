@@ -1,4 +1,5 @@
 import 'lesson.dart';
+import 'course_section.dart';
 
 class Course {
   final String id;
@@ -9,7 +10,7 @@ class Course {
   final String icon;
   final int chaptersCount;
   final String duration;
-  final List<Lesson> lessons;
+  final List<CourseSection> sections;
   bool isSaved;
 
   Course({
@@ -21,9 +22,14 @@ class Course {
     required this.icon,
     required this.chaptersCount,
     required this.duration,
-    required this.lessons,
+    required this.sections,
     this.isSaved = false,
   });
+
+  // Convenience getter for all lessons (flatten from sections)
+  List<Lesson> get lessons {
+    return sections.expand((s) => s.lessons).toList();
+  }
 
   int get completedLessons => lessons.where((l) => l.isCompleted).length;
   int get totalLessons => lessons.length;
@@ -31,8 +37,10 @@ class Course {
       totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
 
   factory Course.fromJson(Map<String, dynamic> json) {
-    var lessonsJson = (json['lessons'] ?? []) as List;
-    List<Lesson> lessons = lessonsJson.map((l) => Lesson.fromJson(l)).toList();
+    var sectionsJson = (json['sections'] ?? []) as List;
+    List<CourseSection> sections = sectionsJson
+        .map((s) => CourseSection.fromJson(s as Map<String, dynamic>))
+        .toList();
 
     return Course(
       id: json['id'] ?? '',
@@ -43,7 +51,7 @@ class Course {
       icon: json['icon'] ?? '📚',
       chaptersCount: json['chaptersCount'] ?? 1,
       duration: json['duration'] ?? '0 hours',
-      lessons: lessons,
+      sections: sections,
       isSaved: json['isSaved'] ?? false,
     );
   }
@@ -58,7 +66,7 @@ class Course {
       'icon': icon,
       'chaptersCount': chaptersCount,
       'duration': duration,
-      'lessons': lessons.map((l) => l.toJson()).toList(),
+      'sections': sections.map((s) => s.toJson()).toList(),
       'isSaved': isSaved,
     };
   }
@@ -72,7 +80,7 @@ class Course {
     String? icon,
     int? chaptersCount,
     String? duration,
-    List<Lesson>? lessons,
+    List<CourseSection>? sections,
     bool? isSaved,
   }) {
     return Course(
@@ -84,7 +92,7 @@ class Course {
       icon: icon ?? this.icon,
       chaptersCount: chaptersCount ?? this.chaptersCount,
       duration: duration ?? this.duration,
-      lessons: lessons ?? this.lessons,
+      sections: sections ?? this.sections,
       isSaved: isSaved ?? this.isSaved,
     );
   }
