@@ -27,10 +27,12 @@ class LessonDetailScreen extends StatefulWidget {
 
 class _LessonDetailScreenState extends State<LessonDetailScreen> {
   late ScrollController _scrollController;
+  late GlobalKey<ScaffoldState> _scaffoldKey;
 
   @override
   void initState() {
     super.initState();
+    _scaffoldKey = GlobalKey<ScaffoldState>();
     _scrollController = ScrollController();
     context
         .read<LessonBloc>()
@@ -60,6 +62,7 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
         return false;
       },
       child: Scaffold(
+        key: _scaffoldKey,
         backgroundColor: AppColors.background,
         appBar: AppBar(
           title: Text(widget.course.title),
@@ -71,7 +74,21 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
             },
             child: Icon(Icons.arrow_back),
           ),
+          actions: [
+            Padding(
+              padding: EdgeInsets.only(right: 16),
+              child: Center(
+                child: GestureDetector(
+                  onTap: () {
+                    _scaffoldKey.currentState?.openDrawer();
+                  },
+                  child: Icon(Icons.list_alt, size: 24),
+                ),
+              ),
+            ),
+          ],
         ),
+        drawer: _buildLessonDrawer(),
         body: SingleChildScrollView(
           controller: _scrollController,
           child: Column(
@@ -319,6 +336,191 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLessonDrawer() {
+    return Drawer(
+      child: Container(
+        color: AppColors.background,
+        child: Column(
+          children: [
+            // Drawer header
+            Container(
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [AppColors.primary, AppColors.secondary],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 20),
+                  Text(
+                    'Lessons',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    '${widget.course.lessons.length} lessons',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.white.withOpacity(0.8),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Lesson list
+            Expanded(
+              child: ListView.builder(
+                itemCount: widget.course.lessons.length,
+                padding: EdgeInsets.symmetric(vertical: 8),
+                itemBuilder: (context, index) {
+                  final lesson = widget.course.lessons[index];
+                  final isCurrentLesson = index == widget.lessonIndex;
+                  
+                  return Container(
+                    margin: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: isCurrentLesson
+                          ? AppColors.primary.withOpacity(0.2)
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: isCurrentLesson
+                            ? AppColors.primary
+                            : AppColors.border,
+                        width: isCurrentLesson ? 2 : 1,
+                      ),
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: isCurrentLesson
+                            ? null
+                            : () {
+                                Navigator.pop(context); // Close drawer
+                                Future.delayed(Duration(milliseconds: 200), () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    '/lesson-detail',
+                                    arguments: {
+                                      'lesson': lesson,
+                                      'course': widget.course,
+                                      'lessonIndex': index,
+                                    },
+                                  );
+                                });
+                              },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                          child: Row(
+                            children: [
+                              // Lesson number circle
+                              Container(
+                                width: 36,
+                                height: 36,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: isCurrentLesson
+                                      ? AppColors.primary
+                                      : AppColors.border,
+                                ),
+                                child: Center(
+                                  child: lesson.isCompleted
+                                      ? Icon(
+                                          Icons.check,
+                                          color: Colors.white,
+                                          size: 18,
+                                        )
+                                      : Text(
+                                          '${index + 1}',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: isCurrentLesson
+                                                ? Colors.white
+                                                : AppColors.text,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                ),
+                              ),
+                              SizedBox(width: 12),
+                              // Lesson title
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      lesson.title,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                        color: isCurrentLesson
+                                            ? AppColors.primary
+                                            : AppColors.text,
+                                        decoration: lesson.isCompleted
+                                            ? TextDecoration.lineThrough
+                                            : null,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      lesson.duration,
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: AppColors.textLight,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              // Current indicator
+                              if (isCurrentLesson)
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    'Now',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
