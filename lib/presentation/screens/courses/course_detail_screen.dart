@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lms_mobile_app/config/theme.dart';
 import 'package:lms_mobile_app/data/models/course.dart';
+import 'package:lms_mobile_app/data/models/course_section.dart';
+import 'package:lms_mobile_app/data/models/lesson.dart';
 import 'package:lms_mobile_app/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/presentation/bloc/course/course_event.dart';
@@ -292,7 +294,7 @@ class CourseDetailScreen extends StatelessWidget {
                           section,
                           currentCourse,
                         );
-                      }).toList(),
+                      }),
                       SizedBox(height: 24),
                     ],
                   ),
@@ -307,11 +309,16 @@ class CourseDetailScreen extends StatelessWidget {
 
   Widget _buildSectionWidget(
     BuildContext context,
-    dynamic section,
+    CourseSection section,
     Course course,
   ) {
-    final sectionLessons = section.lessons;
-    final completedCount = sectionLessons.where((l) => l.isCompleted).length;
+    final List<Lesson> sectionLessons = section.lessons;
+    var completedCount = 0;
+    for (final lesson in sectionLessons) {
+      if (lesson.isCompleted) {
+        completedCount++;
+      }
+    }
     final totalCount = sectionLessons.length;
     final progressPercent = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
 

@@ -9,6 +9,7 @@ class LessonMapper {
       title: model.title,
       content: model.content,
       duration: model.duration,
+      type: model.type,
       isCompleted: model.isCompleted,
     );
   }
@@ -20,6 +21,7 @@ class LessonMapper {
       title: entity.title,
       content: entity.content,
       duration: entity.duration,
+      type: entity.type,
       isCompleted: entity.isCompleted,
     );
   }

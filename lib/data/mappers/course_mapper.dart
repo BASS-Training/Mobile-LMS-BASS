@@ -1,11 +1,25 @@
 import '../../domain/entities/course_entity.dart';
+import '../../domain/entities/course_section_entity.dart';
 import '../models/course.dart';
+import '../models/course_section.dart';
 import 'lesson_mapper.dart';
 
 class CourseMapper {
   static CourseEntity toDomain(Course model) {
-    // Flatten all lessons from all sections
-    final allLessons = model.lessons;
+    final sections = model.sections
+        .map(
+          (section) => CourseSectionEntity(
+            id: section.id,
+            courseId: section.courseId,
+            sectionNumber: section.sectionNumber,
+            title: section.title,
+            description: section.description,
+            lessons: section.lessons.map((lesson) => LessonMapper.toDomain(lesson)).toList(),
+          ),
+        )
+        .toList();
+
+    final allLessons = sections.expand((section) => section.lessons).toList();
     
     return CourseEntity(
       id: model.id,
@@ -16,14 +30,26 @@ class CourseMapper {
       icon: model.icon,
       chaptersCount: model.chaptersCount,
       duration: model.duration,
-      lessons: allLessons.map((l) => LessonMapper.toDomain(l)).toList(),
+      sections: sections,
+      lessons: allLessons,
       isSaved: model.isSaved,
     );
   }
 
   static Course fromDomain(CourseEntity entity) {
-    // For now, just reconstruct with empty sections since entity doesn't have section info
-    // This is a simplified approach for backward compatibility
+    final sections = entity.sections
+        .map(
+          (section) => CourseSection(
+            id: section.id,
+            courseId: section.courseId,
+            sectionNumber: section.sectionNumber,
+            title: section.title,
+            description: section.description,
+            lessons: section.lessons.map((lesson) => LessonMapper.fromDomain(lesson)).toList(),
+          ),
+        )
+        .toList();
+
     return Course(
       id: entity.id,
       title: entity.title,
@@ -33,7 +59,7 @@ class CourseMapper {
       icon: entity.icon,
       chaptersCount: entity.chaptersCount,
       duration: entity.duration,
-      sections: [],
+      sections: sections,
       isSaved: entity.isSaved,
     );
   }

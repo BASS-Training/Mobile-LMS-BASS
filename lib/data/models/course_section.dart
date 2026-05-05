@@ -17,7 +17,15 @@ class CourseSection {
     required this.lessons,
   });
 
-  int get completedLessons => lessons.where((l) => l.isCompleted).length;
+  int get completedLessons {
+    var count = 0;
+    for (final lesson in lessons) {
+      if (lesson.isCompleted) {
+        count++;
+      }
+    }
+    return count;
+  }
   int get totalLessons => lessons.length;
   double get progressPercentage =>
       totalLessons == 0 ? 0 : (completedLessons / totalLessons) * 100;

@@ -33,10 +33,11 @@ class CourseCard extends StatelessWidget {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             // Header with gradient background
             Container(
-              height: 140,
+              height: 128,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
@@ -58,7 +59,7 @@ class CourseCard extends StatelessWidget {
                   Positioned(
                     right: 16,
                     top: 16,
-                    child: Text(course.icon, style: TextStyle(fontSize: 48)),
+                    child: Text(course.icon, style: TextStyle(fontSize: 44)),
                   ),
                   Positioned(
                     right: 16,
@@ -92,31 +93,32 @@ class CourseCard extends StatelessWidget {
             Expanded(
               child: Container(
                 color: Colors.white,
-                padding: EdgeInsets.all(16),
+                padding: EdgeInsets.all(12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       course.title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 15,
                         fontWeight: FontWeight.bold,
                         color: AppColors.text,
                       ),
                     ),
-                    SizedBox(height: 6),
+                    SizedBox(height: 4),
                     Text(
                       course.instructor,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: 12,
+                        fontSize: 11,
                         color: AppColors.textLight,
                       ),
                     ),
-                    SizedBox(height: 10),
+                    SizedBox(height: 8),
                     Row(
                       children: [
                         Expanded(
@@ -125,14 +127,14 @@ class CourseCard extends StatelessWidget {
                             children: [
                               Icon(
                                 Icons.book_outlined,
-                                size: 14,
+                                size: 13,
                                 color: AppColors.textLight,
                               ),
-                              SizedBox(width: 4),
+                              SizedBox(width: 3),
                               Text(
                                 '${course.totalLessons} lessons',
                                 style: TextStyle(
-                                  fontSize: 12,
+                                  fontSize: 11,
                                   color: AppColors.textLight,
                                 ),
                               ),
@@ -141,14 +143,14 @@ class CourseCard extends StatelessWidget {
                         ),
                         Icon(
                           Icons.schedule,
-                          size: 14,
+                          size: 13,
                           color: AppColors.textLight,
                         ),
-                        SizedBox(width: 4),
+                        SizedBox(width: 3),
                         Text(
                           course.duration,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 11,
                             color: AppColors.textLight,
                           ),
                         ),

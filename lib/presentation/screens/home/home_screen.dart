@@ -153,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               SizedBox(height: AppConstants.paddingLarge),
-              // Subject Courses - Grid Layout (2x2)
+              // Statistics Cards - Grid Layout (2x2)
               BlocBuilder<CourseBloc, CourseState>(
                 builder: (context, state) {
                   if (state is CourseLoading) {
@@ -168,42 +168,26 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   }
                   
-                  // Show cards for both CourseInitial and CourseLoaded states
-                  if (state is CourseLoaded || state is CourseInitial) {
-                    final statsItems = [
-                      {
-                        'icon': '👥📚',
-                        'title': 'KURSUS DIIKUTI',
-                        'number': '5,109',
-                        'description': '5091 Peserta • 15 Instruktur',
-                        'borderColor': Color(0xFF6366F1), // Blue
-                        'backgroundColor': Color(0xFFF0F3FF),
-                      },
-                      {
-                        'icon': '📚',
-                        'title': 'TOTAL KURSUS',
-                        'number': '56',
-                        'description': '53 Published • 3 Draft',
-                        'borderColor': Color(0xFF14B8A6), // Teal
-                        'backgroundColor': Color(0xFFF0FFFE),
-                      },
-                      {
-                        'icon': '📋',
-                        'title': 'TOTAL KUIS',
-                        'number': '446',
-                        'description': '23226/23321 percobaan selesai',
-                        'borderColor': Color(0xFFA855F7), // Purple
-                        'backgroundColor': Color(0xFFFAF5FF),
-                      },
-                      {
-                        'icon': '📢',
-                        'title': 'PENGUMUMAN',
-                        'number': '0',
-                        'description': '0 aktif dari 0 total',
-                        'borderColor': Color(0xFFFB923C), // Orange
-                        'backgroundColor': Color(0xFFFFF7ED),
-                      },
-                    ];
+                  // Show cards for CourseLoaded state
+                  if (state is CourseLoaded) {
+                    // Calculate metrics
+                    final totalCourses = state.courses.length;
+                    final completedCourses = state.courses
+                        .where((course) => course.progressPercentage == 100)
+                        .length;
+                    final incompleteCourses = totalCourses - completedCourses;
+                    
+                    // Calculate total lessons
+                    int totalLessons = 0;
+                    int totalCompletedLessons = 0;
+                    for (final course in state.courses) {
+                      totalLessons += course.totalLessons;
+                      totalCompletedLessons += course.completedLessons;
+                    }
+                    
+                    final overallProgress = totalLessons > 0
+                        ? ((totalCompletedLessons / totalLessons) * 100).toInt()
+                        : 0;
                     
                     return Padding(
                       padding: EdgeInsets.symmetric(
@@ -213,23 +197,86 @@ class _HomeScreenState extends State<HomeScreen> {
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
                         crossAxisCount: 2,
-                        childAspectRatio: 0.9,
+                        childAspectRatio: 1.0,
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
-                        children: List.generate(
-                          statsItems.length,
-                          (index) {
-                            final item = statsItems[index];
-                            return StatisticsCard(
-                              icon: item['icon'] as String,
-                              title: item['title'] as String,
-                              number: item['number'] as String,
-                              description: item['description'] as String,
-                              borderColor: item['borderColor'] as Color,
-                              backgroundColor: item['backgroundColor'] as Color,
-                            );
-                          },
-                        ),
+                        children: [
+                          // Card 1: Courses
+                          _buildStatCard(
+                            icon: '📚',
+                            title: 'Kursus',
+                            number: totalCourses.toString(),
+                            description: '$completedCourses selesai, $incompleteCourses belum selesai',
+                            borderColor: Color(0xFF6366F1),
+                            backgroundColor: Color(0xFFF0F3FF),
+                          ),
+                          // Card 2: Progress Keseluruhan
+                          _buildProgressCard(
+                            icon: '📈',
+                            title: 'Progress Keseluruhan',
+                            number: '$overallProgress%',
+                            percentage: overallProgress / 100.0,
+                            description: '% Lesson Selesai',
+                            borderColor: Color(0xFF14B8A6),
+                            backgroundColor: Color(0xFFF0FFFE),
+                          ),
+                          // Card 3: Konten Selesai
+                          _buildStatCard(
+                            icon: '✅',
+                            title: 'Konten Selesai',
+                            number: totalCompletedLessons.toString(),
+                            description: 'dari $totalLessons total lesson',
+                            borderColor: Color(0xFFA855F7),
+                            backgroundColor: Color(0xFFFAF5FF),
+                          ),
+                          // Card 4: User Guide
+                          _buildUserGuideCard(),
+                        ],
+                      ),
+                    );
+                  }
+                  
+                  // Show cards for CourseInitial state
+                  if (state is CourseInitial) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: AppConstants.paddingLarge,
+                      ),
+                      child: GridView.count(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        crossAxisCount: 2,
+                        childAspectRatio: 1.0,
+                        crossAxisSpacing: 12,
+                        mainAxisSpacing: 12,
+                        children: [
+                          _buildStatCard(
+                            icon: '📚',
+                            title: 'Kursus',
+                            number: '0',
+                            description: '0 selesai, 0 belum selesai',
+                            borderColor: Color(0xFF6366F1),
+                            backgroundColor: Color(0xFFF0F3FF),
+                          ),
+                          _buildProgressCard(
+                            icon: '📈',
+                            title: 'Progress Keseluruhan',
+                            number: '0%',
+                            percentage: 0.0,
+                            description: '% Lesson Selesai',
+                            borderColor: Color(0xFF14B8A6),
+                            backgroundColor: Color(0xFFF0FFFE),
+                          ),
+                          _buildStatCard(
+                            icon: '✅',
+                            title: 'Konten Selesai',
+                            number: '0',
+                            description: 'dari 0 total lesson',
+                            borderColor: Color(0xFFA855F7),
+                            backgroundColor: Color(0xFFFAF5FF),
+                          ),
+                          _buildUserGuideCard(),
+                        ],
                       ),
                     );
                   }
@@ -257,102 +304,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   
                   return SizedBox.shrink();
                 },
-              ),
-              SizedBox(height: AppConstants.paddingLarge),
-              // User Guide Card
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppConstants.paddingLarge,
-                ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Color(0xFFF3F0FF),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: Color(0xFF9333EA).withOpacity(0.2),
-                      width: 1,
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0xFF9333EA).withOpacity(0.08),
-                        blurRadius: 12,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Stack(
-                    children: [
-                      // Left accent bar
-                      Positioned(
-                        left: 0,
-                        top: 0,
-                        bottom: 0,
-                        child: Container(
-                          width: 6,
-                          decoration: BoxDecoration(
-                            color: Color(0xFF9333EA),
-                            borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(16),
-                              bottomLeft: Radius.circular(16),
-                            ),
-                          ),
-                        ),
-                      ),
-                      // Content
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(20, 16, 16, 16),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  width: 48,
-                                  height: 48,
-                                  decoration: BoxDecoration(
-                                    color: Color(0xFF9333EA).withOpacity(0.12),
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: Center(
-                                    child: Text('📖', style: TextStyle(fontSize: 24)),
-                                  ),
-                                ),
-                                SizedBox(width: 12),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'User Guide',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.text,
-                                      ),
-                                    ),
-                                    SizedBox(height: 4),
-                                    Text(
-                                      'Panduan penggunaan aplikasi',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: AppColors.textLight,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              color: Color(0xFF9333EA),
-                              size: 16,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
               ),
               SizedBox(height: AppConstants.paddingLarge),
               // Recommended Section
@@ -419,6 +370,224 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: AppConstants.paddingLarge),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  /// Helper method to build a simple statistic card
+  Widget _buildStatCard({
+    required String icon,
+    required String title,
+    required String number,
+    required String description,
+    required Color borderColor,
+    required Color backgroundColor,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: borderColor.withOpacity(0.3),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: borderColor.withOpacity(0.08),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              icon,
+              style: TextStyle(fontSize: 28),
+            ),
+            SizedBox(height: 12),
+            Text(
+              number,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: AppColors.text,
+              ),
+            ),
+            SizedBox(height: 4),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textLight,
+              ),
+            ),
+            SizedBox(height: 8),
+            Expanded(
+              child: Text(
+                description,
+                style: TextStyle(
+                  fontSize: 11,
+                  color: AppColors.textLighter,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Helper method to build progress card with progress bar
+  Widget _buildProgressCard({
+    required String icon,
+    required String title,
+    required String number,
+    required double percentage,
+    required String description,
+    required Color borderColor,
+    required Color backgroundColor,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: borderColor.withOpacity(0.3),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: borderColor.withOpacity(0.08),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              icon,
+              style: TextStyle(fontSize: 28),
+            ),
+            SizedBox(height: 12),
+            Text(
+              number,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: AppColors.text,
+              ),
+            ),
+            SizedBox(height: 4),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textLight,
+              ),
+            ),
+            SizedBox(height: 12),
+            // Progress bar
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: LinearProgressIndicator(
+                value: percentage,
+                minHeight: 6,
+                backgroundColor: borderColor.withOpacity(0.2),
+                valueColor: AlwaysStoppedAnimation<Color>(borderColor),
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              description,
+              style: TextStyle(
+                fontSize: 11,
+                color: AppColors.textLighter,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Helper method to build User Guide card
+  Widget _buildUserGuideCard() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Color(0xFFF3F0FF),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Color(0xFF9333EA).withOpacity(0.3),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0xFF9333EA).withOpacity(0.08),
+            blurRadius: 8,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '📖',
+              style: TextStyle(fontSize: 28),
+            ),
+            SizedBox(height: 12),
+            Text(
+              'User Guide',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: AppColors.text,
+              ),
+            ),
+            SizedBox(height: 8),
+            Expanded(
+              child: Text(
+                'Panduan lengkap penggunaan aplikasi LMS',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: AppColors.textLighter,
+                ),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            SizedBox(height: 12),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Color(0xFF9333EA).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                'Buka',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF9333EA),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
