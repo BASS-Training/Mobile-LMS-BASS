@@ -74,8 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               builder: (context, state) {
                                 String userName = 'User';
                                 if (state is AuthSuccess) {
-                                  userName =
-                                      state.user.name.split(' ')[0];
+                                  userName = state.user.name.split(' ')[0];
                                 }
                                 return Text(
                                   userName,
@@ -131,8 +130,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         controller: _searchController,
                         onChanged: (value) {
                           context.read<CourseBloc>().add(
-                                SearchCoursesEvent(query: value),
-                              );
+                            SearchCoursesEvent(query: value),
+                          );
                         },
                         decoration: InputDecoration(
                           hintText: AppConstants.searchCourses,
@@ -167,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     );
                   }
-                  
+
                   // Show cards for CourseLoaded state
                   if (state is CourseLoaded) {
                     // Calculate metrics
@@ -176,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         .where((course) => course.progressPercentage == 100)
                         .length;
                     final incompleteCourses = totalCourses - completedCourses;
-                    
+
                     // Calculate total lessons
                     int totalLessons = 0;
                     int totalCompletedLessons = 0;
@@ -184,11 +183,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       totalLessons += course.totalLessons;
                       totalCompletedLessons += course.completedLessons;
                     }
-                    
+
                     final overallProgress = totalLessons > 0
                         ? ((totalCompletedLessons / totalLessons) * 100).toInt()
                         : 0;
-                    
+
                     return Padding(
                       padding: EdgeInsets.symmetric(
                         horizontal: AppConstants.paddingLarge,
@@ -206,7 +205,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             icon: '📚',
                             title: 'Kursus',
                             number: totalCourses.toString(),
-                            description: '$completedCourses selesai, $incompleteCourses belum selesai',
+                            description:
+                                '$completedCourses selesai, $incompleteCourses belum selesai',
                             borderColor: Color(0xFF6366F1),
                             backgroundColor: Color(0xFFF0F3FF),
                           ),
@@ -235,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     );
                   }
-                  
+
                   // Show cards for CourseInitial state
                   if (state is CourseInitial) {
                     return Padding(
@@ -280,7 +280,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     );
                   }
-                  
+
                   // Show error message for CourseFailure
                   if (state is CourseFailure) {
                     return Padding(
@@ -301,7 +301,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     );
                   }
-                  
+
                   return SizedBox.shrink();
                 },
               ),
@@ -325,8 +325,10 @@ class _HomeScreenState extends State<HomeScreen> {
               BlocBuilder<CourseBloc, CourseState>(
                 builder: (context, state) {
                   if (state is CourseLoaded) {
-                    final recommendedCourses =
-                        state.courses.skip(3).take(3).toList();
+                    final recommendedCourses = state.courses
+                        .skip(3)
+                        .take(3)
+                        .toList();
                     return SizedBox(
                       height: 280,
                       child: ListView.builder(
@@ -337,8 +339,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemCount: recommendedCourses.length,
                         itemBuilder: (context, index) {
                           final courseEntity = recommendedCourses[index];
-                          final course =
-                              CourseMapper.fromDomain(courseEntity);
+                          final course = CourseMapper.fromDomain(courseEntity);
                           return Container(
                             width: 200,
                             margin: EdgeInsets.only(right: 12),
@@ -354,9 +355,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               },
                               onSavePressed: () {
                                 context.read<CourseBloc>().add(
-                                      ToggleSaveCourseEvent(
-                                          courseId: courseEntity.id),
-                                    );
+                                  ToggleSaveCourseEvent(
+                                    courseId: courseEntity.id,
+                                  ),
+                                );
                               },
                             ),
                           );
@@ -388,10 +390,7 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: borderColor.withOpacity(0.3),
-          width: 1.5,
-        ),
+        border: Border.all(color: borderColor.withOpacity(0.3), width: 1.5),
         boxShadow: [
           BoxShadow(
             color: borderColor.withOpacity(0.08),
@@ -405,10 +404,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              icon,
-              style: TextStyle(fontSize: 28),
-            ),
+            Text(icon, style: TextStyle(fontSize: 28)),
             SizedBox(height: 12),
             Text(
               number,
@@ -431,10 +427,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: Text(
                 description,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: AppColors.textLighter,
-                ),
+                style: TextStyle(fontSize: 11, color: AppColors.textLighter),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -459,10 +452,7 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: borderColor.withOpacity(0.3),
-          width: 1.5,
-        ),
+        border: Border.all(color: borderColor.withOpacity(0.3), width: 1.5),
         boxShadow: [
           BoxShadow(
             color: borderColor.withOpacity(0.08),
@@ -476,10 +466,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              icon,
-              style: TextStyle(fontSize: 28),
-            ),
+            Text(icon, style: TextStyle(fontSize: 28)),
             SizedBox(height: 12),
             Text(
               number,
@@ -512,10 +499,7 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(height: 8),
             Text(
               description,
-              style: TextStyle(
-                fontSize: 11,
-                color: AppColors.textLighter,
-              ),
+              style: TextStyle(fontSize: 11, color: AppColors.textLighter),
             ),
           ],
         ),
@@ -546,10 +530,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              '📖',
-              style: TextStyle(fontSize: 28),
-            ),
+            Text('📖', style: TextStyle(fontSize: 28)),
             SizedBox(height: 12),
             Text(
               'User Guide',
@@ -563,10 +544,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
               child: Text(
                 'Panduan lengkap penggunaan aplikasi LMS',
-                style: TextStyle(
-                  fontSize: 11,
-                  color: AppColors.textLighter,
-                ),
+                style: TextStyle(fontSize: 11, color: AppColors.textLighter),
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
               ),
