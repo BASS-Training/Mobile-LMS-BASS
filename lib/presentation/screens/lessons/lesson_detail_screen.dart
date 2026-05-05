@@ -330,7 +330,7 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
                           ),
                       ],
                     ),
-                    SizedBox(height: 24),
+                    SizedBox(height: 12),
                   ],
                 ),
               ),

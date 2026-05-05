@@ -58,18 +58,20 @@ class CourseProgressIndicator extends StatelessWidget {
                   width: double.infinity,
                   color: AppColors.border,
                 ),
-                Container(
-                  height: 8,
-                  width: double.infinity * percentage,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [AppColors.primary, AppColors.secondary],
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
+                 FractionallySizedBox(
+                   widthFactor: percentage,
+                   child: Container(
+                     height: 8,
+                     decoration: BoxDecoration(
+                       gradient: LinearGradient(
+                         colors: [AppColors.primary, AppColors.secondary],
+                         begin: Alignment.centerLeft,
+                         end: Alignment.centerRight,
+                       ),
+                       borderRadius: BorderRadius.circular(8),
+                     ),
+                   ),
+                 ),
               ],
             ),
           ),
