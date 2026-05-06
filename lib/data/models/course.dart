@@ -31,19 +31,6 @@ class Course {
     return sections.expand((s) => s.lessons).toList();
   }
 
-  int get completedLessons {
-    var count = 0;
-    for (final lesson in lessons) {
-      if (lesson.isCompleted) {
-        count++;
-      }
-    }
-    return count;
-  }
-  int get totalLessons => lessons.length;
-  double get progressPercentage =>
-      totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
-
   factory Course.fromJson(Map<String, dynamic> json) {
     var sectionsJson = (json['sections'] ?? []) as List;
     List<CourseSection> sections = sectionsJson

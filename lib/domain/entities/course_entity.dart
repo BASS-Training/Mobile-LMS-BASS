@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'lesson_entity.dart';
 import 'course_section_entity.dart';
+import '../value_objects/progress.dart';
 
 class CourseEntity extends Equatable {
   final String id;
@@ -29,21 +30,26 @@ class CourseEntity extends Equatable {
     this.isSaved = false,
   });
 
-  List<LessonEntity> get allLessons =>
-      sections.isNotEmpty ? sections.expand((section) => section.lessons).toList() : lessons;
+  List<LessonEntity> get allLessons => sections.isNotEmpty
+      ? sections.expand((section) => section.lessons).toList()
+      : lessons;
 
-  int get completedLessons {
-    var count = 0;
-    for (final lesson in allLessons) {
-      if (lesson.isCompleted) {
-        count++;
-      }
-    }
-    return count;
+  /// Get progress value object (source of truth untuk progress calculation)
+  Progress get progress {
+    final completedCount = allLessons
+        .where((lesson) => lesson.isCompleted)
+        .length;
+    final totalCount = allLessons.length;
+    return Progress.create(
+      completedCount: completedCount,
+      totalCount: totalCount,
+    );
   }
-  int get totalLessons => allLessons.length;
-  double get progressPercentage =>
-      totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
+
+  /// Convenience getters untuk backward compatibility
+  int get completedLessons => progress.completedCount;
+  int get totalLessons => progress.totalCount;
+  double get progressPercentage => progress.percentage;
 
   CourseEntity copyWith({bool? isSaved}) {
     return CourseEntity(
@@ -62,5 +68,17 @@ class CourseEntity extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, title, description, instructor, color, icon, chaptersCount, duration, sections, lessons, isSaved];
+  List<Object?> get props => [
+    id,
+    title,
+    description,
+    instructor,
+    color,
+    icon,
+    chaptersCount,
+    duration,
+    sections,
+    lessons,
+    isSaved,
+  ];
 }

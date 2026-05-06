@@ -15,7 +15,13 @@ class ToggleLessonCompletionUseCase {
 
   ToggleLessonCompletionUseCase(this.repository);
 
+  /// Toggle lesson completion dengan validation
+  /// @throws ArgumentError jika lessonId invalid
   Future<void> call(String lessonId) async {
+    if (lessonId.isEmpty) {
+      throw ArgumentError('Lesson ID tidak boleh kosong');
+    }
+
     return await repository.toggleLessonCompletion(lessonId);
   }
 }
@@ -25,7 +31,13 @@ class MarkLessonCompleteUseCase {
 
   MarkLessonCompleteUseCase(this.repository);
 
+  /// Mark lesson sebagai completed dengan validation
+  /// @throws ArgumentError jika lessonId invalid
   Future<void> call(String lessonId) async {
+    if (lessonId.isEmpty) {
+      throw ArgumentError('Lesson ID tidak boleh kosong');
+    }
+
     return await repository.markLessonComplete(lessonId);
   }
 }
@@ -35,7 +47,13 @@ class MarkLessonIncompleteUseCase {
 
   MarkLessonIncompleteUseCase(this.repository);
 
+  /// Mark lesson sebagai incomplete dengan validation
+  /// @throws ArgumentError jika lessonId invalid
   Future<void> call(String lessonId) async {
+    if (lessonId.isEmpty) {
+      throw ArgumentError('Lesson ID tidak boleh kosong');
+    }
+
     return await repository.markLessonIncomplete(lessonId);
   }
 }

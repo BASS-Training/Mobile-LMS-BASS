@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import 'lesson_entity.dart';
+import '../value_objects/progress.dart';
 
 class CourseSectionEntity extends Equatable {
   final String id;
@@ -19,18 +20,21 @@ class CourseSectionEntity extends Equatable {
     required this.lessons,
   });
 
-  int get completedLessons {
-    var count = 0;
-    for (final lesson in lessons) {
-      if (lesson.isCompleted) {
-        count++;
-      }
-    }
-    return count;
+  /// Get progress value object (source of truth untuk progress calculation)
+  Progress get progress {
+    final completedCount = lessons.where((lesson) => lesson.isCompleted).length;
+    final totalCount = lessons.length;
+    return Progress.create(
+      completedCount: completedCount,
+      totalCount: totalCount,
+    );
   }
-  int get totalLessons => lessons.length;
-  double get progressPercentage =>
-      totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
+
+  /// Convenience getters untuk backward compatibility
+  int get completedLessons => progress.completedCount;
+  int get totalLessons => progress.totalCount;
+  double get progressPercentage => progress.percentage;
+  bool get isFullyCompleted => progress.isFullyCompleted;
 
   CourseSectionEntity copyWith({
     String? id,
@@ -51,5 +55,12 @@ class CourseSectionEntity extends Equatable {
   }
 
   @override
-  List<Object?> get props => [id, courseId, sectionNumber, title, description, lessons];
+  List<Object?> get props => [
+    id,
+    courseId,
+    sectionNumber,
+    title,
+    description,
+    lessons,
+  ];
 }

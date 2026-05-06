@@ -36,7 +36,20 @@ class ToggleSaveCourseUseCase {
 
   ToggleSaveCourseUseCase(this.repository);
 
+  /// Toggle save course dengan validation
+  /// @throws ArgumentError jika courseId invalid
   Future<void> call(String courseId) async {
+    // Validasi courseId
+    if (courseId.isEmpty) {
+      throw ArgumentError('Course ID tidak boleh kosong');
+    }
+
+    // Validasi bahwa course exist
+    final course = await repository.getCourseById(courseId);
+    if (course == null) {
+      throw ArgumentError('Course dengan ID $courseId tidak ditemukan');
+    }
+
     return await repository.toggleSaveCourse(courseId);
   }
 }

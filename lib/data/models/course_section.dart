@@ -17,20 +17,6 @@ class CourseSection {
     required this.lessons,
   });
 
-  int get completedLessons {
-    var count = 0;
-    for (final lesson in lessons) {
-      if (lesson.isCompleted) {
-        count++;
-      }
-    }
-    return count;
-  }
-  int get totalLessons => lessons.length;
-  double get progressPercentage =>
-      totalLessons == 0 ? 0 : (completedLessons / totalLessons) * 100;
-  bool get isFullyCompleted => completedLessons == totalLessons;
-
   factory CourseSection.fromJson(Map<String, dynamic> json) {
     return CourseSection(
       id: json['id'] ?? '',
@@ -38,7 +24,8 @@ class CourseSection {
       sectionNumber: json['sectionNumber'] ?? 0,
       title: json['title'] ?? '',
       description: json['description'] ?? '',
-      lessons: (json['lessons'] as List<dynamic>?)
+      lessons:
+          (json['lessons'] as List<dynamic>?)
               ?.map((l) => Lesson.fromJson(l as Map<String, dynamic>))
               .toList() ??
           [],
