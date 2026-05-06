@@ -9,9 +9,12 @@ import 'package:lms_mobile_app/presentation/bloc/course/course_state.dart';
 import 'package:lms_mobile_app/presentation/widgets/course_card.dart';
 import 'package:lms_mobile_app/presentation/widgets/statistics_card.dart';
 import 'package:lms_mobile_app/utils/constants.dart';
+import 'package:lms_mobile_app/domain/entities/course_entity.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final VoidCallback? onShowCourses;
+
+  const HomeScreen({super.key, this.onShowCourses});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -19,6 +22,71 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _searchController = TextEditingController();
+  final _joinClassTokenController = TextEditingController();
+  bool _isSubmittingJoinToken = false;
+  bool _didNavigateFromEdgeSwipe = false;
+  double _edgeOverscrollAcumulator = 0.0;
+  static const double _edgeSwipeThreshold = 80.0;
+
+  void _goToCourseList() {
+    if (!mounted || _didNavigateFromEdgeSwipe) return;
+
+    _didNavigateFromEdgeSwipe = true;
+    _edgeOverscrollAcumulator = 0;
+
+    if (widget.onShowCourses != null) {
+      widget.onShowCourses!.call();
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) _didNavigateFromEdgeSwipe = false;
+      });
+      return;
+    }
+    Navigator.pushNamed(context, AppConstants.routeCourseList).then((_) {
+      if (!mounted) return;
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) {
+          _didNavigateFromEdgeSwipe = false;
+        }
+      });
+    });
+  }
+
+  // Simulate join class action with validation and loading state
+  Future<void> _submitJoinClassToken() async {
+    final token = _joinClassTokenController.text.trim();
+
+    if (token.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Token pendaftaran wajib diisi')),
+      );
+      return;
+    }
+
+    if (token.length < 6) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Token minimal 6 karakter')));
+      return;
+    }
+
+    setState(() => _isSubmittingJoinToken = true);
+
+    try {
+      await Future.delayed(const Duration(milliseconds: 900));
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Berhasil gabung kelas')));
+
+      _joinClassTokenController.clear();
+    } finally {
+      if (mounted) {
+        setState(() => _isSubmittingJoinToken = false);
+      }
+    }
+  }
 
   @override
   void initState() {
@@ -29,6 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _joinClassTokenController.dispose();
     super.dispose();
   }
 
@@ -187,6 +256,21 @@ class _HomeScreenState extends State<HomeScreen> {
                         ? ((totalCompletedLessons / totalLessons) * 100).toInt()
                         : 0;
 
+                    final allLessons = state.courses
+                        .expand((c) => c.allLessons)
+                        .toList();
+                    final totalLessonsAll = allLessons.length;
+                    final completedLessonsAll = allLessons
+                        .where((l) => l.isCompleted)
+                        .length;
+
+                    final totalQuizzes = allLessons
+                        .where((l) => l.type == 'quiz')
+                        .length;
+                    final completedQuizzes = allLessons
+                        .where((l) => l.type == 'quiz' && l.isCompleted)
+                        .length;
+
                     return Padding(
                       padding: EdgeInsets.symmetric(
                         horizontal: AppConstants.paddingLarge,
@@ -200,7 +284,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisSpacing: 12,
                         children: [
                           // Card 1: Courses
-                          _buildStatCard(
+                          StatisticsCard(
                             icon: '📚',
                             title: 'Kursus',
                             number: totalCourses.toString(),
@@ -330,38 +414,112 @@ class _HomeScreenState extends State<HomeScreen> {
                         .toList();
                     return SizedBox(
                       height: 280,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: AppConstants.paddingLarge,
-                        ),
-                        itemCount: recommendedCourses.length,
-                        itemBuilder: (context, index) {
-                          final courseEntity = recommendedCourses[index];
-                          return Container(
-                            width: 200,
-                            margin: EdgeInsets.only(right: 12),
-                            child: CourseCard(
-                              course: courseEntity,
-                              isSaved: courseEntity.isSaved,
-                              onTap: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  '/course-detail',
-                                  arguments: courseEntity,
-                                );
-                              },
-                              onSavePressed: () {
-                                context.read<CourseBloc>().add(
-                                  ToggleSaveCourseEvent(
-                                    courseId: courseEntity.id,
-                                  ),
-                                );
-                              },
-                            ),
-                          );
+                      child: NotificationListener<ScrollNotification>(
+                        onNotification: (notification) {
+                          if (_didNavigateFromEdgeSwipe) return false;
+                          if (notification.metrics.axis != Axis.horizontal)
+                            return false;
+
+                          if (notification is OverscrollNotification) {
+                            final atRightEdge =
+                                notification.metrics.pixels >=
+                                notification.metrics.maxScrollExtent;
+                            final pushingBeyondRight =
+                                notification.overscroll > 0;
+
+                            if (atRightEdge && pushingBeyondRight) {
+                              _edgeOverscrollAcumulator +=
+                                  notification.overscroll;
+
+                              if (_edgeOverscrollAcumulator >=
+                                  _edgeSwipeThreshold) {
+                                _goToCourseList();
+                                return true;
+                              }
+                            } else {
+                              _edgeOverscrollAcumulator = 0;
+                            }
+                          }
+
+                          if (notification is ScrollEndNotification) {
+                            _edgeOverscrollAcumulator = 0;
+                          }
+
+                          return false;
                         },
+
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          physics: const BouncingScrollPhysics(
+                            parent: AlwaysScrollableScrollPhysics(),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: AppConstants.paddingLarge,
+                          ),
+                          itemCount: recommendedCourses.length + 1,
+                          itemBuilder: (context, index) {
+                            if (index == recommendedCourses.length) {
+                              return _buildViewAllCard();
+                            }
+                            final courseEntity = recommendedCourses[index];
+                            return Container(
+                              width: 200,
+                              margin: EdgeInsets.only(right: 12),
+                              child: CourseCard(
+                                course: courseEntity,
+                                isSaved: courseEntity.isSaved,
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    '/course-detail',
+                                    arguments: courseEntity,
+                                  );
+                                },
+                                onSavePressed: () {
+                                  context.read<CourseBloc>().add(
+                                    ToggleSaveCourseEvent(
+                                      courseId: courseEntity.id,
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                        ),
                       ),
+                    );
+                  }
+                  return SizedBox.shrink();
+                },
+              ),
+              SizedBox(height: 16),
+              BlocBuilder<CourseBloc, CourseState>(
+                builder: (context, state) {
+                  if (state is CourseLoaded) {
+                    final allLessons = state.courses
+                        .expand((c) => c.allLessons)
+                        .toList();
+                    final totalLessonsAll = allLessons.length;
+                    final completedLessonsAll = allLessons
+                        .where((l) => l.isCompleted)
+                        .length;
+
+                    final totalQuizzes = allLessons
+                        .where((l) => l.type == 'quiz')
+                        .length;
+                    final completedQuizzes = allLessons
+                        .where((l) => l.type == 'quiz' && l.isCompleted)
+                        .length;
+                    final completedCourses = state.courses
+                        .where((c) => c.progressPercentage == 100)
+                        .toList();
+
+                    return _buildExtraHomeSections(
+                      completedLessonCount: completedLessonsAll,
+                      totalLessonCount: totalLessonsAll,
+                      completedQuizCount: completedQuizzes,
+                      totalQuizCount: totalQuizzes,
+                      completedCourses: completedCourses,
                     );
                   }
                   return SizedBox.shrink();
@@ -387,16 +545,17 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: borderColor.withOpacity(0.3), width: 1.5),
         boxShadow: [
           BoxShadow(
             color: borderColor.withOpacity(0.08),
-            blurRadius: 8,
-            offset: Offset(0, 2),
+            blurRadius: 12,
+            offset: Offset(0, 4),
           ),
         ],
       ),
+
       child: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
@@ -565,6 +724,441 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildViewAllCard() {
+    return GestureDetector(
+      onTap: _goToCourseList,
+      child: Container(
+        width: 200,
+        margin: const EdgeInsets.only(right: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.border),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8,
+              offset: Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(Icons.menu_book_rounded, color: AppColors.primary, size: 28),
+              const Spacer(),
+              Text(
+                'Tampilkan Semua',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.text,
+                  height: 1.1,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Text(
+                    'Buka daftar Kursus',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textLighter,
+                    ),
+                  ),
+                  const Spacer(),
+                  Icon(Icons.arrow_forward_rounded, color: AppColors.text),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExtraHomeSections({
+    required int completedLessonCount,
+    required int totalLessonCount,
+    required int completedQuizCount,
+    required int totalQuizCount,
+    required List<CourseEntity> completedCourses,
+  }) {
+    String lessonText = '$completedLessonCount/$totalLessonCount';
+    String quizText = totalQuizCount > 0
+        ? '$completedQuizCount/$totalQuizCount'
+        : '0/0';
+
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: AppConstants.paddingLarge),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildModernCard(
+            title: 'Statistik belajar',
+            icon: Icons.insights_rounded,
+            gradient: const LinearGradient(
+              colors: [Color(0xFFEAF4FF), Color(0xFFDDF0FF)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            child: Column(
+              children: [
+                _buildMetricRowModern('Pelajaran Selesai', lessonText),
+                const SizedBox(height: 8),
+                _buildMetricRowModern('Kuis Selesai', quizText),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
+          _buildModernCard(
+            title: 'Gabung Kelas',
+            icon: Icons.groups_2_rounded,
+            gradient: const LinearGradient(
+              colors: [Color(0xFFEFFFEF), Color(0xFFE1F8E1)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.success.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    'Status Verifikasi AVPN: APPROVED',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.success,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Token Pendaftaran',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.text,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: _joinClassTokenController,
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (_) => _submitJoinClassToken(),
+                  decoration: InputDecoration(
+                    hintText: 'Contoh: KLS-2026-AB12',
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 12,
+                    ),
+                    suffixIcon: Icon(
+                      Icons.vpn_key_rounded,
+                      color: AppColors.primary,
+                      size: 18,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: _isSubmittingJoinToken
+                        ? null
+                        : _submitJoinClassToken,
+                    icon: _isSubmittingJoinToken
+                        ? const SizedBox(
+                            width: 14,
+                            height: 14,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Icon(Icons.send_rounded, size: 16),
+                    label: Text(
+                      _isSubmittingJoinToken ? 'Mengirim...' : 'Kirim Token',
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
+          _buildModernCard(
+            title: 'Sertifikat saya',
+            icon: Icons.workspace_premium_rounded,
+            trailing: GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, AppConstants.routeCertificateList);
+              },
+              child: Text(
+                'Lihat daftar sertifikat',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: AppColors.primaryDark,
+                  fontWeight: FontWeight.w700,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
+            ),
+            gradient: const LinearGradient(
+              colors: [Color(0xFFFFF6E7), Color(0xFFFFEED3)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            child: completedCourses.isEmpty
+                ? Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.7),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.white),
+                    ),
+                    child: Text(
+                      'Belum ada sertifikat. Selesaikan course sampai 100% untuk mendapatkan sertifikat.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textLight,
+                        height: 1.4,
+                      ),
+                    ),
+                  )
+                : Column(
+                    children: completedCourses.map((course) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            AppConstants.routeCertificateDetail,
+                            arguments: course,
+                          );
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          margin: const EdgeInsets.only(bottom: 10),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.72),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.white),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                course.title,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.text,
+                                  height: 1.3,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.verified_rounded,
+                                    size: 14,
+                                    color: AppColors.success,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'Sertifikat tersedia',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.textLight,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionCard({
+    required String title,
+    required Widget child,
+    Widget? trailing,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Color(0xFFF4F3CC),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Colors.black26, width: 0.8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.12),
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+              if (trailing != null) trailing,
+            ],
+          ),
+          SizedBox(height: 8),
+          child,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatRow(String label, String value) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 2),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(fontSize: 11, color: AppColors.text),
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: AppColors.text,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMetricRowModern(
+    String label,
+    String value, {
+    bool isLast = false,
+  }) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: isLast ? 2 : 0),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(fontSize: 11, color: AppColors.text),
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: AppColors.text,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildModernCard({
+    required String title,
+    required IconData icon,
+    required Widget child,
+    required Gradient gradient,
+    Widget? trailing,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        gradient: gradient,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.8)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 14,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.9),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: AppColors.primaryDark, size: 19),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.text,
+                  ),
+                ),
+              ),
+              if (trailing != null) trailing,
+            ],
+          ),
+          const SizedBox(height: 12),
+          child,
+        ],
       ),
     );
   }

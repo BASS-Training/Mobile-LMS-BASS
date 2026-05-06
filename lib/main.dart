@@ -9,6 +9,8 @@ import 'package:lms_mobile_app/presentation/bloc/auth/auth_bloc.dart';
 import 'package:lms_mobile_app/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/presentation/bloc/lesson/lesson_bloc.dart';
 import 'package:lms_mobile_app/presentation/screens/auth/login_screen.dart';
+import 'package:lms_mobile_app/presentation/screens/certificate/certificate_detail_screen.dart';
+import 'package:lms_mobile_app/presentation/screens/certificate/certificate_list_screen.dart';
 import 'package:lms_mobile_app/presentation/screens/courses/course_detail_screen.dart';
 import 'package:lms_mobile_app/presentation/screens/lessons/lesson_detail_screen.dart';
 import 'package:lms_mobile_app/presentation/screens/main_screen.dart';
@@ -49,6 +51,7 @@ class MainApp extends StatelessWidget {
           '/login': (context) => const LoginScreen(),
           '/home': (context) => const MainScreen(initialTab: 0),
           '/courses': (context) => const MainScreen(initialTab: 1),
+          '/certificates': (context) => const CertificateListScreen(),
         },
         onGenerateRoute: (RouteSettings settings) {
           if (settings.name == '/course-detail') {
@@ -69,6 +72,12 @@ class MainApp extends StatelessWidget {
                 lessonIndex: lessonIndex,
               ),
               settings: settings,
+            );
+          } else if (settings.name == '/certificate-detail') {
+            final course = settings.arguments as CourseEntity;
+            return MaterialPageRoute(
+            builder: (context) => CertificateDetailScreen(course: course),
+            settings: settings,
             );
           }
           return null;

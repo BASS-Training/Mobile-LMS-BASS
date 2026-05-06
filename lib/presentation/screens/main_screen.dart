@@ -29,7 +29,13 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
     _selectedIndex = widget.initialTab;
     _screens = [
-      HomeScreen(),
+      HomeScreen(
+        onShowCourses: () {
+          setState(() {
+            _selectedIndex = 1;
+          });
+        },
+      ),
       CourseListScreen(),
       SavedCoursesScreen(),
       ProfileScreen(),

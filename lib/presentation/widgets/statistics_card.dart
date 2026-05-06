@@ -10,14 +10,14 @@ class StatisticsCard extends StatelessWidget {
   final String icon;
 
   const StatisticsCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.number,
     required this.description,
     required this.borderColor,
     required this.backgroundColor,
     this.icon = '',
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,10 +25,7 @@ class StatisticsCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: borderColor.withOpacity(0.2),
-          width: 1,
-        ),
+        border: Border.all(color: borderColor.withOpacity(0.2), width: 1),
         boxShadow: [
           BoxShadow(
             color: borderColor.withOpacity(0.08),
@@ -66,13 +63,13 @@ class StatisticsCard extends StatelessWidget {
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 11,
+                    fontSize: 25,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textLight,
                     letterSpacing: 0.5,
                   ),
                 ),
-                SizedBox(height: 8),
+                SizedBox(height: 4),
                 // Icon and Number Row
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -86,10 +83,7 @@ class StatisticsCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Center(
-                          child: Text(
-                            icon,
-                            style: TextStyle(fontSize: 24),
-                          ),
+                          child: Text(icon, style: TextStyle(fontSize: 24)),
                         ),
                       ),
                     if (icon.isNotEmpty) SizedBox(width: 12),
@@ -122,7 +116,6 @@ class StatisticsCard extends StatelessWidget {
           ),
         ],
       ),
-      );
-    
+    );
   }
 }

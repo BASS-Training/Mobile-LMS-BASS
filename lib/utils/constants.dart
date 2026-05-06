@@ -55,6 +55,10 @@ class AppConstants {
   static const String nextLesson = 'Next Lesson';
   static const String previousLesson = 'Previous Lesson';
 
+  //Certificate related
+  static const String routeCertificateList = '/certificates';
+  static const String routeCertificateDetail = '/certificate-detail';
+
   // General
   static const String save = 'Save';
   static const String delete = 'Delete';
