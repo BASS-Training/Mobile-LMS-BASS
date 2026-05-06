@@ -10,7 +10,6 @@ import 'package:lms_mobile_app/presentation/bloc/course/course_state.dart';
 import 'package:lms_mobile_app/presentation/screens/courses/course_list_screen.dart';
 import 'package:lms_mobile_app/presentation/screens/home/home_screen.dart';
 import 'package:lms_mobile_app/presentation/widgets/bottom_nav_bar.dart';
-import 'package:lms_mobile_app/data/mappers/course_mapper.dart';
 
 class MainScreen extends StatefulWidget {
   final int initialTab;
@@ -91,7 +90,10 @@ class _SavedCoursesScreenState extends State<SavedCoursesScreen> {
                     SizedBox(height: 16),
                     Text(
                       'No saved courses yet',
-                      style: TextStyle(fontSize: 16, color: AppColors.textLight),
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColors.textLight,
+                      ),
                     ),
                   ],
                 ),
@@ -102,7 +104,6 @@ class _SavedCoursesScreenState extends State<SavedCoursesScreen> {
               itemCount: savedCourses.length,
               itemBuilder: (context, index) {
                 final courseEntity = savedCourses[index];
-                final course = CourseMapper.fromDomain(courseEntity);
                 return Container(
                   margin: EdgeInsets.only(bottom: 12),
                   padding: EdgeInsets.all(16),
@@ -127,12 +128,12 @@ class _SavedCoursesScreenState extends State<SavedCoursesScreen> {
                             colors: [
                               Color(
                                 int.parse(
-                                  course.color.replaceFirst('#', '0xFF'),
+                                  courseEntity.color.replaceFirst('#', '0xFF'),
                                 ),
                               ),
                               Color(
                                 int.parse(
-                                  course.color.replaceFirst('#', '0xFF'),
+                                  courseEntity.color.replaceFirst('#', '0xFF'),
                                 ),
                               ).withOpacity(0.7),
                             ],
@@ -141,7 +142,7 @@ class _SavedCoursesScreenState extends State<SavedCoursesScreen> {
                         ),
                         child: Center(
                           child: Text(
-                            course.icon,
+                            courseEntity.icon,
                             style: TextStyle(fontSize: 32),
                           ),
                         ),
@@ -152,7 +153,7 @@ class _SavedCoursesScreenState extends State<SavedCoursesScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              course.title,
+                              courseEntity.title,
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -161,7 +162,7 @@ class _SavedCoursesScreenState extends State<SavedCoursesScreen> {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              course.instructor,
+                              courseEntity.instructor,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
@@ -179,7 +180,7 @@ class _SavedCoursesScreenState extends State<SavedCoursesScreen> {
                                 ),
                                 SizedBox(width: 4),
                                 Text(
-                                  '${course.totalLessons} lessons',
+                                  '${courseEntity.totalLessons} lessons',
                                   style: TextStyle(
                                     fontSize: 11,
                                     color: AppColors.textLighter,
@@ -195,7 +196,7 @@ class _SavedCoursesScreenState extends State<SavedCoursesScreen> {
                           Navigator.pushNamed(
                             context,
                             '/course-detail',
-                            arguments: course,
+                            arguments: courseEntity,
                           );
                         },
                         child: Icon(
@@ -375,9 +376,7 @@ class ProfileScreen extends StatelessWidget {
             ),
           );
         }
-        return Scaffold(
-          body: Center(child: Text('No user logged in')),
-        );
+        return Scaffold(body: Center(child: Text('No user logged in')));
       },
     );
   }

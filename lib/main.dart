@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lms_mobile_app/config/theme.dart';
-import 'package:lms_mobile_app/data/sources/local_storage.dart';
-import 'package:lms_mobile_app/data/models/course.dart';
-import 'package:lms_mobile_app/data/models/lesson.dart';
 import 'package:lms_mobile_app/config/service_locator.dart';
+import 'package:lms_mobile_app/data/sources/local_storage.dart';
+import 'package:lms_mobile_app/domain/entities/course_entity.dart';
+import 'package:lms_mobile_app/domain/entities/lesson_entity.dart';
 import 'package:lms_mobile_app/presentation/bloc/auth/auth_bloc.dart';
 import 'package:lms_mobile_app/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/presentation/bloc/lesson/lesson_bloc.dart';
@@ -16,10 +16,10 @@ import 'package:lms_mobile_app/presentation/screens/main_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await LocalStorage.init();
-  
+
   // Setup service locator for dependency injection
   ServiceLocator().setupServiceLocator();
-  
+
   runApp(const MainApp());
 }
 
@@ -29,12 +29,10 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final serviceLocator = ServiceLocator();
-    
+
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AuthBloc>(
-          create: (context) => serviceLocator.authBloc,
-        ),
+        BlocProvider<AuthBloc>(create: (context) => serviceLocator.authBloc),
         BlocProvider<CourseBloc>(
           create: (context) => serviceLocator.courseBloc,
         ),
@@ -54,15 +52,15 @@ class MainApp extends StatelessWidget {
         },
         onGenerateRoute: (RouteSettings settings) {
           if (settings.name == '/course-detail') {
-            final course = settings.arguments as Course;
+            final course = settings.arguments as CourseEntity;
             return MaterialPageRoute(
               builder: (context) => CourseDetailScreen(course: course),
               settings: settings,
             );
           } else if (settings.name == '/lesson-detail') {
             final args = settings.arguments as Map<String, dynamic>;
-            final lesson = args['lesson'] as Lesson;
-            final course = args['course'] as Course;
+            final lesson = args['lesson'] as LessonEntity;
+            final course = args['course'] as CourseEntity;
             final lessonIndex = args['lessonIndex'] as int;
             return MaterialPageRoute(
               builder: (context) => LessonDetailScreen(

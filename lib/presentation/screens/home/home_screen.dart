@@ -9,7 +9,6 @@ import 'package:lms_mobile_app/presentation/bloc/course/course_state.dart';
 import 'package:lms_mobile_app/presentation/widgets/course_card.dart';
 import 'package:lms_mobile_app/presentation/widgets/statistics_card.dart';
 import 'package:lms_mobile_app/utils/constants.dart';
-import 'package:lms_mobile_app/data/mappers/course_mapper.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -339,18 +338,17 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemCount: recommendedCourses.length,
                         itemBuilder: (context, index) {
                           final courseEntity = recommendedCourses[index];
-                          final course = CourseMapper.fromDomain(courseEntity);
                           return Container(
                             width: 200,
                             margin: EdgeInsets.only(right: 12),
                             child: CourseCard(
-                              course: course,
+                              course: courseEntity,
                               isSaved: courseEntity.isSaved,
                               onTap: () {
                                 Navigator.pushNamed(
                                   context,
                                   '/course-detail',
-                                  arguments: course,
+                                  arguments: courseEntity,
                                 );
                               },
                               onSavePressed: () {

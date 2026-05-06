@@ -6,7 +6,6 @@ import 'package:lms_mobile_app/presentation/bloc/course/course_event.dart';
 import 'package:lms_mobile_app/presentation/bloc/course/course_state.dart';
 import 'package:lms_mobile_app/utils/constants.dart';
 import 'package:lms_mobile_app/presentation/widgets/course_card.dart';
-import 'package:lms_mobile_app/data/mappers/course_mapper.dart';
 
 class CourseListScreen extends StatefulWidget {
   const CourseListScreen({super.key});
@@ -55,8 +54,8 @@ class _CourseListScreenState extends State<CourseListScreen> {
               controller: _searchController,
               onChanged: (value) {
                 context.read<CourseBloc>().add(
-                      SearchCoursesEvent(query: value),
-                    );
+                  SearchCoursesEvent(query: value),
+                );
               },
               decoration: InputDecoration(
                 hintText: AppConstants.searchCourses,
@@ -67,8 +66,8 @@ class _CourseListScreenState extends State<CourseListScreen> {
                         onTap: () {
                           _searchController.clear();
                           context.read<CourseBloc>().add(
-                                const SearchCoursesEvent(query: ''),
-                              );
+                            const SearchCoursesEvent(query: ''),
+                          );
                         },
                         child: Icon(Icons.close, color: AppColors.textLighter),
                       )
@@ -122,21 +121,20 @@ class _CourseListScreenState extends State<CourseListScreen> {
                     itemCount: courses.length,
                     itemBuilder: (context, index) {
                       final courseEntity = courses[index];
-                      final course = CourseMapper.fromDomain(courseEntity);
                       return CourseCard(
-                        course: course,
+                        course: courseEntity,
                         isSaved: courseEntity.isSaved,
                         onTap: () {
                           Navigator.pushNamed(
                             context,
                             '/course-detail',
-                            arguments: course,
+                            arguments: courseEntity,
                           );
                         },
                         onSavePressed: () {
                           context.read<CourseBloc>().add(
-                                ToggleSaveCourseEvent(courseId: courseEntity.id),
-                              );
+                            ToggleSaveCourseEvent(courseId: courseEntity.id),
+                          );
                         },
                       );
                     },

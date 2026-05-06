@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/config/theme.dart';
-import 'package:lms_mobile_app/data/models/course.dart';
+import 'package:lms_mobile_app/domain/entities/course_entity.dart';
 
 class CourseCard extends StatelessWidget {
-  final Course course;
+  final CourseEntity course;
   final VoidCallback onTap;
   final VoidCallback? onSavePressed;
   final bool isSaved;

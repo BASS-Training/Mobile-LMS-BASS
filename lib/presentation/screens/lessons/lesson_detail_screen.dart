@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lms_mobile_app/config/theme.dart';
-import 'package:lms_mobile_app/data/models/course.dart';
-import 'package:lms_mobile_app/data/models/lesson.dart';
+import 'package:lms_mobile_app/domain/entities/course_entity.dart';
+import 'package:lms_mobile_app/domain/entities/lesson_entity.dart';
 import 'package:lms_mobile_app/presentation/bloc/lesson/lesson_bloc.dart';
 import 'package:lms_mobile_app/presentation/bloc/lesson/lesson_event.dart';
 import 'package:lms_mobile_app/presentation/bloc/lesson/lesson_state.dart';
@@ -10,8 +10,8 @@ import 'package:lms_mobile_app/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/presentation/bloc/course/course_event.dart';
 
 class LessonDetailScreen extends StatefulWidget {
-  final Lesson lesson;
-  final Course course;
+  final LessonEntity lesson;
+  final CourseEntity course;
   final int lessonIndex;
 
   const LessonDetailScreen({
@@ -34,9 +34,9 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
     super.initState();
     _scaffoldKey = GlobalKey<ScaffoldState>();
     _scrollController = ScrollController();
-    context
-        .read<LessonBloc>()
-        .add(CheckLessonCompletionEvent(lessonId: widget.lesson.id));
+    context.read<LessonBloc>().add(
+      CheckLessonCompletionEvent(lessonId: widget.lesson.id),
+    );
   }
 
   @override
@@ -45,13 +45,14 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
     super.dispose();
   }
 
-  bool get canGoNext => widget.lessonIndex < widget.course.lessons.length - 1;
+  bool get canGoNext =>
+      widget.lessonIndex < widget.course.allLessons.length - 1;
   bool get canGoPrevious => widget.lessonIndex > 0;
 
-  Lesson? get nextLesson =>
-      canGoNext ? widget.course.lessons[widget.lessonIndex + 1] : null;
-  Lesson? get previousLesson =>
-      canGoPrevious ? widget.course.lessons[widget.lessonIndex - 1] : null;
+  LessonEntity? get nextLesson =>
+      canGoNext ? widget.course.allLessons[widget.lessonIndex + 1] : null;
+  LessonEntity? get previousLesson =>
+      canGoPrevious ? widget.course.allLessons[widget.lessonIndex - 1] : null;
 
   @override
   Widget build(BuildContext context) {
@@ -231,13 +232,13 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
                           child: ElevatedButton.icon(
                             onPressed: () {
                               context.read<LessonBloc>().add(
-                                    ToggleLessonCompletionEvent(
-                                      lessonId: widget.lesson.id,
-                                    ),
-                                  );
-                              context
-                                  .read<CourseBloc>()
-                                  .add(const RefreshCoursesEvent());
+                                ToggleLessonCompletionEvent(
+                                  lessonId: widget.lesson.id,
+                                ),
+                              );
+                              context.read<CourseBloc>().add(
+                                const RefreshCoursesEvent(),
+                              );
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text(
@@ -253,9 +254,7 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
                               );
                             },
                             icon: Icon(
-                              isCompleted
-                                  ? Icons.close
-                                  : Icons.check_circle,
+                              isCompleted ? Icons.close : Icons.check_circle,
                             ),
                             label: Text(
                               isCompleted
@@ -271,8 +270,7 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
                                   ? Colors.orange
                                   : Colors.green,
                               foregroundColor: Colors.white,
-                              padding:
-                                  EdgeInsets.symmetric(vertical: 14),
+                              padding: EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -371,7 +369,7 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
                   ),
                   SizedBox(height: 8),
                   Text(
-                    '${widget.course.lessons.length} lessons',
+                    '${widget.course.allLessons.length} lessons',
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.white.withOpacity(0.8),
@@ -383,12 +381,12 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
             // Lesson list
             Expanded(
               child: ListView.builder(
-                itemCount: widget.course.lessons.length,
+                itemCount: widget.course.allLessons.length,
                 padding: EdgeInsets.symmetric(vertical: 8),
                 itemBuilder: (context, index) {
-                  final lesson = widget.course.lessons[index];
+                  final lesson = widget.course.allLessons[index];
                   final isCurrentLesson = index == widget.lessonIndex;
-                  
+
                   return Container(
                     margin: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     decoration: BoxDecoration(

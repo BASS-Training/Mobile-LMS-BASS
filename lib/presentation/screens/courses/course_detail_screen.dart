@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lms_mobile_app/config/theme.dart';
-import 'package:lms_mobile_app/data/models/course.dart';
-import 'package:lms_mobile_app/data/models/course_section.dart';
-import 'package:lms_mobile_app/data/models/lesson.dart';
 import 'package:lms_mobile_app/domain/entities/course_entity.dart';
+import 'package:lms_mobile_app/domain/entities/course_section_entity.dart';
+import 'package:lms_mobile_app/domain/entities/lesson_entity.dart';
 import 'package:lms_mobile_app/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/presentation/bloc/course/course_event.dart';
 import 'package:lms_mobile_app/presentation/bloc/course/course_state.dart';
 import 'package:lms_mobile_app/presentation/bloc/lesson/lesson_bloc.dart';
 import 'package:lms_mobile_app/presentation/bloc/lesson/lesson_event.dart';
 import 'package:lms_mobile_app/utils/constants.dart';
-import 'package:lms_mobile_app/presentation/widgets/lesson_tile.dart';
 import 'package:lms_mobile_app/presentation/widgets/progress_indicator.dart';
-import 'package:lms_mobile_app/data/mappers/course_mapper.dart';
 
 class CourseDetailScreen extends StatelessWidget {
-  final Course course;
+  final CourseEntity course;
 
   const CourseDetailScreen({super.key, required this.course});
 
@@ -24,17 +21,15 @@ class CourseDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<CourseBloc, CourseState>(
       builder: (context, state) {
-        CourseEntity currentCourseEntity = CourseMapper.toDomain(course);
-        
+        CourseEntity currentCourseEntity = course;
+
         if (state is CourseLoaded) {
           final foundCourse = state.courses.firstWhere(
             (c) => c.id == course.id,
-            orElse: () => CourseMapper.toDomain(course),
+            orElse: () => course,
           );
           currentCourseEntity = foundCourse;
         }
-
-        final currentCourse = CourseMapper.fromDomain(currentCourseEntity);
 
         return Scaffold(
           backgroundColor: AppColors.background,
@@ -50,12 +45,12 @@ class CourseDetailScreen extends StatelessWidget {
                       colors: [
                         Color(
                           int.parse(
-                            currentCourse.color.replaceFirst('#', '0xFF'),
+                            currentCourseEntity.color.replaceFirst('#', '0xFF'),
                           ),
                         ),
                         Color(
                           int.parse(
-                            currentCourse.color.replaceFirst('#', '0xFF'),
+                            currentCourseEntity.color.replaceFirst('#', '0xFF'),
                           ),
                         ).withOpacity(0.7),
                       ],
@@ -78,8 +73,10 @@ class CourseDetailScreen extends StatelessWidget {
                                 color: Colors.white.withOpacity(0.2),
                                 shape: BoxShape.circle,
                               ),
-                              child:
-                                  Icon(Icons.arrow_back, color: Colors.white),
+                              child: Icon(
+                                Icons.arrow_back,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
@@ -90,9 +87,10 @@ class CourseDetailScreen extends StatelessWidget {
                           child: GestureDetector(
                             onTap: () {
                               context.read<CourseBloc>().add(
-                                    ToggleSaveCourseEvent(
-                                        courseId: currentCourse.id),
-                                  );
+                                ToggleSaveCourseEvent(
+                                  courseId: currentCourseEntity.id,
+                                ),
+                              );
                             },
                             child: Container(
                               padding: EdgeInsets.all(8),
@@ -115,12 +113,12 @@ class CourseDetailScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                currentCourse.icon,
+                                currentCourseEntity.icon,
                                 style: TextStyle(fontSize: 80),
                               ),
                               SizedBox(height: 24),
                               Text(
-                                currentCourse.title,
+                                currentCourseEntity.title,
                                 style: TextStyle(
                                   fontSize: 28,
                                   fontWeight: FontWeight.bold,
@@ -160,8 +158,7 @@ class CourseDetailScreen extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Icon(Icons.person,
-                                      color: AppColors.primary),
+                                  Icon(Icons.person, color: AppColors.primary),
                                   SizedBox(height: 8),
                                   Text(
                                     'Instructor',
@@ -172,7 +169,7 @@ class CourseDetailScreen extends StatelessWidget {
                                   ),
                                   SizedBox(height: 4),
                                   Text(
-                                    currentCourse.instructor,
+                                    currentCourseEntity.instructor,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
@@ -202,8 +199,7 @@ class CourseDetailScreen extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Icon(Icons.timer,
-                                      color: AppColors.secondary),
+                                  Icon(Icons.timer, color: AppColors.secondary),
                                   SizedBox(height: 8),
                                   Text(
                                     'Duration',
@@ -214,7 +210,7 @@ class CourseDetailScreen extends StatelessWidget {
                                   ),
                                   SizedBox(height: 4),
                                   Text(
-                                    currentCourse.duration,
+                                    currentCourseEntity.duration,
                                     style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w600,
@@ -239,7 +235,7 @@ class CourseDetailScreen extends StatelessWidget {
                       ),
                       SizedBox(height: 8),
                       Text(
-                        currentCourse.description,
+                        currentCourseEntity.description,
                         style: TextStyle(
                           fontSize: 14,
                           color: AppColors.textLight,
@@ -288,11 +284,11 @@ class CourseDetailScreen extends StatelessWidget {
                       ),
                       SizedBox(height: 12),
                       // Sections list
-                      ...currentCourse.sections.map((section) {
+                      ...currentCourseEntity.sections.map((section) {
                         return _buildSectionWidget(
                           context,
                           section,
-                          currentCourse,
+                          currentCourseEntity,
                         );
                       }),
                       SizedBox(height: 24),
@@ -309,10 +305,10 @@ class CourseDetailScreen extends StatelessWidget {
 
   Widget _buildSectionWidget(
     BuildContext context,
-    CourseSection section,
-    Course course,
+    CourseSectionEntity section,
+    CourseEntity course,
   ) {
-    final List<Lesson> sectionLessons = section.lessons;
+    final List<LessonEntity> sectionLessons = section.lessons;
     var completedCount = 0;
     for (final lesson in sectionLessons) {
       if (lesson.isCompleted) {
@@ -320,7 +316,9 @@ class CourseDetailScreen extends StatelessWidget {
       }
     }
     final totalCount = sectionLessons.length;
-    final progressPercent = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
+    final progressPercent = totalCount > 0
+        ? (completedCount / totalCount) * 100
+        : 0;
 
     return Container(
       margin: EdgeInsets.only(bottom: 16),
@@ -329,10 +327,7 @@ class CourseDetailScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.border),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-          ),
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8),
         ],
       ),
       child: ClipRRect(
@@ -409,10 +404,7 @@ class CourseDetailScreen extends StatelessWidget {
                 SizedBox(height: 4),
                 Text(
                   '$completedCount/$totalCount lessons',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: AppColors.textLight,
-                  ),
+                  style: TextStyle(fontSize: 11, color: AppColors.textLight),
                 ),
               ],
             ),
@@ -425,8 +417,7 @@ class CourseDetailScreen extends StatelessWidget {
                 children: sectionLessons.asMap().entries.map((entry) {
                   final lessonIndexInSection = entry.key;
                   final lesson = entry.value;
-                  final overallLessonIndex =
-                      course.lessons.indexOf(lesson);
+                  final overallLessonIndex = course.allLessons.indexOf(lesson);
 
                   return Container(
                     margin: EdgeInsets.only(bottom: 8),
@@ -488,8 +479,7 @@ class CourseDetailScreen extends StatelessWidget {
                               // Lesson info
                               Expanded(
                                 child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Text(
@@ -510,9 +500,11 @@ class CourseDetailScreen extends StatelessWidget {
                                     SizedBox(height: 2),
                                     Row(
                                       children: [
-                                        Icon(Icons.timer,
-                                            size: 12,
-                                            color: AppColors.textLight),
+                                        Icon(
+                                          Icons.timer,
+                                          size: 12,
+                                          color: AppColors.textLight,
+                                        ),
                                         SizedBox(width: 3),
                                         Text(
                                           lesson.duration,
@@ -530,13 +522,14 @@ class CourseDetailScreen extends StatelessWidget {
                                           ),
                                           decoration: BoxDecoration(
                                             color: _getLessonTypeColor(
-                                                lesson.type),
-                                            borderRadius:
-                                                BorderRadius.circular(4),
+                                              lesson.type,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              4,
+                                            ),
                                           ),
                                           child: Text(
-                                            lesson.type
-                                                .toUpperCase(),
+                                            lesson.type.toUpperCase(),
                                             style: TextStyle(
                                               fontSize: 9,
                                               color: Colors.white,
@@ -577,4 +570,3 @@ class CourseDetailScreen extends StatelessWidget {
     }
   }
 }
-

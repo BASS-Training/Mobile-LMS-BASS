@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/config/theme.dart';
-import 'package:lms_mobile_app/data/models/lesson.dart';
+import 'package:lms_mobile_app/domain/entities/lesson_entity.dart';
 
 class LessonTile extends StatelessWidget {
-  final Lesson lesson;
+  final LessonEntity lesson;
   final int index;
   final VoidCallback onTap;
   final Function(bool)? onCompletionChanged;
