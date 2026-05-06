@@ -1,6 +1,10 @@
 import 'package:lms_mobile_app/data/repositories/auth_repository_impl.dart';
 import 'package:lms_mobile_app/data/repositories/course_repository_impl.dart';
 import 'package:lms_mobile_app/data/repositories/lesson_repository_impl.dart';
+import 'package:lms_mobile_app/data/sources/course_local_data_source.dart';
+import 'package:lms_mobile_app/data/sources/course_local_data_source_impl.dart';
+import 'package:lms_mobile_app/data/sources/course_remote_data_source.dart';
+import 'package:lms_mobile_app/data/sources/course_remote_data_source_impl.dart';
 import 'package:lms_mobile_app/domain/repositories/auth_repository.dart';
 import 'package:lms_mobile_app/domain/repositories/course_repository.dart';
 import 'package:lms_mobile_app/domain/repositories/lesson_repository.dart';
@@ -25,9 +29,17 @@ class ServiceLocator {
   late LessonBloc _lessonBloc;
 
   void setupServiceLocator() {
+    // Data Sources
+    CourseLocalDataSource courseLocalDataSource = CourseLocalDataSourceImpl();
+    CourseRemoteDataSource courseRemoteDataSource =
+        CourseRemoteDataSourceImpl();
+
     // Repositories
     AuthRepository authRepository = AuthRepositoryImpl();
-    CourseRepository courseRepository = CourseRepositoryImpl();
+    CourseRepository courseRepository = CourseRepositoryImpl(
+      localDataSource: courseLocalDataSource,
+      remoteDataSource: courseRemoteDataSource,
+    );
     LessonRepository lessonRepository = LessonRepositoryImpl();
 
     // Auth Use Cases
@@ -36,14 +48,18 @@ class ServiceLocator {
 
     // Course Use Cases
     GetCoursesUseCase getCoursesUseCase = GetCoursesUseCase(courseRepository);
-    SearchCoursesUseCase searchCoursesUseCase =
-        SearchCoursesUseCase(courseRepository);
-    ToggleSaveCourseUseCase toggleSaveCourseUseCase =
-        ToggleSaveCourseUseCase(courseRepository);
-    GetSavedCoursesUseCase getSavedCoursesUseCase =
-        GetSavedCoursesUseCase(courseRepository);
-    RefreshCoursesUseCase refreshCoursesUseCase =
-        RefreshCoursesUseCase(courseRepository);
+    SearchCoursesUseCase searchCoursesUseCase = SearchCoursesUseCase(
+      courseRepository,
+    );
+    ToggleSaveCourseUseCase toggleSaveCourseUseCase = ToggleSaveCourseUseCase(
+      courseRepository,
+    );
+    GetSavedCoursesUseCase getSavedCoursesUseCase = GetSavedCoursesUseCase(
+      courseRepository,
+    );
+    RefreshCoursesUseCase refreshCoursesUseCase = RefreshCoursesUseCase(
+      courseRepository,
+    );
 
     // Lesson Use Cases
     IsLessonCompletedUseCase isLessonCompletedUseCase =

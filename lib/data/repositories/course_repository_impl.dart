@@ -2,74 +2,124 @@ import '../../domain/entities/course_entity.dart';
 import '../../domain/repositories/course_repository.dart';
 import '../mappers/course_mapper.dart';
 import '../models/course.dart';
-import '../sources/dummy_data.dart';
+import '../sources/course_local_data_source.dart';
+import '../sources/course_remote_data_source.dart';
 import '../sources/local_storage.dart';
 
 class CourseRepositoryImpl implements CourseRepository {
-  List<Course> _courses = [];
+  final CourseLocalDataSource localDataSource;
+  final CourseRemoteDataSource remoteDataSource;
+
+  CourseRepositoryImpl({
+    required this.localDataSource,
+    required this.remoteDataSource,
+  });
 
   @override
   Future<List<CourseEntity>> getCourses() async {
-    _courses = DummyData.getCourses();
-    _updateCompletionStatus();
-    return _courses.map((c) => CourseMapper.toDomain(c)).toList();
+    try {
+      // Strategi: Coba remote dulu untuk data terbaru
+      final remoteCourses = await remoteDataSource.getCourses();
+      // Simpan ke cache local
+      await localDataSource.saveCourses(remoteCourses);
+      return _mapCoursesToEntities(remoteCourses);
+    } catch (e) {
+      // Fallback ke local cache jika remote gagal
+      final localCourses = await localDataSource.getCourses();
+      return _mapCoursesToEntities(localCourses);
+    }
   }
 
   @override
   Future<CourseEntity?> getCourseById(String id) async {
     try {
-      final course = _courses.firstWhere((course) => course.id == id);
-      return CourseMapper.toDomain(course);
+      // Coba remote dulu
+      final remoteCourse = await remoteDataSource.getCourseById(id);
+      if (remoteCourse != null) {
+        // Simpan ke cache
+        await localDataSource.saveCourse(remoteCourse);
+        return CourseMapper.toDomain(remoteCourse);
+      }
     } catch (e) {
-      return null;
+      // Fallback ke local
     }
+
+    // Jika remote gagal atau return null, cek local
+    final localCourse = await localDataSource.getCourseById(id);
+    if (localCourse != null) {
+      return CourseMapper.toDomain(localCourse);
+    }
+
+    return null;
   }
 
   @override
   Future<List<CourseEntity>> searchCourses(String query) async {
-    if (_courses.isEmpty) {
-      await getCourses();
+    try {
+      // Coba remote dulu
+      final remoteCourses = await remoteDataSource.searchCourses(query);
+      // Simpan ke cache
+      await localDataSource.saveCourses(remoteCourses);
+      return _mapCoursesToEntities(remoteCourses);
+    } catch (e) {
+      // Fallback ke local cache
+      final localCourses = await localDataSource.searchCourses(query);
+      return _mapCoursesToEntities(localCourses);
     }
-    
-    final filtered = _courses
-        .where(
-          (course) =>
-              course.title.toLowerCase().contains(query.toLowerCase()) ||
-              course.description.toLowerCase().contains(query.toLowerCase()),
-        )
-        .toList();
-
-    return filtered.map((c) => CourseMapper.toDomain(c)).toList();
   }
 
   @override
   Future<void> toggleSaveCourse(String courseId) async {
-    final courseIndex = _courses.indexWhere((c) => c.id == courseId);
-    if (courseIndex != -1) {
-      _courses[courseIndex].isSaved = !_courses[courseIndex].isSaved;
+    // Update di local
+    await localDataSource.toggleSaveCourse(courseId);
+
+    // Update di remote (non-blocking)
+    try {
+      await remoteDataSource.toggleSaveCourse(courseId);
+    } catch (e) {
+      // Biarkan sync nanti atau ignore jika offline
     }
   }
 
   @override
   Future<List<CourseEntity>> getSavedCourses() async {
-    if (_courses.isEmpty) {
-      await getCourses();
+    try {
+      // Coba remote dulu untuk list terbaru
+      final remoteSavedCourses = await remoteDataSource.getSavedCourses();
+      // Simpan ke cache
+      await localDataSource.saveCourses(remoteSavedCourses);
+      return _mapCoursesToEntities(remoteSavedCourses);
+    } catch (e) {
+      // Fallback ke local cache
+      final localCourses = await localDataSource.getCourses();
+      final savedCourses = localCourses.where((c) => c.isSaved).toList();
+      return _mapCoursesToEntities(savedCourses);
     }
-    
-    return _courses
-        .where((c) => c.isSaved)
-        .map((c) => CourseMapper.toDomain(c))
-        .toList();
   }
 
   @override
   Future<void> refreshCourses() async {
-    _updateCompletionStatus();
+    // Refresh akan coba remote dulu, fallback ke local
+    try {
+      final remoteCourses = await remoteDataSource.getCourses();
+      await localDataSource.saveCourses(remoteCourses);
+    } catch (e) {
+      // Jika remote gagal, biarkan pakai cache yang ada
+    }
+    // Update completion status dari local storage
+    final allCourses = await localDataSource.getCourses();
+    _updateCompletionStatus(allCourses);
   }
 
-  void _updateCompletionStatus() {
+  /// Map list of courses ke list of entities
+  List<CourseEntity> _mapCoursesToEntities(List<Course> courses) {
+    return courses.map((c) => CourseMapper.toDomain(c)).toList();
+  }
+
+  /// Update completion status dari LocalStorage
+  Future<void> _updateCompletionStatus(List<Course> courses) async {
     final completedLessons = LocalStorage.getCompletedLessons();
-    for (var course in _courses) {
+    for (var course in courses) {
       for (var lesson in course.lessons) {
         lesson.isCompleted = completedLessons.contains(lesson.id);
       }
