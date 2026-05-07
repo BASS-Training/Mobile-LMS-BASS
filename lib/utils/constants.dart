@@ -9,6 +9,9 @@ class AppConstants {
   static const String routeCourseList = '/courses';
   static const String routeCourseDetail = '/course-detail';
   static const String routeLessonDetail = '/lesson-detail';
+  static const String routeLessonVideoDetail = '/lesson-video-detail';
+  static const String routeCertificateList = '/certificates';
+  static const String routeCertificateDetail = '/certificate-detail';
 
   // Sizes
   static const double paddingXSmall = 4.0;
@@ -54,10 +57,6 @@ class AppConstants {
   static const String completed = 'Completed';
   static const String nextLesson = 'Next Lesson';
   static const String previousLesson = 'Previous Lesson';
-
-  //Certificate related
-  static const String routeCertificateList = '/certificates';
-  static const String routeCertificateDetail = '/certificate-detail';
 
   // General
   static const String save = 'Save';

@@ -8,6 +8,7 @@ import 'package:lms_mobile_app/presentation/bloc/lesson/lesson_event.dart';
 import 'package:lms_mobile_app/presentation/bloc/lesson/lesson_state.dart';
 import 'package:lms_mobile_app/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/presentation/bloc/course/course_event.dart';
+import 'package:lms_mobile_app/utils/constants.dart';
 
 class LessonDetailScreen extends StatefulWidget {
   final LessonEntity lesson;
@@ -43,6 +44,22 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
   void dispose() {
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _openLesson(BuildContext context, LessonEntity lesson, int lessonIndex) {
+    final routeName = lesson.type.toLowerCase() == 'video'
+        ? AppConstants.routeLessonVideoDetail
+        : AppConstants.routeLessonDetail;
+
+    Navigator.pushNamed(
+      context,
+      routeName,
+      arguments: {
+        'lesson': lesson,
+        'course': widget.course,
+        'lessonIndex': lessonIndex,
+      },
+    );
   }
 
   bool get canGoNext =>
@@ -289,14 +306,10 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
                               onPressed: () {
                                 Navigator.pop(context);
                                 Future.delayed(Duration(milliseconds: 200), () {
-                                  Navigator.pushNamed(
+                                  _openLesson(
                                     context,
-                                    '/lesson-detail',
-                                    arguments: {
-                                      'lesson': previousLesson,
-                                      'course': widget.course,
-                                      'lessonIndex': widget.lessonIndex - 1,
-                                    },
+                                    previousLesson!,
+                                    widget.lessonIndex - 1,
                                   );
                                 });
                               },
@@ -311,14 +324,10 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
                               onPressed: () {
                                 Navigator.pop(context);
                                 Future.delayed(Duration(milliseconds: 200), () {
-                                  Navigator.pushNamed(
+                                  _openLesson(
                                     context,
-                                    '/lesson-detail',
-                                    arguments: {
-                                      'lesson': nextLesson,
-                                      'course': widget.course,
-                                      'lessonIndex': widget.lessonIndex + 1,
-                                    },
+                                    nextLesson!,
+                                    widget.lessonIndex + 1,
                                   );
                                 });
                               },

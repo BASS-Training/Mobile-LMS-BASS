@@ -11,6 +11,7 @@ class LessonMapper {
       duration: model.duration,
       type: model.type,
       isCompleted: model.isCompleted,
+      youtubeVideoId: model.youtubeVideoId,
     );
   }
 
@@ -23,6 +24,7 @@ class LessonMapper {
       duration: entity.duration,
       type: entity.type,
       isCompleted: entity.isCompleted,
+      youtubeVideoId: entity.youtubeVideoId,
     );
   }
 }

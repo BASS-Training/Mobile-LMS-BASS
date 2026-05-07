@@ -31,6 +31,7 @@ class DummyData {
                 content: 'Overview of accounting as a discipline.',
                 duration: '20 min',
                 type: 'video',
+                youtubeVideoId: 'dQw4w9WgXcQ',
               ),
               Lesson(
                 id: '1-1-2',
@@ -617,8 +618,7 @@ class DummyData {
                 id: '4-2-3',
                 courseId: '4',
                 title: 'Visual Hierarchy',
-                content:
-                    'Understand visual hierarchy and emphasis in design.',
+                content: 'Understand visual hierarchy and emphasis in design.',
                 duration: '35 min',
                 type: 'document',
               ),
@@ -765,7 +765,8 @@ class DummyData {
                 id: '5-1-2',
                 courseId: '5',
                 title: 'Characteristics of Life',
-                content: 'Understanding the characteristics of living organisms.',
+                content:
+                    'Understanding the characteristics of living organisms.',
                 duration: '30 min',
                 type: 'document',
               ),
@@ -773,8 +774,7 @@ class DummyData {
                 id: '5-1-3',
                 courseId: '5',
                 title: 'Organization of Life',
-                content:
-                    'Learn about organization from cells to ecosystems.',
+                content: 'Learn about organization from cells to ecosystems.',
                 duration: '35 min',
                 type: 'document',
               ),
@@ -913,7 +913,8 @@ class DummyData {
                 id: '5-4-4',
                 courseId: '5',
                 title: 'Conservation Biology',
-                content: 'Learn conservation strategies and environmental issues.',
+                content:
+                    'Learn conservation strategies and environmental issues.',
                 duration: '45 min',
                 type: 'document',
               ),
@@ -961,8 +962,7 @@ class DummyData {
                 id: '6-1-2',
                 courseId: '6',
                 title: 'Major Branches',
-                content:
-                    'Overview of metaphysics, epistemology, and ethics.',
+                content: 'Overview of metaphysics, epistemology, and ethics.',
                 duration: '40 min',
                 type: 'document',
               ),
@@ -1036,7 +1036,8 @@ class DummyData {
                 id: '6-3-2',
                 courseId: '6',
                 title: 'Virtue Ethics',
-                content: 'Learn about virtue, character, and human flourishing.',
+                content:
+                    'Learn about virtue, character, and human flourishing.',
                 duration: '40 min',
                 type: 'document',
               ),
@@ -1085,8 +1086,7 @@ class DummyData {
                 id: '6-4-2',
                 courseId: '6',
                 title: 'Philosophy of Mind',
-                content:
-                    'Explore consciousness, intentionality, and the mind.',
+                content: 'Explore consciousness, intentionality, and the mind.',
                 duration: '40 min',
                 type: 'document',
               ),
@@ -1094,7 +1094,8 @@ class DummyData {
                 id: '6-4-3',
                 courseId: '6',
                 title: 'Philosophy in Life',
-                content: 'Apply philosophy to daily living and decision-making.',
+                content:
+                    'Apply philosophy to daily living and decision-making.',
                 duration: '35 min',
                 type: 'document',
               ),

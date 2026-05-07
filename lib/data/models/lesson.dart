@@ -5,6 +5,7 @@ class Lesson {
   final String content;
   final String duration;
   final String type; // 'video', 'document', 'quiz'
+  final String? youtubeVideoId;
   bool isCompleted;
 
   Lesson({
@@ -14,6 +15,7 @@ class Lesson {
     required this.content,
     required this.duration,
     this.type = 'document',
+    this.youtubeVideoId,
     this.isCompleted = false,
   });
 
@@ -25,6 +27,7 @@ class Lesson {
       content: json['content'] ?? '',
       duration: json['duration'] ?? '0 min',
       type: json['type'] ?? 'document',
+      youtubeVideoId: json['youtubeVideoId'],
       isCompleted: json['isCompleted'] ?? false,
     );
   }
@@ -37,6 +40,7 @@ class Lesson {
       'content': content,
       'duration': duration,
       'type': type,
+      'youtubeVideoId': youtubeVideoId,
       'isCompleted': isCompleted,
     };
   }
@@ -44,6 +48,7 @@ class Lesson {
   Lesson copyWith({
     bool? isCompleted,
     String? type,
+    String? youtubeVideoId,
   }) {
     return Lesson(
       id: id,
@@ -52,6 +57,7 @@ class Lesson {
       content: content,
       duration: duration,
       type: type ?? this.type,
+      youtubeVideoId: youtubeVideoId ?? this.youtubeVideoId,
       isCompleted: isCompleted ?? this.isCompleted,
     );
   }

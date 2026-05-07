@@ -8,6 +8,7 @@ class LessonEntity extends Equatable {
   final String duration;
   final String type;
   final bool isCompleted;
+  final String? youtubeVideoId;
 
   const LessonEntity({
     required this.id,
@@ -17,9 +18,14 @@ class LessonEntity extends Equatable {
     required this.duration,
     this.type = 'document',
     this.isCompleted = false,
+    this.youtubeVideoId,
   });
 
-  LessonEntity copyWith({bool? isCompleted, String? type}) {
+  LessonEntity copyWith({
+    bool? isCompleted,
+    String? type,
+    String? youtubeVideoId,
+  }) {
     return LessonEntity(
       id: id,
       courseId: courseId,
@@ -28,9 +34,19 @@ class LessonEntity extends Equatable {
       duration: duration,
       type: type ?? this.type,
       isCompleted: isCompleted ?? this.isCompleted,
+      youtubeVideoId: youtubeVideoId ?? this.youtubeVideoId,
     );
   }
 
   @override
-  List<Object?> get props => [id, courseId, title, content, duration, type, isCompleted];
+  List<Object?> get props => [
+    id,
+    courseId,
+    title,
+    content,
+    duration,
+    type,
+    isCompleted,
+    youtubeVideoId,
+  ];
 }

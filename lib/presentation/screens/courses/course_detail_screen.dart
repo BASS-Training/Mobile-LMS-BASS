@@ -430,13 +430,21 @@ class CourseDetailScreen extends StatelessWidget {
                       color: Colors.transparent,
                       child: InkWell(
                         onTap: () {
+                          final safeLessonIndex = overallLessonIndex >= 0
+                              ? overallLessonIndex
+                              : lessonIndexInSection;
+
+                          final routeName = lesson.type.toLowerCase() == 'video'
+                              ? AppConstants.routeLessonVideoDetail
+                              : AppConstants.routeLessonDetail;
+
                           Navigator.pushNamed(
                             context,
-                            '/lesson-detail',
+                            routeName,
                             arguments: {
                               'lesson': lesson,
                               'course': course,
-                              'lessonIndex': overallLessonIndex,
+                              'lessonIndex': safeLessonIndex,
                             },
                           );
                         },

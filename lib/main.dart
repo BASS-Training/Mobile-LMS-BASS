@@ -13,7 +13,9 @@ import 'package:lms_mobile_app/presentation/screens/certificate/certificate_deta
 import 'package:lms_mobile_app/presentation/screens/certificate/certificate_list_screen.dart';
 import 'package:lms_mobile_app/presentation/screens/courses/course_detail_screen.dart';
 import 'package:lms_mobile_app/presentation/screens/lessons/lesson_detail_screen.dart';
+import 'package:lms_mobile_app/presentation/screens/lessons/video_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/presentation/screens/main_screen.dart';
+import 'package:lms_mobile_app/utils/constants.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -76,8 +78,22 @@ class MainApp extends StatelessWidget {
           } else if (settings.name == '/certificate-detail') {
             final course = settings.arguments as CourseEntity;
             return MaterialPageRoute(
-            builder: (context) => CertificateDetailScreen(course: course),
-            settings: settings,
+              builder: (context) => CertificateDetailScreen(course: course),
+              settings: settings,
+            );
+          } else if (settings.name == '/lesson-video-detail') {
+            final args = settings.arguments as Map<String, dynamic>;
+            final lesson = args['lesson'] as LessonEntity;
+            final course = args['course'] as CourseEntity;
+            final lessonIndex = args['lessonIndex'] as int;
+
+            return MaterialPageRoute(
+              builder: (context) => VideoLessonDetailScreen(
+                lesson: lesson,
+                course: course,
+                lessonIndex: lessonIndex,
+              ),
+              settings: settings,
             );
           }
           return null;
