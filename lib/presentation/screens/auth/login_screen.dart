@@ -30,11 +30,11 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleLogin(BuildContext context) {
     if (_formKey.currentState!.validate()) {
       context.read<AuthBloc>().add(
-            AuthLoginEvent(
-              email: _emailController.text.trim(),
-              password: _passwordController.text,
-            ),
-          );
+        AuthLoginEvent(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        ),
+      );
     }
   }
 
@@ -81,11 +81,17 @@ class _LoginScreenState extends State<LoginScreen> {
                           width: 80,
                           fit: BoxFit.contain,
                           semanticLabel: AppConstants.appName,
-                          errorBuilder: (context, error, stackTrace) => SizedBox(
-                            width: 80,
-                            height: 80,
-                            child: Center(child: Text('📚', style: TextStyle(fontSize: 80),),),
-                          ),
+                          errorBuilder: (context, error, stackTrace) =>
+                              SizedBox(
+                                width: 80,
+                                height: 80,
+                                child: Center(
+                                  child: Text(
+                                    '📚',
+                                    style: TextStyle(fontSize: 80),
+                                  ),
+                                ),
+                              ),
                         ),
                         SizedBox(height: 24),
                         Text(
@@ -146,7 +152,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               validator: Validators.validateEmail,
                               onChanged: (_) {
-                                context.read<AuthBloc>().add(AuthClearErrorEvent());
+                                context.read<AuthBloc>().add(
+                                  AuthClearErrorEvent(),
+                                );
                               },
                             ),
                             SizedBox(height: 16),
@@ -174,7 +182,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               validator: Validators.validatePassword,
                               onChanged: (_) {
-                                context.read<AuthBloc>().add(AuthClearErrorEvent());
+                                context.read<AuthBloc>().add(
+                                  AuthClearErrorEvent(),
+                                );
                               },
                             ),
                             SizedBox(height: 8),
@@ -198,7 +208,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               builder: (context, state) {
                                 final isLoading = state is AuthLoading;
                                 return ElevatedButton(
-                                  onPressed: isLoading ? null : () => _handleLogin(context),
+                                  onPressed: isLoading
+                                      ? null
+                                      : () => _handleLogin(context),
                                   child: isLoading
                                       ? SizedBox(
                                           height: 20,
