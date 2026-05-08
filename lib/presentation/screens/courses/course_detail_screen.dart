@@ -429,25 +429,28 @@ class CourseDetailScreen extends StatelessWidget {
                     child: Material(
                       color: Colors.transparent,
                       child: InkWell(
-                        onTap: () {
-                          final safeLessonIndex = overallLessonIndex >= 0
-                              ? overallLessonIndex
-                              : lessonIndexInSection;
+                        onTap: _isLessonUnlocked(lesson, course)
+                            ? () {
+                                final safeLessonIndex = overallLessonIndex >= 0
+                                    ? overallLessonIndex
+                                    : lessonIndexInSection;
 
-                          final routeName = lesson.type.toLowerCase() == 'video'
-                              ? AppConstants.routeLessonVideoDetail
-                              : AppConstants.routeLessonDocumentDetail;
+                                final routeName =
+                                    lesson.type.toLowerCase() == 'video'
+                                    ? AppConstants.routeLessonVideoDetail
+                                    : AppConstants.routeLessonDocumentDetail;
 
-                          Navigator.pushNamed(
-                            context,
-                            routeName,
-                            arguments: {
-                              'lesson': lesson,
-                              'course': course,
-                              'lessonIndex': safeLessonIndex,
-                            },
-                          );
-                        },
+                                Navigator.pushNamed(
+                                  context,
+                                  routeName,
+                                  arguments: {
+                                    'lesson': lesson,
+                                    'course': course,
+                                    'lessonIndex': safeLessonIndex,
+                                  },
+                                );
+                              }
+                            : null,
                         borderRadius: BorderRadius.circular(8),
                         child: Padding(
                           padding: EdgeInsets.symmetric(
@@ -464,7 +467,9 @@ class CourseDetailScreen extends StatelessWidget {
                                   shape: BoxShape.circle,
                                   color: lesson.isCompleted
                                       ? AppColors.primary
-                                      : AppColors.border,
+                                      : _isLessonUnlocked(lesson, course)
+                                      ? AppColors.border
+                                      : Colors.grey,
                                 ),
                                 child: Center(
                                   child: lesson.isCompleted
@@ -497,9 +502,11 @@ class CourseDetailScreen extends StatelessWidget {
                                       style: TextStyle(
                                         fontSize: 13,
                                         fontWeight: FontWeight.w500,
-                                        color: lesson.isCompleted
-                                            ? AppColors.textLight
-                                            : AppColors.text,
+                                        color: _isLessonUnlocked(lesson, course)
+                                            ? (lesson.isCompleted
+                                                  ? AppColors.textLight
+                                                  : AppColors.text)
+                                            : Colors.grey,
                                         decoration: lesson.isCompleted
                                             ? TextDecoration.lineThrough
                                             : null,
@@ -511,14 +518,14 @@ class CourseDetailScreen extends StatelessWidget {
                                         Icon(
                                           Icons.timer,
                                           size: 12,
-                                          color: AppColors.textLight,
+                                          color: _isLessonUnlocked(lesson, course) ? AppColors.textLight : Colors.grey,
                                         ),
                                         SizedBox(width: 3),
                                         Text(
                                           lesson.duration,
                                           style: TextStyle(
                                             fontSize: 11,
-                                            color: AppColors.textLight,
+                                            color: _isLessonUnlocked(lesson, course) ? AppColors.textLight : Colors.grey,
                                           ),
                                         ),
                                         SizedBox(width: 8),
@@ -529,9 +536,9 @@ class CourseDetailScreen extends StatelessWidget {
                                             vertical: 2,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: _getLessonTypeColor(
-                                              lesson.type,
-                                            ),
+                                            color: _isLessonUnlocked(lesson, course)
+                                                ? _getLessonTypeColor(lesson.type)
+                                                : Colors.grey,
                                             borderRadius: BorderRadius.circular(
                                               4,
                                             ),
@@ -576,5 +583,16 @@ class CourseDetailScreen extends StatelessWidget {
       default:
         return AppColors.primary;
     }
+  }
+
+  bool _isLessonUnlocked(LessonEntity lesson, CourseEntity course) {
+    final lessonIndex = course.allLessons.indexOf(lesson);
+
+    //lesson pertama selalu terbuka
+    if (lessonIndex == 0) return true;
+
+    //cek apakah lesson sebelumnya sudah selesai
+    final previousLesson = course.allLessons[lessonIndex - 1];
+    return previousLesson.isCompleted;
   }
 }

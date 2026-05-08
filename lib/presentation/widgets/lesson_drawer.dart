@@ -77,15 +77,17 @@ class LessonDrawer extends StatelessWidget {
                       child: InkWell(
                         onTap: isCurrent
                             ? null
-                            : () {
-                                Navigator.pop(context);
-                                Future.delayed(
-                                  const Duration(milliseconds: 200),
-                                  () {
-                                    onSelectLesson(lesson, index);
-                                  },
-                                );
-                              },
+                            : (_isLessonUnlocked(lesson, course)
+                                  ? () {
+                                      Navigator.pop(context);
+                                      Future.delayed(
+                                        const Duration(milliseconds: 200),
+                                        () {
+                                          onSelectLesson(lesson, index);
+                                        },
+                                      );
+                                    }
+                                  : null),
                         borderRadius: BorderRadius.circular(8),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
@@ -101,7 +103,9 @@ class LessonDrawer extends StatelessWidget {
                                   shape: BoxShape.circle,
                                   color: isCurrent
                                       ? AppColors.primary
-                                      : AppColors.border,
+                                      : _isLessonUnlocked(lesson, course)
+                                      ? AppColors.border
+                                      : Colors.grey.withOpacity(0.3),
                                 ),
                                 child: Center(
                                   child: lesson.isCompleted
@@ -110,7 +114,8 @@ class LessonDrawer extends StatelessWidget {
                                           color: Colors.white,
                                           size: 18,
                                         )
-                                      : Text(
+                                      : _isLessonUnlocked(lesson, course)
+                                      ? Text(
                                           '${index + 1}',
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
@@ -119,6 +124,11 @@ class LessonDrawer extends StatelessWidget {
                                                 : AppColors.text,
                                             fontSize: 14,
                                           ),
+                                        )
+                                      : const Icon(
+                                          Icons.lock,
+                                          color: Colors.grey,
+                                          size: 16,
                                         ),
                                 ),
                               ),
@@ -136,7 +146,9 @@ class LessonDrawer extends StatelessWidget {
                                         fontWeight: FontWeight.w600,
                                         color: isCurrent
                                             ? AppColors.primary
-                                            : AppColors.text,
+                                            : _isLessonUnlocked(lesson, course)
+                                            ? AppColors.text
+                                            : Colors.grey,
                                         decoration: lesson.isCompleted
                                             ? TextDecoration.lineThrough
                                             : null,
@@ -145,9 +157,11 @@ class LessonDrawer extends StatelessWidget {
                                     const SizedBox(height: 4),
                                     Text(
                                       lesson.duration,
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 11,
-                                        color: AppColors.textLight,
+                                        color: _isLessonUnlocked(lesson, course)
+                                            ? AppColors.textLight
+                                            : Colors.grey,
                                       ),
                                     ),
                                   ],
@@ -185,5 +199,16 @@ class LessonDrawer extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  bool _isLessonUnlocked(LessonEntity lesson, CourseEntity course) {
+    final lessonIndex = course.allLessons.indexOf(lesson);
+
+    // Lesson pertama selalu bisa dibuka
+    if (lessonIndex == 0) return true;
+
+    // Cek apakah lesson sebelumnya sudah selesai
+    final previousLesson = course.allLessons[lessonIndex - 1];
+    return previousLesson.isCompleted;
   }
 }

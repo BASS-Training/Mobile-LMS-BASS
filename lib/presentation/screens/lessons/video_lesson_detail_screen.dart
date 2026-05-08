@@ -34,6 +34,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
   final TextEditingController _commentController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool _markedCompleteTriggered = false;
+  bool _canProceed = false;
   bool get canGoNext =>
       widget.lessonIndex < widget.course.allLessons.length - 1;
   bool get canGoPrevious => widget.lessonIndex > 0;
@@ -76,28 +77,46 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
       ),
     );
     _controller.addListener(_videoListener);
+    _canProceed = widget.lesson.isCompleted;
   }
 
   void _videoListener() {
     final value = _controller.value;
+
+    // update progress threshold (safe-guard kalau duration belum tersedia)
+    final duration = value.metaData.duration;
+    final position = value.position;
+
+    if (duration != null && duration.inSeconds > 0) {
+      final remaining = duration - position;
+      final reachedThreshold =
+          remaining.inSeconds <= 10 ||
+          position.inSeconds >= (duration.inSeconds - 10);
+
+      if (reachedThreshold && !_canProceed) {
+        setState(() => _canProceed = true);
+      }
+    }
+
+    // jika video berakhir, tandai complete (existing)
     if (!_markedCompleteTriggered && value.playerState == PlayerState.ended) {
       _markedCompleteTriggered = true;
-      // Mark lesson complete via LessonBloc
-      context.read<LessonBloc>().add(
-        MarkLessonCompleteEvent(lessonId: widget.lesson.id),
-      );
-      // Refresh courses so CourseBloc/UI update progress and list
-      context.read<CourseBloc>().add(const RefreshCoursesEvent());
+      if (!widget.lesson.isCompleted) {
+        context.read<LessonBloc>().add(
+          MarkLessonCompleteEvent(lessonId: widget.lesson.id),
+        );
+        context.read<CourseBloc>().add(const RefreshCoursesEvent());
+      }
     }
   }
 
   @override
   void dispose() {
     SystemChrome.setPreferredOrientations(DeviceOrientation.values);
+    _controller.removeListener(_videoListener);
     _controller.dispose();
     _commentController.dispose();
     _scrollController.dispose();
-    _controller.removeListener(_videoListener);
     super.dispose();
   }
 
@@ -121,7 +140,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
   void _openLesson(LessonEntity lesson, int lessonIndex) {
     final route = lesson.type.toLowerCase() == 'video'
         ? AppConstants.routeLessonVideoDetail
-        : AppConstants.routeLessonDetail;
+        : AppConstants.routeLessonDocumentDetail;
 
     Navigator.pushNamed(
       context,
@@ -313,22 +332,48 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
                             if (canGoNext)
                               Expanded(
                                 child: ElevatedButton.icon(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    Future.delayed(
-                                      const Duration(milliseconds: 200),
-                                      () {
-                                        _openLesson(
-                                          nextLesson!,
-                                          widget.lessonIndex + 1,
-                                        );
-                                      },
-                                    );
-                                  },
+                                  onPressed:
+                                      (!_canProceed &&
+                                          !widget.lesson.isCompleted)
+                                      ? null
+                                      : () {
+                                          // jika belum complete, tandai dulu
+                                          if (!widget.lesson.isCompleted) {
+                                            context.read<LessonBloc>().add(
+                                              MarkLessonCompleteEvent(
+                                                lessonId: widget.lesson.id,
+                                              ),
+                                            );
+                                            context.read<CourseBloc>().add(
+                                              const RefreshCoursesEvent(),
+                                            );
+                                          }
+                                          Navigator.pop(context);
+                                          Future.delayed(
+                                            const Duration(milliseconds: 200),
+                                            () {
+                                              _openLesson(
+                                                nextLesson!,
+                                                widget.lessonIndex + 1,
+                                              );
+                                            },
+                                          );
+                                        },
                                   icon: const Icon(Icons.arrow_forward),
-                                  label: const Text('next'),
+                                  label: const Text('Next'),
                                 ),
                               ),
+                            // if (!_canProceed && !widget.lesson.isCompleted)
+                            //   Padding(
+                            //     padding: const EdgeInsets.only(top: 8.0),
+                            //     child: Text(
+                            //       'Tonton sampai 10 detik terakhir untuk melanjutkan',
+                            //       style: TextStyle(
+                            //         fontSize: 12,
+                            //         color: AppColors.textLight,
+                            //       ),
+                            //     ),
+                            //   ),
                           ],
                         ),
                       ],

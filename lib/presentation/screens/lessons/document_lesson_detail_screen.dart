@@ -146,8 +146,7 @@ class _DocumentLessonDetailScreenState
               const SizedBox(height: 16),
               ...sections.map(_buildSectionCard),
               const SizedBox(height: 16),
-              _buildActionCard(),
-              const SizedBox(height: 16),
+
               Row(
                 children: [
                   if (canGoPrevious)
@@ -170,7 +169,9 @@ class _DocumentLessonDetailScreenState
                   if (canGoNext)
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: () {
+                        onPressed: () async {
+                          _markComplete();
+                          await Future.delayed(const Duration(milliseconds: 100));
                           Navigator.pop(context);
                           Future.delayed(const Duration(milliseconds: 200), () {
                             _openLesson(nextLesson!, widget.lessonIndex + 1);
@@ -359,47 +360,6 @@ class _DocumentLessonDetailScreenState
               ),
             ),
           ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Aksi Lesson',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: AppColors.text,
-            ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _markComplete,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text('Mark as Complete'),
-            ),
-          ),
         ],
       ),
     );
