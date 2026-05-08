@@ -67,6 +67,7 @@ class DummyData {
                     'Understand how to debit and credit accounts properly.',
                 duration: '35 min',
                 type: 'video',
+                youtubeVideoId: 'dQw4w9WgXcQ',
               ),
               Lesson(
                 id: '1-2-2',
@@ -109,6 +110,7 @@ class DummyData {
                     'Understand balance sheet structure and interpretation.',
                 duration: '40 min',
                 type: 'video',
+                youtubeVideoId: 'dQw4w9WgXcQ',
               ),
               Lesson(
                 id: '1-3-2',
@@ -159,6 +161,7 @@ class DummyData {
                     'Explore ethical standards and practices in professional accounting.',
                 duration: '30 min',
                 type: 'video',
+                youtubeVideoId: 'dQw4w9WgXcQ',
               ),
               Lesson(
                 id: '1-4-2',
@@ -207,6 +210,7 @@ class DummyData {
                 content: 'Overview of modern agricultural practices.',
                 duration: '25 min',
                 type: 'video',
+                youtubeVideoId: 'dQw4w9WgXcQ',
               ),
               Lesson(
                 id: '2-1-2',
@@ -241,6 +245,7 @@ class DummyData {
                     'Understand soil composition, pH levels, and nutrient content.',
                 duration: '40 min',
                 type: 'video',
+                youtubeVideoId: 'dQw4w9WgXcQ',
               ),
               Lesson(
                 id: '2-2-2',
@@ -249,6 +254,7 @@ class DummyData {
                 content: 'Learn soil testing methods and interpretation.',
                 duration: '35 min',
                 type: 'document',
+                youtubeVideoId: 'dQw4w9WgXcQ',
               ),
               Lesson(
                 id: '2-2-3',
@@ -282,6 +288,7 @@ class DummyData {
                 content: 'Choose appropriate crops for your climate and soil.',
                 duration: '35 min',
                 type: 'video',
+                youtubeVideoId: 'dQw4w9WgXcQ',
               ),
               Lesson(
                 id: '2-3-2',
@@ -333,6 +340,7 @@ class DummyData {
                     'Explore different irrigation methods and water management.',
                 duration: '45 min',
                 type: 'video',
+                youtubeVideoId: 'dQw4w9WgXcQ',
               ),
               Lesson(
                 id: '2-4-2',

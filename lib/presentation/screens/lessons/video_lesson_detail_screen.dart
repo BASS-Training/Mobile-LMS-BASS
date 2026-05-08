@@ -3,7 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:lms_mobile_app/config/theme.dart';
 import 'package:lms_mobile_app/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/domain/entities/lesson_entity.dart';
+import 'package:lms_mobile_app/presentation/widgets/lesson_drawer.dart';
+import 'package:lms_mobile_app/utils/constants.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lms_mobile_app/presentation/bloc/lesson/lesson_bloc.dart';
+import 'package:lms_mobile_app/presentation/bloc/lesson/lesson_event.dart';
+import 'package:lms_mobile_app/presentation/bloc/course/course_bloc.dart';
+import 'package:lms_mobile_app/presentation/bloc/course/course_event.dart';
 
 class VideoLessonDetailScreen extends StatefulWidget {
   final LessonEntity lesson;
@@ -26,6 +33,17 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
   late final YoutubePlayerController _controller;
   final TextEditingController _commentController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  bool _markedCompleteTriggered = false;
+  bool get canGoNext =>
+      widget.lessonIndex < widget.course.allLessons.length - 1;
+  bool get canGoPrevious => widget.lessonIndex > 0;
+
+  LessonEntity? get nextLesson =>
+      canGoNext ? widget.course.allLessons[widget.lessonIndex + 1] : null;
+  LessonEntity? get previousLesson =>
+      canGoPrevious ? widget.course.allLessons[widget.lessonIndex - 1] : null;
+
+  late GlobalKey<ScaffoldState> _scaffoldKey;
 
   final List<_DiscussionComment> _comments = [
     _DiscussionComment(
@@ -38,6 +56,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
   @override
   void initState() {
     super.initState();
+    _scaffoldKey = GlobalKey<ScaffoldState>();
 
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -56,6 +75,20 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
         disableDragSeek: false,
       ),
     );
+    _controller.addListener(_videoListener);
+  }
+
+  void _videoListener() {
+    final value = _controller.value;
+    if (!_markedCompleteTriggered && value.playerState == PlayerState.ended) {
+      _markedCompleteTriggered = true;
+      // Mark lesson complete via LessonBloc
+      context.read<LessonBloc>().add(
+        MarkLessonCompleteEvent(lessonId: widget.lesson.id),
+      );
+      // Refresh courses so CourseBloc/UI update progress and list
+      context.read<CourseBloc>().add(const RefreshCoursesEvent());
+    }
   }
 
   @override
@@ -64,6 +97,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
     _controller.dispose();
     _commentController.dispose();
     _scrollController.dispose();
+    _controller.removeListener(_videoListener);
     super.dispose();
   }
 
@@ -82,6 +116,22 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
       );
     });
     _commentController.clear();
+  }
+
+  void _openLesson(LessonEntity lesson, int lessonIndex) {
+    final route = lesson.type.toLowerCase() == 'video'
+        ? AppConstants.routeLessonVideoDetail
+        : AppConstants.routeLessonDetail;
+
+    Navigator.pushNamed(
+      context,
+      route,
+      arguments: {
+        'lesson': lesson,
+        'course': widget.course,
+        'lessonIndex': lessonIndex,
+      },
+    );
   }
 
   @override
@@ -109,6 +159,28 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
       ),
       builder: (context, player) {
         return Scaffold(
+          key: _scaffoldKey,
+          drawer: LessonDrawer(
+            course: widget.course,
+            currentLessonIndex: widget.lessonIndex,
+            onSelectLesson: (lesson, index) {
+              final route = lesson.type.toLowerCase() == 'video'
+                  ? AppConstants.routeLessonVideoDetail
+                  : AppConstants.routeLessonDetail;
+              Navigator.pop(
+                context,
+              ); // close drawer (LessonDrawer already closes, but safe)
+              Navigator.pushNamed(
+                context,
+                route,
+                arguments: {
+                  'lesson': lesson,
+                  'course': widget.course,
+                  'lessonIndex': index,
+                },
+              );
+            },
+          ),
           backgroundColor: AppColors.background,
           body: SafeArea(
             child: Column(
@@ -164,6 +236,23 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
                           ],
                         ),
                       ),
+                      GestureDetector(
+                        onTap: () => _scaffoldKey.currentState?.openDrawer(),
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.06),
+                                blurRadius: 8,
+                              ),
+                            ],
+                          ),
+                          child: const Icon(Icons.list_alt),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -196,6 +285,52 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
                         ),
                         const SizedBox(height: 12),
                         ..._comments.map(_buildCommentItem),
+                        const SizedBox(height: 24),
+                        //Navigation buttons
+                        Row(
+                          children: [
+                            if (canGoPrevious)
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    Future.delayed(
+                                      const Duration(milliseconds: 200),
+                                      () {
+                                        _openLesson(
+                                          previousLesson!,
+                                          widget.lessonIndex - 1,
+                                        );
+                                      },
+                                    );
+                                  },
+                                  icon: const Icon(Icons.arrow_back),
+                                  label: const Text('previous'),
+                                ),
+                              ),
+                            if (canGoPrevious && canGoNext)
+                              const SizedBox(width: 12),
+                            if (canGoNext)
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    Future.delayed(
+                                      const Duration(milliseconds: 200),
+                                      () {
+                                        _openLesson(
+                                          nextLesson!,
+                                          widget.lessonIndex + 1,
+                                        );
+                                      },
+                                    );
+                                  },
+                                  icon: const Icon(Icons.arrow_forward),
+                                  label: const Text('next'),
+                                ),
+                              ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -293,19 +428,21 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          TextField(controller: _commentController,
-          maxLines: 3,
-          decoration: InputDecoration(
-            hintText: 'Tulis komentar Anda di sini...',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.border),
+          TextField(
+            controller: _commentController,
+            maxLines: 3,
+            decoration: InputDecoration(
+              hintText: 'Tulis komentar Anda di sini...',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: AppColors.border),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: AppColors.primary),
+              ),
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.primary),
-            ),
-          ),),
+          ),
           const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
@@ -321,7 +458,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
               ),
               child: const Text('Kirim Komentar'),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -329,7 +466,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
 
   Widget _buildCommentItem(_DiscussionComment comment) {
     return Container(
-      margin: const EdgeInsets.only(bottom:12),
+      margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -387,8 +524,8 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
               ],
             ),
           ),
-        ]
-      )
+        ],
+      ),
     );
   }
 }

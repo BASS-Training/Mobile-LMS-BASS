@@ -8,6 +8,7 @@ import 'package:lms_mobile_app/presentation/bloc/lesson/lesson_event.dart';
 import 'package:lms_mobile_app/presentation/bloc/lesson/lesson_state.dart';
 import 'package:lms_mobile_app/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/presentation/bloc/course/course_event.dart';
+import 'package:lms_mobile_app/presentation/widgets/lesson_drawer.dart';
 import 'package:lms_mobile_app/utils/constants.dart';
 
 class LessonDetailScreen extends StatefulWidget {
@@ -106,7 +107,27 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
             ),
           ],
         ),
-        drawer: _buildLessonDrawer(),
+        drawer: LessonDrawer(
+          course: widget.course,
+          currentLessonIndex: widget.lessonIndex,
+          onSelectLesson: (lesson, index) {
+            final route = lesson.type.toLowerCase() == 'video'
+                ? AppConstants.routeLessonVideoDetail
+                : AppConstants.routeLessonDetail;
+            Navigator.pop(
+              context,
+            ); // close drawer (LessonDrawer already closes, but safe)
+            Navigator.pushNamed(
+              context,
+              route,
+              arguments: {
+                'lesson': lesson,
+                'course': widget.course,
+                'lessonIndex': index,
+              },
+            );
+          },
+        ),
         body: SingleChildScrollView(
           controller: _scrollController,
           child: Column(
