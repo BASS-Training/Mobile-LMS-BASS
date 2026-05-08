@@ -436,7 +436,7 @@ class CourseDetailScreen extends StatelessWidget {
 
                           final routeName = lesson.type.toLowerCase() == 'video'
                               ? AppConstants.routeLessonVideoDetail
-                              : AppConstants.routeLessonDetail;
+                              : AppConstants.routeLessonDocumentDetail;
 
                           Navigator.pushNamed(
                             context,

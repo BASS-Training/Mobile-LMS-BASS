@@ -10,6 +10,7 @@ class AppConstants {
   static const String routeCourseDetail = '/course-detail';
   static const String routeLessonDetail = '/lesson-detail';
   static const String routeLessonVideoDetail = '/lesson-video-detail';
+  static const String routeLessonDocumentDetail = '/lesson-document-detail';
   static const String routeCertificateList = '/certificates';
   static const String routeCertificateDetail = '/certificate-detail';
 

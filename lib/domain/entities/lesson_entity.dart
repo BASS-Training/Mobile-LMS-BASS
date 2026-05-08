@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:lms_mobile_app/domain/entities/document_section_entity.dart';
 
 class LessonEntity extends Equatable {
   final String id;
@@ -9,6 +10,7 @@ class LessonEntity extends Equatable {
   final String type;
   final bool isCompleted;
   final String? youtubeVideoId;
+  final List<DocumentSectionEntity>? documentSections;
 
   const LessonEntity({
     required this.id,
@@ -19,12 +21,14 @@ class LessonEntity extends Equatable {
     this.type = 'document',
     this.isCompleted = false,
     this.youtubeVideoId,
+    this.documentSections,
   });
 
   LessonEntity copyWith({
     bool? isCompleted,
     String? type,
     String? youtubeVideoId,
+    List<DocumentSectionEntity>? documentSections,
   }) {
     return LessonEntity(
       id: id,
@@ -35,6 +39,7 @@ class LessonEntity extends Equatable {
       type: type ?? this.type,
       isCompleted: isCompleted ?? this.isCompleted,
       youtubeVideoId: youtubeVideoId ?? this.youtubeVideoId,
+      documentSections: documentSections ?? this.documentSections,
     );
   }
 
@@ -48,5 +53,6 @@ class LessonEntity extends Equatable {
     type,
     isCompleted,
     youtubeVideoId,
+    documentSections,
   ];
 }

@@ -1,4 +1,5 @@
 import 'package:lms_mobile_app/data/models/course.dart';
+import 'package:lms_mobile_app/data/models/document_lesson_model.dart';
 import 'package:lms_mobile_app/data/models/lesson.dart';
 import 'package:lms_mobile_app/data/models/course_section.dart';
 
