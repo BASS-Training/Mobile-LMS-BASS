@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
+import 'package:lms_mobile_app/src/core/routes/app_router.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
@@ -138,18 +138,11 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
   }
 
   void _openLesson(LessonEntity lesson, int lessonIndex) {
-    final route = lesson.type.toLowerCase() == 'video'
-        ? AppRoutes.videoLessonDetail
-        : AppRoutes.documentLessonDetail;
-
-    Navigator.pushNamed(
+    AppRouter.openLesson(
       context,
-      route,
-      arguments: {
-        'lesson': lesson,
-        'course': widget.course,
-        'lessonIndex': lessonIndex,
-      },
+      lesson: lesson,
+      course: widget.course,
+      lessonIndex: lessonIndex,
     );
   }
 
@@ -183,20 +176,14 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
             course: widget.course,
             currentLessonIndex: widget.lessonIndex,
             onSelectLesson: (lesson, index) {
-              final route = lesson.type.toLowerCase() == 'video'
-                  ? AppRoutes.videoLessonDetail
-                  : AppRoutes.documentLessonDetail;
               Navigator.pop(
                 context,
               ); // close drawer (LessonDrawer already closes, but safe)
-              Navigator.pushNamed(
+              AppRouter.openLesson(
                 context,
-                route,
-                arguments: {
-                  'lesson': lesson,
-                  'course': widget.course,
-                  'lessonIndex': index,
-                },
+                lesson: lesson,
+                course: widget.course,
+                lessonIndex: index,
               );
             },
           ),

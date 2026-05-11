@@ -1,63 +1,57 @@
+import '../datasources/dummy_data.dart';
 import '../models/course.dart';
 import 'course_remote_data_source.dart';
 
 /// Implementasi CourseRemoteDataSource untuk REST API
-/// Saat ini placeholder - akan diimplementasi ketika backend ready
+/// Saat ini menggunakan dummy data, akan diimplementasikan ketika backend ready
 class CourseRemoteDataSourceImpl implements CourseRemoteDataSource {
-  // final HttpClient httpClient;
-  // final String baseUrl;
-
-  // CourseRemoteDataSourceImpl({
-  //   required this.httpClient,
-  //   required this.baseUrl,
-  // });
+  // TODO: Tambahkan Dio client ketika backend ready
+  // final Dio _dio;
+  // CourseRemoteDataSourceImpl(this._dio);
 
   @override
   Future<List<Course>> getCourses() async {
-    // TODO: Implementasikan ketika endpoint ready
-    // Example:
-    // final response = await httpClient.get('$baseUrl/courses');
-    // if (response.statusCode == 200) {
-    //   return (json.decode(response.body) as List)
-    //       .map((c) => Course.fromJson(c))
-    //       .toList();
-    // } else {
-    //   throw Exception('Failed to load courses');
-    // }
-    throw UnimplementedError(
-      'Remote data source belum tersedia, tunggu backend ready',
-    );
+    // Saat ini return dummy data
+    // Nanti ganti dengan:
+    // final response = await _dio.get('/api/courses');
+    // return (response.data as List).map((c) => Course.fromJson(c)).toList();
+    return DummyData.getCourses();
   }
 
   @override
   Future<Course?> getCourseById(String id) async {
-    // TODO: Implementasikan ketika endpoint ready
-    throw UnimplementedError(
-      'Remote data source belum tersedia, tunggu backend ready',
-    );
+    // Saat ini return dummy data yang sesuai
+    final courses = DummyData.getCourses();
+    try {
+      return courses.firstWhere((course) => course.id == id);
+    } catch (e) {
+      return null;
+    }
   }
 
   @override
   Future<List<Course>> searchCourses(String query) async {
-    // TODO: Implementasikan ketika endpoint ready
-    throw UnimplementedError(
-      'Remote data source belum tersedia, tunggu backend ready',
-    );
+    // Saat ini search di dummy data
+    final courses = DummyData.getCourses();
+    return courses
+        .where(
+          (course) =>
+              course.title.toLowerCase().contains(query.toLowerCase()) ||
+              course.description.toLowerCase().contains(query.toLowerCase()),
+        )
+        .toList();
   }
 
   @override
   Future<void> toggleSaveCourse(String courseId) async {
-    // TODO: Implementasikan ketika endpoint ready
-    throw UnimplementedError(
-      'Remote data source belum tersedia, tunggu backend ready',
-    );
+    // TODO: Implementasikan ketika backend ready
+    // Saat ini no-op, status saved disimpan di local saja
   }
 
   @override
   Future<List<Course>> getSavedCourses() async {
-    // TODO: Implementasikan ketika endpoint ready
-    throw UnimplementedError(
-      'Remote data source belum tersedia, tunggu backend ready',
-    );
+    // Saat ini return semua dummy data (nanti filter dari backend)
+    // TODO: Implementasikan filter di backend ketika ready
+    return DummyData.getCourses();
   }
 }

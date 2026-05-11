@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_strings.dart';
+import 'package:lms_mobile_app/src/core/routes/app_router.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_state.dart';
@@ -126,11 +127,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
                         course: courseEntity,
                         isSaved: courseEntity.isSaved,
                         onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            '/course-detail',
-                            arguments: courseEntity,
-                          );
+                          AppRouter.goToCourseDetail(context, courseEntity);
                         },
                         onSavePressed: () {
                           context.read<CourseBloc>().add(

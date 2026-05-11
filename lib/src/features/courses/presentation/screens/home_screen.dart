@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_strings.dart';
+import 'package:lms_mobile_app/src/core/routes/app_router.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_bloc.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_state.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
@@ -43,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
       });
       return;
     }
-    Navigator.pushNamed(context, AppRoutes.courses).then((_) {
+    AppRouter.goToCourses(context).then((_) {
       if (!mounted) return;
       Future.delayed(const Duration(milliseconds: 300), () {
         if (mounted) {
@@ -471,10 +471,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 course: courseEntity,
                                 isSaved: courseEntity.isSaved,
                                 onTap: () {
-                                  Navigator.pushNamed(
+                                  AppRouter.goToCourseDetail(
                                     context,
-                                    '/course-detail',
-                                    arguments: courseEntity,
+                                    courseEntity,
                                   );
                                 },
                                 onSavePressed: () {
@@ -915,7 +914,7 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icons.workspace_premium_rounded,
             trailing: GestureDetector(
               onTap: () {
-                Navigator.pushNamed(context, AppRoutes.certificateList);
+                AppRouter.goToCertificateList(context);
               },
               child: Text(
                 'Lihat daftar sertifikat',
@@ -954,11 +953,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: completedCourses.map((course) {
                       return GestureDetector(
                         onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            AppRoutes.certificateDetail,
-                            arguments: course,
-                          );
+                          AppRouter.goToCertificateDetail(context, course);
                         },
                         child: Container(
                           width: double.infinity,

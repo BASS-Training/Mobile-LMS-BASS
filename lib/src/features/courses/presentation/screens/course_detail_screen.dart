@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
+import 'package:lms_mobile_app/src/core/routes/app_router.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_section_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
@@ -434,19 +434,11 @@ class CourseDetailScreen extends StatelessWidget {
                                     ? overallLessonIndex
                                     : lessonIndexInSection;
 
-                                final routeName =
-                                    lesson.type.toLowerCase() == 'video'
-                                    ? AppRoutes.videoLessonDetail
-                                    : AppRoutes.documentLessonDetail;
-
-                                Navigator.pushNamed(
+                                AppRouter.openLesson(
                                   context,
-                                  routeName,
-                                  arguments: {
-                                    'lesson': lesson,
-                                    'course': course,
-                                    'lessonIndex': safeLessonIndex,
-                                  },
+                                  lesson: lesson,
+                                  course: course,
+                                  lessonIndex: safeLessonIndex,
                                 );
                               }
                             : null,
@@ -517,14 +509,23 @@ class CourseDetailScreen extends StatelessWidget {
                                         Icon(
                                           Icons.timer,
                                           size: 12,
-                                          color: _isLessonUnlocked(lesson, course) ? AppColors.textLight : Colors.grey,
+                                          color:
+                                              _isLessonUnlocked(lesson, course)
+                                              ? AppColors.textLight
+                                              : Colors.grey,
                                         ),
                                         SizedBox(width: 3),
                                         Text(
                                           lesson.duration,
                                           style: TextStyle(
                                             fontSize: 11,
-                                            color: _isLessonUnlocked(lesson, course) ? AppColors.textLight : Colors.grey,
+                                            color:
+                                                _isLessonUnlocked(
+                                                  lesson,
+                                                  course,
+                                                )
+                                                ? AppColors.textLight
+                                                : Colors.grey,
                                           ),
                                         ),
                                         SizedBox(width: 8),
@@ -535,8 +536,14 @@ class CourseDetailScreen extends StatelessWidget {
                                             vertical: 2,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: _isLessonUnlocked(lesson, course)
-                                                ? _getLessonTypeColor(lesson.type)
+                                            color:
+                                                _isLessonUnlocked(
+                                                  lesson,
+                                                  course,
+                                                )
+                                                ? _getLessonTypeColor(
+                                                    lesson.type,
+                                                  )
                                                 : Colors.grey,
                                             borderRadius: BorderRadius.circular(
                                               4,

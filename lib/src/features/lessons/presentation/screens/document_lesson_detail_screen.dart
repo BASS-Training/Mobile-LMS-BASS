@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
+import 'package:lms_mobile_app/src/core/routes/app_router.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
@@ -60,18 +60,11 @@ class _DocumentLessonDetailScreenState
       canGoPrevious ? widget.course.allLessons[widget.lessonIndex - 1] : null;
 
   void _openLesson(LessonEntity lesson, int lessonIndex) {
-    final route = lesson.type.toLowerCase() == 'video'
-        ? AppRoutes.videoLessonDetail
-        : AppRoutes.documentLessonDetail;
-
-    Navigator.pushNamed(
+    AppRouter.openLesson(
       context,
-      route,
-      arguments: {
-        'lesson': lesson,
-        'course': widget.course,
-        'lessonIndex': lessonIndex,
-      },
+      lesson: lesson,
+      course: widget.course,
+      lessonIndex: lessonIndex,
     );
   }
 
@@ -96,18 +89,11 @@ class _DocumentLessonDetailScreenState
         course: widget.course,
         currentLessonIndex: widget.lessonIndex,
         onSelectLesson: (selectedLesson, index) {
-          final route = selectedLesson.type.toLowerCase() == 'video'
-              ? AppRoutes.videoLessonDetail
-              : AppRoutes.documentLessonDetail;
-
-          Navigator.pushNamed(
+          AppRouter.openLesson(
             context,
-            route,
-            arguments: {
-              'lesson': selectedLesson,
-              'course': widget.course,
-              'lessonIndex': index,
-            },
+            lesson: selectedLesson,
+            course: widget.course,
+            lessonIndex: index,
           );
         },
       ),
@@ -155,6 +141,7 @@ class _DocumentLessonDetailScreenState
                         onPressed: () {
                           Navigator.pop(context);
                           Future.delayed(const Duration(milliseconds: 200), () {
+                            if (!context.mounted) return;
                             _openLesson(
                               previousLesson!,
                               widget.lessonIndex - 1,
@@ -171,9 +158,13 @@ class _DocumentLessonDetailScreenState
                       child: ElevatedButton.icon(
                         onPressed: () async {
                           _markComplete();
-                          await Future.delayed(const Duration(milliseconds: 100));
+                          await Future.delayed(
+                            const Duration(milliseconds: 100),
+                          );
+                          if (!context.mounted) return;
                           Navigator.pop(context);
                           Future.delayed(const Duration(milliseconds: 200), () {
+                            if (!context.mounted) return;
                             _openLesson(nextLesson!, widget.lessonIndex + 1);
                           });
                         },
