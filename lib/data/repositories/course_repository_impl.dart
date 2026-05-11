@@ -22,10 +22,12 @@ class CourseRepositoryImpl implements CourseRepository {
       final remoteCourses = await remoteDataSource.getCourses();
       // Simpan ke cache local
       await localDataSource.saveCourses(remoteCourses);
+      _updateCompletionStatus(remoteCourses);
       return _mapCoursesToEntities(remoteCourses);
     } catch (e) {
       // Fallback ke local cache jika remote gagal
       final localCourses = await localDataSource.getCourses();
+      _updateCompletionStatus(localCourses);
       return _mapCoursesToEntities(localCourses);
     }
   }
@@ -38,6 +40,7 @@ class CourseRepositoryImpl implements CourseRepository {
       if (remoteCourse != null) {
         // Simpan ke cache
         await localDataSource.saveCourse(remoteCourse);
+        _updateCompletionStatus([remoteCourse]);
         return CourseMapper.toDomain(remoteCourse);
       }
     } catch (e) {
@@ -47,6 +50,7 @@ class CourseRepositoryImpl implements CourseRepository {
     // Jika remote gagal atau return null, cek local
     final localCourse = await localDataSource.getCourseById(id);
     if (localCourse != null) {
+      _updateCompletionStatus([localCourse]);
       return CourseMapper.toDomain(localCourse);
     }
 
@@ -60,10 +64,12 @@ class CourseRepositoryImpl implements CourseRepository {
       final remoteCourses = await remoteDataSource.searchCourses(query);
       // Simpan ke cache
       await localDataSource.saveCourses(remoteCourses);
+      _updateCompletionStatus(remoteCourses);
       return _mapCoursesToEntities(remoteCourses);
     } catch (e) {
       // Fallback ke local cache
       final localCourses = await localDataSource.searchCourses(query);
+      _updateCompletionStatus(localCourses);
       return _mapCoursesToEntities(localCourses);
     }
   }
@@ -88,11 +94,13 @@ class CourseRepositoryImpl implements CourseRepository {
       final remoteSavedCourses = await remoteDataSource.getSavedCourses();
       // Simpan ke cache
       await localDataSource.saveCourses(remoteSavedCourses);
+      _updateCompletionStatus(remoteSavedCourses);
       return _mapCoursesToEntities(remoteSavedCourses);
     } catch (e) {
       // Fallback ke local cache
       final localCourses = await localDataSource.getCourses();
       final savedCourses = localCourses.where((c) => c.isSaved).toList();
+      _updateCompletionStatus(savedCourses);
       return _mapCoursesToEntities(savedCourses);
     }
   }
@@ -103,12 +111,12 @@ class CourseRepositoryImpl implements CourseRepository {
     try {
       final remoteCourses = await remoteDataSource.getCourses();
       await localDataSource.saveCourses(remoteCourses);
+      _updateCompletionStatus(remoteCourses);
     } catch (e) {
       // Jika remote gagal, biarkan pakai cache yang ada
+      final localCourses = await localDataSource.getCourses();
+      _updateCompletionStatus(localCourses);
     }
-    // Update completion status dari local storage
-    final allCourses = await localDataSource.getCourses();
-    _updateCompletionStatus(allCourses);
   }
 
   /// Map list of courses ke list of entities
@@ -117,7 +125,7 @@ class CourseRepositoryImpl implements CourseRepository {
   }
 
   /// Update completion status dari LocalStorage
-  Future<void> _updateCompletionStatus(List<Course> courses) async {
+  void _updateCompletionStatus(List<Course> courses) {
     final completedLessons = LocalStorage.getCompletedLessons();
     for (var course in courses) {
       for (var lesson in course.lessons) {
