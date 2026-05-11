@@ -20,6 +20,7 @@ class AppRoutes {
   static const String lessonDetail = '/lesson-detail';
   static const String videoLessonDetail = '/lesson-video-detail';
   static const String documentLessonDetail = '/lesson-document-detail';
+  static const String quizLessonDetail = '/lesson-quiz-detail';
 
   // Certificate Details
   static const String certificateDetail = '/certificate-detail';

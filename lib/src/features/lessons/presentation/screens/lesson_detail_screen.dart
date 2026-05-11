@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
@@ -48,14 +49,16 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
   }
 
   void _openLesson(BuildContext context, LessonEntity lesson, int lessonIndex) {
-    final routeName = lesson.type.toLowerCase() == 'video'
+    final type = lesson.type.toLowerCase();
+    final routeName = type == 'video'
         ? AppRoutes.videoLessonDetail
-        : AppRoutes.documentLessonDetail;
+        : (type == 'quiz'
+              ? AppRoutes.quizLessonDetail
+              : AppRoutes.documentLessonDetail);
 
-    Navigator.pushNamed(
-      context,
+    context.push(
       routeName,
-      arguments: {
+      extra: {
         'lesson': lesson,
         'course': widget.course,
         'lessonIndex': lessonIndex,
@@ -111,16 +114,18 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
           course: widget.course,
           currentLessonIndex: widget.lessonIndex,
           onSelectLesson: (lesson, index) {
-            final route = lesson.type.toLowerCase() == 'video'
+            final type = lesson.type.toLowerCase();
+            final route = type == 'video'
                 ? AppRoutes.videoLessonDetail
-                : AppRoutes.documentLessonDetail;
+                : (type == 'quiz'
+                      ? AppRoutes.quizLessonDetail
+                      : AppRoutes.documentLessonDetail);
             Navigator.pop(
               context,
             ); // close drawer (LessonDrawer already closes, but safe)
-            Navigator.pushNamed(
-              context,
+            context.push(
               route,
-              arguments: {
+              extra: {
                 'lesson': lesson,
                 'course': widget.course,
                 'lessonIndex': index,
@@ -439,10 +444,9 @@ class _LessonDetailScreenState extends State<LessonDetailScreen> {
                             : () {
                                 Navigator.pop(context); // Close drawer
                                 Future.delayed(Duration(milliseconds: 200), () {
-                                  Navigator.pushNamed(
-                                    context,
-                                    '/lesson-detail',
-                                    arguments: {
+                                  context.push(
+                                    AppRoutes.lessonDetail,
+                                    extra: {
                                       'lesson': lesson,
                                       'course': widget.course,
                                       'lessonIndex': index,

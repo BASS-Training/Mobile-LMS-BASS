@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_strings.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_bloc.dart';
@@ -43,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
       });
       return;
     }
-    Navigator.pushNamed(context, AppRoutes.courses).then((_) {
+    context.push(AppRoutes.courses).then((_) {
       if (!mounted) return;
       Future.delayed(const Duration(milliseconds: 300), () {
         if (mounted) {
@@ -471,10 +472,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 course: courseEntity,
                                 isSaved: courseEntity.isSaved,
                                 onTap: () {
-                                  Navigator.pushNamed(
-                                    context,
-                                    '/course-detail',
-                                    arguments: courseEntity,
+                                  context.push(
+                                    AppRoutes.courseDetail,
+                                    extra: courseEntity,
                                   );
                                 },
                                 onSavePressed: () {
@@ -915,7 +915,7 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icons.workspace_premium_rounded,
             trailing: GestureDetector(
               onTap: () {
-                Navigator.pushNamed(context, AppRoutes.certificateList);
+                context.push(AppRoutes.certificateList);
               },
               child: Text(
                 'Lihat daftar sertifikat',
@@ -954,10 +954,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: completedCourses.map((course) {
                       return GestureDetector(
                         onTap: () {
-                          Navigator.pushNamed(
-                            context,
+                          context.push(
                             AppRoutes.certificateDetail,
-                            arguments: course,
+                            extra: course,
                           );
                         },
                         child: Container(

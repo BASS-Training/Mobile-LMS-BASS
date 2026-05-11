@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
-import 'package:lms_mobile_app/src/shared/styles/app_theme.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_bloc.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_event.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_state.dart';
@@ -200,10 +201,9 @@ class _SavedCoursesScreenState extends State<SavedCoursesScreen> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            '/course-detail',
-                            arguments: courseEntity,
+                          context.push(
+                            AppRoutes.courseDetail,
+                            extra: courseEntity,
                           );
                         },
                         child: Icon(
@@ -368,7 +368,7 @@ class ProfileScreen extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: () {
                         context.read<AuthBloc>().add(const AuthLogoutEvent());
-                        Navigator.pushReplacementNamed(context, '/login');
+                        context.go(AppRoutes.login);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.error,

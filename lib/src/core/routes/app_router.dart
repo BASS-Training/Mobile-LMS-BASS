@@ -9,6 +9,7 @@ import 'package:lms_mobile_app/src/features/courses/presentation/screens/course_
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/video_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/document_lesson_detail_screen.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/screens/quiz_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/certificates/presentation/screens/certificate_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/certificates/presentation/screens/certificate_list_screen.dart';
 
@@ -21,29 +22,32 @@ import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_entit
 class AppRouter {
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
-  static GoRouter get router => GoRouter(
+  static final GoRouter router = GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: AppRoutes.login,
     redirect: (context, state) {
-      // TODO: Implement auth guard logic
-      // - Jika user tidak authenticated, redirect ke login
-      // - Jika user authenticated, allow navigation
+      // TODO: Tambahkan auth guard ketika state auth sudah siap.
       return null;
     },
     routes: [
       GoRoute(
         path: AppRoutes.login,
-        name: 'login',
         builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
         path: AppRoutes.main,
-        name: 'main',
         builder: (context, state) => const MainScreen(initialTab: 0),
       ),
       GoRoute(
+        path: AppRoutes.home,
+        builder: (context, state) => const MainScreen(initialTab: 0),
+      ),
+      GoRoute(
+        path: AppRoutes.courses,
+        builder: (context, state) => const MainScreen(initialTab: 1),
+      ),
+      GoRoute(
         path: AppRoutes.courseDetail,
-        name: 'course-detail',
         builder: (context, state) {
           final course = state.extra as CourseEntity;
           return CourseDetailScreen(course: course);
@@ -51,7 +55,6 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.lessonDetail,
-        name: 'lesson-detail',
         builder: (context, state) {
           final args = state.extra as Map<String, dynamic>;
           final lesson = args['lesson'] as LessonEntity;
@@ -66,7 +69,6 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.videoLessonDetail,
-        name: 'video-lesson-detail',
         builder: (context, state) {
           final args = state.extra as Map<String, dynamic>;
           final lesson = args['lesson'] as LessonEntity;
@@ -81,7 +83,6 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.documentLessonDetail,
-        name: 'document-lesson-detail',
         builder: (context, state) {
           final args = state.extra as Map<String, dynamic>;
           final lesson = args['lesson'] as LessonEntity;
@@ -95,8 +96,21 @@ class AppRouter {
         },
       ),
       GoRoute(
+        path: AppRoutes.quizLessonDetail,
+        builder: (context, state) {
+          final args = state.extra as Map<String, dynamic>;
+          final lesson = args['lesson'] as LessonEntity;
+          final course = args['course'] as CourseEntity;
+          final lessonIndex = args['lessonIndex'] as int;
+          return QuizLessonDetailScreen(
+            lesson: lesson,
+            course: course,
+            lessonIndex: lessonIndex,
+          );
+        },
+      ),
+      GoRoute(
         path: AppRoutes.certificateDetail,
-        name: 'certificate-detail',
         builder: (context, state) {
           final course = state.extra as CourseEntity;
           return CertificateDetailScreen(course: course);
@@ -104,7 +118,6 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.certificateList,
-        name: 'certificate-list',
         builder: (context, state) => const CertificateListScreen(),
       ),
     ],

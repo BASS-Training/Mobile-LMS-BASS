@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
@@ -13,11 +14,7 @@ class CertificateListTile extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(14),
       onTap: () {
-        Navigator.pushNamed(
-          context,
-          AppRoutes.certificateDetail,
-          arguments: course,
-        );
+        context.push(AppRoutes.certificateDetail, extra: course);
       },
       child: Container(
         padding: const EdgeInsets.all(14),
