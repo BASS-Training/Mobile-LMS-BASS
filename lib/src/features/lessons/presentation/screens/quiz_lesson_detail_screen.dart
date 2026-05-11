@@ -225,7 +225,13 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
   }
 
   /// Build Quiz Questions Screen
+  /// Build Quiz Questions Screen
   Widget _buildQuizScreen(QuizLoaded quizState) {
+    // 1. Hitung jumlah soal yang sudah dijawab
+    final int answeredCount = quizState.answers.length;
+    final int totalCount = quizState.quiz.totalQuestions;
+    final double progressPercent = totalCount > 0 ? (answeredCount / totalCount) : 0.0;
+
     return WillPopScope(
       onWillPop: () async {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -240,48 +246,73 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
         appBar: AppBar(
           title: Text('${widget.course.title} - Kuis'),
           elevation: 0,
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: Center(
-                child: Text(
-                  '${quizState.currentQuestionIndex + 1}/${quizState.quiz.totalQuestions}',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+          // Hapus text 1/10 dari AppBar karena sudah diganti dengan progress bar di bawah
+          actions: const [], 
+        ),
+        body: Column(
+          children: [
+            // === PROGRESS BAR SECTION ===
+            Container(
+              color: AppColors.background,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  // Teks Keterangan
+                  Text(
+                    'Telah dijawab $answeredCount/$totalCount',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey, 
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 8),
+                  // Progress Bar
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: LinearProgressIndicator(
+                      value: progressPercent,
+                      minHeight: 6,
+                      backgroundColor: Colors.grey.withOpacity(0.3),
+                      valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            // === QUIZ QUESTIONS WIDGET ===
+            Expanded(
+              child: QuizQuestionsWidget(
+                quiz: quizState.quiz,
+                currentQuestionIndex: quizState.currentQuestionIndex,
+                answers: quizState.answers,
+                onSelectAnswer: (selectedOptionIndex) {
+                  context.read<QuizBloc>().add(
+                    SelectAnswerEvent(
+                      questionIndex: quizState.currentQuestionIndex,
+                      selectedOptionIndex: selectedOptionIndex,
+                    ),
+                  );
+                },
+                onNextQuestion: () {
+                  context.read<QuizBloc>().add(const NextQuestionEvent());
+                },
+                onPreviousQuestion: () {
+                  context.read<QuizBloc>().add(const PreviousQuestionEvent());
+                },
+                onSubmitQuiz: () {
+                  context.read<QuizBloc>().add(const SubmitQuizEvent());
+                },
+                onQuestionNavigate: (questionIndex) {
+                  context.read<QuizBloc>().add(
+                    GoToQuestionEvent(questionIndex: questionIndex),
+                  );
+                },
               ),
             ),
           ],
-        ),
-        body: QuizQuestionsWidget(
-          quiz: quizState.quiz,
-          currentQuestionIndex: quizState.currentQuestionIndex,
-          answers: quizState.answers,
-          onSelectAnswer: (selectedOptionIndex) {
-            context.read<QuizBloc>().add(
-              SelectAnswerEvent(
-                questionIndex: quizState.currentQuestionIndex,
-                selectedOptionIndex: selectedOptionIndex,
-              ),
-            );
-          },
-          onNextQuestion: () {
-            context.read<QuizBloc>().add(const NextQuestionEvent());
-          },
-          onPreviousQuestion: () {
-            context.read<QuizBloc>().add(const PreviousQuestionEvent());
-          },
-          onSubmitQuiz: () {
-            context.read<QuizBloc>().add(const SubmitQuizEvent());
-          },
-          onQuestionNavigate: (questionIndex) {
-            context.read<QuizBloc>().add(
-              GoToQuestionEvent(questionIndex: questionIndex),
-            );
-          },
         ),
       ),
     );

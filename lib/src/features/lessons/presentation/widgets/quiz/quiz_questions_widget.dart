@@ -31,6 +31,7 @@ class QuizQuestionsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final question = quiz.questions[currentQuestionIndex];
     final isLastQuestion = currentQuestionIndex == quiz.questions.length - 1;
+    final bool isAllAnswered = answers.length == quiz.questions.length;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -38,15 +39,15 @@ class QuizQuestionsWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Progress bar
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: LinearProgressIndicator(
-              value: (currentQuestionIndex + 1) / quiz.questions.length,
-              minHeight: 8,
-              backgroundColor: Colors.grey[300],
-              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-            ),
-          ),
+          // ClipRRect(
+          //   borderRadius: BorderRadius.circular(8),
+          //   child: LinearProgressIndicator(
+          //     value: (currentQuestionIndex + 1) / quiz.questions.length,
+          //     minHeight: 8,
+          //     backgroundColor: Colors.grey[300],
+          //     valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+          //   ),
+          // ),
           const SizedBox(height: 24),
 
           // Question card
@@ -121,7 +122,7 @@ class QuizQuestionsWidget extends StatelessWidget {
                     )
                   else
                     ElevatedButton.icon(
-                      onPressed: onSubmitQuiz,
+                      onPressed: isAllAnswered ? onSubmitQuiz : null,
                       icon: const Icon(Icons.check_circle),
                       label: const Text('Kirim Jawaban'),
                       style: ElevatedButton.styleFrom(
