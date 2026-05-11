@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lms_mobile_app/src/core/bloc/session_bloc.dart';
+import 'package:lms_mobile_app/src/core/bloc/session_event.dart';
+import 'package:lms_mobile_app/src/core/bloc/session_state.dart';
+import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 
 // Core - Theme & DI
 import 'package:lms_mobile_app/src/shared/styles/app_theme.dart';
@@ -45,83 +50,69 @@ class MainApp extends StatelessWidget {
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AuthBloc>(create: (context) => serviceLocator.authBloc),
-        BlocProvider<CourseBloc>(
-          create: (context) => serviceLocator.courseBloc,
-        ),
-        BlocProvider<LessonBloc>(
-          create: (context) => serviceLocator.lessonBloc,
+        BlocProvider(create: (context) => getIt<AuthBloc>()),
+        BlocProvider(
+          create: (context) =>
+              getIt<SessionBloc>()..add(const SessionEvent.sessionStarted()),
         ),
       ],
-      child: MaterialApp(
-        title: 'LMS Mobile App',
+      child: MaterialApp.router(
         theme: AppTheme.lightTheme,
-        debugShowCheckedModeBanner: false,
-        initialRoute: '/login',
-        routes: {
-          '/login': (context) => const LoginScreen(),
-          '/home': (context) => const MainScreen(initialTab: 0),
-          '/courses': (context) => const MainScreen(initialTab: 1),
-          '/certificate-list': (context) => const CertificateListScreen(),
+        themeMode: ThemeMode.light,
+        routerConfig: getIt<GoRouter>(),
+        builder: (context, child) {
+          return BlocListener<SessionBloc, SessionState>(
+            listener: (context, state) {
+              state.whenOrNull(
+                unauthenticated: (message) {
+                  if (message != null && message.isNotEmpty) {
+                    // Delay untuk memastikan routing selesai
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      _showSessionExpiredSnackbar(context, message);
+                    });
+                  }
+                },
+              );
+            },
+            child: child ?? const SizedBox.shrink(),
+          );
         },
-        onGenerateRoute: (RouteSettings settings) {
-          if (settings.name == '/course-detail') {
-            final course = settings.arguments as CourseEntity;
-            return MaterialPageRoute(
-              builder: (context) => CourseDetailScreen(course: course),
-              settings: settings,
-            );
-          } else if (settings.name == '/lesson-detail') {
-            final args = settings.arguments as Map<String, dynamic>;
-            final lesson = args['lesson'] as LessonEntity;
-            final course = args['course'] as CourseEntity;
-            final lessonIndex = args['lessonIndex'] as int;
-            return MaterialPageRoute(
-              builder: (context) => LessonDetailScreen(
-                lesson: lesson,
-                course: course,
-                lessonIndex: lessonIndex,
-              ),
-              settings: settings,
-            );
-          } else if (settings.name == '/certificate-detail') {
-            final course = settings.arguments as CourseEntity;
-            return MaterialPageRoute(
-              builder: (context) => CertificateDetailScreen(course: course),
-              settings: settings,
-            );
-          } else if (settings.name == '/lesson-video-detail') {
-            final args = settings.arguments as Map<String, dynamic>;
-            final lesson = args['lesson'] as LessonEntity;
-            final course = args['course'] as CourseEntity;
-            final lessonIndex = args['lessonIndex'] as int;
+      ),
+    );
+  }
 
-            return MaterialPageRoute(
-              builder: (context) => VideoLessonDetailScreen(
-                lesson: lesson,
-                course: course,
-                lessonIndex: lessonIndex,
-              ),
-              settings: settings,
-            );
-          } else if (settings.name == '/lesson-document-detail') {
-            final args = settings.arguments as Map<String, dynamic>;
-            final lesson = args['lesson'] as LessonEntity;
-            final course = args['course'] as CourseEntity;
-            final lessonIndex = args['lessonIndex'] as int;
+  void _showSessionExpiredSnackbar(BuildContext context, String message) {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
-            return MaterialPageRoute(
-              builder: (context) => DocumentLessonDetailScreen(
-                lesson: lesson,
-                course: course,
-                lessonIndex: lessonIndex,
+    // Clear any existing snackbars
+    scaffoldMessenger.clearSnackBars();
+
+    scaffoldMessenger.showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            const Icon(
+              Icons.warning_amber_rounded,
+              color: Colors.white,
+              size: 24,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                message,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-              settings: settings,
-            );
-          }
-          return null;
-        },
-        home: const LoginScreen(),
+            ),
+          ],
+        ),
+        backgroundColor: AppColors.error,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 2),
+        margin: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
   }

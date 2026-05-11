@@ -12,12 +12,12 @@ import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class VideoLessonDetailScreen extends StatefulWidget {
+class LessonVideoDetailScreen extends StatefulWidget {
   final LessonEntity lesson;
   final CourseEntity course;
   final int lessonIndex;
 
-  const VideoLessonDetailScreen({
+  const LessonVideoDetailScreen({
     super.key,
     required this.lesson,
     required this.course,
@@ -25,11 +25,11 @@ class VideoLessonDetailScreen extends StatefulWidget {
   });
 
   @override
-  State<VideoLessonDetailScreen> createState() =>
-      _VideoLessonDetailScreenState();
+  State<LessonVideoDetailScreen> createState() =>
+      _LessonVideoDetailScreenState();
 }
 
-class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
+class _LessonVideoDetailScreenState extends State<LessonVideoDetailScreen> {
   late final YoutubePlayerController _controller;
   final TextEditingController _commentController = TextEditingController();
   final ScrollController _scrollController = ScrollController();

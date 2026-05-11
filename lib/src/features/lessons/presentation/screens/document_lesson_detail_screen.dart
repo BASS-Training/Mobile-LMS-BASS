@@ -12,12 +12,12 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/les
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 
-class DocumentLessonDetailScreen extends StatefulWidget {
+class LessonDocumentDetailScreen extends StatefulWidget {
   final LessonEntity lesson;
   final CourseEntity course;
   final int lessonIndex;
 
-  const DocumentLessonDetailScreen({
+  const LessonDocumentDetailScreen({
     super.key,
     required this.lesson,
     required this.course,
@@ -25,12 +25,12 @@ class DocumentLessonDetailScreen extends StatefulWidget {
   });
 
   @override
-  State<DocumentLessonDetailScreen> createState() =>
-      _DocumentLessonDetailScreenState();
+  State<LessonDocumentDetailScreen> createState() =>
+      _LessonDocumentDetailScreenState();
 }
 
-class _DocumentLessonDetailScreenState
-    extends State<DocumentLessonDetailScreen> {
+class _LessonDocumentDetailScreenState
+    extends State<LessonDocumentDetailScreen> {
   late GlobalKey<ScaffoldState> _scaffoldKey;
 
   @override
@@ -171,7 +171,9 @@ class _DocumentLessonDetailScreenState
                       child: ElevatedButton.icon(
                         onPressed: () async {
                           _markComplete();
-                          await Future.delayed(const Duration(milliseconds: 100));
+                          await Future.delayed(
+                            const Duration(milliseconds: 100),
+                          );
                           Navigator.pop(context);
                           Future.delayed(const Duration(milliseconds: 200), () {
                             _openLesson(nextLesson!, widget.lessonIndex + 1);

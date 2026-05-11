@@ -1,5 +1,6 @@
 /// Service Locator - Orchestrate semua DI modules
 /// Ini adalah entry point untuk dependency injection
+import 'package:get_it/get_it.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
@@ -10,6 +11,8 @@ import 'modules/auth_module.dart';
 import 'modules/course_module.dart';
 import 'modules/lesson_module.dart';
 import 'modules/certificate_module.dart';
+
+final getIt = GetIt.instance;
 
 class ServiceLocator {
   static final ServiceLocator _instance = ServiceLocator._internal();
