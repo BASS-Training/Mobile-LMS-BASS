@@ -1,9 +1,13 @@
 /// Lesson module - dependency injection untuk lesson feature
 /// Berisi: LessonRepository, UseCases, BLoC
+import 'package:lms_mobile_app/src/features/lessons/data/datasources/quiz_local_datasource_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/lesson_repository_impl.dart';
+import 'package:lms_mobile_app/src/features/lessons/data/repositories/quiz_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_repository.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/usecases/get_quiz_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/lesson_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/quiz/quiz_bloc.dart';
 
 class LessonModule {
   static late LessonBloc _lessonBloc;
@@ -37,4 +41,14 @@ class LessonModule {
 
   /// Get LessonBloc instance
   static LessonBloc get lessonBloc => _lessonBloc;
+  static QuizBloc get quizBloc {
+    final quizDataSource = QuizLocalDataSourceImpl();
+    final quizRepository = QuizRepositoryImpl(localDataSource: quizDataSource);
+    return QuizBloc(
+      getQuizUseCase: GetQuizUseCase(
+        // Pastikan repository kuis juga sudah diinisialisasi di module ini
+        repository: quizRepository,
+      ),
+    );
+  }
 }

@@ -145,7 +145,7 @@ class LessonDrawer extends StatelessWidget {
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600,
                                         color: isCurrent
-                                            ? AppColors.primary
+                                            ? AppColors.textLighter
                                             : _isLessonUnlocked(lesson, course)
                                             ? AppColors.text
                                             : Colors.grey,
@@ -160,7 +160,7 @@ class LessonDrawer extends StatelessWidget {
                                       style: TextStyle(
                                         fontSize: 11,
                                         color: _isLessonUnlocked(lesson, course)
-                                            ? AppColors.textLight
+                                            ? AppColors.text
                                             : Colors.grey,
                                       ),
                                     ),
@@ -174,14 +174,14 @@ class LessonDrawer extends StatelessWidget {
                                     vertical: 4,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: AppColors.primary,
+                                    color: AppColors.background,
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: const Text(
                                     'Now',
                                     style: TextStyle(
                                       fontSize: 10,
-                                      color: Colors.white,
+                                      color: AppColors.primary,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
