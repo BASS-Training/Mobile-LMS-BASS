@@ -10,6 +10,7 @@ import 'package:lms_mobile_app/src/features/courses/presentation/screens/main_sc
 import 'package:lms_mobile_app/src/features/courses/presentation/screens/course_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/essay/essay_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/quiz/quiz_bloc.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/video/video_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/video_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/document_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/quiz_lesson_detail_screen.dart';
@@ -67,10 +68,13 @@ class AppRouter {
           final lessonIndex = args['lessonIndex'] as int;
           return CustomTransitionPage(
             key: state.pageKey,
-            child: VideoLessonDetailScreen(
-              lesson: lesson,
-              course: course,
-              lessonIndex: lessonIndex,
+            child: BlocProvider<VideoBloc>(
+              create: (context) => LessonModule.videoBloc,
+              child: VideoLessonDetailScreen(
+                lesson: lesson,
+                course: course,
+                lessonIndex: lessonIndex,
+              ),
             ),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
