@@ -2,6 +2,7 @@
 /// Berisi: LessonRepository, UseCases, BLoC
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/essay_local_data_source.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/quiz_local_datasource_impl.dart';
+import 'package:lms_mobile_app/src/features/lessons/data/datasources/video_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/essay_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/lesson_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/quiz_repository_impl.dart';
@@ -12,6 +13,7 @@ import 'package:lms_mobile_app/src/features/lessons/domain/usecases/submit_essay
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/essay/essay_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/quiz/quiz_bloc.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/video/video_bloc.dart';
 
 class LessonModule {
   static late LessonBloc _lessonBloc;
@@ -73,4 +75,10 @@ class LessonModule {
       submitUseCase: submitUseCase,
     );
   }
+
+  // Di dalam class LessonModule:
+static VideoBloc get videoBloc {
+  final repository = VideoRepositoryImpl(); 
+  return VideoBloc(repository);
+}
 }

@@ -8,10 +8,17 @@ import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/cou
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_event.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion_card.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+// Sesuaikan path import widget ini dengan lokasi foldermu
+import '../widgets/comment_item_widget.dart';
+import '../bloc/video/video_bloc.dart';
+import '../bloc/video/video_event.dart';
+import '../bloc/video/video_state.dart';
 
 class VideoLessonDetailScreen extends StatefulWidget {
   final LessonEntity lesson;
@@ -35,7 +42,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
   final TextEditingController _commentController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool _markedCompleteTriggered = false;
-  bool _canProceed = false;
+
   bool get canGoNext =>
       widget.lessonIndex < widget.course.allLessons.length - 1;
   bool get canGoPrevious => widget.lessonIndex > 0;
@@ -47,14 +54,6 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
 
   late GlobalKey<ScaffoldState> _scaffoldKey;
 
-  final List<_DiscussionComment> _comments = [
-    _DiscussionComment(
-      userName: 'Andi',
-      message: 'Materinya jelas dan mudah dipahami.',
-      timeLabel: '2 menit lalu',
-    ),
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -64,6 +63,11 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+
+    // Inisiasi data ke BLoC
+    context.read<VideoBloc>().add(
+      InitVideoLesson(widget.lesson.id, widget.lesson.isCompleted),
+    );
 
     final videoId = widget.lesson.youtubeVideoId ?? '';
     _controller = YoutubePlayerController(
@@ -78,28 +82,21 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
       ),
     );
     _controller.addListener(_videoListener);
-    _canProceed = widget.lesson.isCompleted;
   }
 
   void _videoListener() {
     final value = _controller.value;
-
-    // update progress threshold (safe-guard kalau duration belum tersedia)
     final duration = value.metaData.duration;
     final position = value.position;
 
     if (duration != null && duration.inSeconds > 0) {
-      final remaining = duration - position;
-      final reachedThreshold =
-          remaining.inSeconds <= 10 ||
-          position.inSeconds >= (duration.inSeconds - 10);
-
-      if (reachedThreshold && !_canProceed) {
-        setState(() => _canProceed = true);
-      }
+      // Delegasikan perhitungan 10 detik ke BLoC
+      context.read<VideoBloc>().add(
+        VideoProgressUpdated(position.inSeconds, duration.inSeconds),
+      );
     }
 
-    // jika video berakhir, tandai complete (existing)
+    // Eksekusi MarkComplete dibiarkan di sini karena bergantung pada LessonBloc global
     if (!_markedCompleteTriggered && value.playerState == PlayerState.ended) {
       _markedCompleteTriggered = true;
       if (!widget.lesson.isCompleted) {
@@ -125,22 +122,16 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
     final text = _commentController.text.trim();
     if (text.isEmpty) return;
 
-    setState(() {
-      _comments.insert(
-        0,
-        _DiscussionComment(
-          userName: 'Anda',
-          message: text,
-          timeLabel: 'Baru saja',
-        ),
-      );
-    });
+    // Serahkan penyimpanan data ke BLoC
+    context.read<VideoBloc>().add(
+      SubmitDiscussionComment(widget.lesson.id, text),
+    );
     _commentController.clear();
+    FocusScope.of(context).unfocus(); // Menutup keyboard dengan rapi
   }
 
   void _openLesson(LessonEntity lesson, int lessonIndex) {
     final route = LessonRouteResolver.routeForType(lesson.type);
-
     context.push(
       route,
       extra: {
@@ -156,7 +147,6 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
     final videoId = widget.lesson.youtubeVideoId;
 
     if (videoId == null || videoId.isEmpty) {
-      print('Video Id : $videoId');
       return Scaffold(
         backgroundColor: const Color(0xFFF6F8FF),
         appBar: AppBar(
@@ -284,61 +274,81 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
               ),
             ],
           ),
-          body: SafeArea(
-            child: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-              child: Column(
-                children: [
-                  const SizedBox(height: 12),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: _buildHeroSummary(),
-                  ),
-                  const SizedBox(height: 12),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(18),
-                      child: AspectRatio(aspectRatio: 16 / 9, child: player),
+          body: BlocBuilder<VideoBloc, VideoState>(
+            builder: (context, state) {
+              return SafeArea(
+                child: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      controller: _scrollController,
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildInfoCard(widget.lesson.title),
-                          const SizedBox(height: 16),
-                          _buildDiscussionCard(),
-                          const SizedBox(height: 16),
-                          const Text(
-                            'Komentar',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.text,
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-                          ..._comments.map(_buildCommentItem),
-                          const SizedBox(height: 24),
-                          _buildBottomButtons(),
-                        ],
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 12),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: _buildHeroSummary(),
                       ),
-                    ),
+                      const SizedBox(height: 12),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(18),
+                          child: AspectRatio(
+                            aspectRatio: 16 / 9,
+                            child: player,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          controller: _scrollController,
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildInfoCard(widget.lesson.title),
+                              const SizedBox(height: 16),
+                              DiscussionCard(
+                              onSend: (komentarTeks) {
+                                // Eksekusi BLoC spesifik untuk Video Lesson di sini
+                                context.read<VideoBloc>().add(
+                                  SubmitDiscussionComment(widget.lesson.id, komentarTeks),
+                                );
+                              },
+                            ),
+                              const SizedBox(height: 16),
+                              const Text(
+                                'Komentar',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.text,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+
+                              // IMPLEMENTASI WIDGET KOMENTAR DI SINI
+                              ...state.comments.map(
+                                (comment) =>
+                                    CommentItemWidget(comment: comment),
+                              ),
+
+                              const SizedBox(height: 24),
+                              _buildBottomButtons(state),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           ),
         );
       },
@@ -425,7 +435,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
     );
   }
 
-  Widget _buildBottomButtons() {
+  Widget _buildBottomButtons(VideoState state) {
     return Row(
       children: [
         if (canGoPrevious)
@@ -445,7 +455,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
         if (canGoNext)
           Expanded(
             child: ElevatedButton.icon(
-              onPressed: (!_canProceed && !widget.lesson.isCompleted)
+              onPressed: (!state.canProceed && !widget.lesson.isCompleted)
                   ? null
                   : () {
                       if (!widget.lesson.isCompleted) {
@@ -613,92 +623,4 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
       ),
     );
   }
-
-  Widget _buildCommentItem(_DiscussionComment comment) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Colors.white, Color(0xFFF9FAFF)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border.withOpacity(0.8)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 14,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CircleAvatar(
-            radius: 18,
-            backgroundColor: AppColors.primary.withOpacity(0.15),
-            child: Text(
-              comment.userName.characters.first.toUpperCase(),
-              style: const TextStyle(
-                color: AppColors.primary,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      comment.userName,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.text,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      comment.timeLabel,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: AppColors.textLight,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  comment.message,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    height: 1.5,
-                    color: AppColors.text,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _DiscussionComment {
-  final String userName;
-  final String message;
-  final String timeLabel;
-
-  _DiscussionComment({
-    required this.userName,
-    required this.message,
-    required this.timeLabel,
-  });
 }
