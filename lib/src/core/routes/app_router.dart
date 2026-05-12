@@ -9,7 +9,6 @@ import 'package:lms_mobile_app/src/features/authentication/presentation/screens/
 import 'package:lms_mobile_app/src/features/courses/presentation/screens/main_screen.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/screens/course_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/quiz/quiz_bloc.dart';
-import 'package:lms_mobile_app/src/features/lessons/presentation/screens/lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/video_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/document_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/quiz_lesson_detail_screen.dart';
@@ -57,75 +56,129 @@ class AppRouter {
           return CourseDetailScreen(course: course);
         },
       ),
-      // GoRoute(
-      //   path: AppRoutes.lessonDetail,
-      //   builder: (context, state) {
-      //     final args = state.extra as Map<String, dynamic>;
-      //     final lesson = args['lesson'] as LessonEntity;
-      //     final course = args['course'] as CourseEntity;
-      //     final lessonIndex = args['lessonIndex'] as int;
-      //     return LessonDetailScreen(
-      //       lesson: lesson,
-      //       course: course,
-      //       lessonIndex: lessonIndex,
-      //     );
-      //   },
-      // ),
+      
       GoRoute(
         path: AppRoutes.videoLessonDetail,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final args = state.extra as Map<String, dynamic>;
           final lesson = args['lesson'] as LessonEntity;
           final course = args['course'] as CourseEntity;
           final lessonIndex = args['lessonIndex'] as int;
-          return VideoLessonDetailScreen(
-            lesson: lesson,
-            course: course,
-            lessonIndex: lessonIndex,
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: VideoLessonDetailScreen(
+              lesson: lesson,
+              course: course,
+              lessonIndex: lessonIndex,
+            ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  final fade = CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                  );
+                  final slide = Tween<Offset>(
+                    begin: const Offset(0.04, 0),
+                    end: Offset.zero,
+                  ).animate(fade);
+                  return FadeTransition(
+                    opacity: fade,
+                    child: SlideTransition(position: slide, child: child),
+                  );
+                },
           );
         },
       ),
       GoRoute(
         path: AppRoutes.documentLessonDetail,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final args = state.extra as Map<String, dynamic>;
           final lesson = args['lesson'] as LessonEntity;
           final course = args['course'] as CourseEntity;
           final lessonIndex = args['lessonIndex'] as int;
-          return DocumentLessonDetailScreen(
-            lesson: lesson,
-            course: course,
-            lessonIndex: lessonIndex,
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: DocumentLessonDetailScreen(
+              lesson: lesson,
+              course: course,
+              lessonIndex: lessonIndex,
+            ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  final fade = CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                  );
+                  final slide = Tween<Offset>(
+                    begin: const Offset(0.04, 0),
+                    end: Offset.zero,
+                  ).animate(fade);
+                  return FadeTransition(
+                    opacity: fade,
+                    child: SlideTransition(position: slide, child: child),
+                  );
+                },
           );
         },
       ),
       GoRoute(
         path: AppRoutes.quizLessonDetail,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final args = state.extra as Map<String, dynamic>;
-          // final lesson = args['lesson'] as LessonEntity;
-          // final course = args['course'] as CourseEntity;
-          // final lessonIndex = args['lessonIndex'] as int;
-          return BlocProvider<QuizBloc>(
-            // Buat instance QuizBloc-nya di sini
-            // Jika kamu pakai Dependency Injection (GetIt), gunakan: sl<QuizBloc>() atau GetIt.I<QuizBloc>()
-            create: (context) => LessonModule.quizBloc,
-            child: QuizLessonDetailScreen(
-              lesson: args['lesson'],
-              course: args['course'],
-              lessonIndex: args['lessonIndex'],
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: BlocProvider<QuizBloc>(
+              create: (context) => LessonModule.quizBloc,
+              child: QuizLessonDetailScreen(
+                lesson: args['lesson'],
+                course: args['course'],
+                lessonIndex: args['lessonIndex'],
+              ),
             ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  final fade = CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                  );
+                  final slide = Tween<Offset>(
+                    begin: const Offset(0.04, 0),
+                    end: Offset.zero,
+                  ).animate(fade);
+                  return FadeTransition(
+                    opacity: fade,
+                    child: SlideTransition(position: slide, child: child),
+                  );
+                },
           );
         },
       ),
       GoRoute(
         path: AppRoutes.essayLessonDetail,
-        builder: (context, state) {
+        pageBuilder: (context, state) {
           final args = state.extra as Map<String, dynamic>;
-          return EssayLessonDetailScreen(
-            lesson: args['lesson'],
-            course: args['course'],
-            lessonIndex: args['lessonIndex'],
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: EssayLessonDetailScreen(
+              lesson: args['lesson'],
+              course: args['course'],
+              lessonIndex: args['lessonIndex'],
+            ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  final fade = CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                  );
+                  final slide = Tween<Offset>(
+                    begin: const Offset(0.04, 0),
+                    end: Offset.zero,
+                  ).animate(fade);
+                  return FadeTransition(
+                    opacity: fade,
+                    child: SlideTransition(position: slide, child: child),
+                  );
+                },
           );
         },
       ),

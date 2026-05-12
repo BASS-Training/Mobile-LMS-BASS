@@ -93,37 +93,123 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
           // Show loading
           if (state is QuizLoading) {
             return Scaffold(
-              backgroundColor: AppColors.background,
-              appBar: AppBar(title: Text(widget.course.title), elevation: 0),
-              body: const Center(child: CircularProgressIndicator()),
+              backgroundColor: const Color(0xFFF6F8FF),
+              appBar: AppBar(
+                title: Text(widget.course.title),
+                elevation: 0,
+                backgroundColor: Colors.transparent,
+                surfaceTintColor: Colors.transparent,
+                flexibleSpace: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                ),
+              ),
+              body: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+                child: const Center(child: CircularProgressIndicator()),
+              ),
             );
           }
 
           // Show error
           if (state is QuizError) {
             return Scaffold(
-              backgroundColor: AppColors.background,
+              backgroundColor: const Color(0xFFF6F8FF),
               appBar: AppBar(
                 title: Text(widget.course.title),
                 elevation: 0,
+                backgroundColor: Colors.transparent,
+                surfaceTintColor: Colors.transparent,
+                flexibleSpace: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                ),
                 leading: GestureDetector(
                   onTap: _backToCourse,
                   child: const Icon(Icons.arrow_back),
                 ),
               ),
-              body: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.error, size: 64, color: Colors.red),
-                    const SizedBox(height: 16),
-                    Text(state.message),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: _backToCourse,
-                      child: const Text('Kembali ke Kursus'),
+              body: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+                child: Center(
+                  child: Container(
+                    margin: const EdgeInsets.all(24),
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(
+                        color: AppColors.border.withOpacity(0.8),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 18,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
                     ),
-                  ],
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.error_outline,
+                          size: 64,
+                          color: Colors.red,
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          'Kuis belum bisa dimuat',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.text,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          state.message,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            height: 1.5,
+                            color: AppColors.textLight,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: _backToCourse,
+                            child: const Text('Kembali ke Kursus'),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             );
@@ -146,9 +232,32 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
 
           // Initial state
           return Scaffold(
-            backgroundColor: AppColors.background,
-            appBar: AppBar(title: Text(widget.course.title), elevation: 0),
-            body: const Center(child: CircularProgressIndicator()),
+            backgroundColor: const Color(0xFFF6F8FF),
+            appBar: AppBar(
+              title: Text(widget.course.title),
+              elevation: 0,
+              backgroundColor: Colors.transparent,
+              surfaceTintColor: Colors.transparent,
+              flexibleSpace: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+              ),
+            ),
+            body: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+              child: const Center(child: CircularProgressIndicator()),
+            ),
           );
         },
       ),
@@ -164,10 +273,21 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
       },
       child: Scaffold(
         key: _scaffoldKey,
-        backgroundColor: AppColors.background,
+        backgroundColor: const Color(0xFFF6F8FF),
         appBar: AppBar(
           title: Text(widget.course.title),
           elevation: 0,
+          backgroundColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
           leading: GestureDetector(
             onTap: _backToCourse,
             child: const Icon(Icons.arrow_back),
@@ -200,15 +320,29 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
             );
           },
         ),
-        body: QuizIntroWidget(
-          courseTitle: widget.course.title,
-          lessonTitle: widget.lesson.title,
-          lessonIndex: widget.lessonIndex,
-          quiz: quizState.quiz,
-          onStartQuiz: () {
-            // Trigger start quiz via BLoC
-            context.read<QuizBloc>().add(const StartQuizEvent());
-          },
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 280),
+            switchInCurve: Curves.easeOutCubic,
+            switchOutCurve: Curves.easeInCubic,
+            child: QuizIntroWidget(
+              key: const ValueKey('quiz_intro'),
+              courseTitle: widget.course.title,
+              lessonTitle: widget.lesson.title,
+              lessonIndex: widget.lessonIndex,
+              quiz: quizState.quiz,
+              onStartQuiz: () {
+                context.read<QuizBloc>().add(const StartQuizEvent());
+              },
+            ),
+          ),
         ),
       ),
     );
@@ -234,76 +368,194 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
         return false;
       },
       child: Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: const Color(0xFFF6F8FF),
         appBar: AppBar(
           title: Text('${widget.course.title} - Kuis'),
           elevation: 0,
-          // Hapus text 1/10 dari AppBar karena sudah diganti dengan progress bar di bawah
-          actions: const [],
-        ),
-        body: Column(
-          children: [
-            // === PROGRESS BAR SECTION ===
-            Container(
-              color: AppColors.background,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  // Teks Keterangan
-                  Text(
-                    'Telah dijawab $answeredCount/$totalCount',
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  // Progress Bar
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: LinearProgressIndicator(
-                      value: progressPercent,
-                      minHeight: 6,
-                      backgroundColor: Colors.grey.withOpacity(0.3),
-                      valueColor: const AlwaysStoppedAnimation<Color>(
-                        AppColors.primary,
-                      ),
-                    ),
-                  ),
-                ],
+          backgroundColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
             ),
-
-            // === QUIZ QUESTIONS WIDGET ===
-            Expanded(
-              child: QuizQuestionsWidget(
-                quiz: quizState.quiz,
-                currentQuestionIndex: quizState.currentQuestionIndex,
-                answers: quizState.answers,
-                onSelectAnswer: (selectedOptionIndex) {
-                  context.read<QuizBloc>().add(
-                    SelectAnswerEvent(
-                      questionIndex: quizState.currentQuestionIndex,
-                      selectedOptionIndex: selectedOptionIndex,
+          ),
+          actions: const [],
+        ),
+        bottomNavigationBar: _buildBottomActionBar(quizState),
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: Column(
+            children: [
+              Container(
+                margin: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Colors.white, Color(0xFFF8FAFF)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.border.withOpacity(0.8)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6),
                     ),
-                  );
-                },
-                onNextQuestion: () {
-                  context.read<QuizBloc>().add(const NextQuestionEvent());
-                },
-                onPreviousQuestion: () {
-                  context.read<QuizBloc>().add(const PreviousQuestionEvent());
-                },
-                onSubmitQuiz: () {
-                  context.read<QuizBloc>().add(const SubmitQuizEvent());
-                },
-                onQuestionNavigate: (questionIndex) {
-                  context.read<QuizBloc>().add(
-                    GoToQuestionEvent(questionIndex: questionIndex),
-                  );
-                },
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Telah dijawab $answeredCount/$totalCount',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: LinearProgressIndicator(
+                        value: progressPercent,
+                        minHeight: 6,
+                        backgroundColor: Colors.grey.withOpacity(0.18),
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                          Color(0xFF4F8CFF),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  switchInCurve: Curves.easeOutCubic,
+                  switchOutCurve: Curves.easeInCubic,
+                  child: QuizQuestionsWidget(
+                    key: ValueKey(
+                      '${quizState.currentQuestionIndex}-${quizState.answers.length}',
+                    ),
+                    quiz: quizState.quiz,
+                    currentQuestionIndex: quizState.currentQuestionIndex,
+                    answers: quizState.answers,
+                    showNavigationButtons: false,
+                    onSelectAnswer: (selectedOptionIndex) {
+                      context.read<QuizBloc>().add(
+                        SelectAnswerEvent(
+                          questionIndex: quizState.currentQuestionIndex,
+                          selectedOptionIndex: selectedOptionIndex,
+                        ),
+                      );
+                    },
+                    onNextQuestion: () {
+                      context.read<QuizBloc>().add(const NextQuestionEvent());
+                    },
+                    onPreviousQuestion: () {
+                      context.read<QuizBloc>().add(
+                        const PreviousQuestionEvent(),
+                      );
+                    },
+                    onSubmitQuiz: () {
+                      context.read<QuizBloc>().add(const SubmitQuizEvent());
+                    },
+                    onQuestionNavigate: (questionIndex) {
+                      context.read<QuizBloc>().add(
+                        GoToQuestionEvent(questionIndex: questionIndex),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomActionBar(QuizLoaded quizState) {
+    final isLastQuestion =
+        quizState.currentQuestionIndex == quizState.quiz.questions.length - 1;
+
+    return SafeArea(
+      top: false,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(
+            top: BorderSide(color: AppColors.border.withOpacity(0.9)),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.12),
+              blurRadius: 22,
+              offset: const Offset(0, -8),
+              spreadRadius: 1,
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: quizState.currentQuestionIndex > 0
+                    ? () {
+                        context.read<QuizBloc>().add(
+                          const PreviousQuestionEvent(),
+                        );
+                      }
+                    : null,
+                icon: const Icon(Icons.arrow_back),
+                label: const Text('Sebelumnya'),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: AppColors.border.withOpacity(0.9)),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  backgroundColor: Colors.white,
+                  foregroundColor: AppColors.text,
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: isLastQuestion
+                    ? (quizState.answers.length ==
+                              quizState.quiz.questions.length
+                          ? () => context.read<QuizBloc>().add(
+                              const SubmitQuizEvent(),
+                            )
+                          : null)
+                    : () {
+                        context.read<QuizBloc>().add(const NextQuestionEvent());
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  shadowColor: AppColors.primary.withOpacity(0.45),
+                  elevation: 8,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                icon: Icon(
+                  isLastQuestion
+                      ? Icons.check_circle_outline
+                      : Icons.arrow_forward,
+                ),
+                label: Text(isLastQuestion ? 'Kirim Jawaban' : 'Selanjutnya'),
               ),
             ),
           ],
@@ -317,23 +569,49 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
     final canProceed = quizState.result.passed && canGoNext;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: const Color(0xFFF6F8FF),
       appBar: AppBar(
         title: Text(widget.course.title),
         elevation: 0,
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         leading: GestureDetector(
           onTap: _backToCourse,
           child: const Icon(Icons.arrow_back),
         ),
       ),
-      body: QuizResultWidget(
-        courseTitle: widget.course.title,
-        result: quizState.result,
-        canGoNext: canProceed,
-        onNextLesson: () {
-          _openLesson(nextLesson!, widget.lessonIndex + 1);
-        },
-        onBackToCourse: _backToCourse,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeInCubic,
+          child: QuizResultWidget(
+            key: const ValueKey('quiz_result'),
+            courseTitle: widget.course.title,
+            result: quizState.result,
+            canGoNext: canProceed,
+            onNextLesson: () {
+              _openLesson(nextLesson!, widget.lessonIndex + 1);
+            },
+            onBackToCourse: _backToCourse,
+          ),
+        ),
       ),
     );
   }

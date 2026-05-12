@@ -20,35 +20,85 @@ class LessonDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       child: Container(
-        color: AppColors.background,
+        color: const Color(0xFFF6F8FF),
         child: Column(
           children: [
             // Header Drawer
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [AppColors.primary, AppColors.secondary],
+                  colors: [
+                    AppColors.primary,
+                    AppColors.secondary,
+                    AppColors.secondaryDark,
+                  ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primary.withOpacity(0.22),
+                    blurRadius: 18,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 20),
-                  const Text(
-                    'Lessons',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                  Row(
+                    children: [
+                      Container(
+                        width: 46,
+                        height: 46,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.16),
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.school_rounded,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Text(
+                          'Lessons',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '${course.allLessons.length} lessons',
+                    '${course.allLessons.length} lessons • ${course.sections.length} sections',
                     style: const TextStyle(fontSize: 13, color: Colors.white),
+                  ),
+                  const SizedBox(height: 14),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(999),
+                    child: LinearProgressIndicator(
+                      value: course.allLessons.isEmpty
+                          ? 0
+                          : course.allLessons
+                                    .where((l) => l.isCompleted)
+                                    .length /
+                                course.allLessons.length,
+                      minHeight: 6,
+                      backgroundColor: Colors.white.withOpacity(0.18),
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        Colors.white,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -60,23 +110,42 @@ class LessonDrawer extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 itemBuilder: (context, sectionIndex) {
                   final section = course.sections[sectionIndex];
-                  
+
                   // Menghitung progress per section
-                  int completedCount = section.lessons.where((l) => l.isCompleted).length;
+                  int completedCount = section.lessons
+                      .where((l) => l.isCompleted)
+                      .length;
                   int totalCount = section.lessons.length;
-                  double progressPercent = totalCount > 0 ? completedCount / totalCount : 0.0;
+                  double progressPercent = totalCount > 0
+                      ? completedCount / totalCount
+                      : 0.0;
 
                   // Mengecek apakah lesson saat ini ada di dalam section ini
                   // Jika iya, maka section ini akan otomatis terbuka (expanded)
                   bool isSectionActive = section.lessons.any(
-                      (l) => course.allLessons.indexOf(l) == currentLessonIndex);
+                    (l) => course.allLessons.indexOf(l) == currentLessonIndex,
+                  );
 
                   return Theme(
                     // Menghilangkan garis border default bawaan ExpansionTile
-                    data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                    data: Theme.of(context).copyWith(
+                      dividerColor: Colors.transparent,
+                      splashColor: AppColors.primary.withOpacity(0.08),
+                      highlightColor: AppColors.primary.withOpacity(0.04),
+                    ),
                     child: ExpansionTile(
                       initiallyExpanded: isSectionActive,
-                      tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                      tilePadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 6,
+                      ),
+                      childrenPadding: const EdgeInsets.only(bottom: 8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      collapsedShape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                       title: Row(
                         children: [
                           // Ikon Angka Section (Kotak Rounded)
@@ -121,8 +190,12 @@ class LessonDrawer extends StatelessWidget {
                                         child: LinearProgressIndicator(
                                           value: progressPercent,
                                           minHeight: 4,
-                                          backgroundColor: AppColors.border,
-                                          valueColor: const AlwaysStoppedAnimation<Color>(Colors.green),
+                                          backgroundColor: AppColors.border
+                                              .withOpacity(0.7),
+                                          valueColor:
+                                              const AlwaysStoppedAnimation<
+                                                Color
+                                              >(Color(0xFF16A34A)),
                                         ),
                                       ),
                                     ),
@@ -160,7 +233,11 @@ class LessonDrawer extends StatelessWidget {
   }
 
   // Dipisah menjadi widget tersendiri agar kode lebih rapi
-  Widget _buildLessonItem(BuildContext context, LessonEntity lesson, int globalIndex) {
+  Widget _buildLessonItem(
+    BuildContext context,
+    LessonEntity lesson,
+    int globalIndex,
+  ) {
     final isCurrent = globalIndex == currentLessonIndex;
     final isUnlocked = _isLessonUnlocked(lesson, course);
 
@@ -168,12 +245,21 @@ class LessonDrawer extends StatelessWidget {
       margin: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
       decoration: BoxDecoration(
         // Jika terpilih, beri background transparan warna ungu (menyesuaikan gambar UI)
-        color: isCurrent ? AppColors.primary.withOpacity(0.1) : Colors.white,
+        color: isCurrent
+            ? AppColors.primary.withOpacity(0.1)
+            : const Color(0xFFFDFDFF),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
           color: isCurrent ? AppColors.primary : AppColors.border,
           width: isCurrent ? 1.5 : 1,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(isCurrent ? 0.07 : 0.03),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Material(
         color: Colors.transparent,
@@ -201,8 +287,8 @@ class LessonDrawer extends StatelessWidget {
                     color: lesson.isCompleted
                         ? Colors.green.withOpacity(0.1)
                         : isCurrent
-                            ? AppColors.primary
-                            : AppColors.background,
+                        ? AppColors.primary
+                        : AppColors.background,
                     border: !lesson.isCompleted && !isCurrent
                         ? Border.all(color: AppColors.border)
                         : null,
@@ -211,19 +297,21 @@ class LessonDrawer extends StatelessWidget {
                     child: lesson.isCompleted
                         ? const Icon(Icons.check, color: Colors.green, size: 16)
                         : isUnlocked
-                            ? Text(
-                                '${globalIndex + 1}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: isCurrent ? Colors.white : AppColors.textLight,
-                                  fontSize: 12,
-                                ),
-                              )
-                            : const Icon(Icons.lock, color: Colors.grey, size: 14),
+                        ? Text(
+                            '${globalIndex + 1}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: isCurrent
+                                  ? Colors.white
+                                  : AppColors.textLight,
+                              fontSize: 12,
+                            ),
+                          )
+                        : const Icon(Icons.lock, color: Colors.grey, size: 14),
                   ),
                 ),
                 const SizedBox(width: 12),
-                
+
                 // Info Lesson (Tipe, Judul)
                 Expanded(
                   child: Column(
@@ -239,9 +327,11 @@ class LessonDrawer extends StatelessWidget {
                           color: isCurrent
                               ? AppColors.primary
                               : isUnlocked
-                                  ? AppColors.text
-                                  : Colors.grey,
-                          decoration: lesson.isCompleted ? TextDecoration.lineThrough : null,
+                              ? AppColors.text
+                              : Colors.grey,
+                          decoration: lesson.isCompleted
+                              ? TextDecoration.lineThrough
+                              : null,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -252,7 +342,9 @@ class LessonDrawer extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
-                              color: isUnlocked ? AppColors.textLight : Colors.grey.withOpacity(0.6),
+                              color: isUnlocked
+                                  ? AppColors.textLight
+                                  : Colors.grey.withOpacity(0.6),
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -260,7 +352,9 @@ class LessonDrawer extends StatelessWidget {
                             '•  ${lesson.duration}',
                             style: TextStyle(
                               fontSize: 10,
-                              color: isUnlocked ? AppColors.textLight : Colors.grey.withOpacity(0.6),
+                              color: isUnlocked
+                                  ? AppColors.textLight
+                                  : Colors.grey.withOpacity(0.6),
                             ),
                           ),
                         ],
@@ -268,12 +362,15 @@ class LessonDrawer extends StatelessWidget {
                     ],
                   ),
                 ),
-                
+
                 // Badge "Now" jika sedang dibuka
                 if (isCurrent)
                   Container(
                     margin: const EdgeInsets.only(left: 8),
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.primary,
                       borderRadius: BorderRadius.circular(12),

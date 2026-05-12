@@ -181,13 +181,24 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
       },
       child: Scaffold(
         key: _scaffoldKey,
-        backgroundColor: AppColors.background,
+        backgroundColor: const Color(0xFFF6F8FF),
         appBar: AppBar(
           title: Text(widget.course.title),
           elevation: 0,
+          backgroundColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
           leading: GestureDetector(
             onTap: _backToCourse,
             child: const Icon(Icons.arrow_back),
+          ),
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
           ),
           actions: [
             Padding(
@@ -218,46 +229,104 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
           },
         ),
         body: SafeArea(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final useDesktopLayout = constraints.maxWidth >= 900;
-              final sidePanel = _buildSidePanel(
-                savedCount,
-                answeredChars,
-                currentWordCount,
-              );
-              final mainPanel = _buildEssayPanel(
-                savedCount,
-                answeredChars,
-                currentWordCount,
-              );
-
-              if (!useDesktopLayout) {
-                return SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      sidePanel,
-                      const SizedBox(height: 14),
-                      mainPanel,
-                    ],
+          child: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+            child: Stack(
+              children: [
+                Positioned(
+                  top: -60,
+                  right: -40,
+                  child: Container(
+                    width: 180,
+                    height: 180,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: [
+                          const Color(0xFF6D5EF7).withOpacity(0.16),
+                          const Color(0xFF6D5EF7).withOpacity(0.0),
+                        ],
+                      ),
+                    ),
                   ),
-                );
-              }
-
-              return SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(flex: 3, child: sidePanel),
-                    const SizedBox(width: 16),
-                    Expanded(flex: 8, child: mainPanel),
-                  ],
                 ),
-              );
-            },
+                Positioned(
+                  bottom: 120,
+                  left: -70,
+                  child: Container(
+                    width: 170,
+                    height: 170,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: [
+                          const Color(0xFF4F8CFF).withOpacity(0.12),
+                          const Color(0xFF4F8CFF).withOpacity(0.0),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final useDesktopLayout = constraints.maxWidth >= 900;
+                    final sidePanel = _buildSidePanel(
+                      savedCount,
+                      answeredChars,
+                      currentWordCount,
+                    );
+                    final mainPanel = _buildEssayPanel(
+                      savedCount,
+                      answeredChars,
+                      currentWordCount,
+                    );
+
+                    final header = _buildPageHeader();
+
+                    if (!useDesktopLayout) {
+                      return SingleChildScrollView(
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 190),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            header,
+                            const SizedBox(height: 14),
+                            sidePanel,
+                            const SizedBox(height: 14),
+                            mainPanel,
+                          ],
+                        ),
+                      );
+                    }
+
+                    return SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 190),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          header,
+                          const SizedBox(height: 14),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(flex: 3, child: sidePanel),
+                              const SizedBox(width: 16),
+                              Expanded(flex: 8, child: mainPanel),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
         bottomNavigationBar: _buildBottomActionBar(),
@@ -330,13 +399,32 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
       top: false,
       child: Container(
         padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           color: Colors.white,
-          border: Border(top: BorderSide(color: AppColors.border)),
+          border: Border(
+            top: BorderSide(color: AppColors.border.withOpacity(0.9)),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.12),
+              blurRadius: 22,
+              offset: const Offset(0, -8),
+              spreadRadius: 1,
+            ),
+          ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            Container(
+              width: 42,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 10),
+              decoration: BoxDecoration(
+                color: AppColors.border,
+                borderRadius: BorderRadius.circular(999),
+              ),
+            ),
             Row(
               children: [
                 Expanded(
@@ -344,6 +432,14 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
                     onPressed: canGoBackAction ? _handlePreviousAction : null,
                     icon: const Icon(Icons.arrow_back),
                     label: const Text('Sebelumnya'),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(
+                        color: AppColors.border.withOpacity(0.9),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      backgroundColor: Colors.white,
+                      foregroundColor: AppColors.text,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -354,12 +450,15 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
                         : _saveDraft,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
+                      shadowColor: AppColors.primary.withOpacity(0.45),
+                      elevation: 8,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
                     icon: const Icon(Icons.save_outlined),
                     label: Text(
                       _currentQuestionIndex < _totalEssayQuestions - 1
-                          ? 'Simpan Jawaban & Lanjut'
-                          : 'Simpan Jawaban',
+                          ? 'Simpan & Lanjut'
+                          : 'Simpan',
                     ),
                   ),
                 ),
@@ -370,7 +469,15 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: _isSubmitting ? null : _submitEssay,
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF16A34A),
+                  shadowColor: const Color(0xFF16A34A).withOpacity(0.45),
+                  elevation: 10,
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
                 icon: _isSubmitting
                     ? const SizedBox(
                         width: 16,
@@ -392,6 +499,71 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
     );
   }
 
+  Widget _buildPageHeader() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF6D5EF7).withOpacity(0.22),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.18),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.white.withOpacity(0.18)),
+            ),
+            child: const Icon(
+              Icons.edit_note_rounded,
+              color: Colors.white,
+              size: 28,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Latihan Essay Interaktif',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Simpan jawaban per nomor, lanjutkan kapan saja, dan kirim kalau semua sudah siap.',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.92),
+                    fontSize: 12,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSidePanel(
     int savedCount,
     int answeredChars,
@@ -404,9 +576,20 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: const LinearGradient(
+          colors: [Colors.white, Color(0xFFF8FAFF)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.border.withOpacity(0.8)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -425,9 +608,9 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
             child: LinearProgressIndicator(
               value: progress / 100,
               minHeight: 8,
-              backgroundColor: AppColors.border,
+              backgroundColor: AppColors.border.withOpacity(0.7),
               valueColor: const AlwaysStoppedAnimation<Color>(
-                AppColors.primary,
+                Color(0xFF4F8CFF),
               ),
             ),
           ),
@@ -446,7 +629,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppColors.background,
+              color: const Color(0xFFF3F6FF),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
@@ -479,9 +662,20 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: const LinearGradient(
+          colors: [Colors.white, Color(0xFFFDFDFF)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.border.withOpacity(0.8)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -490,7 +684,11 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFFF3F0FF),
+              gradient: const LinearGradient(
+                colors: [Color(0xFFF2F0FF), Color(0xFFEAF1FF)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -531,7 +729,11 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: const Color(0xFFEEF2FF),
+              gradient: const LinearGradient(
+                colors: [Color(0xFFEEF2FF), Color(0xFFF7F9FF)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: const Color(0xFFDDE3FF)),
             ),

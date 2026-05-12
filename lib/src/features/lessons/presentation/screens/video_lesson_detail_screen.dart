@@ -158,9 +158,69 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
     if (videoId == null || videoId.isEmpty) {
       print('Video Id : $videoId');
       return Scaffold(
-        backgroundColor: AppColors.background,
-        appBar: AppBar(title: const Text('Video Lesson')),
-        body: const Center(child: Text('Video belum diatur untuk lesson ini')),
+        backgroundColor: const Color(0xFFF6F8FF),
+        appBar: AppBar(
+          title: const Text('Video Lesson'),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          surfaceTintColor: Colors.transparent,
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
+        ),
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: Center(
+            child: Container(
+              margin: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: AppColors.border.withOpacity(0.8)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 18,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: const Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.ondemand_video_outlined,
+                    size: 64,
+                    color: AppColors.primary,
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    'Video belum diatur untuk lesson ini',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 15,
+                      height: 1.5,
+                      color: AppColors.textLight,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       );
     }
 
@@ -192,191 +252,220 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
               );
             },
           ),
-          backgroundColor: AppColors.background,
+          backgroundColor: const Color(0xFFF6F8FF),
+          appBar: AppBar(
+            title: Text(widget.course.title),
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            surfaceTintColor: Colors.transparent,
+            automaticallyImplyLeading: false,
+            flexibleSpace: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+            ),
+            leading: GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: const Icon(Icons.arrow_back),
+            ),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: Center(
+                  child: GestureDetector(
+                    onTap: () => _scaffoldKey.currentState?.openDrawer(),
+                    child: const Icon(Icons.list_alt, size: 24),
+                  ),
+                ),
+              ),
+            ],
+          ),
           body: SafeArea(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  child: Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.06),
-                                blurRadius: 8,
-                              ),
-                            ],
-                          ),
-                          child: const Icon(Icons.arrow_back),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              widget.course.title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: AppColors.textLight,
-                              ),
-                            ),
-                            Text(
-                              widget.lesson.title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: AppColors.text,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () => _scaffoldKey.currentState?.openDrawer(),
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.06),
-                                blurRadius: 8,
-                              ),
-                            ],
-                          ),
-                          child: const Icon(Icons.list_alt),
-                        ),
-                      ),
-                    ],
-                  ),
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: ClipRect(
-                    // borderRadius: BorderRadius.circular(16),
-                    child: AspectRatio(aspectRatio: 16 / 9, child: player),
+              ),
+              child: Column(
+                children: [
+                  const SizedBox(height: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: _buildHeroSummary(),
                   ),
-                ),
-                const SizedBox(height: 16),
-                Expanded(
-                  child: SingleChildScrollView(
-                    controller: _scrollController,
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildInfoCard(widget.lesson.title),
-                        const SizedBox(height: 16),
-                        _buildDiscussionCard(),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'Komentar',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.text,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        ..._comments.map(_buildCommentItem),
-                        const SizedBox(height: 24),
-                        //Navigation buttons
-                        Row(
-                          children: [
-                            if (canGoPrevious)
-                              Expanded(
-                                child: OutlinedButton.icon(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    Future.delayed(
-                                      const Duration(milliseconds: 200),
-                                      () {
-                                        _openLesson(
-                                          previousLesson!,
-                                          widget.lessonIndex - 1,
-                                        );
-                                      },
-                                    );
-                                  },
-                                  icon: const Icon(Icons.arrow_back),
-                                  label: const Text('previous'),
-                                ),
-                              ),
-                            if (canGoPrevious && canGoNext)
-                              const SizedBox(width: 12),
-                            if (canGoNext)
-                              Expanded(
-                                child: ElevatedButton.icon(
-                                  onPressed:
-                                      (!_canProceed &&
-                                          !widget.lesson.isCompleted)
-                                      ? null
-                                      : () {
-                                          // jika belum complete, tandai dulu
-                                          if (!widget.lesson.isCompleted) {
-                                            context.read<LessonBloc>().add(
-                                              MarkLessonCompleteEvent(
-                                                lessonId: widget.lesson.id,
-                                              ),
-                                            );
-                                            context.read<CourseBloc>().add(
-                                              const RefreshCoursesEvent(),
-                                            );
-                                          }
-                                          Navigator.pop(context);
-                                          Future.delayed(
-                                            const Duration(milliseconds: 200),
-                                            () {
-                                              _openLesson(
-                                                nextLesson!,
-                                                widget.lessonIndex + 1,
-                                              );
-                                            },
-                                          );
-                                        },
-                                  icon: const Icon(Icons.arrow_forward),
-                                  label: const Text('Next'),
-                                ),
-                              ),
-                            // if (!_canProceed && !widget.lesson.isCompleted)
-                            //   Padding(
-                            //     padding: const EdgeInsets.only(top: 8.0),
-                            //     child: Text(
-                            //       'Tonton sampai 10 detik terakhir untuk melanjutkan',
-                            //       style: TextStyle(
-                            //         fontSize: 12,
-                            //         color: AppColors.textLight,
-                            //       ),
-                            //     ),
-                            //   ),
-                          ],
-                        ),
-                      ],
+                  const SizedBox(height: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(18),
+                      child: AspectRatio(aspectRatio: 16 / 9, child: player),
                     ),
+                  ),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      controller: _scrollController,
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildInfoCard(widget.lesson.title),
+                          const SizedBox(height: 16),
+                          _buildDiscussionCard(),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'Komentar',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.text,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          ..._comments.map(_buildCommentItem),
+                          const SizedBox(height: 24),
+                          _buildBottomButtons(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildHeroSummary() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF6D5EF7).withOpacity(0.18),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.14),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: const Icon(
+              Icons.play_circle_fill_rounded,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Lesson Video',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  widget.lesson.title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.92),
+                    fontSize: 12,
                   ),
                 ),
               ],
             ),
           ),
-        );
-      },
+          const SizedBox(width: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.16),
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(
+              widget.lesson.isCompleted ? 'Completed' : 'In Progress',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomButtons() {
+    return Row(
+      children: [
+        if (canGoPrevious)
+          Expanded(
+            child: OutlinedButton.icon(
+              onPressed: () {
+                Navigator.pop(context);
+                Future.delayed(const Duration(milliseconds: 200), () {
+                  _openLesson(previousLesson!, widget.lessonIndex - 1);
+                });
+              },
+              icon: const Icon(Icons.arrow_back),
+              label: const Text('Previous'),
+            ),
+          ),
+        if (canGoPrevious && canGoNext) const SizedBox(width: 12),
+        if (canGoNext)
+          Expanded(
+            child: ElevatedButton.icon(
+              onPressed: (!_canProceed && !widget.lesson.isCompleted)
+                  ? null
+                  : () {
+                      if (!widget.lesson.isCompleted) {
+                        context.read<LessonBloc>().add(
+                          MarkLessonCompleteEvent(lessonId: widget.lesson.id),
+                        );
+                        context.read<CourseBloc>().add(
+                          const RefreshCoursesEvent(),
+                        );
+                      }
+                      Navigator.pop(context);
+                      Future.delayed(const Duration(milliseconds: 200), () {
+                        _openLesson(nextLesson!, widget.lessonIndex + 1);
+                      });
+                    },
+              icon: const Icon(Icons.arrow_forward),
+              label: const Text('Next'),
+            ),
+          ),
+      ],
     );
   }
 
@@ -385,9 +474,20 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: const LinearGradient(
+          colors: [Colors.white, Color(0xFFF8FAFF)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.border.withOpacity(0.8)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -449,9 +549,20 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: const LinearGradient(
+          colors: [Colors.white, Color(0xFFFDFDFF)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.border.withOpacity(0.8)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -470,6 +581,8 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
             maxLines: 3,
             decoration: InputDecoration(
               hintText: 'Tulis komentar Anda di sini...',
+              filled: true,
+              fillColor: const Color(0xFFF8FAFF),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(color: AppColors.border),
@@ -506,9 +619,20 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: const LinearGradient(
+          colors: [Colors.white, Color(0xFFF9FAFF)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.border.withOpacity(0.8)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 14,
+            offset: const Offset(0, 5),
+          ),
+        ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

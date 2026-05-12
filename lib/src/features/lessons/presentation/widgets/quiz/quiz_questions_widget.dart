@@ -14,6 +14,7 @@ class QuizQuestionsWidget extends StatelessWidget {
   final VoidCallback onPreviousQuestion;
   final VoidCallback onSubmitQuiz;
   final Function(int) onQuestionNavigate;
+  final bool showNavigationButtons;
 
   const QuizQuestionsWidget({
     super.key,
@@ -25,6 +26,7 @@ class QuizQuestionsWidget extends StatelessWidget {
     required this.onPreviousQuestion,
     required this.onSubmitQuiz,
     required this.onQuestionNavigate,
+    this.showNavigationButtons = true,
   });
 
   @override
@@ -97,42 +99,44 @@ class QuizQuestionsWidget extends StatelessWidget {
           ),
           const SizedBox(height: 24),
 
-          // Navigation buttons
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              if (currentQuestionIndex > 0)
-                OutlinedButton.icon(
-                  onPressed: onPreviousQuestion,
-                  icon: const Icon(Icons.arrow_back),
-                  label: const Text('Sebelumnya'),
-                )
-              else
-                const SizedBox(width: 0),
-              Row(
-                children: [
-                  if (!isLastQuestion)
-                    ElevatedButton.icon(
-                      onPressed: onNextQuestion,
-                      icon: const Icon(Icons.arrow_forward),
-                      label: const Text('Selanjutnya'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
+          if (showNavigationButtons) ...[
+            // Navigation buttons
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                if (currentQuestionIndex > 0)
+                  OutlinedButton.icon(
+                    onPressed: onPreviousQuestion,
+                    icon: const Icon(Icons.arrow_back),
+                    label: const Text('Sebelumnya'),
+                  )
+                else
+                  const SizedBox(width: 0),
+                Row(
+                  children: [
+                    if (!isLastQuestion)
+                      ElevatedButton.icon(
+                        onPressed: onNextQuestion,
+                        icon: const Icon(Icons.arrow_forward),
+                        label: const Text('Selanjutnya'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                        ),
+                      )
+                    else
+                      ElevatedButton.icon(
+                        onPressed: isAllAnswered ? onSubmitQuiz : null,
+                        icon: const Icon(Icons.check_circle),
+                        label: const Text('Kirim Jawaban'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                        ),
                       ),
-                    )
-                  else
-                    ElevatedButton.icon(
-                      onPressed: isAllAnswered ? onSubmitQuiz : null,
-                      icon: const Icon(Icons.check_circle),
-                      label: const Text('Kirim Jawaban'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                      ),
-                    ),
-                ],
-              ),
-            ],
-          ),
+                  ],
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );

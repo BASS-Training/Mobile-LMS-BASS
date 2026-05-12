@@ -105,10 +105,21 @@ class _DocumentLessonDetailScreenState
           );
         },
       ),
-      backgroundColor: AppColors.background,
+      backgroundColor: const Color(0xFFF6F8FF),
       appBar: AppBar(
         title: Text(widget.course.title),
         elevation: 0,
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         leading: GestureDetector(
           onTap: () {
             Navigator.pop(context);
@@ -129,57 +140,75 @@ class _DocumentLessonDetailScreenState
         ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(lesson),
-              const SizedBox(height: 16),
-              _buildMetaCard(lesson),
-              const SizedBox(height: 16),
-              ...sections.map(_buildSectionCard),
-              const SizedBox(height: 16),
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeader(lesson),
+                const SizedBox(height: 16),
+                _buildMetaCard(lesson),
+                const SizedBox(height: 16),
+                ...sections.map(_buildSectionCard),
+                const SizedBox(height: 16),
 
-              Row(
-                children: [
-                  if (canGoPrevious)
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () {
-                          Navigator.pop(context);
-                          Future.delayed(const Duration(milliseconds: 200), () {
-                            _openLesson(
-                              previousLesson!,
-                              widget.lessonIndex - 1,
+                Row(
+                  children: [
+                    if (canGoPrevious)
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            Navigator.pop(context);
+                            Future.delayed(
+                              const Duration(milliseconds: 200),
+                              () {
+                                _openLesson(
+                                  previousLesson!,
+                                  widget.lessonIndex - 1,
+                                );
+                              },
                             );
-                          });
-                        },
-                        icon: const Icon(Icons.arrow_back),
-                        label: const Text('Previous'),
+                          },
+                          icon: const Icon(Icons.arrow_back),
+                          label: const Text('Previous'),
+                        ),
                       ),
-                    ),
-                  if (canGoPrevious && canGoNext) const SizedBox(width: 12),
-                  if (canGoNext)
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: () async {
-                          _markComplete();
-                          await Future.delayed(
-                            const Duration(milliseconds: 100),
-                          );
-                          Navigator.pop(context);
-                          Future.delayed(const Duration(milliseconds: 200), () {
-                            _openLesson(nextLesson!, widget.lessonIndex + 1);
-                          });
-                        },
-                        icon: const Icon(Icons.arrow_forward),
-                        label: const Text('Next'),
+                    if (canGoPrevious && canGoNext) const SizedBox(width: 12),
+                    if (canGoNext)
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () async {
+                            _markComplete();
+                            await Future.delayed(
+                              const Duration(milliseconds: 100),
+                            );
+                            Navigator.pop(context);
+                            Future.delayed(
+                              const Duration(milliseconds: 200),
+                              () {
+                                _openLesson(
+                                  nextLesson!,
+                                  widget.lessonIndex + 1,
+                                );
+                              },
+                            );
+                          },
+                          icon: const Icon(Icons.arrow_forward),
+                          label: const Text('Next'),
+                        ),
                       ),
-                    ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -191,12 +220,19 @@ class _DocumentLessonDetailScreenState
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [AppColors.primary, AppColors.secondary],
+        gradient: const LinearGradient(
+          colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF6D5EF7).withOpacity(0.18),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -258,9 +294,20 @@ class _DocumentLessonDetailScreenState
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: const LinearGradient(
+          colors: [Colors.white, Color(0xFFF8FAFF)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.border.withOpacity(0.8)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -274,6 +321,22 @@ class _DocumentLessonDetailScreenState
             ),
           ),
           const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEEF2FF),
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: const Text(
+              'DOCUMENT',
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF4F8CFF),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
           Text(
             lesson.content.isNotEmpty
                 ? lesson.content
@@ -295,9 +358,20 @@ class _DocumentLessonDetailScreenState
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        gradient: const LinearGradient(
+          colors: [Colors.white, Color(0xFFFDFDFF)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.border.withOpacity(0.8)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 14,
+            offset: const Offset(0, 5),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -308,6 +382,15 @@ class _DocumentLessonDetailScreenState
               fontSize: 16,
               fontWeight: FontWeight.w700,
               color: AppColors.text,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Container(
+            width: 44,
+            height: 4,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.25),
+              borderRadius: BorderRadius.circular(999),
             ),
           ),
           const SizedBox(height: 10),
