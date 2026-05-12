@@ -172,7 +172,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
     final currentAnswer = _workingAnswers[_currentQuestionIndex] ?? '';
     final answeredChars = currentAnswer.trim().length;
     final currentWordCount = _countWords(currentAnswer);
-    final validCount = _validQuestionIndexes.length;
+    final savedCount = _savedQuestionIndexes.length;
 
     return WillPopScope(
       onWillPop: () async {
@@ -222,12 +222,12 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
             builder: (context, constraints) {
               final useDesktopLayout = constraints.maxWidth >= 900;
               final sidePanel = _buildSidePanel(
-                validCount,
+                savedCount,
                 answeredChars,
                 currentWordCount,
               );
               final mainPanel = _buildEssayPanel(
-                validCount,
+                savedCount,
                 answeredChars,
                 currentWordCount,
               );
@@ -260,9 +260,15 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
             },
           ),
         ),
+        bottomNavigationBar: _buildBottomActionBar(),
       ),
     );
   }
+
+  Set<int> get _savedQuestionIndexes => _savedDraftAnswers.entries
+      .where((entry) => entry.value.trim().isNotEmpty)
+      .map((entry) => entry.key)
+      .toSet();
 
   Set<int> get _validQuestionIndexes => _workingAnswers.entries
       .where((entry) => _countWords(entry.value) >= _minWordsPerQuestion)
@@ -304,13 +310,95 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
     _syncDraftBadgeState();
   }
 
+  void _handlePreviousAction() {
+    if (_currentQuestionIndex > 0) {
+      _goToQuestion(_currentQuestionIndex - 1);
+      return;
+    }
+
+    if (previousLesson == null) return;
+    Navigator.pop(context);
+    Future.delayed(const Duration(milliseconds: 200), () {
+      _openLesson(previousLesson!, widget.lessonIndex - 1);
+    });
+  }
+
+  Widget _buildBottomActionBar() {
+    final canGoBackAction = _currentQuestionIndex > 0 || previousLesson != null;
+
+    return SafeArea(
+      top: false,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          border: Border(top: BorderSide(color: AppColors.border)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: canGoBackAction ? _handlePreviousAction : null,
+                    icon: const Icon(Icons.arrow_back),
+                    label: const Text('Sebelumnya'),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: _currentQuestionIndex < _totalEssayQuestions - 1
+                        ? _saveDraftAndNext
+                        : _saveDraft,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                    ),
+                    icon: const Icon(Icons.save_outlined),
+                    label: Text(
+                      _currentQuestionIndex < _totalEssayQuestions - 1
+                          ? 'Simpan Jawaban & Lanjut'
+                          : 'Simpan Jawaban',
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _isSubmitting ? null : _submitEssay,
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                icon: _isSubmitting
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.check_circle_outline),
+                label: Text(
+                  _isSubmitting ? 'Mengirim...' : 'Kirim Semua Jawaban',
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildSidePanel(
-    int validCount,
+    int savedCount,
     int answeredChars,
     int currentWordCount,
   ) {
     final progress = _totalEssayQuestions > 0
-        ? (validCount / _totalEssayQuestions) * 100
+        ? (savedCount / _totalEssayQuestions) * 100
         : 0.0;
 
     return Container(
@@ -350,7 +438,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            'Valid: $validCount/$_totalEssayQuestions (min $_minWordsPerQuestion kata)',
+            'Tersimpan: $savedCount/$_totalEssayQuestions',
             style: const TextStyle(fontSize: 12, color: AppColors.textLight),
           ),
           const SizedBox(height: 12),
@@ -384,7 +472,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
   }
 
   Widget _buildEssayPanel(
-    int validCount,
+    int savedCount,
     int answeredChars,
     int currentWordCount,
   ) {
@@ -552,75 +640,13 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
           EssayQuestionNavigatorWidget(
             totalQuestions: _totalEssayQuestions,
             currentQuestionIndex: _currentQuestionIndex,
-            completedQuestionIndexes: _validQuestionIndexes,
+            completedQuestionIndexes: _savedQuestionIndexes,
             onQuestionSelected: _goToQuestion,
           ),
           const SizedBox(height: 8),
           Text(
-            'Nomor valid: $validCount/$_totalEssayQuestions',
+            'Nomor tersimpan: $savedCount/$_totalEssayQuestions',
             style: const TextStyle(fontSize: 12, color: AppColors.textLight),
-          ),
-          const SizedBox(height: 14),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                    if (_currentQuestionIndex > 0) {
-                      _goToQuestion(_currentQuestionIndex - 1);
-                      return;
-                    }
-
-                    if (previousLesson == null) return;
-                    Navigator.pop(context);
-                    Future.delayed(const Duration(milliseconds: 200), () {
-                      _openLesson(previousLesson!, widget.lessonIndex - 1);
-                    });
-                  },
-                  icon: const Icon(Icons.arrow_back),
-                  label: const Text('Sebelumnya'),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: _currentQuestionIndex < _totalEssayQuestions - 1
-                      ? _saveDraftAndNext
-                      : _saveDraft,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                  ),
-                  icon: const Icon(Icons.save_outlined),
-                  label: Text(
-                    _currentQuestionIndex < _totalEssayQuestions - 1
-                        ? 'Simpan Jawaban & Lanjut'
-                        : 'Simpan Jawaban',
-                  ),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: _isSubmitting ? null : _submitEssay,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                  ),
-                  icon: _isSubmitting
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : const Icon(Icons.check_circle_outline),
-                  label: Text(
-                    _isSubmitting ? 'Mengirim...' : 'Kirim Semua Jawaban',
-                  ),
-                ),
-              ),
-            ],
           ),
         ],
       ),

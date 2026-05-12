@@ -76,13 +76,13 @@ class EssayQuestionNavigatorWidget extends StatelessWidget {
             _LegendItem(
               color: AppColors.background,
               borderColor: AppColors.border,
-              label: 'Belum valid',
+              label: 'Belum disimpan',
             ),
             const SizedBox(width: 12),
             _LegendItem(
               color: Colors.green.shade100,
               borderColor: Colors.green.shade300,
-              label: 'Valid (>=10 kata)',
+              label: 'Sudah disimpan',
             ),
             const SizedBox(width: 12),
             _LegendItem(
