@@ -4,7 +4,7 @@ class Lesson {
   final String title;
   final String content;
   final String duration;
-  final String type; // 'video', 'document', 'quiz'
+  final String type; // 'video', 'document', 'quiz', 'essay'
   final String? youtubeVideoId;
   bool isCompleted;
 
@@ -45,11 +45,7 @@ class Lesson {
     };
   }
 
-  Lesson copyWith({
-    bool? isCompleted,
-    String? type,
-    String? youtubeVideoId,
-  }) {
+  Lesson copyWith({bool? isCompleted, String? type, String? youtubeVideoId}) {
     return Lesson(
       id: id,
       courseId: courseId,

@@ -1,4 +1,3 @@
-
 import 'package:lms_mobile_app/src/features/courses/data/models/course.dart';
 import 'package:lms_mobile_app/src/features/courses/data/models/course_section.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/models/lesson.dart';
@@ -179,6 +178,15 @@ class DummyData {
                 content: 'Comprehensive review of all accounting topics.',
                 duration: '30 min',
                 type: 'quiz',
+              ),
+              Lesson(
+                id: '1-4-4',
+                courseId: '1',
+                title: 'Essay Reflection: Ethics in Accounting',
+                content:
+                    'Refleksikan satu situasi nyata di dunia kerja akuntansi yang menurut Anda rawan konflik etika. Jelaskan risiko, pihak yang terdampak, dan bagaimana Anda akan mengambil keputusan yang bertanggung jawab.',
+                duration: '25 min',
+                type: 'essay',
               ),
             ],
           ),
@@ -376,6 +384,15 @@ class DummyData {
                 duration: '30 min',
                 type: 'quiz',
               ),
+              Lesson(
+                id: '2-4-6',
+                courseId: '2',
+                title: 'Essay Reflection: Sustainable Farming Plan',
+                content:
+                    'Susun rencana singkat praktik pertanian berkelanjutan untuk daerah Anda. Jelaskan langkah utama, sumber daya yang diperlukan, dan dampak jangka panjang terhadap lingkungan.',
+                duration: '25 min',
+                type: 'essay',
+              ),
             ],
           ),
         ],
@@ -553,6 +570,15 @@ class DummyData {
                 content: 'Final assessment on global economics.',
                 duration: '25 min',
                 type: 'quiz',
+              ),
+              Lesson(
+                id: '3-4-5',
+                courseId: '3',
+                title: 'Essay Reflection: Dampak Kebijakan Ekonomi',
+                content:
+                    'Pilih satu kebijakan ekonomi publik yang Anda ketahui. Jelaskan dampak positif dan negatifnya bagi masyarakat, lalu berikan pendapat Anda secara argumentatif.',
+                duration: '25 min',
+                type: 'essay',
               ),
             ],
           ),
@@ -745,6 +771,15 @@ class DummyData {
                 content: 'Apply your design skills to a real project.',
                 duration: '60 min',
                 type: 'document',
+              ),
+              Lesson(
+                id: '4-4-6',
+                courseId: '4',
+                title: 'Essay Reflection: Design Decision',
+                content:
+                    'Jelaskan keputusan desain paling penting pada proyek Anda. Uraikan alasan visual, target pengguna, dan trade-off yang harus Anda ambil.',
+                duration: '20 min',
+                type: 'essay',
               ),
             ],
           ),
@@ -947,6 +982,15 @@ class DummyData {
                 duration: '25 min',
                 type: 'quiz',
               ),
+              Lesson(
+                id: '5-4-6',
+                courseId: '5',
+                title: 'Essay Reflection: Conservation Strategy',
+                content:
+                    'Tulis strategi konservasi sederhana untuk melindungi keanekaragaman hayati di wilayah lokal Anda. Sertakan tantangan utama dan solusi yang realistis.',
+                duration: '20 min',
+                type: 'essay',
+              ),
             ],
           ),
         ],
@@ -1131,6 +1175,15 @@ class DummyData {
                 content: 'Comprehensive philosophy assessment.',
                 duration: '30 min',
                 type: 'quiz',
+              ),
+              Lesson(
+                id: '6-4-5',
+                courseId: '6',
+                title: 'Essay Reflection: Philosophy in Daily Life',
+                content:
+                    'Refleksikan satu keputusan penting dalam hidup Anda menggunakan sudut pandang filsafat (etika, logika, atau epistemologi). Jelaskan proses berpikir Anda.',
+                duration: '20 min',
+                type: 'essay',
               ),
             ],
           ),

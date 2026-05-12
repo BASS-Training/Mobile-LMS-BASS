@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
+import 'package:lms_mobile_app/src/core/utils/lesson_route_resolver.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
@@ -48,12 +48,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
   // === Helper Methods ===
 
   void _openLesson(LessonEntity lesson, int lessonIndex) {
-    final type = lesson.type.toLowerCase();
-    final route = type == 'video'
-        ? AppRoutes.videoLessonDetail
-        : (type == 'quiz'
-              ? AppRoutes.quizLessonDetail
-              : AppRoutes.documentLessonDetail);
+    final route = LessonRouteResolver.routeForType(lesson.type);
 
     Navigator.pop(context);
     Future.delayed(const Duration(milliseconds: 200), () {
@@ -193,12 +188,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
           course: widget.course,
           currentLessonIndex: widget.lessonIndex,
           onSelectLesson: (lesson, index) {
-            final type = lesson.type.toLowerCase();
-            final route = type == 'video'
-                ? AppRoutes.videoLessonDetail
-                : (type == 'quiz'
-                      ? AppRoutes.quizLessonDetail
-                      : AppRoutes.documentLessonDetail);
+            final route = LessonRouteResolver.routeForType(lesson.type);
             Navigator.pop(context);
             context.push(
               route,
@@ -230,7 +220,9 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
     // 1. Hitung jumlah soal yang sudah dijawab
     final int answeredCount = quizState.answers.length;
     final int totalCount = quizState.quiz.totalQuestions;
-    final double progressPercent = totalCount > 0 ? (answeredCount / totalCount) : 0.0;
+    final double progressPercent = totalCount > 0
+        ? (answeredCount / totalCount)
+        : 0.0;
 
     return WillPopScope(
       onWillPop: () async {
@@ -247,7 +239,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
           title: Text('${widget.course.title} - Kuis'),
           elevation: 0,
           // Hapus text 1/10 dari AppBar karena sudah diganti dengan progress bar di bawah
-          actions: const [], 
+          actions: const [],
         ),
         body: Column(
           children: [
@@ -264,7 +256,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: Colors.grey, 
+                      color: Colors.grey,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -275,13 +267,15 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
                       value: progressPercent,
                       minHeight: 6,
                       backgroundColor: Colors.grey.withOpacity(0.3),
-                      valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+                      valueColor: const AlwaysStoppedAnimation<Color>(
+                        AppColors.primary,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-            
+
             // === QUIZ QUESTIONS WIDGET ===
             Expanded(
               child: QuizQuestionsWidget(

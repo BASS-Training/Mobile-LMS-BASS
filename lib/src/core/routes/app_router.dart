@@ -13,6 +13,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/screens/lesson_
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/video_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/document_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/quiz_lesson_detail_screen.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/screens/essay_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/certificates/presentation/screens/certificate_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/certificates/presentation/screens/certificate_list_screen.dart';
 
@@ -56,20 +57,20 @@ class AppRouter {
           return CourseDetailScreen(course: course);
         },
       ),
-      GoRoute(
-        path: AppRoutes.lessonDetail,
-        builder: (context, state) {
-          final args = state.extra as Map<String, dynamic>;
-          final lesson = args['lesson'] as LessonEntity;
-          final course = args['course'] as CourseEntity;
-          final lessonIndex = args['lessonIndex'] as int;
-          return LessonDetailScreen(
-            lesson: lesson,
-            course: course,
-            lessonIndex: lessonIndex,
-          );
-        },
-      ),
+      // GoRoute(
+      //   path: AppRoutes.lessonDetail,
+      //   builder: (context, state) {
+      //     final args = state.extra as Map<String, dynamic>;
+      //     final lesson = args['lesson'] as LessonEntity;
+      //     final course = args['course'] as CourseEntity;
+      //     final lessonIndex = args['lessonIndex'] as int;
+      //     return LessonDetailScreen(
+      //       lesson: lesson,
+      //       course: course,
+      //       lessonIndex: lessonIndex,
+      //     );
+      //   },
+      // ),
       GoRoute(
         path: AppRoutes.videoLessonDetail,
         builder: (context, state) {
@@ -114,6 +115,17 @@ class AppRouter {
               course: args['course'],
               lessonIndex: args['lessonIndex'],
             ),
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.essayLessonDetail,
+        builder: (context, state) {
+          final args = state.extra as Map<String, dynamic>;
+          return EssayLessonDetailScreen(
+            lesson: args['lesson'],
+            course: args['course'],
+            lessonIndex: args['lessonIndex'],
           );
         },
       ),

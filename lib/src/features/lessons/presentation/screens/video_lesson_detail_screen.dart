@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lms_mobile_app/src/core/utils/lesson_route_resolver.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
@@ -139,12 +139,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
   }
 
   void _openLesson(LessonEntity lesson, int lessonIndex) {
-    final type = lesson.type.toLowerCase();
-    final route = type == 'video'
-        ? AppRoutes.videoLessonDetail
-        : (type == 'quiz'
-              ? AppRoutes.quizLessonDetail
-              : AppRoutes.documentLessonDetail);
+    final route = LessonRouteResolver.routeForType(lesson.type);
 
     context.push(
       route,
@@ -186,12 +181,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
             course: widget.course,
             currentLessonIndex: widget.lessonIndex,
             onSelectLesson: (lesson, index) {
-              final type = lesson.type.toLowerCase();
-              final route = type == 'video'
-                  ? AppRoutes.videoLessonDetail
-                  : (type == 'quiz'
-                        ? AppRoutes.quizLessonDetail
-                        : AppRoutes.documentLessonDetail);
+              final route = LessonRouteResolver.routeForType(lesson.type);
               context.push(
                 route,
                 extra: {

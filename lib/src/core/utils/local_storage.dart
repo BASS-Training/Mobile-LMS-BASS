@@ -3,6 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 class LocalStorage {
   static const String _boxName = 'mini_lms_box';
   static const String _completedLessonsKey = 'completed_lessons';
+  static const String _essayDraftPrefix = 'essay_draft_';
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -50,5 +51,55 @@ class LocalStorage {
       'completedCount': completedLessons.length,
       'completedLessons': completedLessons,
     };
+  }
+
+  static String _essayDraftKey(String lessonId) {
+    return '$_essayDraftPrefix$lessonId';
+  }
+
+  static Map<int, String> getEssayDraftAnswers(String lessonId) {
+    final raw = _box.get(
+      _essayDraftKey(lessonId),
+      defaultValue: <dynamic, dynamic>{},
+    );
+    if (raw is! Map) {
+      return <int, String>{};
+    }
+
+    final result = <int, String>{};
+    raw.forEach((key, value) {
+      final index = int.tryParse(key.toString());
+      if (index == null) return;
+      result[index] = value?.toString() ?? '';
+    });
+
+    return result;
+  }
+
+  static Future<void> saveEssayDraftAnswer({
+    required String lessonId,
+    required int questionIndex,
+    required String answer,
+  }) async {
+    final current = getEssayDraftAnswers(lessonId);
+    current[questionIndex] = answer;
+    await _box.put(
+      _essayDraftKey(lessonId),
+      current.map((key, value) => MapEntry(key.toString(), value)),
+    );
+  }
+
+  static Future<void> saveEssayDraftAnswers({
+    required String lessonId,
+    required Map<int, String> answers,
+  }) async {
+    await _box.put(
+      _essayDraftKey(lessonId),
+      answers.map((key, value) => MapEntry(key.toString(), value)),
+    );
+  }
+
+  static Future<void> clearEssayDraft(String lessonId) async {
+    await _box.delete(_essayDraftKey(lessonId));
   }
 }

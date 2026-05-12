@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
+import 'package:lms_mobile_app/src/core/utils/lesson_route_resolver.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_section_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
@@ -435,12 +435,10 @@ class CourseDetailScreen extends StatelessWidget {
                                     ? overallLessonIndex
                                     : lessonIndexInSection;
 
-                                final type = lesson.type.toLowerCase();
-                                final routeName = type == 'video'
-                                    ? AppRoutes.videoLessonDetail
-                                    : (type == 'quiz'
-                                          ? AppRoutes.quizLessonDetail
-                                          : AppRoutes.documentLessonDetail);
+                                final routeName =
+                                    LessonRouteResolver.routeForType(
+                                      lesson.type,
+                                    );
 
                                 context.push(
                                   routeName,
@@ -594,6 +592,8 @@ class CourseDetailScreen extends StatelessWidget {
         return Colors.blue;
       case 'quiz':
         return Colors.orange;
+      case 'essay':
+        return Colors.purple;
       case 'document':
         return Colors.green;
       default:
