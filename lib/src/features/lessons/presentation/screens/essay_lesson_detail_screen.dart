@@ -30,29 +30,38 @@ class EssayLessonDetailScreen extends StatefulWidget {
   });
 
   @override
-  State<EssayLessonDetailScreen> createState() => _EssayLessonDetailScreenState();
+  State<EssayLessonDetailScreen> createState() =>
+      _EssayLessonDetailScreenState();
 }
 
 class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
   late final TextEditingController _answerController;
   late final GlobalKey<ScaffoldState> _scaffoldKey;
 
-  bool get canGoNext => widget.lessonIndex < widget.course.allLessons.length - 1;
+  bool get canGoNext =>
+      widget.lessonIndex < widget.course.allLessons.length - 1;
   bool get canGoPrevious => widget.lessonIndex > 0;
-  LessonEntity? get nextLesson => canGoNext ? widget.course.allLessons[widget.lessonIndex + 1] : null;
-  LessonEntity? get previousLesson => canGoPrevious ? widget.course.allLessons[widget.lessonIndex - 1] : null;
+  LessonEntity? get nextLesson =>
+      canGoNext ? widget.course.allLessons[widget.lessonIndex + 1] : null;
+  LessonEntity? get previousLesson =>
+      canGoPrevious ? widget.course.allLessons[widget.lessonIndex - 1] : null;
 
   @override
   void initState() {
     super.initState();
     _scaffoldKey = GlobalKey<ScaffoldState>();
     _answerController = TextEditingController();
-    
+
     // Tembak event inisialisasi
-    context.read<EssayBloc>().add(LoadEssay(
-      lessonId: widget.lesson.id, 
-      content: widget.lesson.content,
-    ));
+    context.read<EssayBloc>().add(
+      LoadEssay(
+        lessonId: widget.lesson.id,
+        courseId: widget.course.id,
+        courseTitle: widget.course.title,
+        lessonTitle: widget.lesson.title,
+        content: widget.lesson.content,
+      ),
+    );
   }
 
   @override
@@ -70,7 +79,11 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
     final route = LessonRouteResolver.routeForType(lesson.type);
     context.push(
       route,
-      extra: {'lesson': lesson, 'course': widget.course, 'lessonIndex': lessonIndex},
+      extra: {
+        'lesson': lesson,
+        'course': widget.course,
+        'lessonIndex': lessonIndex,
+      },
     );
   }
 
@@ -96,26 +109,40 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
           },
           listener: (context, state) {
             if (state.errorMessage != null) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
               context.read<EssayBloc>().add(ClearSnackbarMessage());
             }
             if (state.snackbarMessage != null) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.snackbarMessage!)));
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.snackbarMessage!)));
               context.read<EssayBloc>().add(ClearSnackbarMessage());
             }
             if (state.isSuccess) {
-              context.read<LessonBloc>().add(MarkLessonCompleteEvent(lessonId: widget.lesson.id));
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Jawaban essay berhasil dikirim.')));
-              
+              context.read<LessonBloc>().add(
+                MarkLessonCompleteEvent(lessonId: widget.lesson.id),
+              );
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Jawaban essay berhasil dikirim.'),
+                ),
+              );
+
               if (canGoNext && nextLesson != null) {
                 Navigator.pop(context);
-                Future.delayed(const Duration(milliseconds: 200), () => _openLesson(nextLesson!, widget.lessonIndex + 1));
+                Future.delayed(
+                  const Duration(milliseconds: 200),
+                  () => _openLesson(nextLesson!, widget.lessonIndex + 1),
+                );
               }
             }
           },
           builder: (context, state) {
             // Pastikan controller sinkron di awal render
-            if (_answerController.text != state.currentAnswer && _answerController.text.isEmpty) {
+            if (_answerController.text != state.currentAnswer &&
+                _answerController.text.isEmpty) {
               _answerController.text = state.currentAnswer;
             }
 
@@ -143,7 +170,13 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
                             padding: const EdgeInsets.fromLTRB(16, 16, 16, 190),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [header, const SizedBox(height: 14), sidePanel, const SizedBox(height: 14), mainPanel],
+                              children: [
+                                header,
+                                const SizedBox(height: 14),
+                                sidePanel,
+                                const SizedBox(height: 14),
+                                mainPanel,
+                              ],
                             ),
                           );
                         }
@@ -187,10 +220,17 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
       elevation: 0,
       backgroundColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
-      leading: GestureDetector(onTap: _backToCourse, child: const Icon(Icons.arrow_back)),
+      leading: GestureDetector(
+        onTap: _backToCourse,
+        child: const Icon(Icons.arrow_back),
+      ),
       flexibleSpace: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+          gradient: LinearGradient(
+            colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
         ),
       ),
       actions: [
@@ -214,7 +254,14 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
       onSelectLesson: (lesson, index) {
         final route = LessonRouteResolver.routeForType(lesson.type);
         Navigator.pop(context);
-        context.push(route, extra: {'lesson': lesson, 'course': widget.course, 'lessonIndex': index});
+        context.push(
+          route,
+          extra: {
+            'lesson': lesson,
+            'course': widget.course,
+            'lessonIndex': index,
+          },
+        );
       },
     );
   }
@@ -223,17 +270,37 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
     return Stack(
       children: [
         Positioned(
-          top: -60, right: -40,
+          top: -60,
+          right: -40,
           child: Container(
-            width: 180, height: 180,
-            decoration: BoxDecoration(shape: BoxShape.circle, gradient: RadialGradient(colors: [const Color(0xFF6D5EF7).withOpacity(0.16), Colors.transparent])),
+            width: 180,
+            height: 180,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  const Color(0xFF6D5EF7).withOpacity(0.16),
+                  Colors.transparent,
+                ],
+              ),
+            ),
           ),
         ),
         Positioned(
-          bottom: 120, left: -70,
+          bottom: 120,
+          left: -70,
           child: Container(
-            width: 170, height: 170,
-            decoration: BoxDecoration(shape: BoxShape.circle, gradient: RadialGradient(colors: [const Color(0xFF4F8CFF).withOpacity(0.12), Colors.transparent])),
+            width: 170,
+            height: 170,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  const Color(0xFF4F8CFF).withOpacity(0.12),
+                  Colors.transparent,
+                ],
+              ),
+            ),
           ),
         ),
       ],
@@ -242,27 +309,61 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
 
   Widget _buildPageHeader() {
     return Container(
-      width: double.infinity, padding: const EdgeInsets.all(16),
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),
-        gradient: const LinearGradient(colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)], begin: Alignment.topLeft, end: Alignment.bottomRight),
-        boxShadow: [BoxShadow(color: const Color(0xFF6D5EF7).withOpacity(0.22), blurRadius: 20, offset: const Offset(0, 8))],
+        gradient: const LinearGradient(
+          colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF6D5EF7).withOpacity(0.22),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Row(
         children: [
           Container(
-            width: 48, height: 48,
-            decoration: BoxDecoration(color: Colors.white.withOpacity(0.18), borderRadius: BorderRadius.circular(14), border: Border.all(color: Colors.white.withOpacity(0.18))),
-            child: const Icon(Icons.edit_note_rounded, color: Colors.white, size: 28),
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.18),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.white.withOpacity(0.18)),
+            ),
+            child: const Icon(
+              Icons.edit_note_rounded,
+              color: Colors.white,
+              size: 28,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Latihan Essay Interaktif', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w800)),
+                const Text(
+                  'Latihan Essay Interaktif',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text('Simpan jawaban per nomor, lanjutkan kapan saja, dan kirim kalau semua sudah siap.', style: TextStyle(color: Colors.white.withOpacity(0.92), fontSize: 12, height: 1.4)),
+                Text(
+                  'Simpan jawaban per nomor, lanjutkan kapan saja, dan kirim kalau semua sudah siap.',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.92),
+                    fontSize: 12,
+                    height: 1.4,
+                  ),
+                ),
               ],
             ),
           ),
@@ -272,102 +373,260 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
   }
 
   Widget _buildSidePanel(EssayState state) {
-    final progress = state.totalQuestions > 0 ? (state.savedCount / state.totalQuestions) * 100 : 0.0;
+    final progress = state.totalQuestions > 0
+        ? (state.savedCount / state.totalQuestions) * 100
+        : 0.0;
 
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [Colors.white, Color(0xFFF8FAFF)], begin: Alignment.topLeft, end: Alignment.bottomRight),
-        borderRadius: BorderRadius.circular(14), border: Border.all(color: AppColors.pearl.withOpacity(0.8)),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 18, offset: const Offset(0, 6))],
+        gradient: const LinearGradient(
+          colors: [Colors.white, Color(0xFFF8FAFF)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.pearl.withOpacity(0.8)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Progress Essay', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.charcoal)),
+          const Text(
+            'Progress Essay',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: AppColors.charcoal,
+            ),
+          ),
           const SizedBox(height: 8),
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: LinearProgressIndicator(value: progress / 100, minHeight: 8, backgroundColor: AppColors.pearl.withOpacity(0.7), valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF4F8CFF))),
+            child: LinearProgressIndicator(
+              value: progress / 100,
+              minHeight: 8,
+              backgroundColor: AppColors.pearl.withOpacity(0.7),
+              valueColor: const AlwaysStoppedAnimation<Color>(
+                Color(0xFF4F8CFF),
+              ),
+            ),
           ),
           const SizedBox(height: 8),
-          Text('${progress.toStringAsFixed(0)}% • Soal ${state.currentQuestionIndex + 1} dari ${state.totalQuestions}', style: const TextStyle(fontSize: 12, color: AppColors.slate)),
+          Text(
+            '${progress.toStringAsFixed(0)}% • Soal ${state.currentQuestionIndex + 1} dari ${state.totalQuestions}',
+            style: const TextStyle(fontSize: 12, color: AppColors.slate),
+          ),
           const SizedBox(height: 4),
-          Text('Tersimpan: ${state.savedCount}/${state.totalQuestions}', style: const TextStyle(fontSize: 12, color: AppColors.slate)),
+          Text(
+            'Tersimpan: ${state.savedCount}/${state.totalQuestions}',
+            style: const TextStyle(fontSize: 12, color: AppColors.slate),
+          ),
           const SizedBox(height: 12),
           Container(
-            width: double.infinity, padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(color: const Color(0xFFF3F6FF), borderRadius: BorderRadius.circular(10)),
-            child: Text(state.isDraftSaved ? 'Draft jawaban sudah disimpan' : 'Draft belum disimpan', style: const TextStyle(fontSize: 12, color: AppColors.slate)),
+            width: double.infinity,
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF3F6FF),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              state.isDraftSaved
+                  ? 'Draft jawaban sudah disimpan'
+                  : 'Draft belum disimpan',
+              style: const TextStyle(fontSize: 12, color: AppColors.slate),
+            ),
           ),
           const SizedBox(height: 10),
-          Text('Karakter: ${state.currentAnswer.length}', style: const TextStyle(fontSize: 12, color: AppColors.slate)),
+          Text(
+            'Karakter: ${state.currentAnswer.length}',
+            style: const TextStyle(fontSize: 12, color: AppColors.slate),
+          ),
           const SizedBox(height: 4),
-          Text('Kata: ${state.currentWordCount}', style: const TextStyle(fontSize: 12, color: AppColors.slate)),
+          Text(
+            'Kata: ${state.currentWordCount}',
+            style: const TextStyle(fontSize: 12, color: AppColors.slate),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildEssayPanel(EssayState state) {
-    if (state.questions.isEmpty) return const Center(child: CircularProgressIndicator());
+    if (state.questions.isEmpty)
+      return const Center(child: CircularProgressIndicator());
 
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [Colors.white, Color(0xFFFDFDFF)], begin: Alignment.topLeft, end: Alignment.bottomRight),
-        borderRadius: BorderRadius.circular(14), border: Border.all(color: AppColors.pearl.withOpacity(0.8)),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 18, offset: const Offset(0, 6))],
+        gradient: const LinearGradient(
+          colors: [Colors.white, Color(0xFFFDFDFF)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.pearl.withOpacity(0.8)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: double.infinity, padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(gradient: const LinearGradient(colors: [Color(0xFFF2F0FF), Color(0xFFEAF1FF)], begin: Alignment.topLeft, end: Alignment.bottomRight), borderRadius: BorderRadius.circular(12)),
+            width: double.infinity,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFFF2F0FF), Color(0xFFEAF1FF)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Row(
               children: [
                 Container(
-                  width: 34, height: 34, decoration: const BoxDecoration(color: AppColors.violet, shape: BoxShape.circle),
-                  child: Center(child: Text('${state.currentQuestionIndex + 1}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))),
+                  width: 34,
+                  height: 34,
+                  decoration: const BoxDecoration(
+                    color: AppColors.violet,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      '${state.currentQuestionIndex + 1}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 12),
-                Expanded(child: Text('Pertanyaan ${state.currentQuestionIndex + 1} dari ${state.totalQuestions}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.charcoal))),
+                Expanded(
+                  child: Text(
+                    'Pertanyaan ${state.currentQuestionIndex + 1} dari ${state.totalQuestions}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.charcoal,
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
           const SizedBox(height: 14),
           Container(
-            width: double.infinity, padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(gradient: const LinearGradient(colors: [Color(0xFFEEF2FF), Color(0xFFF7F9FF)], begin: Alignment.topLeft, end: Alignment.bottomRight), borderRadius: BorderRadius.circular(12), border: Border.all(color: const Color(0xFFDDE3FF))),
-            child: Text(state.currentQuestion, style: const TextStyle(fontSize: 15, height: 1.6, color: AppColors.charcoal)),
+            width: double.infinity,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFFEEF2FF), Color(0xFFF7F9FF)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFDDE3FF)),
+            ),
+            child: Text(
+              state.currentQuestion,
+              style: const TextStyle(
+                fontSize: 15,
+                height: 1.6,
+                color: AppColors.charcoal,
+              ),
+            ),
           ),
           const SizedBox(height: 16),
-          const Text('Jawaban Anda', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.charcoal)),
+          const Text(
+            'Jawaban Anda',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: AppColors.charcoal,
+            ),
+          ),
           const SizedBox(height: 8),
           Container(
-            width: double.infinity, padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            decoration: BoxDecoration(color: state.isCurrentQuestionValid ? Colors.green.shade50 : Colors.orange.shade50, borderRadius: BorderRadius.circular(8), border: Border.all(color: state.isCurrentQuestionValid ? Colors.green.shade200 : Colors.orange.shade200)),
-            child: Text(state.isCurrentQuestionValid ? 'Jawaban nomor ini valid (>= 10 kata).' : 'Minimal 10 kata untuk menandai nomor ini selesai.', style: TextStyle(fontSize: 12, color: state.isCurrentQuestionValid ? Colors.green.shade800 : Colors.orange.shade800, fontWeight: FontWeight.w500)),
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            decoration: BoxDecoration(
+              color: state.isCurrentQuestionValid
+                  ? Colors.green.shade50
+                  : Colors.orange.shade50,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: state.isCurrentQuestionValid
+                    ? Colors.green.shade200
+                    : Colors.orange.shade200,
+              ),
+            ),
+            child: Text(
+              state.isCurrentQuestionValid
+                  ? 'Jawaban nomor ini valid (>= 10 kata).'
+                  : 'Minimal 10 kata untuk menandai nomor ini selesai.',
+              style: TextStyle(
+                fontSize: 12,
+                color: state.isCurrentQuestionValid
+                    ? Colors.green.shade800
+                    : Colors.orange.shade800,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
           const SizedBox(height: 8),
           TextField(
             controller: _answerController,
-            minLines: 10, maxLines: 14,
-            onChanged: (value) => context.read<EssayBloc>().add(AnswerChanged(value)),
+            minLines: 10,
+            maxLines: 14,
+            onChanged: (value) =>
+                context.read<EssayBloc>().add(AnswerChanged(value)),
             decoration: InputDecoration(
-              hintText: 'Tulis jawaban essay Anda di sini...', alignLabelWithHint: true,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.pearl)),
-              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.pearl)),
-              focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.violet, width: 2)),
+              hintText: 'Tulis jawaban essay Anda di sini...',
+              alignLabelWithHint: true,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: AppColors.pearl),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: AppColors.pearl),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: AppColors.violet, width: 2),
+              ),
             ),
           ),
           const SizedBox(height: 8),
           Row(
             children: [
-              Text('${state.currentWordCount} kata (min 10) | ${state.currentAnswer.length} karakter', style: const TextStyle(fontSize: 11, color: AppColors.slate)),
+              Text(
+                '${state.currentWordCount} kata (min 10) | ${state.currentAnswer.length} karakter',
+                style: const TextStyle(fontSize: 11, color: AppColors.slate),
+              ),
               const Spacer(),
-              Text(state.isDraftSaved ? 'Draft tersimpan' : 'Belum disimpan', style: TextStyle(fontSize: 11, color: state.isDraftSaved ? AppColors.emerald : AppColors.silver)),
+              Text(
+                state.isDraftSaved ? 'Draft tersimpan' : 'Belum disimpan',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: state.isDraftSaved
+                      ? AppColors.emerald
+                      : AppColors.silver,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -375,7 +634,8 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
             totalQuestions: state.totalQuestions,
             currentQuestionIndex: state.currentQuestionIndex,
             completedQuestionIndexes: state.savedQuestionIndexes,
-            onQuestionSelected: (index) => context.read<EssayBloc>().add(ChangeQuestion(index)),
+            onQuestionSelected: (index) =>
+                context.read<EssayBloc>().add(ChangeQuestion(index)),
           ),
         ],
       ),
@@ -383,21 +643,29 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
   }
 
   Widget _buildBottomActionBar(EssayState state) {
-    final canGoBackAction = state.currentQuestionIndex > 0 || previousLesson != null;
+    final canGoBackAction =
+        state.currentQuestionIndex > 0 || previousLesson != null;
 
     void handlePreviousAction() {
       if (state.currentQuestionIndex > 0) {
-        context.read<EssayBloc>().add(ChangeQuestion(state.currentQuestionIndex - 1));
+        context.read<EssayBloc>().add(
+          ChangeQuestion(state.currentQuestionIndex - 1),
+        );
       } else if (previousLesson != null) {
         Navigator.pop(context);
-        Future.delayed(const Duration(milliseconds: 200), () => _openLesson(previousLesson!, widget.lessonIndex - 1));
+        Future.delayed(
+          const Duration(milliseconds: 200),
+          () => _openLesson(previousLesson!, widget.lessonIndex - 1),
+        );
       }
     }
 
     void handleSaveAndNext() {
       context.read<EssayBloc>().add(SaveDraftClicked());
       if (state.currentQuestionIndex < state.totalQuestions - 1) {
-        context.read<EssayBloc>().add(ChangeQuestion(state.currentQuestionIndex + 1));
+        context.read<EssayBloc>().add(
+          ChangeQuestion(state.currentQuestionIndex + 1),
+        );
       }
     }
 
@@ -406,29 +674,62 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
       child: Container(
         padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
         decoration: BoxDecoration(
-          color: Colors.white, border: Border(top: BorderSide(color: AppColors.pearl.withOpacity(0.9))),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.12), blurRadius: 22, offset: const Offset(0, -8), spreadRadius: 1)],
+          color: Colors.white,
+          border: Border(
+            top: BorderSide(color: AppColors.pearl.withOpacity(0.9)),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.12),
+              blurRadius: 22,
+              offset: const Offset(0, -8),
+              spreadRadius: 1,
+            ),
+          ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(width: 42, height: 4, margin: const EdgeInsets.only(bottom: 10), decoration: BoxDecoration(color: AppColors.pearl, borderRadius: BorderRadius.circular(999))),
+            Container(
+              width: 42,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 10),
+              decoration: BoxDecoration(
+                color: AppColors.pearl,
+                borderRadius: BorderRadius.circular(999),
+              ),
+            ),
             Row(
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: canGoBackAction ? handlePreviousAction : null,
-                    icon: const Icon(Icons.arrow_back), label: const Text('Sebelumnya'),
-                    style: OutlinedButton.styleFrom(side: BorderSide(color: AppColors.pearl.withOpacity(0.9)), padding: const EdgeInsets.symmetric(vertical: 14), backgroundColor: Colors.white, foregroundColor: AppColors.charcoal),
+                    icon: const Icon(Icons.arrow_back),
+                    label: const Text('Sebelumnya'),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: AppColors.pearl.withOpacity(0.9)),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      backgroundColor: Colors.white,
+                      foregroundColor: AppColors.charcoal,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: handleSaveAndNext,
-                    style: ElevatedButton.styleFrom(backgroundColor: AppColors.violet, shadowColor: AppColors.violet.withOpacity(0.45), elevation: 8, padding: const EdgeInsets.symmetric(vertical: 14)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.violet,
+                      shadowColor: AppColors.violet.withOpacity(0.45),
+                      elevation: 8,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
                     icon: const Icon(Icons.save_outlined),
-                    label: Text(state.currentQuestionIndex < state.totalQuestions - 1 ? 'Simpan & Lanjut' : 'Simpan'),
+                    label: Text(
+                      state.currentQuestionIndex < state.totalQuestions - 1
+                          ? 'Simpan & Lanjut'
+                          : 'Simpan',
+                    ),
                   ),
                 ),
               ],
@@ -437,13 +738,31 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: state.isSubmitting ? null : () => context.read<EssayBloc>().add(SubmitEssayClicked()),
+                onPressed: state.isSubmitting
+                    ? null
+                    : () => context.read<EssayBloc>().add(SubmitEssayClicked()),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF16A34A), shadowColor: const Color(0xFF16A34A).withOpacity(0.45), elevation: 10, padding: const EdgeInsets.symmetric(vertical: 15),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  backgroundColor: const Color(0xFF16A34A),
+                  shadowColor: const Color(0xFF16A34A).withOpacity(0.45),
+                  elevation: 10,
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-                icon: state.isSubmitting ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) : const Icon(Icons.check_circle_outline),
-                label: Text(state.isSubmitting ? 'Mengirim...' : 'Kirim Semua Jawaban'),
+                icon: state.isSubmitting
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.check_circle_outline),
+                label: Text(
+                  state.isSubmitting ? 'Mengirim...' : 'Kirim Semua Jawaban',
+                ),
               ),
             ),
           ],

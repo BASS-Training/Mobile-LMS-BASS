@@ -8,6 +8,7 @@ import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/cou
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_state.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_entity.dart';
+import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
 import 'package:lms_mobile_app/src/shared/widgets/progress_indicator.dart';
@@ -250,6 +251,28 @@ class CourseDetailScreen extends StatelessWidget {
                         showPercentage: true,
                       ),
                       SizedBox(height: 24),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            context.push(
+                              AppRoutes.courseResults,
+                              extra: currentCourseEntity,
+                            );
+                          },
+                          icon: const Icon(Icons.assessment_outlined),
+                          label: const Text('Nilai & Hasil'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.violet,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 24),
                       // Sections header
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -374,10 +397,7 @@ class CourseDetailScreen extends StatelessWidget {
                       section.description,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.slate,
-                      ),
+                      style: TextStyle(fontSize: 12, color: AppColors.slate),
                     ),
                   ],
                 ),
@@ -396,9 +416,7 @@ class CourseDetailScreen extends StatelessWidget {
                     value: progressPercent / 100,
                     minHeight: 4,
                     backgroundColor: AppColors.pearl,
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      AppColors.violet,
-                    ),
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.violet),
                   ),
                 ),
                 SizedBox(height: 4),
@@ -612,4 +630,3 @@ class CourseDetailScreen extends StatelessWidget {
     return previousLesson.isCompleted;
   }
 }
-

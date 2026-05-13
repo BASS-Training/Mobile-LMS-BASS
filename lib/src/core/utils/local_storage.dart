@@ -4,6 +4,7 @@ class LocalStorage {
   static const String _boxName = 'mini_lms_box';
   static const String _completedLessonsKey = 'completed_lessons';
   static const String _essayDraftPrefix = 'essay_draft_';
+  static const String _lessonAttemptPrefix = 'lesson_attempts_';
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -101,5 +102,38 @@ class LocalStorage {
 
   static Future<void> clearEssayDraft(String lessonId) async {
     await _box.delete(_essayDraftKey(lessonId));
+  }
+
+  static String _lessonAttemptsKey(String courseId) {
+    return '$_lessonAttemptPrefix$courseId';
+  }
+
+  static List<Map<String, dynamic>> getLessonAttempts(String courseId) {
+    final raw = _box.get(
+      _lessonAttemptsKey(courseId),
+      defaultValue: <dynamic>[],
+    );
+
+    if (raw is! List) {
+      return <Map<String, dynamic>>[];
+    }
+
+    return raw
+        .whereType<Map>()
+        .map(
+          (entry) => entry.map((key, value) => MapEntry(key.toString(), value)),
+        )
+        .toList();
+  }
+
+  static Future<void> saveLessonAttempts({
+    required String courseId,
+    required List<Map<String, dynamic>> attempts,
+  }) async {
+    await _box.put(_lessonAttemptsKey(courseId), attempts);
+  }
+
+  static Future<void> clearLessonAttempts(String courseId) async {
+    await _box.delete(_lessonAttemptsKey(courseId));
   }
 }

@@ -13,11 +13,19 @@ abstract class QuizEvent extends Equatable {
 /// Event: Fetch quiz berdasarkan lesson ID
 class FetchQuizEvent extends QuizEvent {
   final String lessonId;
+  final String courseId;
+  final String courseTitle;
+  final String lessonTitle;
 
-  const FetchQuizEvent({required this.lessonId});
+  const FetchQuizEvent({
+    required this.lessonId,
+    required this.courseId,
+    required this.courseTitle,
+    required this.lessonTitle,
+  });
 
   @override
-  List<Object?> get props => [lessonId];
+  List<Object?> get props => [lessonId, courseId, courseTitle, lessonTitle];
 }
 
 /// Event: Start quiz

@@ -4,9 +4,11 @@ import 'package:lms_mobile_app/src/features/lessons/data/datasources/essay_local
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/quiz_local_datasource_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/video_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/essay_repository_impl.dart';
+import 'package:lms_mobile_app/src/features/lessons/data/repositories/lesson_result_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/lesson_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/quiz_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_repository.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_result_repository.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/get_quiz_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/is_lesson_completed_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/mark_lesson_complete_usecase.dart';
@@ -21,6 +23,8 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/video/vide
 
 class LessonModule {
   static late LessonBloc _lessonBloc;
+  static final LessonResultRepository _lessonResultRepository =
+      const LessonResultRepositoryImpl();
 
   /// Register semua lesson dependencies
   static void register() {
@@ -59,6 +63,7 @@ class LessonModule {
         // Pastikan repository kuis juga sudah diinisialisasi di module ini
         repository: quizRepository,
       ),
+      resultRepository: _lessonResultRepository,
     );
   }
 
@@ -66,23 +71,27 @@ class LessonModule {
   static EssayBloc get essayBloc {
     // 1. Inisialisasi Data Source
     final localDataSource = EssayLocalDataSourceImpl();
-    
+
     // 2. Inisialisasi Repository
     final repository = EssayRepositoryImpl(localDataSource);
-    
+
     // 3. Inisialisasi UseCase
     final submitUseCase = SubmitEssayUseCase(repository);
-    
+
     // 4. Return BLoC-nya
     return EssayBloc(
       repository: repository,
       submitUseCase: submitUseCase,
+      resultRepository: _lessonResultRepository,
     );
   }
 
+  static LessonResultRepository get lessonResultRepository =>
+      _lessonResultRepository;
+
   // Di dalam class LessonModule:
-static VideoBloc get videoBloc {
-  final repository = VideoRepositoryImpl(); 
-  return VideoBloc(repository);
-}
+  static VideoBloc get videoBloc {
+    final repository = VideoRepositoryImpl();
+    return VideoBloc(repository);
+  }
 }

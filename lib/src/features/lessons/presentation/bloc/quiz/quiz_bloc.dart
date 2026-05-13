@@ -4,6 +4,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/models/quiz_model.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_attempt_entity.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_result_repository.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/get_quiz_usecase.dart';
 
 part 'quiz_event.dart';
@@ -11,8 +13,14 @@ part 'quiz_state.dart';
 
 class QuizBloc extends Bloc<QuizEvent, QuizState> {
   final GetQuizUseCase getQuizUseCase;
+  final LessonResultRepository? resultRepository;
+  String _lessonId = '';
+  String _courseId = '';
+  String _courseTitle = '';
+  String _lessonTitle = '';
 
-  QuizBloc({required this.getQuizUseCase}) : super(const QuizInitial()) {
+  QuizBloc({required this.getQuizUseCase, this.resultRepository})
+    : super(const QuizInitial()) {
     on<FetchQuizEvent>(_onFetchQuiz);
     on<StartQuizEvent>(_onStartQuiz);
     on<SelectAnswerEvent>(_onSelectAnswer);
@@ -28,6 +36,11 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
     FetchQuizEvent event,
     Emitter<QuizState> emit,
   ) async {
+    _lessonId = event.lessonId;
+    _courseId = event.courseId;
+    _courseTitle = event.courseTitle;
+    _lessonTitle = event.lessonTitle;
+
     emit(const QuizLoading());
     try {
       final quiz = await getQuizUseCase.call(event.lessonId);
@@ -130,6 +143,33 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
         score: correctCount,
         total: quiz.totalQuestions,
       );
+
+      if (resultRepository != null) {
+        try {
+          final questions = quiz.questions.asMap().entries.map((entry) {
+            return LessonAttemptQuestionSnapshot(
+              questionIndex: entry.key,
+              questionText: entry.value.text,
+              options: List<String>.from(entry.value.options),
+              correctOptionIndex: entry.value.correctIndex,
+              selectedOptionIndex: answers[entry.key],
+            );
+          }).toList();
+
+          await resultRepository!.recordQuizAttempt(
+            courseId: _courseId,
+            courseTitle: _courseTitle,
+            lessonId: _lessonId,
+            lessonTitle: _lessonTitle,
+            questions: questions,
+            score: correctCount,
+            maxScore: quiz.totalQuestions,
+            passed: result.passed,
+          );
+        } catch (_) {
+          // Keep quiz submission flow intact even if local history save fails.
+        }
+      }
 
       emit(QuizSubmitted(quiz: quiz, result: result, answers: answers));
     }

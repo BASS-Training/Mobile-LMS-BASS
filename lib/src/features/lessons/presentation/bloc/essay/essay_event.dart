@@ -9,8 +9,26 @@ abstract class EssayEvent extends Equatable {
 
 class LoadEssay extends EssayEvent {
   final String lessonId;
+  final String courseId;
+  final String courseTitle;
+  final String lessonTitle;
   final String content;
-  const LoadEssay({required this.lessonId, required this.content});
+  const LoadEssay({
+    required this.lessonId,
+    required this.courseId,
+    required this.courseTitle,
+    required this.lessonTitle,
+    required this.content,
+  });
+
+  @override
+  List<Object?> get props => [
+    lessonId,
+    courseId,
+    courseTitle,
+    lessonTitle,
+    content,
+  ];
 }
 
 class AnswerChanged extends EssayEvent {

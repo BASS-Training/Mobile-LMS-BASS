@@ -42,7 +42,14 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
     super.initState();
     _scaffoldKey = GlobalKey<ScaffoldState>();
     // Trigger fetch quiz data via BLoC
-    context.read<QuizBloc>().add(FetchQuizEvent(lessonId: widget.lesson.id));
+    context.read<QuizBloc>().add(
+      FetchQuizEvent(
+        lessonId: widget.lesson.id,
+        courseId: widget.course.id,
+        courseTitle: widget.course.title,
+        lessonTitle: widget.lesson.title,
+      ),
+    );
   }
 
   // === Helper Methods ===
@@ -616,4 +623,3 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
     );
   }
 }
-

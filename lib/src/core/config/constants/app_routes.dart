@@ -15,6 +15,7 @@ class AppRoutes {
 
   // Course Details
   static const String courseDetail = '/course-detail';
+  static const String courseResults = '/course-results';
 
   // Lesson Details
   static const String lessonDetail = '/lesson-detail';
@@ -22,6 +23,10 @@ class AppRoutes {
   static const String documentLessonDetail = '/lesson-document-detail';
   static const String quizLessonDetail = '/lesson-quiz-detail';
   static const String essayLessonDetail = '/lesson-essay-detail';
+
+  // Result Details
+  static const String quizResultDetail = '/quiz-result-detail';
+  static const String essayResultDetail = '/essay-result-detail';
 
   // Certificate Details
   static const String certificateDetail = '/certificate-detail';
