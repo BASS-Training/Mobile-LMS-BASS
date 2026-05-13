@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
-import 'package:lms_mobile_app/src/features/courses/domain/entities/course_section_entity.dart'; // Pastikan import ini ditambahkan
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_entity.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 

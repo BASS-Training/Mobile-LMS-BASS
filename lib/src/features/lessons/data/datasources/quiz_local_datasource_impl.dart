@@ -3,7 +3,6 @@
 
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/quiz_dummy_data.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/quiz_local_datasource.dart';
-import 'package:lms_mobile_app/src/features/lessons/data/models/quiz_model.dart';
 
 class QuizLocalDataSourceImpl implements QuizLocalDataSource {
   const QuizLocalDataSourceImpl();

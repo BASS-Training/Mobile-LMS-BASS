@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../styles/app_colors.dart';
-import '../styles/app_measures.dart';
 import '../styles/app_typography.dart';
 
 /// Primary button widget - untuk aksi utama
@@ -13,14 +12,14 @@ class PrimaryButton extends StatelessWidget {
   final IconData? icon;
 
   const PrimaryButton({
-    Key? key,
+    super.key,
     required this.label,
     required this.onPressed,
     this.isLoading = false,
     this.isEnabled = true,
     this.width,
     this.icon,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -55,13 +54,13 @@ class SecondaryButton extends StatelessWidget {
   final IconData? icon;
 
   const SecondaryButton({
-    Key? key,
+    super.key,
     required this.label,
     required this.onPressed,
     this.isEnabled = true,
     this.width,
     this.icon,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -83,11 +82,11 @@ class TextActionButton extends StatelessWidget {
   final Color color;
 
   const TextActionButton({
-    Key? key,
+    super.key,
     required this.label,
     required this.onPressed,
     this.color = AppColors.violet,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

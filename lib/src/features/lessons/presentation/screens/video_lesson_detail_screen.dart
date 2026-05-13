@@ -89,7 +89,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
     final duration = value.metaData.duration;
     final position = value.position;
 
-    if (duration != null && duration.inSeconds > 0) {
+    if (duration.inSeconds > 0) {
       // Delegasikan perhitungan 10 detik ke BLoC
       context.read<VideoBloc>().add(
         VideoProgressUpdated(position.inSeconds, duration.inSeconds),
