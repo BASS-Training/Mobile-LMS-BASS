@@ -25,7 +25,7 @@ class EssayQuestionNavigatorWidget extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
-            color: AppColors.text,
+            color: AppColors.charcoal,
           ),
         ),
         const SizedBox(height: 10),
@@ -37,12 +37,12 @@ class EssayQuestionNavigatorWidget extends StatelessWidget {
             final isCompleted = completedQuestionIndexes.contains(index);
 
             final backgroundColor = isCurrent
-                ? AppColors.primary
-                : (isCompleted ? Colors.green.shade100 : AppColors.background);
+                ? AppColors.violet
+                : (isCompleted ? Colors.green.shade100 : AppColors.mist);
 
             final textColor = isCurrent
                 ? Colors.white
-                : (isCompleted ? Colors.green.shade800 : AppColors.textLight);
+                : (isCompleted ? Colors.green.shade800 : AppColors.slate);
 
             return InkWell(
               onTap: () => onQuestionSelected(index),
@@ -55,7 +55,7 @@ class EssayQuestionNavigatorWidget extends StatelessWidget {
                   color: backgroundColor,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: isCurrent ? AppColors.primary : AppColors.border,
+                    color: isCurrent ? AppColors.violet : AppColors.pearl,
                   ),
                 ),
                 child: Text(
@@ -74,8 +74,8 @@ class EssayQuestionNavigatorWidget extends StatelessWidget {
         Row(
           children: [
             _LegendItem(
-              color: AppColors.background,
-              borderColor: AppColors.border,
+              color: AppColors.mist,
+              borderColor: AppColors.pearl,
               label: 'Belum disimpan',
             ),
             const SizedBox(width: 12),
@@ -86,8 +86,8 @@ class EssayQuestionNavigatorWidget extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             _LegendItem(
-              color: AppColors.primary,
-              borderColor: AppColors.primary,
+              color: AppColors.violet,
+              borderColor: AppColors.violet,
               label: 'Sedang dilihat',
             ),
           ],
@@ -124,9 +124,10 @@ class _LegendItem extends StatelessWidget {
         const SizedBox(width: 5),
         Text(
           label,
-          style: const TextStyle(fontSize: 10, color: AppColors.textLight),
+          style: const TextStyle(fontSize: 10, color: AppColors.slate),
         ),
       ],
     );
   }
 }
+

@@ -6,57 +6,58 @@ class AppTypography {
   static const TextStyle displayLarge = TextStyle(
     fontSize: 32,
     fontWeight: FontWeight.bold,
-    color: AppColors.text,
+    color: AppColors.charcoal,
   );
 
   static const TextStyle displayMedium = TextStyle(
     fontSize: 28,
     fontWeight: FontWeight.bold,
-    color: AppColors.text,
+    color: AppColors.charcoal,
   );
 
   static const TextStyle displaySmall = TextStyle(
     fontSize: 24,
     fontWeight: FontWeight.bold,
-    color: AppColors.text,
+    color: AppColors.charcoal,
   );
 
   // Headline styles
   static const TextStyle headlineSmall = TextStyle(
     fontSize: 18,
     fontWeight: FontWeight.w600,
-    color: AppColors.text,
+    color: AppColors.charcoal,
   );
 
   // Title styles
   static const TextStyle titleLarge = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w600,
-    color: AppColors.text,
+    color: AppColors.charcoal,
   );
 
   static const TextStyle titleMedium = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w500,
-    color: AppColors.text,
+    color: AppColors.charcoal,
   );
 
   // Body styles
   static const TextStyle bodyLarge = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w400,
-    color: AppColors.text,
+    color: AppColors.charcoal,
   );
 
   static const TextStyle bodyMedium = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w400,
-    color: AppColors.textLight,
+    color: AppColors.slate,
   );
 
   static const TextStyle bodySmall = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w400,
-    color: AppColors.textLighter,
+    color: AppColors.silver,
   );
 }
+

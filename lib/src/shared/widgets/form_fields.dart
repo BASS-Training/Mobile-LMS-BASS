@@ -68,7 +68,7 @@ class _AppTextFieldState extends State<AppTextField> {
           decoration: InputDecoration(
             hintText: widget.hintText,
             prefixIcon: widget.prefixIcon != null
-                ? Icon(widget.prefixIcon, color: AppColors.primary)
+                ? Icon(widget.prefixIcon, color: AppColors.violet)
                 : null,
             suffixIcon: widget.suffixIcon != null
                 ? GestureDetector(
@@ -81,7 +81,7 @@ class _AppTextFieldState extends State<AppTextField> {
                                 });
                               }
                             : null),
-                    child: Icon(widget.suffixIcon, color: AppColors.primary),
+                    child: Icon(widget.suffixIcon, color: AppColors.violet),
                   )
                 : null,
           ),
@@ -124,7 +124,7 @@ class AppDropdownField<T> extends StatelessWidget {
           validator: validator,
           decoration: InputDecoration(
             prefixIcon: prefixIcon != null
-                ? Icon(prefixIcon, color: AppColors.primary)
+                ? Icon(prefixIcon, color: AppColors.violet)
                 : null,
           ),
         ),
@@ -132,3 +132,4 @@ class AppDropdownField<T> extends StatelessWidget {
     );
   }
 }
+

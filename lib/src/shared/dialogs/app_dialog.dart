@@ -97,7 +97,7 @@ class LoadingDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+              valueColor: AlwaysStoppedAnimation<Color>(AppColors.violet),
             ),
             SizedBox(height: AppMeasures.paddingLarge),
             Text(
@@ -191,3 +191,4 @@ class ConfirmationDialog extends StatelessWidget {
     );
   }
 }
+

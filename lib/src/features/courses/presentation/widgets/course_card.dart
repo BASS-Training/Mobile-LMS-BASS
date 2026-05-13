@@ -80,7 +80,7 @@ class CourseCard extends StatelessWidget {
                         ),
                         child: Icon(
                           isSaved ? Icons.bookmark : Icons.bookmark_outline,
-                          color: AppColors.primary,
+                          color: AppColors.violet,
                           size: 20,
                         ),
                       ),
@@ -105,7 +105,7 @@ class CourseCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.text,
+                        color: AppColors.charcoal,
                       ),
                     ),
                     SizedBox(height: 4),
@@ -115,7 +115,7 @@ class CourseCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 11,
-                        color: AppColors.textLight,
+                        color: AppColors.slate,
                       ),
                     ),
                     SizedBox(height: 8),
@@ -128,14 +128,14 @@ class CourseCard extends StatelessWidget {
                               Icon(
                                 Icons.book_outlined,
                                 size: 13,
-                                color: AppColors.textLight,
+                                color: AppColors.slate,
                               ),
                               SizedBox(width: 3),
                               Text(
                                 '${course.totalLessons} lessons',
                                 style: TextStyle(
                                   fontSize: 11,
-                                  color: AppColors.textLight,
+                                  color: AppColors.slate,
                                 ),
                               ),
                             ],
@@ -144,14 +144,14 @@ class CourseCard extends StatelessWidget {
                         Icon(
                           Icons.schedule,
                           size: 13,
-                          color: AppColors.textLight,
+                          color: AppColors.slate,
                         ),
                         SizedBox(width: 3),
                         Text(
                           course.duration,
                           style: TextStyle(
                             fontSize: 11,
-                            color: AppColors.textLight,
+                            color: AppColors.slate,
                           ),
                         ),
                       ],

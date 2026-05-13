@@ -57,7 +57,7 @@ class _DiscussionCardState extends State<DiscussionCard> {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.pearl),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -74,7 +74,7 @@ class _DiscussionCardState extends State<DiscussionCard> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
-              color: AppColors.text,
+              color: AppColors.charcoal,
             ),
           ),
           const SizedBox(height: 12),
@@ -87,11 +87,11 @@ class _DiscussionCardState extends State<DiscussionCard> {
               fillColor: const Color(0xFFF8FAFF),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.border),
+                borderSide: const BorderSide(color: AppColors.pearl),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.primary),
+                borderSide: const BorderSide(color: AppColors.violet),
               ),
             ),
           ),
@@ -101,7 +101,7 @@ class _DiscussionCardState extends State<DiscussionCard> {
             child: ElevatedButton(
               onPressed: _handleSend, // Panggil fungsi internal di atas
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
+                backgroundColor: AppColors.violet,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(

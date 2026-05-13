@@ -28,8 +28,8 @@ class CustomBottomNavBar extends StatelessWidget {
         currentIndex: currentIndex,
         onTap: onItemSelected,
         backgroundColor: Colors.white,
-        selectedItemColor: AppColors.primary,
-        unselectedItemColor: AppColors.textLighter,
+        selectedItemColor: AppColors.violet,
+        unselectedItemColor: AppColors.silver,
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,
         elevation: 0,
@@ -59,3 +59,4 @@ class CustomBottomNavBar extends StatelessWidget {
     );
   }
 }
+

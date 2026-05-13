@@ -8,8 +8,12 @@ import 'package:lms_mobile_app/src/features/lessons/data/repositories/lesson_rep
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/quiz_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_repository.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/get_quiz_usecase.dart';
-import 'package:lms_mobile_app/src/features/lessons/domain/usecases/lesson_usecase.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/usecases/is_lesson_completed_usecase.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/usecases/mark_lesson_complete_usecase.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/usecases/mark_lesson_incomplete_usecase.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/usecases/refresh_lesson_completion_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/submit_essay_usecase.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/usecases/toggle_lesson_completion_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/essay/essay_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/quiz/quiz_bloc.dart';

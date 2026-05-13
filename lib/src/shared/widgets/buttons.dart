@@ -35,7 +35,7 @@ class PrimaryButton extends StatelessWidget {
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    isEnabled ? Colors.white : AppColors.textLighter,
+                    isEnabled ? Colors.white : AppColors.silver,
                   ),
                 ),
               )
@@ -86,7 +86,7 @@ class TextActionButton extends StatelessWidget {
     Key? key,
     required this.label,
     required this.onPressed,
-    this.color = AppColors.primary,
+    this.color = AppColors.violet,
   }) : super(key: key);
 
   @override
@@ -100,3 +100,4 @@ class TextActionButton extends StatelessWidget {
     );
   }
 }
+

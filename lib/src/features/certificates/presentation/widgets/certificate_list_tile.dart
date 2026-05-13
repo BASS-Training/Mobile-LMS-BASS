@@ -21,7 +21,7 @@ class CertificateListTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: AppColors.pearl),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.2),
@@ -36,7 +36,7 @@ class CertificateListTile extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: AppColors.success,
+                color: AppColors.emerald,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: const Icon(
@@ -56,21 +56,22 @@ class CertificateListTile extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.text,
+                      color: AppColors.charcoal,
                     ),
                   ),
                   const SizedBox(height: 4),
                   const Text(
                     'Status: Sertifikat tersedia',
-                    style: TextStyle(fontSize: 12, color: AppColors.textLight),
+                    style: TextStyle(fontSize: 12, color: AppColors.slate),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded, color: AppColors.textLight),
+            const Icon(Icons.chevron_right_rounded, color: AppColors.slate),
           ],
         ),
       ),
     );
   }
 }
+

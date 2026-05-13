@@ -65,7 +65,7 @@ class StatisticsCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textLight,
+                    color: AppColors.slate,
                     letterSpacing: 0.5,
                   ),
                 ),
@@ -93,7 +93,7 @@ class StatisticsCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.text,
+                          color: AppColors.charcoal,
                         ),
                       ),
                     ),
@@ -105,7 +105,7 @@ class StatisticsCard extends StatelessWidget {
                   description,
                   style: TextStyle(
                     fontSize: 11,
-                    color: AppColors.textLight,
+                    color: AppColors.slate,
                     height: 1.4,
                   ),
                   maxLines: 2,
@@ -119,3 +119,4 @@ class StatisticsCard extends StatelessWidget {
     );
   }
 }
+

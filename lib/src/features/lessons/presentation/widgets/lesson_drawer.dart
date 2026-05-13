@@ -29,16 +29,16 @@ class LessonDrawer extends StatelessWidget {
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    AppColors.primary,
-                    AppColors.secondary,
-                    AppColors.secondaryDark,
+                    AppColors.violet,
+                    AppColors.azure,
+                    AppColors.cobalt,
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.22),
+                    color: AppColors.violet.withOpacity(0.22),
                     blurRadius: 18,
                     offset: const Offset(0, 8),
                   ),
@@ -130,8 +130,8 @@ class LessonDrawer extends StatelessWidget {
                     // Menghilangkan garis border default bawaan ExpansionTile
                     data: Theme.of(context).copyWith(
                       dividerColor: Colors.transparent,
-                      splashColor: AppColors.primary.withOpacity(0.08),
-                      highlightColor: AppColors.primary.withOpacity(0.04),
+                      splashColor: AppColors.violet.withOpacity(0.08),
+                      highlightColor: AppColors.violet.withOpacity(0.04),
                     ),
                     child: ExpansionTile(
                       initiallyExpanded: isSectionActive,
@@ -153,7 +153,7 @@ class LessonDrawer extends StatelessWidget {
                             width: 36,
                             height: 36,
                             decoration: BoxDecoration(
-                              color: AppColors.primary,
+                              color: AppColors.violet,
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Center(
@@ -178,7 +178,7 @@ class LessonDrawer extends StatelessWidget {
                                   style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w700,
-                                    color: AppColors.text,
+                                    color: AppColors.charcoal,
                                   ),
                                 ),
                                 const SizedBox(height: 6),
@@ -190,7 +190,7 @@ class LessonDrawer extends StatelessWidget {
                                         child: LinearProgressIndicator(
                                           value: progressPercent,
                                           minHeight: 4,
-                                          backgroundColor: AppColors.border
+                                          backgroundColor: AppColors.pearl
                                               .withOpacity(0.7),
                                           valueColor:
                                               const AlwaysStoppedAnimation<
@@ -204,7 +204,7 @@ class LessonDrawer extends StatelessWidget {
                                       '$completedCount/$totalCount',
                                       style: const TextStyle(
                                         fontSize: 10,
-                                        color: AppColors.textLight,
+                                        color: AppColors.slate,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
@@ -246,11 +246,11 @@ class LessonDrawer extends StatelessWidget {
       decoration: BoxDecoration(
         // Jika terpilih, beri background transparan warna ungu (menyesuaikan gambar UI)
         color: isCurrent
-            ? AppColors.primary.withOpacity(0.1)
+            ? AppColors.violet.withOpacity(0.1)
             : const Color(0xFFFDFDFF),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: isCurrent ? AppColors.primary : AppColors.border,
+          color: isCurrent ? AppColors.violet : AppColors.pearl,
           width: isCurrent ? 1.5 : 1,
         ),
         boxShadow: [
@@ -287,10 +287,10 @@ class LessonDrawer extends StatelessWidget {
                     color: lesson.isCompleted
                         ? Colors.green.withOpacity(0.1)
                         : isCurrent
-                        ? AppColors.primary
-                        : AppColors.background,
+                        ? AppColors.violet
+                        : AppColors.mist,
                     border: !lesson.isCompleted && !isCurrent
-                        ? Border.all(color: AppColors.border)
+                        ? Border.all(color: AppColors.pearl)
                         : null,
                   ),
                   child: Center(
@@ -303,7 +303,7 @@ class LessonDrawer extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                               color: isCurrent
                                   ? Colors.white
-                                  : AppColors.textLight,
+                                  : AppColors.slate,
                               fontSize: 12,
                             ),
                           )
@@ -325,9 +325,9 @@ class LessonDrawer extends StatelessWidget {
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                           color: isCurrent
-                              ? AppColors.primary
+                              ? AppColors.violet
                               : isUnlocked
-                              ? AppColors.text
+                              ? AppColors.charcoal
                               : Colors.grey,
                           decoration: lesson.isCompleted
                               ? TextDecoration.lineThrough
@@ -343,7 +343,7 @@ class LessonDrawer extends StatelessWidget {
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
                               color: isUnlocked
-                                  ? AppColors.textLight
+                                  ? AppColors.slate
                                   : Colors.grey.withOpacity(0.6),
                             ),
                           ),
@@ -353,7 +353,7 @@ class LessonDrawer extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 10,
                               color: isUnlocked
-                                  ? AppColors.textLight
+                                  ? AppColors.slate
                                   : Colors.grey.withOpacity(0.6),
                             ),
                           ),
@@ -372,7 +372,7 @@ class LessonDrawer extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.primary,
+                      color: AppColors.violet,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Text(
@@ -403,3 +403,4 @@ class LessonDrawer extends StatelessWidget {
     return previousLesson.isCompleted;
   }
 }
+

@@ -24,7 +24,7 @@ class CommentItemWidget extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border.withOpacity(0.8)),
+        border: Border.all(color: AppColors.pearl.withOpacity(0.8)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
@@ -38,11 +38,11 @@ class CommentItemWidget extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 18,
-            backgroundColor: AppColors.primary.withOpacity(0.15),
+            backgroundColor: AppColors.violet.withOpacity(0.15),
             child: Text(
               comment.userName.characters.first.toUpperCase(),
               style: const TextStyle(
-                color: AppColors.primary,
+                color: AppColors.violet,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -59,7 +59,7 @@ class CommentItemWidget extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.text,
+                        color: AppColors.charcoal,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -67,7 +67,7 @@ class CommentItemWidget extends StatelessWidget {
                       comment.timeLabel,
                       style: const TextStyle(
                         fontSize: 11,
-                        color: AppColors.textLight,
+                        color: AppColors.slate,
                       ),
                     ),
                   ],
@@ -78,7 +78,7 @@ class CommentItemWidget extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 13,
                     height: 1.5,
-                    color: AppColors.text,
+                    color: AppColors.charcoal,
                   ),
                 ),
               ],

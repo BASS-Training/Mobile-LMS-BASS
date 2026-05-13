@@ -77,7 +77,7 @@ class _SavedCoursesScreenState extends State<SavedCoursesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.mist,
       appBar: AppBar(title: Text('Saved Courses'), elevation: 0),
       body: BlocBuilder<CourseBloc, CourseState>(
         builder: (context, state) {
@@ -93,14 +93,14 @@ class _SavedCoursesScreenState extends State<SavedCoursesScreen> {
                     Icon(
                       Icons.bookmark_outline,
                       size: 64,
-                      color: AppColors.textLighter,
+                      color: AppColors.silver,
                     ),
                     SizedBox(height: 16),
                     Text(
                       'No saved courses yet',
                       style: TextStyle(
                         fontSize: 16,
-                        color: AppColors.textLight,
+                        color: AppColors.slate,
                       ),
                     ),
                   ],
@@ -118,7 +118,7 @@ class _SavedCoursesScreenState extends State<SavedCoursesScreen> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.border),
+                    border: Border.all(color: AppColors.pearl),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withOpacity(0.05),
@@ -165,7 +165,7 @@ class _SavedCoursesScreenState extends State<SavedCoursesScreen> {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.text,
+                                color: AppColors.charcoal,
                               ),
                             ),
                             SizedBox(height: 4),
@@ -175,7 +175,7 @@ class _SavedCoursesScreenState extends State<SavedCoursesScreen> {
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontSize: 12,
-                                color: AppColors.textLight,
+                                color: AppColors.slate,
                               ),
                             ),
                             SizedBox(height: 8),
@@ -184,14 +184,14 @@ class _SavedCoursesScreenState extends State<SavedCoursesScreen> {
                                 Icon(
                                   Icons.book_outlined,
                                   size: 12,
-                                  color: AppColors.textLighter,
+                                  color: AppColors.silver,
                                 ),
                                 SizedBox(width: 4),
                                 Text(
                                   '${courseEntity.totalLessons} lessons',
                                   style: TextStyle(
                                     fontSize: 11,
-                                    color: AppColors.textLighter,
+                                    color: AppColors.silver,
                                   ),
                                 ),
                               ],
@@ -208,7 +208,7 @@ class _SavedCoursesScreenState extends State<SavedCoursesScreen> {
                         },
                         child: Icon(
                           Icons.arrow_forward,
-                          color: AppColors.primary,
+                          color: AppColors.violet,
                         ),
                       ),
                     ],
@@ -234,7 +234,7 @@ class ProfileScreen extends StatelessWidget {
         if (state is AuthSuccess) {
           final user = state.user;
           return Scaffold(
-            backgroundColor: AppColors.background,
+            backgroundColor: AppColors.mist,
             appBar: AppBar(title: Text('Profile'), elevation: 0),
             body: SingleChildScrollView(
               child: Column(
@@ -247,7 +247,7 @@ class ProfileScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: LinearGradient(
-                        colors: [AppColors.primary, AppColors.secondary],
+                        colors: [AppColors.violet, AppColors.azure],
                       ),
                       boxShadow: [
                         BoxShadow(
@@ -267,13 +267,13 @@ class ProfileScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.text,
+                      color: AppColors.charcoal,
                     ),
                   ),
                   SizedBox(height: 8),
                   Text(
                     user.email,
-                    style: TextStyle(fontSize: 14, color: AppColors.textLight),
+                    style: TextStyle(fontSize: 14, color: AppColors.slate),
                   ),
                   SizedBox(height: 32),
                   // Info cards
@@ -286,13 +286,13 @@ class ProfileScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.border),
+                            border: Border.all(color: AppColors.pearl),
                           ),
                           child: Row(
                             children: [
                               Icon(
                                 Icons.info_outline,
-                                color: AppColors.primary,
+                                color: AppColors.violet,
                               ),
                               SizedBox(width: 16),
                               Column(
@@ -302,7 +302,7 @@ class ProfileScreen extends StatelessWidget {
                                     'Account Status',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: AppColors.textLight,
+                                      color: AppColors.slate,
                                     ),
                                   ),
                                   SizedBox(height: 4),
@@ -311,7 +311,7 @@ class ProfileScreen extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
-                                      color: AppColors.success,
+                                      color: AppColors.emerald,
                                     ),
                                   ),
                                 ],
@@ -325,13 +325,13 @@ class ProfileScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.border),
+                            border: Border.all(color: AppColors.pearl),
                           ),
                           child: Row(
                             children: [
                               Icon(
                                 Icons.star_outline,
-                                color: AppColors.accentOrange,
+                                color: AppColors.apricot,
                               ),
                               SizedBox(width: 16),
                               Column(
@@ -341,7 +341,7 @@ class ProfileScreen extends StatelessWidget {
                                     'Member Since',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: AppColors.textLight,
+                                      color: AppColors.slate,
                                     ),
                                   ),
                                   SizedBox(height: 4),
@@ -350,7 +350,7 @@ class ProfileScreen extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
-                                      color: AppColors.text,
+                                      color: AppColors.charcoal,
                                     ),
                                   ),
                                 ],
@@ -371,7 +371,7 @@ class ProfileScreen extends StatelessWidget {
                         context.go(AppRoutes.login);
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.error,
+                        backgroundColor: AppColors.crimson,
                         minimumSize: Size(double.infinity, 50),
                       ),
                       child: Text('Logout'),
@@ -388,3 +388,4 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 }
+

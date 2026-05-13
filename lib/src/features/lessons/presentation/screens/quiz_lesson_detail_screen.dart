@@ -161,7 +161,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(18),
                       border: Border.all(
-                        color: AppColors.border.withOpacity(0.8),
+                        color: AppColors.pearl.withOpacity(0.8),
                       ),
                       boxShadow: [
                         BoxShadow(
@@ -186,7 +186,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w800,
-                            color: AppColors.text,
+                            color: AppColors.charcoal,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -196,7 +196,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
                           style: const TextStyle(
                             fontSize: 13,
                             height: 1.5,
-                            color: AppColors.textLight,
+                            color: AppColors.slate,
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -406,7 +406,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.border.withOpacity(0.8)),
+                  border: Border.all(color: AppColors.pearl.withOpacity(0.8)),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.05),
@@ -499,7 +499,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border(
-            top: BorderSide(color: AppColors.border.withOpacity(0.9)),
+            top: BorderSide(color: AppColors.pearl.withOpacity(0.9)),
           ),
           boxShadow: [
             BoxShadow(
@@ -524,10 +524,10 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
                 icon: const Icon(Icons.arrow_back),
                 label: const Text('Sebelumnya'),
                 style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: AppColors.border.withOpacity(0.9)),
+                  side: BorderSide(color: AppColors.pearl.withOpacity(0.9)),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   backgroundColor: Colors.white,
-                  foregroundColor: AppColors.text,
+                  foregroundColor: AppColors.charcoal,
                 ),
               ),
             ),
@@ -545,8 +545,8 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
                         context.read<QuizBloc>().add(const NextQuestionEvent());
                       },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  shadowColor: AppColors.primary.withOpacity(0.45),
+                  backgroundColor: AppColors.violet,
+                  shadowColor: AppColors.violet.withOpacity(0.45),
                   elevation: 8,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
@@ -616,3 +616,4 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
     );
   }
 }
+

@@ -41,7 +41,7 @@ class FeatureCard extends StatelessWidget {
                 width: 50,
                 height: 50,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.violet.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Center(
@@ -55,7 +55,7 @@ class FeatureCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.text,
+                  color: AppColors.charcoal,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -66,7 +66,7 @@ class FeatureCard extends StatelessWidget {
                 description,
                 style: TextStyle(
                   fontSize: 12,
-                  color: AppColors.textLight,
+                  color: AppColors.slate,
                   height: 1.4,
                 ),
                 maxLines: 2,
@@ -79,7 +79,7 @@ class FeatureCard extends StatelessWidget {
                 child: Icon(
                   Icons.arrow_forward_ios,
                   size: 14,
-                  color: AppColors.primary,
+                  color: AppColors.violet,
                 ),
               ),
             ],
@@ -89,3 +89,4 @@ class FeatureCard extends StatelessWidget {
     );
   }
 }
+

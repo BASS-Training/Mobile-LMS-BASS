@@ -28,11 +28,11 @@ class OptionCardWidget extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: isSelected
-                  ? AppColors.primary.withOpacity(0.1)
+                  ? AppColors.violet.withOpacity(0.1)
                   : Colors.white,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isSelected ? AppColors.primary : Colors.grey[300]!,
+                color: isSelected ? AppColors.violet : Colors.grey[300]!,
                 width: isSelected ? 2 : 1,
               ),
             ),
@@ -42,7 +42,7 @@ class OptionCardWidget extends StatelessWidget {
                   value: index,
                   groupValue: isSelected ? index : null,
                   onChanged: (value) => onTap(),
-                  activeColor: AppColors.primary,
+                  activeColor: AppColors.violet,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -50,7 +50,7 @@ class OptionCardWidget extends StatelessWidget {
                     option,
                     style: TextStyle(
                       fontSize: 14,
-                      color: isSelected ? AppColors.primary : AppColors.text,
+                      color: isSelected ? AppColors.violet : AppColors.charcoal,
                       fontWeight: isSelected
                           ? FontWeight.w600
                           : FontWeight.w500,
@@ -65,3 +65,4 @@ class OptionCardWidget extends StatelessWidget {
     );
   }
 }
+

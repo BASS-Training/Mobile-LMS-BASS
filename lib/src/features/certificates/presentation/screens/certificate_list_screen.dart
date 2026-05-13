@@ -11,7 +11,7 @@ class CertificateListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.mist,
       appBar: AppBar(title: const Text('Daftar Sertifikat')),
       body: BlocBuilder<CourseBloc, CourseState>(
         builder: (context, state) {
@@ -54,3 +54,4 @@ class CertificateListScreen extends StatelessWidget {
     );
   }
 }
+

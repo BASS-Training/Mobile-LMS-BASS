@@ -1,5 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../domain/usecases/lesson_usecase.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/usecases/is_lesson_completed_usecase.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/usecases/mark_lesson_complete_usecase.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/usecases/mark_lesson_incomplete_usecase.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/usecases/refresh_lesson_completion_usecase.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/usecases/toggle_lesson_completion_usecase.dart';
 import 'lesson_event.dart';
 import 'lesson_state.dart';
 

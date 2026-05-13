@@ -118,18 +118,6 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
     super.dispose();
   }
 
-  void _sendComment() {
-    final text = _commentController.text.trim();
-    if (text.isEmpty) return;
-
-    // Serahkan penyimpanan data ke BLoC
-    context.read<VideoBloc>().add(
-      SubmitDiscussionComment(widget.lesson.id, text),
-    );
-    _commentController.clear();
-    FocusScope.of(context).unfocus(); // Menutup keyboard dengan rapi
-  }
-
   void _openLesson(LessonEntity lesson, int lessonIndex) {
     final route = LessonRouteResolver.routeForType(lesson.type);
     context.push(
@@ -179,7 +167,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: AppColors.border.withOpacity(0.8)),
+                border: Border.all(color: AppColors.pearl.withOpacity(0.8)),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.05),
@@ -194,7 +182,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
                   Icon(
                     Icons.ondemand_video_outlined,
                     size: 64,
-                    color: AppColors.primary,
+                    color: AppColors.violet,
                   ),
                   SizedBox(height: 16),
                   Text(
@@ -203,7 +191,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
                     style: TextStyle(
                       fontSize: 15,
                       height: 1.5,
-                      color: AppColors.textLight,
+                      color: AppColors.slate,
                     ),
                   ),
                 ],
@@ -218,10 +206,10 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
       player: YoutubePlayer(
         controller: _controller,
         showVideoProgressIndicator: true,
-        progressIndicatorColor: AppColors.primary,
+        progressIndicatorColor: AppColors.violet,
         progressColors: const ProgressBarColors(
-          playedColor: AppColors.primary,
-          handleColor: AppColors.primary,
+          playedColor: AppColors.violet,
+          handleColor: AppColors.violet,
         ),
       ),
       builder: (context, player) {
@@ -327,7 +315,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
-                                  color: AppColors.text,
+                                  color: AppColors.charcoal,
                                 ),
                               ),
                               const SizedBox(height: 12),
@@ -490,7 +478,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border.withOpacity(0.8)),
+        border: Border.all(color: AppColors.pearl.withOpacity(0.8)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -507,7 +495,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
-              color: AppColors.text,
+              color: AppColors.charcoal,
             ),
           ),
           const SizedBox(height: 8),
@@ -516,19 +504,19 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
             style: const TextStyle(
               fontSize: 14,
               height: 1.6,
-              color: AppColors.textLight,
+              color: AppColors.slate,
             ),
           ),
           const SizedBox(height: 12),
           Row(
             children: [
-              const Icon(Icons.timer, size: 16, color: AppColors.textLight),
+              const Icon(Icons.timer, size: 16, color: AppColors.slate),
               const SizedBox(width: 6),
               Text(
                 lessonTitle,
                 style: const TextStyle(
                   fontSize: 12,
-                  color: AppColors.textLight,
+                  color: AppColors.slate,
                 ),
               ),
               const SizedBox(width: 12),
@@ -553,74 +541,5 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
       ),
     );
   }
-
-  Widget _buildDiscussionCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Colors.white, Color(0xFFFDFDFF)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border.withOpacity(0.8)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 18,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Diskusi',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: AppColors.text,
-            ),
-          ),
-          const SizedBox(height: 12),
-          TextField(
-            controller: _commentController,
-            maxLines: 3,
-            decoration: InputDecoration(
-              hintText: 'Tulis komentar Anda di sini...',
-              filled: true,
-              fillColor: const Color(0xFFF8FAFF),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.border),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: AppColors.primary),
-              ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _sendComment,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text('Kirim Komentar'),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
+

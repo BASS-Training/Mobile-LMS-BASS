@@ -52,7 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: AppColors.error,
+                backgroundColor: AppColors.crimson,
                 duration: Duration(seconds: 3),
               ),
             );
@@ -63,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [AppColors.primary, AppColors.secondary],
+              colors: [AppColors.violet, AppColors.azure],
             ),
           ),
           child: SafeArea(
@@ -140,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.text,
+                                color: AppColors.charcoal,
                               ),
                             ),
                             SizedBox(height: 24),
@@ -151,7 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               decoration: InputDecoration(
                                 hintText: AppStrings.email,
                                 prefixIcon: Icon(Icons.email_outlined),
-                                prefixIconColor: AppColors.primary,
+                                prefixIconColor: AppColors.violet,
                               ),
                               validator: Validators.validateEmail,
                               onChanged: (_) {
@@ -168,7 +168,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               decoration: InputDecoration(
                                 hintText: AppStrings.password,
                                 prefixIcon: Icon(Icons.lock_outlined),
-                                prefixIconColor: AppColors.primary,
+                                prefixIconColor: AppColors.violet,
                                 suffixIcon: GestureDetector(
                                   onTap: () {
                                     setState(() {
@@ -179,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     _obscurePassword
                                         ? Icons.visibility_outlined
                                         : Icons.visibility_off_outlined,
-                                    color: AppColors.textLighter,
+                                    color: AppColors.silver,
                                   ),
                                 ),
                               ),
@@ -199,7 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: Text(
                                   'Forgot Password?',
                                   style: TextStyle(
-                                    color: AppColors.primary,
+                                    color: AppColors.violet,
                                     fontSize: 13,
                                   ),
                                 ),
@@ -245,7 +245,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   child: Text(
                                     'OR',
                                     style: TextStyle(
-                                      color: AppColors.textLighter,
+                                      color: AppColors.silver,
                                     ),
                                   ),
                                 ),
@@ -257,9 +257,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             Container(
                               padding: EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: AppColors.background,
+                                color: AppColors.mist,
                                 borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: AppColors.border),
+                                border: Border.all(color: AppColors.pearl),
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -269,7 +269,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
-                                      color: AppColors.text,
+                                      color: AppColors.charcoal,
                                     ),
                                   ),
                                   SizedBox(height: 4),
@@ -277,7 +277,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     'Email: demo@example.com\nPassword: demo123',
                                     style: TextStyle(
                                       fontSize: 11,
-                                      color: AppColors.textLight,
+                                      color: AppColors.slate,
                                     ),
                                   ),
                                 ],
@@ -298,3 +298,4 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+

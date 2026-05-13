@@ -110,14 +110,14 @@ class _QuestionNavigatorState extends State<QuestionNavigatorWidget> {
                       duration: const Duration(milliseconds: 160),
                       decoration: BoxDecoration(
                         color: isCurrentQuestion
-                            ? AppColors.primary
+                            ? AppColors.violet
                             : (isAnswered
                                   ? Colors.green.shade100
                                   : Colors.grey[200]),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
                           color: isCurrentQuestion
-                              ? AppColors.primary
+                              ? AppColors.violet
                               : (isAnswered
                                     ? Colors.green.shade200
                                     : Colors.transparent),
@@ -134,7 +134,7 @@ class _QuestionNavigatorState extends State<QuestionNavigatorWidget> {
                                 ? Colors.white
                                 : (isAnswered
                                       ? Colors.green.shade800
-                                      : AppColors.text),
+                                      : AppColors.charcoal),
                           ),
                         ),
                       ),
@@ -153,7 +153,7 @@ class _QuestionNavigatorState extends State<QuestionNavigatorWidget> {
   Widget _buildLegend() {
     return Row(
       children: [
-        _buildLegendItem(color: AppColors.primary, label: 'Aktif'),
+        _buildLegendItem(color: AppColors.violet, label: 'Aktif'),
         const SizedBox(width: 16),
         _buildLegendItem(color: Colors.green[100]!, label: 'Terjawab'),
         const SizedBox(width: 16),
@@ -176,9 +176,10 @@ class _QuestionNavigatorState extends State<QuestionNavigatorWidget> {
         const SizedBox(width: 6),
         Text(
           label,
-          style: const TextStyle(fontSize: 11, color: AppColors.textLight),
+          style: const TextStyle(fontSize: 11, color: AppColors.slate),
         ),
       ],
     );
   }
 }
+

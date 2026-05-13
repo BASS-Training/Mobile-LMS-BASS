@@ -300,7 +300,7 @@ class _DocumentLessonDetailScreenState
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border.withOpacity(0.8)),
+        border: Border.all(color: AppColors.pearl.withOpacity(0.8)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -317,7 +317,7 @@ class _DocumentLessonDetailScreenState
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
-              color: AppColors.text,
+              color: AppColors.charcoal,
             ),
           ),
           const SizedBox(height: 8),
@@ -344,7 +344,7 @@ class _DocumentLessonDetailScreenState
             style: const TextStyle(
               fontSize: 14,
               height: 1.8,
-              color: AppColors.textLight,
+              color: AppColors.slate,
             ),
           ),
         ],
@@ -364,7 +364,7 @@ class _DocumentLessonDetailScreenState
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border.withOpacity(0.8)),
+        border: Border.all(color: AppColors.pearl.withOpacity(0.8)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.04),
@@ -381,7 +381,7 @@ class _DocumentLessonDetailScreenState
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
-              color: AppColors.text,
+              color: AppColors.charcoal,
             ),
           ),
           const SizedBox(height: 6),
@@ -389,7 +389,7 @@ class _DocumentLessonDetailScreenState
             width: 44,
             height: 4,
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.25),
+              color: AppColors.violet.withOpacity(0.25),
               borderRadius: BorderRadius.circular(999),
             ),
           ),
@@ -402,7 +402,7 @@ class _DocumentLessonDetailScreenState
                 style: const TextStyle(
                   fontSize: 14,
                   height: 1.8,
-                  color: AppColors.textLight,
+                  color: AppColors.slate,
                 ),
               ),
             ),
@@ -420,7 +420,7 @@ class _DocumentLessonDetailScreenState
                       style: TextStyle(
                         fontSize: 18,
                         height: 1.4,
-                        color: AppColors.primary,
+                        color: AppColors.violet,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -430,7 +430,7 @@ class _DocumentLessonDetailScreenState
                         style: const TextStyle(
                           fontSize: 14,
                           height: 1.7,
-                          color: AppColors.textLight,
+                          color: AppColors.slate,
                         ),
                       ),
                     ),
@@ -476,3 +476,4 @@ class _DocumentLessonDetailScreenState
     ];
   }
 }
+

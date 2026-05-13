@@ -24,7 +24,7 @@ class CertificateDetailScreen extends StatelessWidget {
     });
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.mist,
       appBar: AppBar(title: const Text('Certificate Verification')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(14),
@@ -244,3 +244,4 @@ class _MountainPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+

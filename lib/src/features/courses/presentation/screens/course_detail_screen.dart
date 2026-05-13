@@ -32,7 +32,7 @@ class CourseDetailScreen extends StatelessWidget {
         }
 
         return Scaffold(
-          backgroundColor: AppColors.background,
+          backgroundColor: AppColors.mist,
           body: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,7 +102,7 @@ class CourseDetailScreen extends StatelessWidget {
                                 currentCourseEntity.isSaved
                                     ? Icons.bookmark
                                     : Icons.bookmark_outline,
-                                color: AppColors.primary,
+                                color: AppColors.violet,
                               ),
                             ),
                           ),
@@ -158,13 +158,13 @@ class CourseDetailScreen extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Icon(Icons.person, color: AppColors.primary),
+                                  Icon(Icons.person, color: AppColors.violet),
                                   SizedBox(height: 8),
                                   Text(
                                     'Instructor',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: AppColors.textLight,
+                                      color: AppColors.slate,
                                     ),
                                   ),
                                   SizedBox(height: 4),
@@ -175,7 +175,7 @@ class CourseDetailScreen extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w600,
-                                      color: AppColors.text,
+                                      color: AppColors.charcoal,
                                     ),
                                   ),
                                 ],
@@ -199,13 +199,13 @@ class CourseDetailScreen extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Icon(Icons.timer, color: AppColors.secondary),
+                                  Icon(Icons.timer, color: AppColors.azure),
                                   SizedBox(height: 8),
                                   Text(
                                     'Duration',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: AppColors.textLight,
+                                      color: AppColors.slate,
                                     ),
                                   ),
                                   SizedBox(height: 4),
@@ -214,7 +214,7 @@ class CourseDetailScreen extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w600,
-                                      color: AppColors.text,
+                                      color: AppColors.charcoal,
                                     ),
                                   ),
                                 ],
@@ -230,7 +230,7 @@ class CourseDetailScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.text,
+                          color: AppColors.charcoal,
                         ),
                       ),
                       SizedBox(height: 8),
@@ -238,7 +238,7 @@ class CourseDetailScreen extends StatelessWidget {
                         currentCourseEntity.description,
                         style: TextStyle(
                           fontSize: 14,
-                          color: AppColors.textLight,
+                          color: AppColors.slate,
                           height: 1.6,
                         ),
                       ),
@@ -259,7 +259,7 @@ class CourseDetailScreen extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.text,
+                              color: AppColors.charcoal,
                             ),
                           ),
                           Container(
@@ -268,7 +268,7 @@ class CourseDetailScreen extends StatelessWidget {
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColors.primary.withOpacity(0.1),
+                              color: AppColors.violet.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -276,7 +276,7 @@ class CourseDetailScreen extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                color: AppColors.primary,
+                                color: AppColors.violet,
                               ),
                             ),
                           ),
@@ -325,7 +325,7 @@ class CourseDetailScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.pearl),
         boxShadow: [
           BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8),
         ],
@@ -341,7 +341,7 @@ class CourseDetailScreen extends StatelessWidget {
                 height: 36,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.primary,
+                  color: AppColors.violet,
                 ),
                 child: Center(
                   child: Text(
@@ -366,7 +366,7 @@ class CourseDetailScreen extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: AppColors.text,
+                        color: AppColors.charcoal,
                       ),
                     ),
                     SizedBox(height: 4),
@@ -376,7 +376,7 @@ class CourseDetailScreen extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.textLight,
+                        color: AppColors.slate,
                       ),
                     ),
                   ],
@@ -395,16 +395,16 @@ class CourseDetailScreen extends StatelessWidget {
                   child: LinearProgressIndicator(
                     value: progressPercent / 100,
                     minHeight: 4,
-                    backgroundColor: AppColors.border,
+                    backgroundColor: AppColors.pearl,
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      AppColors.primary,
+                      AppColors.violet,
                     ),
                   ),
                 ),
                 SizedBox(height: 4),
                 Text(
                   '$completedCount/$totalCount lessons',
-                  style: TextStyle(fontSize: 11, color: AppColors.textLight),
+                  style: TextStyle(fontSize: 11, color: AppColors.slate),
                 ),
               ],
             ),
@@ -422,9 +422,9 @@ class CourseDetailScreen extends StatelessWidget {
                   return Container(
                     margin: EdgeInsets.only(bottom: 8),
                     decoration: BoxDecoration(
-                      color: AppColors.background,
+                      color: AppColors.mist,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColors.border),
+                      border: Border.all(color: AppColors.pearl),
                     ),
                     child: Material(
                       color: Colors.transparent,
@@ -465,9 +465,9 @@ class CourseDetailScreen extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: lesson.isCompleted
-                                      ? AppColors.primary
+                                      ? AppColors.violet
                                       : _isLessonUnlocked(lesson, course)
-                                      ? AppColors.border
+                                      ? AppColors.pearl
                                       : Colors.grey,
                                 ),
                                 child: Center(
@@ -481,7 +481,7 @@ class CourseDetailScreen extends StatelessWidget {
                                           '${lessonIndexInSection + 1}',
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            color: AppColors.text,
+                                            color: AppColors.charcoal,
                                             fontSize: 12,
                                           ),
                                         ),
@@ -503,8 +503,8 @@ class CourseDetailScreen extends StatelessWidget {
                                         fontWeight: FontWeight.w500,
                                         color: _isLessonUnlocked(lesson, course)
                                             ? (lesson.isCompleted
-                                                  ? AppColors.textLight
-                                                  : AppColors.text)
+                                                  ? AppColors.slate
+                                                  : AppColors.charcoal)
                                             : Colors.grey,
                                         decoration: lesson.isCompleted
                                             ? TextDecoration.lineThrough
@@ -519,7 +519,7 @@ class CourseDetailScreen extends StatelessWidget {
                                           size: 12,
                                           color:
                                               _isLessonUnlocked(lesson, course)
-                                              ? AppColors.textLight
+                                              ? AppColors.slate
                                               : Colors.grey,
                                         ),
                                         SizedBox(width: 3),
@@ -532,7 +532,7 @@ class CourseDetailScreen extends StatelessWidget {
                                                   lesson,
                                                   course,
                                                 )
-                                                ? AppColors.textLight
+                                                ? AppColors.slate
                                                 : Colors.grey,
                                           ),
                                         ),
@@ -597,7 +597,7 @@ class CourseDetailScreen extends StatelessWidget {
       case 'document':
         return Colors.green;
       default:
-        return AppColors.primary;
+        return AppColors.violet;
     }
   }
 
@@ -612,3 +612,4 @@ class CourseDetailScreen extends StatelessWidget {
     return previousLesson.isCompleted;
   }
 }
+

@@ -107,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.mist,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -118,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: EdgeInsets.all(AppMeasures.paddingLarge),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [AppColors.primary, AppColors.secondary],
+                    colors: [AppColors.violet, AppColors.azure],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -206,10 +206,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                         decoration: InputDecoration(
                           hintText: AppStrings.searchCourses,
-                          hintStyle: TextStyle(color: AppColors.textLighter),
+                          hintStyle: TextStyle(color: AppColors.silver),
                           prefixIcon: Icon(
                             Icons.search,
-                            color: AppColors.primary,
+                            color: AppColors.violet,
                           ),
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.symmetric(
@@ -379,7 +379,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Text(
                             state.message,
                             style: TextStyle(
-                              color: AppColors.error,
+                              color: AppColors.crimson,
                               fontSize: 14,
                             ),
                           ),
@@ -402,7 +402,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.text,
+                    color: AppColors.charcoal,
                   ),
                 ),
               ),
@@ -570,7 +570,7 @@ class _HomeScreenState extends State<HomeScreen> {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: AppColors.text,
+                color: AppColors.charcoal,
               ),
             ),
             SizedBox(height: 4),
@@ -579,14 +579,14 @@ class _HomeScreenState extends State<HomeScreen> {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textLight,
+                color: AppColors.slate,
               ),
             ),
             SizedBox(height: 8),
             Expanded(
               child: Text(
                 description,
-                style: TextStyle(fontSize: 11, color: AppColors.textLighter),
+                style: TextStyle(fontSize: 11, color: AppColors.silver),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -632,7 +632,7 @@ class _HomeScreenState extends State<HomeScreen> {
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: AppColors.text,
+                color: AppColors.charcoal,
               ),
             ),
             SizedBox(height: 4),
@@ -641,7 +641,7 @@ class _HomeScreenState extends State<HomeScreen> {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textLight,
+                color: AppColors.slate,
               ),
             ),
             SizedBox(height: 12),
@@ -658,7 +658,7 @@ class _HomeScreenState extends State<HomeScreen> {
             SizedBox(height: 8),
             Text(
               description,
-              style: TextStyle(fontSize: 11, color: AppColors.textLighter),
+              style: TextStyle(fontSize: 11, color: AppColors.silver),
             ),
           ],
         ),
@@ -696,14 +696,14 @@ class _HomeScreenState extends State<HomeScreen> {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: AppColors.text,
+                color: AppColors.charcoal,
               ),
             ),
             SizedBox(height: 8),
             Expanded(
               child: Text(
                 'Panduan lengkap penggunaan aplikasi LMS',
-                style: TextStyle(fontSize: 11, color: AppColors.textLighter),
+                style: TextStyle(fontSize: 11, color: AppColors.silver),
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -739,7 +739,7 @@ class _HomeScreenState extends State<HomeScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: AppColors.pearl),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
@@ -753,14 +753,14 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Icon(Icons.menu_book_rounded, color: AppColors.primary, size: 28),
+              Icon(Icons.menu_book_rounded, color: AppColors.violet, size: 28),
               const Spacer(),
               Text(
                 'Tampilkan Semua',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.text,
+                  color: AppColors.charcoal,
                   height: 1.1,
                 ),
               ),
@@ -771,11 +771,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     'Buka daftar Kursus',
                     style: TextStyle(
                       fontSize: 12,
-                      color: AppColors.textLighter,
+                      color: AppColors.silver,
                     ),
                   ),
                   const Spacer(),
-                  Icon(Icons.arrow_forward_rounded, color: AppColors.text),
+                  Icon(Icons.arrow_forward_rounded, color: AppColors.charcoal),
                 ],
               ),
             ],
@@ -836,7 +836,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.success.withOpacity(0.12),
+                    color: AppColors.emerald.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: Text(
@@ -844,7 +844,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.success,
+                      color: AppColors.emerald,
                     ),
                   ),
                 ),
@@ -854,7 +854,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.text,
+                    color: AppColors.charcoal,
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -871,7 +871,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     suffixIcon: Icon(
                       Icons.vpn_key_rounded,
-                      color: AppColors.primary,
+                      color: AppColors.violet,
                       size: 18,
                     ),
                   ),
@@ -898,7 +898,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      backgroundColor: AppColors.primary,
+                      backgroundColor: AppColors.violet,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -921,7 +921,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 'Lihat daftar sertifikat',
                 style: TextStyle(
                   fontSize: 11,
-                  color: AppColors.primaryDark,
+                  color: AppColors.indigo,
                   fontWeight: FontWeight.w700,
                   decoration: TextDecoration.underline,
                 ),
@@ -945,7 +945,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       'Belum ada sertifikat. Selesaikan course sampai 100% untuk mendapatkan sertifikat.',
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.textLight,
+                        color: AppColors.slate,
                         height: 1.4,
                       ),
                     ),
@@ -976,7 +976,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w700,
-                                  color: AppColors.text,
+                                  color: AppColors.charcoal,
                                   height: 1.3,
                                 ),
                               ),
@@ -986,14 +986,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Icon(
                                     Icons.verified_rounded,
                                     size: 14,
-                                    color: AppColors.success,
+                                    color: AppColors.emerald,
                                   ),
                                   const SizedBox(width: 6),
                                   Text(
                                     'Sertifikat tersedia',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: AppColors.textLight,
+                                      color: AppColors.slate,
                                     ),
                                   ),
                                 ],
@@ -1063,7 +1063,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             child: Text(
               label,
-              style: TextStyle(fontSize: 11, color: AppColors.text),
+              style: TextStyle(fontSize: 11, color: AppColors.charcoal),
             ),
           ),
           Text(
@@ -1071,7 +1071,7 @@ class _HomeScreenState extends State<HomeScreen> {
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: AppColors.text,
+              color: AppColors.charcoal,
             ),
           ),
         ],
@@ -1091,7 +1091,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             child: Text(
               label,
-              style: TextStyle(fontSize: 11, color: AppColors.text),
+              style: TextStyle(fontSize: 11, color: AppColors.charcoal),
             ),
           ),
           Text(
@@ -1099,7 +1099,7 @@ class _HomeScreenState extends State<HomeScreen> {
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
-              color: AppColors.text,
+              color: AppColors.charcoal,
             ),
           ),
         ],
@@ -1141,7 +1141,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: Colors.white.withOpacity(0.9),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(icon, color: AppColors.primaryDark, size: 19),
+                child: Icon(icon, color: AppColors.indigo, size: 19),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -1150,7 +1150,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.text,
+                    color: AppColors.charcoal,
                   ),
                 ),
               ),
@@ -1164,3 +1164,5 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
+

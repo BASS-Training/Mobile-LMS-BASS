@@ -8,18 +8,18 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.light(
-        primary: AppColors.primary,
-        secondary: AppColors.secondary,
-        surface: AppColors.surface,
-        error: AppColors.error,
+        primary: AppColors.violet,
+        secondary: AppColors.azure,
+        surface: AppColors.white,
+        error: AppColors.crimson,
       ),
-      scaffoldBackgroundColor: AppColors.background,
+      scaffoldBackgroundColor: AppColors.mist,
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.white,
         elevation: 0,
         centerTitle: false,
         titleTextStyle: AppTypography.displaySmall,
-        iconTheme: const IconThemeData(color: AppColors.text),
+        iconTheme: const IconThemeData(color: AppColors.charcoal),
       ),
       textTheme: TextTheme(
         displayLarge: AppTypography.displayLarge,
@@ -34,32 +34,32 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.surface,
+        fillColor: AppColors.white,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppMeasures.paddingLarge,
           vertical: 14,
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppMeasures.radiusMedium),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: const BorderSide(color: AppColors.pearl),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppMeasures.radiusMedium),
-          borderSide: const BorderSide(color: AppColors.border),
+          borderSide: const BorderSide(color: AppColors.pearl),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppMeasures.radiusMedium),
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
+          borderSide: const BorderSide(color: AppColors.violet, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppMeasures.radiusMedium),
-          borderSide: const BorderSide(color: AppColors.error),
+          borderSide: const BorderSide(color: AppColors.crimson),
         ),
         hintStyle: AppTypography.bodyMedium,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
+          backgroundColor: AppColors.violet,
           foregroundColor: Colors.white,
           padding: const EdgeInsets.symmetric(
             horizontal: AppMeasures.paddingXLarge,
@@ -76,8 +76,8 @@ class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.primary,
-          side: const BorderSide(color: AppColors.primary),
+          foregroundColor: AppColors.violet,
+          side: const BorderSide(color: AppColors.violet),
           padding: const EdgeInsets.symmetric(
             horizontal: AppMeasures.paddingXLarge,
             vertical: 14,
@@ -90,3 +90,4 @@ class AppTheme {
     );
   }
 }
+

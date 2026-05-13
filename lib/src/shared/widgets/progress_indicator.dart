@@ -28,7 +28,7 @@ class CourseProgressIndicator extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: AppColors.text,
+                color: AppColors.charcoal,
               ),
             ),
             if (showPercentage)
@@ -37,7 +37,7 @@ class CourseProgressIndicator extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.primary,
+                  color: AppColors.violet,
                 ),
               ),
           ],
@@ -48,7 +48,7 @@ class CourseProgressIndicator extends StatelessWidget {
           child: Container(
             height: 8,
             decoration: BoxDecoration(
-              color: AppColors.border,
+              color: AppColors.pearl,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Stack(
@@ -56,7 +56,7 @@ class CourseProgressIndicator extends StatelessWidget {
                 Container(
                   height: 8,
                   width: double.infinity,
-                  color: AppColors.border,
+                  color: AppColors.pearl,
                 ),
                  FractionallySizedBox(
                    widthFactor: percentage,
@@ -64,7 +64,7 @@ class CourseProgressIndicator extends StatelessWidget {
                      height: 8,
                      decoration: BoxDecoration(
                        gradient: LinearGradient(
-                         colors: [AppColors.primary, AppColors.secondary],
+                         colors: [AppColors.violet, AppColors.azure],
                          begin: Alignment.centerLeft,
                          end: Alignment.centerRight,
                        ),
@@ -80,3 +80,4 @@ class CourseProgressIndicator extends StatelessWidget {
     );
   }
 }
+

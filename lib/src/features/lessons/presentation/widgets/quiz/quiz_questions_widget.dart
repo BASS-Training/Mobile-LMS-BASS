@@ -47,7 +47,7 @@ class QuizQuestionsWidget extends StatelessWidget {
           //     value: (currentQuestionIndex + 1) / quiz.questions.length,
           //     minHeight: 8,
           //     backgroundColor: Colors.grey[300],
-          //     valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+          //     valueColor: AlwaysStoppedAnimation<Color>(AppColors.violet),
           //   ),
           // ),
           const SizedBox(height: 24),
@@ -68,7 +68,7 @@ class QuizQuestionsWidget extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.text,
+                      color: AppColors.charcoal,
                       height: 1.5,
                     ),
                   ),
@@ -120,7 +120,7 @@ class QuizQuestionsWidget extends StatelessWidget {
                         icon: const Icon(Icons.arrow_forward),
                         label: const Text('Selanjutnya'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
+                          backgroundColor: AppColors.violet,
                         ),
                       )
                     else
@@ -142,3 +142,4 @@ class QuizQuestionsWidget extends StatelessWidget {
     );
   }
 }
+

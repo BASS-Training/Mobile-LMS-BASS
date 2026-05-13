@@ -35,7 +35,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.mist,
       appBar: AppBar(title: Text('All Courses'), elevation: 0),
       body: Column(
         children: [
@@ -62,8 +62,8 @@ class _CourseListScreenState extends State<CourseListScreen> {
               },
               decoration: InputDecoration(
                 hintText: AppStrings.searchCourses,
-                hintStyle: TextStyle(color: AppColors.textLighter),
-                prefixIcon: Icon(Icons.search, color: AppColors.primary),
+                hintStyle: TextStyle(color: AppColors.silver),
+                prefixIcon: Icon(Icons.search, color: AppColors.violet),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? GestureDetector(
                         onTap: () {
@@ -72,7 +72,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
                             const SearchCoursesEvent(query: ''),
                           );
                         },
-                        child: Icon(Icons.close, color: AppColors.textLighter),
+                        child: Icon(Icons.close, color: AppColors.silver),
                       )
                     : null,
                 border: InputBorder.none,
@@ -99,14 +99,14 @@ class _CourseListScreenState extends State<CourseListScreen> {
                           Icon(
                             Icons.search_off,
                             size: 64,
-                            color: AppColors.textLighter,
+                            color: AppColors.silver,
                           ),
                           SizedBox(height: 16),
                           Text(
                             'No courses found',
                             style: TextStyle(
                               fontSize: 16,
-                              color: AppColors.textLight,
+                              color: AppColors.slate,
                             ),
                           ),
                         ],
@@ -149,14 +149,14 @@ class _CourseListScreenState extends State<CourseListScreen> {
                         Icon(
                           Icons.error_outline,
                           size: 64,
-                          color: AppColors.error,
+                          color: AppColors.crimson,
                         ),
                         SizedBox(height: 16),
                         Text(
                           state.message,
                           style: TextStyle(
                             fontSize: 16,
-                            color: AppColors.error,
+                            color: AppColors.crimson,
                           ),
                         ),
                       ],
@@ -172,3 +172,4 @@ class _CourseListScreenState extends State<CourseListScreen> {
     );
   }
 }
+

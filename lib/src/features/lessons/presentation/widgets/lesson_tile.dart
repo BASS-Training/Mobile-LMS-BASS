@@ -27,7 +27,7 @@ class LessonTile extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: lesson.isCompleted ? AppColors.success : AppColors.border,
+            color: lesson.isCompleted ? AppColors.emerald : AppColors.pearl,
             width: 1.5,
           ),
           boxShadow: [
@@ -48,8 +48,8 @@ class LessonTile extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
                   colors: lesson.isCompleted
-                      ? [AppColors.success, AppColors.success.withOpacity(0.7)]
-                      : [AppColors.primary, AppColors.primaryLight],
+                      ? [AppColors.emerald, AppColors.emerald.withOpacity(0.7)]
+                      : [AppColors.violet, AppColors.lavender],
                 ),
               ),
               child: Center(
@@ -78,7 +78,7 @@ class LessonTile extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.text,
+                      color: AppColors.charcoal,
                       decoration: lesson.isCompleted
                           ? TextDecoration.lineThrough
                           : TextDecoration.none,
@@ -90,14 +90,14 @@ class LessonTile extends StatelessWidget {
                       Icon(
                         Icons.timer_outlined,
                         size: 12,
-                        color: AppColors.textLighter,
+                        color: AppColors.silver,
                       ),
                       SizedBox(width: 4),
                       Text(
                         lesson.duration,
                         style: TextStyle(
                           fontSize: 12,
-                          color: AppColors.textLighter,
+                          color: AppColors.silver,
                         ),
                       ),
                       if (lesson.isCompleted)
@@ -107,14 +107,14 @@ class LessonTile extends StatelessWidget {
                             Icon(
                               Icons.check_circle,
                               size: 12,
-                              color: AppColors.success,
+                              color: AppColors.emerald,
                             ),
                             SizedBox(width: 4),
                             Text(
                               'Completed',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: AppColors.success,
+                                color: AppColors.emerald,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -137,12 +137,12 @@ class LessonTile extends StatelessWidget {
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: lesson.isCompleted
-                        ? AppColors.success
-                        : AppColors.border,
+                        ? AppColors.emerald
+                        : AppColors.pearl,
                     width: 2,
                   ),
                   color: lesson.isCompleted
-                      ? AppColors.success
+                      ? AppColors.emerald
                       : Colors.transparent,
                 ),
                 child: lesson.isCompleted
@@ -156,3 +156,5 @@ class LessonTile extends StatelessWidget {
     );
   }
 }
+
+
