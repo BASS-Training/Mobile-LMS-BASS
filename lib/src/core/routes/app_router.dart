@@ -6,7 +6,7 @@ import 'package:lms_mobile_app/src/core/di/modules/lesson_module.dart';
 
 // Screen imports
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/login_screen.dart';
-import 'package:lms_mobile_app/src/features/courses/presentation/screens/main_screen.dart';
+import 'package:lms_mobile_app/src/features/main/presentation/screens/main_screen.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/screens/course_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/essay/essay_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/quiz/quiz_bloc.dart';
