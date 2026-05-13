@@ -51,6 +51,18 @@ class CourseEntity extends Equatable {
   int get totalLessons => progress.totalCount;
   double get progressPercentage => progress.percentage;
 
+  /// Logika Bisnis: Menentukan apakah materi terbuka atau terkunci
+  bool isLessonUnlocked(LessonEntity lesson) {
+    final lessonIndex = allLessons.indexOf(lesson);
+
+    // Lesson pertama selalu terbuka
+    if (lessonIndex <= 0) return true;
+
+    // Cek apakah lesson sebelumnya sudah selesai
+    final previousLesson = allLessons[lessonIndex - 1];
+    return previousLesson.isCompleted;
+  }
+
   CourseEntity copyWith({bool? isSaved}) {
     return CourseEntity(
       id: id,
