@@ -8,7 +8,7 @@ class ErrorHandler {
   static Failure mapExceptionToFailure(dynamic exception) {
     if (exception is ServerException) {
       return ServerFailure(
-        message: exception.message,
+        exception.message,
         statusCode: exception.statusCode,
         code: exception.code,
       );

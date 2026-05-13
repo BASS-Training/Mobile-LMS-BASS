@@ -1,7 +1,9 @@
 /// Service Locator - Orchestrate semua DI modules
 /// Ini adalah entry point untuk dependency injection
+import 'package:lms_mobile_app/src/core/di/modules/home_module.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
+import 'package:lms_mobile_app/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
 
 import 'modules/core_module.dart';
@@ -31,6 +33,7 @@ class ServiceLocator {
 
     // Feature modules
     AuthModule.register();
+    HomeModule.register();
     CourseModule.register();
     LessonModule.register();
     CertificateModule.register();
@@ -38,6 +41,7 @@ class ServiceLocator {
 
   /// Get BLoCs
   AuthBloc get authBloc => AuthModule.authBloc;
+  HomeBloc get homeBloc => HomeModule.homeBloc;
   CourseBloc get courseBloc => CourseModule.courseBloc;
   LessonBloc get lessonBloc => LessonModule.lessonBloc;
 }

@@ -10,7 +10,7 @@ import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/cou
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_state.dart';
 import 'course_list_screen.dart';
-import 'home_screen.dart';
+import 'package:lms_mobile_app/src/features/home/presentation/screens/home_screen.dart';
 import 'package:lms_mobile_app/src/shared/widgets/bottom_nav_bar.dart';
 
 class MainScreen extends StatefulWidget {
@@ -98,10 +98,7 @@ class _SavedCoursesScreenState extends State<SavedCoursesScreen> {
                     SizedBox(height: 16),
                     Text(
                       'No saved courses yet',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColors.slate,
-                      ),
+                      style: TextStyle(fontSize: 16, color: AppColors.slate),
                     ),
                   ],
                 ),
@@ -290,10 +287,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                           child: Row(
                             children: [
-                              Icon(
-                                Icons.info_outline,
-                                color: AppColors.violet,
-                              ),
+                              Icon(Icons.info_outline, color: AppColors.violet),
                               SizedBox(width: 16),
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -388,4 +382,3 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 }
-

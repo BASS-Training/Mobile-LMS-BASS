@@ -11,6 +11,7 @@ import 'package:lms_mobile_app/src/core/routes/app_router.dart';
 // BLoCs
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
+import 'package:lms_mobile_app/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
 
 void main() async {
@@ -36,6 +37,7 @@ class MainApp extends StatelessWidget {
         BlocProvider<CourseBloc>(
           create: (context) => serviceLocator.courseBloc,
         ),
+        BlocProvider<HomeBloc>(create: (context) => serviceLocator.homeBloc),
         BlocProvider<LessonBloc>(
           create: (context) => serviceLocator.lessonBloc,
         ),
