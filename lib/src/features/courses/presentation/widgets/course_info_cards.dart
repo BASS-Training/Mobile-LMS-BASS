@@ -28,27 +28,44 @@ class CourseInfoCards extends StatelessWidget {
     );
   }
 
-  Widget _buildCard({required IconData icon, required Color iconColor, required String label, required String value}) {
+  Widget _buildCard({
+    required IconData icon,
+    required Color iconColor,
+    required String label,
+    required String value,
+  }) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8)],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 8,
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Icon(icon, color: iconColor),
             const SizedBox(height: 8),
-            Text(label, style: const TextStyle(fontSize: 12, color: AppColors.slate)),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 12, color: AppColors.slate),
+            ),
             const SizedBox(height: 4),
             Text(
               value,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.charcoal),
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: AppColors.charcoal,
+              ),
             ),
           ],
         ),

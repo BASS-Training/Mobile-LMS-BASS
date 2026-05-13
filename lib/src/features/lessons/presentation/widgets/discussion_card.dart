@@ -5,10 +5,7 @@ class DiscussionCard extends StatefulWidget {
   // Ini adalah "jembatan" untuk mengirim teks ke halaman induk
   final void Function(String text) onSend;
 
-  const DiscussionCard({
-    super.key,
-    required this.onSend,
-  });
+  const DiscussionCard({super.key, required this.onSend});
 
   @override
   State<DiscussionCard> createState() => _DiscussionCardState();
@@ -36,10 +33,10 @@ class _DiscussionCardState extends State<DiscussionCard> {
     if (text.isNotEmpty) {
       // 1. Kirim teks ke halaman induk (Screen)
       widget.onSend(text);
-      
+
       // 2. Bersihkan kolom komentar setelah dikirim
       _commentController.clear();
-      
+
       // 3. Tutup keyboard
       FocusScope.of(context).unfocus();
     }
@@ -60,7 +57,7 @@ class _DiscussionCardState extends State<DiscussionCard> {
         border: Border.all(color: AppColors.pearl),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 18,
             offset: const Offset(0, 6),
           ),

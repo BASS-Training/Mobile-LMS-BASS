@@ -13,13 +13,15 @@ class CourseDetailHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Parsing warna dari hex string
-    final primaryColor = Color(int.parse(course.color.replaceFirst('#', '0xFF')));
+    final primaryColor = Color(
+      int.parse(course.color.replaceFirst('#', '0xFF')),
+    );
 
     return Container(
       height: 280,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [primaryColor, primaryColor.withOpacity(0.7)],
+          colors: [primaryColor, primaryColor.withValues(alpha: 0.7)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -36,7 +38,7 @@ class CourseDetailHeader extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.arrow_back, color: Colors.white),
@@ -49,7 +51,9 @@ class CourseDetailHeader extends StatelessWidget {
               right: 16,
               child: GestureDetector(
                 onTap: () {
-                  context.read<CourseBloc>().add(ToggleSaveCourseEvent(courseId: course.id));
+                  context.read<CourseBloc>().add(
+                    ToggleSaveCourseEvent(courseId: course.id),
+                  );
                 },
                 child: Container(
                   padding: const EdgeInsets.all(8),

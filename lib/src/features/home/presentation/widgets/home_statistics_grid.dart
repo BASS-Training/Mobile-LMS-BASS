@@ -66,10 +66,13 @@ class HomeStatisticsGrid extends StatelessWidget {
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: borderColor.withOpacity(0.3), width: 1.5),
+        border: Border.all(
+          color: borderColor.withValues(alpha: 0.3),
+          width: 1.5,
+        ),
         boxShadow: [
           BoxShadow(
-            color: borderColor.withOpacity(0.08),
+            color: borderColor.withValues(alpha: 0.08),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -127,10 +130,13 @@ class HomeStatisticsGrid extends StatelessWidget {
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: borderColor.withOpacity(0.3), width: 1.5),
+        border: Border.all(
+          color: borderColor.withValues(alpha: 0.3),
+          width: 1.5,
+        ),
         boxShadow: [
           BoxShadow(
-            color: borderColor.withOpacity(0.08),
+            color: borderColor.withValues(alpha: 0.08),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -166,7 +172,7 @@ class HomeStatisticsGrid extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: percentage,
                 minHeight: 6,
-                backgroundColor: borderColor.withOpacity(0.2),
+                backgroundColor: borderColor.withValues(alpha: 0.2),
                 valueColor: AlwaysStoppedAnimation<Color>(borderColor),
               ),
             ),
@@ -187,12 +193,12 @@ class HomeStatisticsGrid extends StatelessWidget {
         color: const Color(0xFFF3F0FF),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: const Color(0xFF9333EA).withOpacity(0.3),
+          color: const Color(0xFF9333EA).withValues(alpha: 0.3),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF9333EA).withOpacity(0.08),
+            color: const Color(0xFF9333EA).withValues(alpha: 0.08),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -226,7 +232,7 @@ class HomeStatisticsGrid extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: const Color(0xFF9333EA).withOpacity(0.1),
+                color: const Color(0xFF9333EA).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(6),
               ),
               child: const Text(

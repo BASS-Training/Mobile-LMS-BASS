@@ -228,7 +228,7 @@ class _DocumentLessonDetailScreenState
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF6D5EF7).withOpacity(0.18),
+            color: const Color(0xFF6D5EF7).withValues(alpha: 0.18),
             blurRadius: 18,
             offset: const Offset(0, 8),
           ),
@@ -242,7 +242,7 @@ class _DocumentLessonDetailScreenState
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: Colors.white.withOpacity(0.85),
+              color: Colors.white.withValues(alpha: 0.85),
             ),
           ),
           const SizedBox(height: 8),
@@ -262,7 +262,7 @@ class _DocumentLessonDetailScreenState
               Text(
                 lesson.duration,
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.85),
+                  color: Colors.white.withValues(alpha: 0.85),
                   fontSize: 13,
                 ),
               ),
@@ -270,7 +270,7 @@ class _DocumentLessonDetailScreenState
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
+                  color: Colors.white.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: const Text(
@@ -300,10 +300,10 @@ class _DocumentLessonDetailScreenState
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.pearl.withOpacity(0.8)),
+        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 18,
             offset: const Offset(0, 6),
           ),
@@ -364,10 +364,10 @@ class _DocumentLessonDetailScreenState
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.pearl.withOpacity(0.8)),
+        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 14,
             offset: const Offset(0, 5),
           ),
@@ -389,7 +389,7 @@ class _DocumentLessonDetailScreenState
             width: 44,
             height: 4,
             decoration: BoxDecoration(
-              color: AppColors.violet.withOpacity(0.25),
+              color: AppColors.violet.withValues(alpha: 0.25),
               borderRadius: BorderRadius.circular(999),
             ),
           ),
@@ -476,4 +476,3 @@ class _DocumentLessonDetailScreenState
     ];
   }
 }
-

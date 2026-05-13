@@ -25,10 +25,10 @@ class StatisticsCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: borderColor.withOpacity(0.2), width: 1),
+        border: Border.all(color: borderColor.withValues(alpha: 0.2), width: 1),
         boxShadow: [
           BoxShadow(
-            color: borderColor.withOpacity(0.08),
+            color: borderColor.withValues(alpha: 0.08),
             blurRadius: 12,
             offset: Offset(0, 4),
           ),
@@ -79,7 +79,7 @@ class StatisticsCard extends StatelessWidget {
                         width: 48,
                         height: 48,
                         decoration: BoxDecoration(
-                          color: borderColor.withOpacity(0.12),
+                          color: borderColor.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Center(
@@ -119,4 +119,3 @@ class StatisticsCard extends StatelessWidget {
     );
   }
 }
-

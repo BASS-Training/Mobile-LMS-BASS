@@ -25,7 +25,7 @@ class CourseCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 12,
               offset: Offset(0, 4),
             ),
@@ -44,7 +44,7 @@ class CourseCard extends StatelessWidget {
                     Color(int.parse(course.color.replaceFirst('#', '0xFF'))),
                     Color(
                       int.parse(course.color.replaceFirst('#', '0xFF')),
-                    ).withOpacity(0.7),
+                    ).withValues(alpha: 0.7),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
@@ -73,7 +73,7 @@ class CourseCard extends StatelessWidget {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
+                              color: Colors.black.withValues(alpha: 0.1),
                               blurRadius: 8,
                             ),
                           ],
@@ -113,10 +113,7 @@ class CourseCard extends StatelessWidget {
                       course.instructor,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: AppColors.slate,
-                      ),
+                      style: TextStyle(fontSize: 11, color: AppColors.slate),
                     ),
                     SizedBox(height: 8),
                     Row(
@@ -141,11 +138,7 @@ class CourseCard extends StatelessWidget {
                             ],
                           ),
                         ),
-                        Icon(
-                          Icons.schedule,
-                          size: 13,
-                          color: AppColors.slate,
-                        ),
+                        Icon(Icons.schedule, size: 13, color: AppColors.slate),
                         SizedBox(width: 3),
                         Text(
                           course.duration,

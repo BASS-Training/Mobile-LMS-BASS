@@ -21,7 +21,6 @@ class CourseDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<CourseBloc, CourseState>(
       builder: (context, state) {
-        
         CourseEntity currentCourseEntity = course;
         if (state is CourseLoaded) {
           currentCourseEntity = state.courses.firstWhere(
@@ -38,7 +37,7 @@ class CourseDetailScreen extends StatelessWidget {
               children: [
                 // 1. Header (Gambar & Tombol atas)
                 CourseDetailHeader(course: currentCourseEntity),
-                
+
                 Padding(
                   padding: const EdgeInsets.all(AppMeasures.paddingLarge),
                   child: Column(
@@ -47,13 +46,27 @@ class CourseDetailScreen extends StatelessWidget {
                       // 2. Info Cards (Instruktur & Durasi)
                       CourseInfoCards(course: currentCourseEntity),
                       const SizedBox(height: 24),
-                      
+
                       // 3. Deskripsi
-                      const Text('About Course', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.charcoal)),
+                      const Text(
+                        'About Course',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.charcoal,
+                        ),
+                      ),
                       const SizedBox(height: 8),
-                      Text(currentCourseEntity.description, style: const TextStyle(fontSize: 14, color: AppColors.slate, height: 1.6)),
+                      Text(
+                        currentCourseEntity.description,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppColors.slate,
+                          height: 1.6,
+                        ),
+                      ),
                       const SizedBox(height: 24),
-                      
+
                       // 4. Progress Keseluruhan
                       CourseProgressIndicator(
                         progress: currentCourseEntity.progressPercentage,
@@ -61,44 +74,69 @@ class CourseDetailScreen extends StatelessWidget {
                         showPercentage: true,
                       ),
                       const SizedBox(height: 24),
-                      
+
                       // 5. Tombol Nilai
                       SizedBox(
                         width: double.infinity,
                         height: 52,
                         child: ElevatedButton.icon(
-                          onPressed: () => context.push(AppRoutes.courseResults, extra: currentCourseEntity),
+                          onPressed: () => context.push(
+                            AppRoutes.courseResults,
+                            extra: currentCourseEntity,
+                          ),
                           icon: const Icon(Icons.assessment_outlined),
                           label: const Text('Nilai & Hasil'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.violet,
                             foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
                           ),
                         ),
                       ),
                       const SizedBox(height: 24),
-                      
+
                       // 6. Daftar Section dan Materi
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Sections', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.charcoal)),
+                          const Text(
+                            'Sections',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.charcoal,
+                            ),
+                          ),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(color: AppColors.violet.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.violet.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                             child: Text(
                               '${currentCourseEntity.completedLessons}/${currentCourseEntity.totalLessons}',
-                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.violet),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.violet,
+                              ),
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 12),
-                      
+
                       // Loop Accordion
                       ...currentCourseEntity.sections.map((section) {
-                        return CourseSectionAccordion(section: section, course: currentCourseEntity);
+                        return CourseSectionAccordion(
+                          section: section,
+                          course: currentCourseEntity,
+                        );
                       }),
                       const SizedBox(height: 24),
                     ],

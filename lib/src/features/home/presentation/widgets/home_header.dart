@@ -58,7 +58,7 @@ class HomeHeader extends StatelessWidget {
               AppStrings.readyForLesson,
               style: TextStyle(
                 fontSize: 13,
-                color: Colors.white.withOpacity(0.8),
+                color: Colors.white.withValues(alpha: 0.8),
               ),
             ),
           ],
@@ -77,7 +77,10 @@ class HomeHeader extends StatelessWidget {
         }
         return Text(
           userName,
-          style: TextStyle(fontSize: 22, color: Colors.white.withOpacity(0.9)),
+          style: TextStyle(
+            fontSize: 22,
+            color: Colors.white.withValues(alpha: 0.9),
+          ),
         );
       },
     );
@@ -89,8 +92,11 @@ class HomeHeader extends StatelessWidget {
       height: 60,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.white.withOpacity(0.2),
-        border: Border.all(color: Colors.white.withOpacity(0.3), width: 2),
+        color: Colors.white.withValues(alpha: 0.2),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: 0.3),
+          width: 2,
+        ),
       ),
       child: const Center(child: Text('👤', style: TextStyle(fontSize: 32))),
     );
@@ -103,7 +109,7 @@ class HomeHeader extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),

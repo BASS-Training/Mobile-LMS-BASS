@@ -65,7 +65,7 @@ class _SavedCoursesScreenState extends State<SavedCoursesScreen> {
                     border: Border.all(color: AppColors.pearl),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 8,
                       ),
                     ],
@@ -87,7 +87,7 @@ class _SavedCoursesScreenState extends State<SavedCoursesScreen> {
                                 int.parse(
                                   courseEntity.color.replaceFirst('#', '0xFF'),
                                 ),
-                              ).withOpacity(0.7),
+                              ).withValues(alpha: 0.7),
                             ],
                           ),
                           borderRadius: BorderRadius.circular(8),

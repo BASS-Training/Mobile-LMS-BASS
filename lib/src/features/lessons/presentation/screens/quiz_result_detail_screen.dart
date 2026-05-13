@@ -137,7 +137,7 @@ class _QuizResultDetailScreenState extends State<QuizResultDetailScreen> {
             '${attempt.lessonTitle} • ${attempt.attemptLabel}',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.92),
+              color: Colors.white.withValues(alpha: 0.92),
               fontSize: 12,
             ),
           ),
@@ -164,7 +164,7 @@ class _QuizResultDetailScreenState extends State<QuizResultDetailScreen> {
                 _selectedAttempt = attempt;
               });
             },
-            selectedColor: AppColors.violet.withOpacity(0.16),
+            selectedColor: AppColors.violet.withValues(alpha: 0.16),
             labelStyle: TextStyle(
               color: isSelected ? AppColors.violet : AppColors.slate,
               fontWeight: FontWeight.w700,
@@ -208,7 +208,7 @@ class _QuizResultDetailScreenState extends State<QuizResultDetailScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.pearl.withOpacity(0.8)),
+        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -277,7 +277,7 @@ class _QuizResultDetailScreenState extends State<QuizResultDetailScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.pearl.withOpacity(0.8)),
+        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -308,10 +308,10 @@ class _QuizResultDetailScreenState extends State<QuizResultDetailScreen> {
             final isCorrect = correctIndex == optionIndex;
 
             final backgroundColor = isCorrect
-                ? Colors.green.withOpacity(0.14)
+                ? Colors.green.withValues(alpha: 0.14)
                 : isSelected
-                ? Colors.red.withOpacity(0.12)
-                : Colors.grey.withOpacity(0.05);
+                ? Colors.red.withValues(alpha: 0.12)
+                : Colors.grey.withValues(alpha: 0.05);
             final borderColor = isCorrect
                 ? Colors.green
                 : isSelected

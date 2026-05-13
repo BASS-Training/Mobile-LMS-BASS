@@ -28,17 +28,13 @@ class LessonDrawer extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 18),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [
-                    AppColors.violet,
-                    AppColors.azure,
-                    AppColors.cobalt,
-                  ],
+                  colors: [AppColors.violet, AppColors.azure, AppColors.cobalt],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.violet.withOpacity(0.22),
+                    color: AppColors.violet.withValues(alpha: 0.22),
                     blurRadius: 18,
                     offset: const Offset(0, 8),
                   ),
@@ -54,10 +50,10 @@ class LessonDrawer extends StatelessWidget {
                         width: 46,
                         height: 46,
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
+                          color: Colors.white.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(
-                            color: Colors.white.withOpacity(0.16),
+                            color: Colors.white.withValues(alpha: 0.16),
                           ),
                         ),
                         child: const Icon(
@@ -94,7 +90,7 @@ class LessonDrawer extends StatelessWidget {
                                     .length /
                                 course.allLessons.length,
                       minHeight: 6,
-                      backgroundColor: Colors.white.withOpacity(0.18),
+                      backgroundColor: Colors.white.withValues(alpha: 0.18),
                       valueColor: const AlwaysStoppedAnimation<Color>(
                         Colors.white,
                       ),
@@ -130,8 +126,8 @@ class LessonDrawer extends StatelessWidget {
                     // Menghilangkan garis border default bawaan ExpansionTile
                     data: Theme.of(context).copyWith(
                       dividerColor: Colors.transparent,
-                      splashColor: AppColors.violet.withOpacity(0.08),
-                      highlightColor: AppColors.violet.withOpacity(0.04),
+                      splashColor: AppColors.violet.withValues(alpha: 0.08),
+                      highlightColor: AppColors.violet.withValues(alpha: 0.04),
                     ),
                     child: ExpansionTile(
                       initiallyExpanded: isSectionActive,
@@ -191,7 +187,7 @@ class LessonDrawer extends StatelessWidget {
                                           value: progressPercent,
                                           minHeight: 4,
                                           backgroundColor: AppColors.pearl
-                                              .withOpacity(0.7),
+                                              .withValues(alpha: 0.7),
                                           valueColor:
                                               const AlwaysStoppedAnimation<
                                                 Color
@@ -246,7 +242,7 @@ class LessonDrawer extends StatelessWidget {
       decoration: BoxDecoration(
         // Jika terpilih, beri background transparan warna ungu (menyesuaikan gambar UI)
         color: isCurrent
-            ? AppColors.violet.withOpacity(0.1)
+            ? AppColors.violet.withValues(alpha: 0.1)
             : const Color(0xFFFDFDFF),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
@@ -255,7 +251,7 @@ class LessonDrawer extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isCurrent ? 0.07 : 0.03),
+            color: Colors.black.withValues(alpha: isCurrent ? 0.07 : 0.03),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -285,7 +281,7 @@ class LessonDrawer extends StatelessWidget {
                     shape: BoxShape.circle,
                     // Warna icon logic seperti di gambar referensi
                     color: lesson.isCompleted
-                        ? Colors.green.withOpacity(0.1)
+                        ? Colors.green.withValues(alpha: 0.1)
                         : isCurrent
                         ? AppColors.violet
                         : AppColors.mist,
@@ -301,9 +297,7 @@ class LessonDrawer extends StatelessWidget {
                             '${globalIndex + 1}',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: isCurrent
-                                  ? Colors.white
-                                  : AppColors.slate,
+                              color: isCurrent ? Colors.white : AppColors.slate,
                               fontSize: 12,
                             ),
                           )
@@ -344,7 +338,7 @@ class LessonDrawer extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                               color: isUnlocked
                                   ? AppColors.slate
-                                  : Colors.grey.withOpacity(0.6),
+                                  : Colors.grey.withValues(alpha: 0.6),
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -354,7 +348,7 @@ class LessonDrawer extends StatelessWidget {
                               fontSize: 10,
                               color: isUnlocked
                                   ? AppColors.slate
-                                  : Colors.grey.withOpacity(0.6),
+                                  : Colors.grey.withValues(alpha: 0.6),
                             ),
                           ),
                         ],
@@ -403,4 +397,3 @@ class LessonDrawer extends StatelessWidget {
     return previousLesson.isCompleted;
   }
 }
-

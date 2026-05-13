@@ -167,10 +167,12 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: AppColors.pearl.withOpacity(0.8)),
+                border: Border.all(
+                  color: AppColors.pearl.withValues(alpha: 0.8),
+                ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 18,
                     offset: const Offset(0, 6),
                   ),
@@ -302,13 +304,16 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
                               _buildInfoCard(widget.lesson.title),
                               const SizedBox(height: 16),
                               DiscussionCard(
-                              onSend: (komentarTeks) {
-                                // Eksekusi BLoC spesifik untuk Video Lesson di sini
-                                context.read<VideoBloc>().add(
-                                  SubmitDiscussionComment(widget.lesson.id, komentarTeks),
-                                );
-                              },
-                            ),
+                                onSend: (komentarTeks) {
+                                  // Eksekusi BLoC spesifik untuk Video Lesson di sini
+                                  context.read<VideoBloc>().add(
+                                    SubmitDiscussionComment(
+                                      widget.lesson.id,
+                                      komentarTeks,
+                                    ),
+                                  );
+                                },
+                              ),
                               const SizedBox(height: 16),
                               const Text(
                                 'Komentar',
@@ -356,7 +361,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF6D5EF7).withOpacity(0.18),
+            color: const Color(0xFF6D5EF7).withValues(alpha: 0.18),
             blurRadius: 18,
             offset: const Offset(0, 8),
           ),
@@ -368,7 +373,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.14),
+              color: Colors.white.withValues(alpha: 0.14),
               borderRadius: BorderRadius.circular(14),
             ),
             child: const Icon(
@@ -395,7 +400,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.92),
+                    color: Colors.white.withValues(alpha: 0.92),
                     fontSize: 12,
                   ),
                 ),
@@ -406,7 +411,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.16),
+              color: Colors.white.withValues(alpha: 0.16),
               borderRadius: BorderRadius.circular(999),
             ),
             child: Text(
@@ -478,10 +483,10 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.pearl.withOpacity(0.8)),
+        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 18,
             offset: const Offset(0, 6),
           ),
@@ -514,16 +519,13 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
               const SizedBox(width: 6),
               Text(
                 lessonTitle,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.slate,
-                ),
+                style: const TextStyle(fontSize: 12, color: AppColors.slate),
               ),
               const SizedBox(width: 12),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.1),
+                  color: Colors.blue.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: const Text(
@@ -542,4 +544,3 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
     );
   }
 }
-

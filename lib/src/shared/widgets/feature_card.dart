@@ -25,7 +25,7 @@ class FeatureCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 12,
               offset: Offset(0, 4),
             ),
@@ -41,7 +41,7 @@ class FeatureCard extends StatelessWidget {
                 width: 50,
                 height: 50,
                 decoration: BoxDecoration(
-                  color: AppColors.violet.withOpacity(0.1),
+                  color: AppColors.violet.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Center(
@@ -89,4 +89,3 @@ class FeatureCard extends StatelessWidget {
     );
   }
 }
-

@@ -293,7 +293,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  const Color(0xFF6D5EF7).withOpacity(0.16),
+                  const Color(0xFF6D5EF7).withValues(alpha: 0.16),
                   Colors.transparent,
                 ],
               ),
@@ -310,7 +310,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  const Color(0xFF4F8CFF).withOpacity(0.12),
+                  const Color(0xFF4F8CFF).withValues(alpha: 0.12),
                   Colors.transparent,
                 ],
               ),
@@ -334,7 +334,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF6D5EF7).withOpacity(0.22),
+            color: const Color(0xFF6D5EF7).withValues(alpha: 0.22),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -346,9 +346,9 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.18),
+              color: Colors.white.withValues(alpha: 0.18),
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: Colors.white.withOpacity(0.18)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
             ),
             child: const Icon(
               Icons.edit_note_rounded,
@@ -373,7 +373,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
                 Text(
                   'Simpan jawaban per nomor, lanjutkan kapan saja, dan kirim kalau semua sudah siap.',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.92),
+                    color: Colors.white.withValues(alpha: 0.92),
                     fontSize: 12,
                     height: 1.4,
                   ),
@@ -400,10 +400,10 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.pearl.withOpacity(0.8)),
+        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 18,
             offset: const Offset(0, 6),
           ),
@@ -426,7 +426,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
             child: LinearProgressIndicator(
               value: progress / 100,
               minHeight: 8,
-              backgroundColor: AppColors.pearl.withOpacity(0.7),
+              backgroundColor: AppColors.pearl.withValues(alpha: 0.7),
               valueColor: const AlwaysStoppedAnimation<Color>(
                 Color(0xFF4F8CFF),
               ),
@@ -485,10 +485,10 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.pearl.withOpacity(0.8)),
+        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 18,
             offset: const Offset(0, 6),
           ),
@@ -690,11 +690,11 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border(
-            top: BorderSide(color: AppColors.pearl.withOpacity(0.9)),
+            top: BorderSide(color: AppColors.pearl.withValues(alpha: 0.9)),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.12),
+              color: Colors.black.withValues(alpha: 0.12),
               blurRadius: 22,
               offset: const Offset(0, -8),
               spreadRadius: 1,
@@ -721,7 +721,9 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
                     icon: const Icon(Icons.arrow_back),
                     label: const Text('Sebelumnya'),
                     style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: AppColors.pearl.withOpacity(0.9)),
+                      side: BorderSide(
+                        color: AppColors.pearl.withValues(alpha: 0.9),
+                      ),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       backgroundColor: Colors.white,
                       foregroundColor: AppColors.charcoal,
@@ -734,7 +736,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
                     onPressed: handleSaveAndNext,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.violet,
-                      shadowColor: AppColors.violet.withOpacity(0.45),
+                      shadowColor: AppColors.violet.withValues(alpha: 0.45),
                       elevation: 8,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
@@ -757,7 +759,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
                     : () => context.read<EssayBloc>().add(SubmitEssayClicked()),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF16A34A),
-                  shadowColor: const Color(0xFF16A34A).withOpacity(0.45),
+                  shadowColor: const Color(0xFF16A34A).withValues(alpha: 0.45),
                   elevation: 10,
                   padding: const EdgeInsets.symmetric(vertical: 15),
                   shape: RoundedRectangleBorder(

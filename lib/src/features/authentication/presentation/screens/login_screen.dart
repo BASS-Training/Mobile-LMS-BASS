@@ -110,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           'Welcome Back',
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.white.withOpacity(0.9),
+                            color: Colors.white.withValues(alpha: 0.9),
                           ),
                         ),
                       ],
@@ -124,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
+                            color: Colors.black.withValues(alpha: 0.2),
                             blurRadius: 16,
                             offset: Offset(0, 8),
                           ),
@@ -244,9 +244,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   padding: EdgeInsets.symmetric(horizontal: 8),
                                   child: Text(
                                     'OR',
-                                    style: TextStyle(
-                                      color: AppColors.silver,
-                                    ),
+                                    style: TextStyle(color: AppColors.silver),
                                   ),
                                 ),
                                 Expanded(child: Divider()),
@@ -298,4 +296,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-

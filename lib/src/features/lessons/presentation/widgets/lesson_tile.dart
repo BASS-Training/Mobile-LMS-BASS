@@ -32,7 +32,7 @@ class LessonTile extends StatelessWidget {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 8,
               offset: Offset(0, 2),
             ),
@@ -48,7 +48,10 @@ class LessonTile extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: LinearGradient(
                   colors: lesson.isCompleted
-                      ? [AppColors.emerald, AppColors.emerald.withOpacity(0.7)]
+                      ? [
+                          AppColors.emerald,
+                          AppColors.emerald.withValues(alpha: 0.7),
+                        ]
                       : [AppColors.violet, AppColors.lavender],
                 ),
               ),
@@ -95,10 +98,7 @@ class LessonTile extends StatelessWidget {
                       SizedBox(width: 4),
                       Text(
                         lesson.duration,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.silver,
-                        ),
+                        style: TextStyle(fontSize: 12, color: AppColors.silver),
                       ),
                       if (lesson.isCompleted)
                         Row(
@@ -156,5 +156,3 @@ class LessonTile extends StatelessWidget {
     );
   }
 }
-
-

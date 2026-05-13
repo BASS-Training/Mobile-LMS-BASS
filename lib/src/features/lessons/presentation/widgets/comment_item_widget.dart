@@ -7,10 +7,7 @@ class CommentItemWidget extends StatelessWidget {
   final CommentEntity comment;
 
   // Gunakan const constructor untuk performa maksimal
-  const CommentItemWidget({
-    super.key,
-    required this.comment,
-  });
+  const CommentItemWidget({super.key, required this.comment});
 
   @override
   Widget build(BuildContext context) {
@@ -24,10 +21,10 @@ class CommentItemWidget extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.pearl.withOpacity(0.8)),
+        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 14,
             offset: const Offset(0, 5),
           ),
@@ -38,7 +35,7 @@ class CommentItemWidget extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 18,
-            backgroundColor: AppColors.violet.withOpacity(0.15),
+            backgroundColor: AppColors.violet.withValues(alpha: 0.15),
             child: Text(
               comment.userName.characters.first.toUpperCase(),
               style: const TextStyle(

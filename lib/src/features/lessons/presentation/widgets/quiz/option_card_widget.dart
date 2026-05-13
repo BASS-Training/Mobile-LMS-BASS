@@ -28,7 +28,7 @@ class OptionCardWidget extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: isSelected
-                  ? AppColors.violet.withOpacity(0.1)
+                  ? AppColors.violet.withValues(alpha: 0.1)
                   : Colors.white,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
@@ -65,4 +65,3 @@ class OptionCardWidget extends StatelessWidget {
     );
   }
 }
-

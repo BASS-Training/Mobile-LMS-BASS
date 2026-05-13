@@ -169,11 +169,11 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(18),
                       border: Border.all(
-                        color: AppColors.pearl.withOpacity(0.8),
+                        color: AppColors.pearl.withValues(alpha: 0.8),
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withValues(alpha: 0.05),
                           blurRadius: 18,
                           offset: const Offset(0, 6),
                         ),
@@ -225,7 +225,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
 
           // Show result screen
           if (state is QuizSubmitted) {
-            final canProceed = state.result.passed && canGoNext;
+            // final canProceed = state.result.passed && canGoNext;
             return _buildResultScreen(state);
           }
 
@@ -414,10 +414,12 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.pearl.withOpacity(0.8)),
+                  border: Border.all(
+                    color: AppColors.pearl.withValues(alpha: 0.8),
+                  ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 16,
                       offset: const Offset(0, 6),
                     ),
@@ -440,7 +442,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
                       child: LinearProgressIndicator(
                         value: progressPercent,
                         minHeight: 6,
-                        backgroundColor: Colors.grey.withOpacity(0.18),
+                        backgroundColor: Colors.grey.withValues(alpha: 0.18),
                         valueColor: const AlwaysStoppedAnimation<Color>(
                           Color(0xFF4F8CFF),
                         ),
@@ -507,11 +509,11 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           border: Border(
-            top: BorderSide(color: AppColors.pearl.withOpacity(0.9)),
+            top: BorderSide(color: AppColors.pearl.withValues(alpha: 0.9)),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.12),
+              color: Colors.black.withValues(alpha: 0.12),
               blurRadius: 22,
               offset: const Offset(0, -8),
               spreadRadius: 1,
@@ -532,7 +534,9 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
                 icon: const Icon(Icons.arrow_back),
                 label: const Text('Sebelumnya'),
                 style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: AppColors.pearl.withOpacity(0.9)),
+                  side: BorderSide(
+                    color: AppColors.pearl.withValues(alpha: 0.9),
+                  ),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   backgroundColor: Colors.white,
                   foregroundColor: AppColors.charcoal,
@@ -554,7 +558,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
                       },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.violet,
-                  shadowColor: AppColors.violet.withOpacity(0.45),
+                  shadowColor: AppColors.violet.withValues(alpha: 0.45),
                   elevation: 8,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
