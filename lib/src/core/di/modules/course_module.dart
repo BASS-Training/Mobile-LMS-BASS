@@ -6,7 +6,11 @@ import 'package:lms_mobile_app/src/features/courses/data/datasources/course_loca
 import 'package:lms_mobile_app/src/features/courses/data/datasources/course_remote_data_source.dart';
 import 'package:lms_mobile_app/src/features/courses/data/datasources/course_remote_data_source_impl.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/repositories/course_repository.dart';
-import 'package:lms_mobile_app/src/features/courses/domain/usecases/course_usecase.dart';
+import 'package:lms_mobile_app/src/features/courses/domain/usecases/get_courses_usecase.dart';
+import 'package:lms_mobile_app/src/features/courses/domain/usecases/get_saved_courses_usecase.dart';
+import 'package:lms_mobile_app/src/features/courses/domain/usecases/refresh_courses_usecase.dart';
+import 'package:lms_mobile_app/src/features/courses/domain/usecases/search_courses_usecase.dart';
+import 'package:lms_mobile_app/src/features/courses/domain/usecases/toggle_save_course_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 
 class CourseModule {

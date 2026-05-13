@@ -1,5 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../domain/usecases/course_usecase.dart';
+import 'package:lms_mobile_app/src/features/courses/domain/usecases/get_courses_usecase.dart';
+import 'package:lms_mobile_app/src/features/courses/domain/usecases/get_saved_courses_usecase.dart';
+import 'package:lms_mobile_app/src/features/courses/domain/usecases/refresh_courses_usecase.dart';
+import 'package:lms_mobile_app/src/features/courses/domain/usecases/search_courses_usecase.dart';
+import 'package:lms_mobile_app/src/features/courses/domain/usecases/toggle_save_course_usecase.dart';
 import 'course_event.dart';
 import 'course_state.dart';
 
@@ -25,7 +29,9 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
   }
 
   Future<void> _onGetCourses(
-      GetCoursesEvent event, Emitter<CourseState> emit) async {
+    GetCoursesEvent event,
+    Emitter<CourseState> emit,
+  ) async {
     emit(const CourseLoading());
 
     try {
@@ -37,7 +43,9 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
   }
 
   Future<void> _onSearchCourses(
-      SearchCoursesEvent event, Emitter<CourseState> emit) async {
+    SearchCoursesEvent event,
+    Emitter<CourseState> emit,
+  ) async {
     emit(const CourseLoading());
 
     try {
@@ -54,7 +62,9 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
   }
 
   Future<void> _onToggleSaveCourse(
-      ToggleSaveCourseEvent event, Emitter<CourseState> emit) async {
+    ToggleSaveCourseEvent event,
+    Emitter<CourseState> emit,
+  ) async {
     try {
       await toggleSaveCourseUseCase(event.courseId);
 
@@ -62,10 +72,9 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
       if (state is CourseLoaded) {
         final currentState = state as CourseLoaded;
         final courses = await getCoursesUseCase();
-        emit(CourseLoaded(
-          courses: courses,
-          searchQuery: currentState.searchQuery,
-        ));
+        emit(
+          CourseLoaded(courses: courses, searchQuery: currentState.searchQuery),
+        );
       }
     } catch (e) {
       emit(CourseFailure(message: 'Failed to toggle save'));
@@ -73,7 +82,9 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
   }
 
   Future<void> _onGetSavedCourses(
-      GetSavedCoursesEvent event, Emitter<CourseState> emit) async {
+    GetSavedCoursesEvent event,
+    Emitter<CourseState> emit,
+  ) async {
     emit(const CourseLoading());
 
     try {
@@ -85,7 +96,9 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
   }
 
   Future<void> _onRefreshCourses(
-      RefreshCoursesEvent event, Emitter<CourseState> emit) async {
+    RefreshCoursesEvent event,
+    Emitter<CourseState> emit,
+  ) async {
     try {
       await refreshCoursesUseCase();
 
