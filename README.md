@@ -12,6 +12,46 @@ Versi dokumentasi yang lebih lengkap untuk pengguna dan pengembang.
 
 README ini memberikan panduan instalasi, arsitektur, alur pengembangan, dan referensi cepat untuk kontributor.
 
+## Arsitektur
+
+Arsitektur proyek mengikuti prinsip Clean Architecture dengan pemisahan tanggung jawab ke dalam tiga lapisan utama:
+
+- Presentation: UI, screens, widgets, dan BLoC/State management. Hanya bertanggung jawab pada rendering dan menerima event dari pengguna.
+- Domain: Usecases, entities, dan kontrak repository. Berisi business rules — lapisan paling independen dan mudah diuji.
+- Data: Implementasi repository, data sources (API, local DB, cache), model mapping, dan DTO. Berinteraksi dengan eksternal.
+
+Aturan dependensi (Dependency Rule): lapisan atas hanya boleh bergantung pada lapisan di bawahnya melalui abstraksi (interface). Domain tidak boleh bergantung pada Data atau Presentation secara langsung.
+
+Pemetaan folder ke lapisan:
+
+- `lib/src/features/<feature>/presentation/` — UI & BLoC
+- `lib/src/features/<feature>/domain/` — entities, repositories (interface), usecases
+- `lib/src/features/<feature>/data/` — models, datasources, repository implementations
+
+Dependensi & Injeksi:
+
+- Gunakan modul DI terpusat (service locator / provider module) untuk mendaftarkan repository, BLoC, dan service (network, local storage).
+- Hindari singletons global tersebar; daftarkan dependency per-module ketika memungkinkan.
+
+State management:
+
+- BLoC (`flutter_bloc`) untuk stateful logic pada fitur yang kompleks. Untuk fitur sederhana, gunakan `Cubit` atau state-less widget.
+
+Alur data singkat (contoh: ambil daftar kursus):
+
+1. UI (screen) kirim Event ke BLoC.
+2. BLoC memanggil Usecase dari layer Domain.
+3. Usecase meminta data dari Repository (interface).
+4. Repository (implementasi di Data) memanggil RemoteDataSource / LocalDataSource.
+5. Data diterima, dimapping ke Entity, dan dikembalikan ke UI melalui BLoC state.
+
+Testing:
+
+- Tulis unit test untuk Usecases dan BLoC (mock repository).
+- Tulis integration test untuk alur end-to-end penting (pemetaan API → UI).
+
+Diagram & dokumentasi tambahan bisa ditempatkan di `ARCHITECTURE_GUIDE.md` dengan diagram layer dan contoh sequence.
+
 ---
 
 ## Untuk Pengguna (End-User)
