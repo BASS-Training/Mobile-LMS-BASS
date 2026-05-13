@@ -144,6 +144,7 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
         total: quiz.totalQuestions,
       );
 
+      dynamic savedAttempt;
       if (resultRepository != null) {
         try {
           final questions = quiz.questions.asMap().entries.map((entry) {
@@ -156,7 +157,7 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
             );
           }).toList();
 
-          await resultRepository!.recordQuizAttempt(
+          savedAttempt = await resultRepository!.recordQuizAttempt(
             courseId: _courseId,
             courseTitle: _courseTitle,
             lessonId: _lessonId,
@@ -171,7 +172,14 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
         }
       }
 
-      emit(QuizSubmitted(quiz: quiz, result: result, answers: answers));
+      emit(
+        QuizSubmitted(
+          quiz: quiz,
+          result: result,
+          answers: answers,
+          attempt: savedAttempt,
+        ),
+      );
     }
   }
 

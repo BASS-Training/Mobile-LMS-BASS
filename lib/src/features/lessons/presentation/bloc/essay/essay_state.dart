@@ -9,6 +9,7 @@ class EssayState extends Equatable {
   final bool isSubmitting;
   final String? errorMessage;
   final bool isSuccess;
+  final dynamic lastAttempt;
   final String? snackbarMessage;
 
   const EssayState({
@@ -21,6 +22,7 @@ class EssayState extends Equatable {
     this.errorMessage,
     this.isSuccess = false,
     this.snackbarMessage,
+    this.lastAttempt,
   });
 
   // Getter pembantu untuk UI agar UI tetap "bodoh"
@@ -61,6 +63,7 @@ class EssayState extends Equatable {
     String? errorMessage,
     bool? isSuccess,
     String? snackbarMessage,
+    dynamic lastAttempt,
   }) {
     return EssayState(
       lessonId: lessonId ?? this.lessonId,
@@ -72,6 +75,7 @@ class EssayState extends Equatable {
       errorMessage: errorMessage, // Dibiarkan null jika tidak di-pass agar ke-reset
       isSuccess: isSuccess ?? this.isSuccess,
       snackbarMessage: snackbarMessage,
+      lastAttempt: lastAttempt ?? this.lastAttempt,
     );
   }
 
@@ -84,7 +88,8 @@ class EssayState extends Equatable {
         currentQuestionIndex,
         isSubmitting,
         errorMessage,
-        isSuccess,
-        snackbarMessage,
+      isSuccess,
+      lastAttempt,
+      snackbarMessage,
       ];
 }

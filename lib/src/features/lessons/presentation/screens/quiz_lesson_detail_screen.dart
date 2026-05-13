@@ -14,6 +14,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/qu
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/quiz_questions_widget.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/quiz_result_widget.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 
 /// Screen utama untuk Quiz Lesson - Dengan BLoC State Management
 /// Bertanggung jawab untuk mengelola routing dan side effects,
@@ -620,6 +621,18 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
           ),
         ),
       ),
+      floatingActionButton: quizState.attempt != null
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                context.push(
+                  AppRoutes.quizResultDetail,
+                  extra: quizState.attempt,
+                );
+              },
+              icon: const Icon(Icons.remove_red_eye),
+              label: const Text('Lihat Hasil'),
+            )
+          : null,
     );
   }
 }

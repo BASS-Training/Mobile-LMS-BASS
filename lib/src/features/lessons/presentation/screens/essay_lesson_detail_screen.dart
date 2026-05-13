@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
+
 import 'package:lms_mobile_app/src/core/utils/lesson_route_resolver.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
@@ -129,6 +131,18 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
                   content: Text('Jawaban essay berhasil dikirim.'),
                 ),
               );
+
+              // Jika ada lastAttempt, buka halaman detail hasil essay terlebih dahulu
+              if (state.lastAttempt != null) {
+                Navigator.pop(context);
+                Future.delayed(const Duration(milliseconds: 200), () {
+                  context.push(
+                    AppRoutes.essayResultDetail,
+                    extra: state.lastAttempt,
+                  );
+                });
+                return;
+              }
 
               if (canGoNext && nextLesson != null) {
                 Navigator.pop(context);

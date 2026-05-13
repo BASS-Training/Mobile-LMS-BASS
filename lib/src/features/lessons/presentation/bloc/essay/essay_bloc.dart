@@ -98,6 +98,7 @@ class EssayBloc extends Bloc<EssayEvent, EssayState> {
       );
 
       if (isSuccess) {
+        dynamic savedAttempt;
         if (resultRepository != null) {
           try {
             final questions = state.questions.asMap().entries.map((entry) {
@@ -110,7 +111,7 @@ class EssayBloc extends Bloc<EssayEvent, EssayState> {
               );
             }).toList();
 
-            await resultRepository!.recordEssaySubmission(
+            savedAttempt = await resultRepository!.recordEssaySubmission(
               courseId: _courseId,
               courseTitle: _courseTitle,
               lessonId: state.lessonId,
@@ -127,6 +128,7 @@ class EssayBloc extends Bloc<EssayEvent, EssayState> {
             isSubmitting: false,
             isSuccess: true,
             savedDraftAnswers: Map.from(state.workingAnswers),
+            lastAttempt: savedAttempt,
           ),
         );
       } else {

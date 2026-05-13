@@ -58,15 +58,17 @@ class QuizSubmitted extends QuizState {
   final Quiz quiz;
   final QuizResult result;
   final Map<int, int> answers;
+  final dynamic attempt; // LessonAttempt? kept dynamic to avoid import cycle
 
   const QuizSubmitted({
     required this.quiz,
     required this.result,
     required this.answers,
+    this.attempt,
   });
 
   @override
-  List<Object?> get props => [quiz, result, answers];
+  List<Object?> get props => [quiz, result, answers, attempt];
 }
 
 /// Error state
