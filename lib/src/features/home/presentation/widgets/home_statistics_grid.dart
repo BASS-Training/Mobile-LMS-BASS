@@ -28,8 +28,8 @@ class HomeStatisticsGrid extends StatelessWidget {
             number: stats.totalCourses.toString(),
             description:
                 '${stats.completedCourses} selesai, ${stats.incompleteCourses} belum selesai',
-            borderColor: const Color(0xFF6366F1),
-            backgroundColor: const Color(0xFFF0F3FF),
+            borderColor: AppColors.cherry,
+            backgroundColor: const Color(0xFFFFF1EE),
           ),
           _buildProgressCard(
             icon: '📈',
@@ -37,16 +37,16 @@ class HomeStatisticsGrid extends StatelessWidget {
             number: '${stats.overallProgressPercentage}%',
             percentage: stats.overallProgressPercentage / 100.0,
             description: '% Lesson Selesai',
-            borderColor: const Color(0xFF14B8A6),
-            backgroundColor: const Color(0xFFF0FFFE),
+            borderColor: AppColors.amber,
+            backgroundColor: const Color(0xFFFFF8E7),
           ),
           _buildStatCard(
             icon: '✅',
             title: 'Konten Selesai',
             number: stats.completedLessons.toString(),
             description: 'dari ${stats.totalLessons} total lesson',
-            borderColor: const Color(0xFFA855F7),
-            backgroundColor: const Color(0xFFFAF5FF),
+            borderColor: AppColors.burgundy,
+            backgroundColor: const Color(0xFFFFF4F4),
           ),
           _buildUserGuideCard(),
         ],
@@ -65,7 +65,7 @@ class HomeStatisticsGrid extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: borderColor.withValues(alpha: 0.3),
           width: 1.5,
@@ -129,7 +129,7 @@ class HomeStatisticsGrid extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: borderColor.withValues(alpha: 0.3),
           width: 1.5,
@@ -190,17 +190,21 @@ class HomeStatisticsGrid extends StatelessWidget {
   Widget _buildUserGuideCard() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF3F0FF),
-        borderRadius: BorderRadius.circular(12),
+        gradient: const LinearGradient(
+          colors: [Color(0xFFFFF7F4), Color(0xFFFFF1EE)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: const Color(0xFF9333EA).withValues(alpha: 0.3),
+          color: AppColors.cherry.withValues(alpha: 0.22),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF9333EA).withValues(alpha: 0.08),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: AppColors.cherry.withValues(alpha: 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -209,7 +213,19 @@ class HomeStatisticsGrid extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('📖', style: TextStyle(fontSize: 28)),
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [AppColors.cherry, AppColors.amber],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: const Icon(Icons.menu_book_rounded, color: Colors.white),
+            ),
             const SizedBox(height: 12),
             const Text(
               'User Guide',
@@ -232,15 +248,15 @@ class HomeStatisticsGrid extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: const Color(0xFF9333EA).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(6),
+                color: AppColors.cherry.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(999),
               ),
               child: const Text(
                 'Buka',
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF9333EA),
+                  color: AppColors.cherry,
                 ),
               ),
             ),

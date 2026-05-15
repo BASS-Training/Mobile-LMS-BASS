@@ -4,17 +4,17 @@ class AppColors {
   // ==========================================
   // NEUTRALS, GRAYS, WHITES & BLACKS
   // ==========================================
-  static const Color black = Color(0xFF000000); 
-  static const Color white = Color(0xFFFFFFFF); 
-  static const Color mist = Color(0xFFF8F9FA); 
-  static const Color pearl = Color(0xFFE0E0E0); 
-  static const Color charcoal = Color(0xFF2D3436); 
-  static const Color slate = Color(0xFF636E72); 
-  static const Color silver = Color(0xFFB2BEC3); 
-  static const Color graphite = Color(0xFF1F2937); 
-  static const Color stone = Color(0xFF6B7280); 
-  static const Color cloud = Color(0xFFF3F4F6); 
-  
+  static const Color black = Color(0xFF000000);
+  static const Color white = Color(0xFFFFFFFF);
+  static const Color mist = Color(0xFFF8F9FA);
+  static const Color pearl = Color(0xFFE0E0E0);
+  static const Color charcoal = Color(0xFF2D3436);
+  static const Color slate = Color(0xFF636E72);
+  static const Color silver = Color(0xFFB2BEC3);
+  static const Color graphite = Color(0xFF1F2937);
+  static const Color stone = Color(0xFF6B7280);
+  static const Color cloud = Color(0xFFF3F4F6);
+
   // New Neutrals
   static const Color snow = Color(0xFFFFFAFA);
   static const Color floralWhite = Color(0xFFFFFAF0);
@@ -41,12 +41,12 @@ class AppColors {
   // ==========================================
   // BROWNS & EARTH TONES
   // ==========================================
-  static const Color brown = Color(0xFF8B5E34); 
-  static const Color chocolate = Color(0xFF5C3A21); 
-  static const Color sand = Color(0xFFF5DEB3); 
-  static const Color beige = Color(0xFFF5F5DC); 
-  static const Color ivory = Color(0xFFFFFFF0); 
-  
+  static const Color brown = Color(0xFF8B5E34);
+  static const Color chocolate = Color(0xFF5C3A21);
+  static const Color sand = Color(0xFFF5DEB3);
+  static const Color beige = Color(0xFFF5F5DC);
+  static const Color ivory = Color(0xFFFFFFF0);
+
   // New Browns
   static const Color cornsilk = Color(0xFFFFF8DC);
   static const Color bisque = Color(0xFFFFE4C4);
@@ -78,15 +78,15 @@ class AppColors {
   // ==========================================
   // REDS & PINKS
   // ==========================================
-  static const Color coral = Color(0xFFFF7675); 
-  static const Color rose = Color(0xFFFF6B9D); 
-  static const Color crimson = Color(0xFFE74C3C); 
-  static const Color cherry = Color(0xFFDC2626); 
-  static const Color scarlet = Color(0xFFEF4444); 
-  static const Color ruby = Color(0xFFBE123C); 
-  static const Color burgundy = Color(0xFF7F1D1D); 
-  static const Color peach = Color(0xFFFDA4AF); 
-  static const Color salmon = Color(0xFFFB7185); 
+  static const Color coral = Color(0xFFE76F51);
+  static const Color rose = Color(0xFFEF4444);
+  static const Color crimson = Color(0xFFC1121F);
+  static const Color cherry = Color(0xFFB91C1C);
+  static const Color scarlet = Color(0xFFE11D48);
+  static const Color ruby = Color(0xFF8F1D21);
+  static const Color burgundy = Color(0xFF7F1D1D);
+  static const Color peach = Color(0xFFFDE7E1);
+  static const Color salmon = Color(0xFFF97373);
 
   // New Reds & Pinks
   static const Color lightPink = Color(0xFFFFB6C1);
@@ -119,13 +119,13 @@ class AppColors {
   // ==========================================
   // ORANGES & YELLOWS
   // ==========================================
-  static const Color apricot = Color(0xFFFFBE76); 
-  static const Color amber = Color(0xFFF39C12); 
-  static const Color tangerine = Color(0xFFF97316); 
-  static const Color pumpkin = Color(0xFFEA580C); 
-  static const Color lemon = Color(0xFFFACC15); 
-  static const Color gold = Color(0xFFEAB308); 
-  static const Color mustard = Color(0xFFD97706); 
+  static const Color apricot = Color(0xFFF6C28B);
+  static const Color amber = Color(0xFFC9A227);
+  static const Color tangerine = Color(0xFFF59E0B);
+  static const Color pumpkin = Color(0xFFD97706);
+  static const Color lemon = Color(0xFFF8D66D);
+  static const Color gold = Color(0xFFD4A017);
+  static const Color mustard = Color(0xFFB45309);
 
   // New Oranges & Yellows
   static const Color lightYellow = Color(0xFFFFFFE0);
@@ -155,12 +155,12 @@ class AppColors {
   // ==========================================
   // GREENS
   // ==========================================
-  static const Color emerald = Color(0xFF27AE60); 
-  static const Color mint = Color(0xFF6EE7B7); 
-  static const Color jade = Color(0xFF10B981); 
-  static const Color forest = Color(0xFF166534); 
-  static const Color olive = Color(0xFF4D7C0F); 
-  static const Color turquoise = Color(0xFF14B8A6); 
+  static const Color emerald = Color(0xFF27AE60);
+  static const Color mint = Color(0xFF6EE7B7);
+  static const Color jade = Color(0xFF10B981);
+  static const Color forest = Color(0xFF166534);
+  static const Color olive = Color(0xFF4D7C0F);
+  static const Color turquoise = Color(0xFF14B8A6);
 
   // New Greens
   static const Color greenYellow = Color(0xFFADFF2F);
@@ -195,15 +195,15 @@ class AppColors {
   // ==========================================
   // BLUES & CYANS
   // ==========================================
-  static const Color azure = Color(0xFF0984E3); 
-  static const Color sky = Color(0xFF74B9FF); 
-  static const Color cobalt = Color(0xFF0770E3); 
-  static const Color ocean = Color(0xFF3498DB); 
-  static const Color navy = Color(0xFF1E3A8A); 
-  static const Color midnight = Color(0xFF0F172A); 
-  static const Color denim = Color(0xFF2563EB); 
-  static const Color sapphire = Color(0xFF1D4ED8); 
-  static const Color cyan = Color(0xFF06B6D4); 
+  static const Color azure = Color(0xFFC9A227);
+  static const Color sky = Color(0xFFF4D06F);
+  static const Color cobalt = Color(0xFF8F1D21);
+  static const Color ocean = Color(0xFFB91C1C);
+  static const Color navy = Color(0xFF5C1A1B);
+  static const Color midnight = Color(0xFF2B090A);
+  static const Color denim = Color(0xFFAA1E2C);
+  static const Color sapphire = Color(0xFFD72638);
+  static const Color cyan = Color(0xFFFFD166);
 
   // New Blues
   static const Color powderBlue = Color(0xFFB0E0E6);
@@ -237,13 +237,13 @@ class AppColors {
   // ==========================================
   // PURPLES, VIOLETS & MAGENTAS
   // ==========================================
-  static const Color violet = Color(0xFF6C5CE7); 
-  static const Color lavender = Color(0xFFA29BFE); 
-  static const Color indigo = Color(0xFF5F3DC4); 
-  static const Color lilac = Color(0xFFC4B5FD); 
-  static const Color plum = Color(0xFF7E22CE); 
-  static const Color orchid = Color(0xFFA855F7); 
-  static const Color magenta = Color(0xFFD946EF); 
+  static const Color violet = Color(0xFF6C5CE7);
+  static const Color lavender = Color(0xFFA29BFE);
+  static const Color indigo = Color(0xFF5F3DC4);
+  static const Color lilac = Color(0xFFC4B5FD);
+  static const Color plum = Color(0xFF7E22CE);
+  static const Color orchid = Color(0xFFA855F7);
+  static const Color magenta = Color(0xFFD946EF);
 
   // New Purples
   static const Color thistle = Color(0xFFD8BFD8);

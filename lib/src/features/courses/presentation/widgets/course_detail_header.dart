@@ -12,16 +12,15 @@ class CourseDetailHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Parsing warna dari hex string
-    final primaryColor = Color(
-      int.parse(course.color.replaceFirst('#', '0xFF')),
-    );
+    final primaryColor = AppColors.cherry;
+    final secondaryColor = AppColors.azure;
+    final accentColor = AppColors.burgundy;
 
     return Container(
       height: 280,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [primaryColor, primaryColor.withValues(alpha: 0.7)],
+          colors: [primaryColor, secondaryColor, accentColor],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -63,7 +62,7 @@ class CourseDetailHeader extends StatelessWidget {
                   ),
                   child: Icon(
                     course.isSaved ? Icons.bookmark : Icons.bookmark_outline,
-                    color: AppColors.violet,
+                    color: AppColors.cherry,
                   ),
                 ),
               ),
@@ -73,13 +72,29 @@ class CourseDetailHeader extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(course.icon, style: const TextStyle(fontSize: 80)),
+                  Container(
+                    width: 96,
+                    height: 96,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.14),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.2),
+                      ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        course.icon,
+                        style: const TextStyle(fontSize: 52),
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 24),
                   Text(
                     course.title,
                     style: const TextStyle(
                       fontSize: 28,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w900,
                       color: Colors.white,
                     ),
                     textAlign: TextAlign.center,

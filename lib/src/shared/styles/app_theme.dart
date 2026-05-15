@@ -7,19 +7,45 @@ class AppTheme {
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
+      visualDensity: VisualDensity.standard,
       colorScheme: ColorScheme.light(
         primary: AppColors.violet,
         secondary: AppColors.azure,
         surface: AppColors.white,
         error: AppColors.crimson,
       ),
-      scaffoldBackgroundColor: AppColors.mist,
+      scaffoldBackgroundColor: const Color(0xFFFFF7F4),
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: false,
         titleTextStyle: AppTypography.displaySmall,
         iconTheme: const IconThemeData(color: AppColors.charcoal),
+        surfaceTintColor: Colors.transparent,
+      ),
+      cardTheme: CardThemeData(
+        color: AppColors.white,
+        elevation: AppMeasures.elevationMedium,
+        shadowColor: Colors.black.withValues(alpha: 0.08),
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppMeasures.radiusLarge),
+        ),
+      ),
+      dividerTheme: DividerThemeData(
+        color: AppColors.pearl.withValues(alpha: 0.7),
+        thickness: 1,
+        space: AppMeasures.paddingLarge,
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: AppColors.cloud,
+        labelStyle: AppTypography.titleMedium.copyWith(
+          color: AppColors.charcoal,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppMeasures.radiusCircle),
+        ),
+        side: BorderSide(color: AppColors.pearl.withValues(alpha: 0.8)),
       ),
       textTheme: TextTheme(
         displayLarge: AppTypography.displayLarge,
@@ -74,6 +100,11 @@ class AppTheme {
           ),
         ),
       ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: AppColors.violet,
+        foregroundColor: Colors.white,
+        elevation: AppMeasures.elevationLarge,
+      ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.violet,
@@ -90,4 +121,3 @@ class AppTheme {
     );
   }
 }
-

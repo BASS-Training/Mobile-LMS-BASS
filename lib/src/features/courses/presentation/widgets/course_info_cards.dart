@@ -13,7 +13,7 @@ class CourseInfoCards extends StatelessWidget {
       children: [
         _buildCard(
           icon: Icons.person,
-          iconColor: AppColors.violet,
+          iconColor: AppColors.cherry,
           label: 'Instructor',
           value: course.instructor,
         ),
@@ -38,19 +38,40 @@ class CourseInfoCards extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          gradient: LinearGradient(
+            colors: [Colors.white, AppColors.peach.withValues(alpha: 0.28)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 8,
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 14,
+              offset: const Offset(0, 6),
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: iconColor),
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    iconColor.withValues(alpha: 0.18),
+                    iconColor.withValues(alpha: 0.08),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: iconColor),
+            ),
             const SizedBox(height: 8),
             Text(
               label,

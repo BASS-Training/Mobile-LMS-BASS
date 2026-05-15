@@ -126,45 +126,65 @@ class _HomeRecommendedCoursesState extends State<HomeRecommendedCourses> {
     return GestureDetector(
       onTap: _handleEdgeSwipeNavigation,
       child: Container(
-        width: 200,
+        width: 210,
         margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.pearl),
+          gradient: LinearGradient(
+            colors: [
+              Colors.white.withValues(alpha: 0.95),
+              const Color(0xFFF6F8FF).withValues(alpha: 0.98),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: AppColors.pearl.withValues(alpha: 0.75)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 18,
+              offset: const Offset(0, 8),
             ),
           ],
         ),
         child: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+          padding: EdgeInsets.all(16),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.menu_book_rounded, color: AppColors.violet, size: 28),
+              Icon(Icons.menu_book_rounded, color: AppColors.cherry, size: 30),
               Spacer(),
               Text(
                 'Tampilkan Semua',
                 style: TextStyle(
                   fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w800,
                   color: AppColors.charcoal,
-                  height: 1.1,
+                  height: 1.05,
                 ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 8),
+              Text(
+                'Buka daftar kursus dan jelajahi semua materi',
+                style: TextStyle(
+                  fontSize: 12,
+                  height: 1.5,
+                  color: AppColors.slate,
+                ),
+              ),
+              SizedBox(height: 12),
               Row(
                 children: [
                   Text(
-                    'Buka daftar Kursus',
-                    style: TextStyle(fontSize: 12, color: AppColors.silver),
+                    'Lihat katalog',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.cherry,
+                    ),
                   ),
                   Spacer(),
-                  Icon(Icons.arrow_forward_rounded, color: AppColors.charcoal),
+                  Icon(Icons.arrow_forward_rounded, color: AppColors.cherry),
                 ],
               ),
             ],
