@@ -44,7 +44,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFC1121F), Color(0xFFC9A227)],
+              colors: [AppColors.tomato, AppColors.red],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),

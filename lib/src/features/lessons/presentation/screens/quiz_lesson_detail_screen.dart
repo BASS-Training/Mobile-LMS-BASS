@@ -110,7 +110,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
                 flexibleSpace: Container(
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
+                      colors: [AppColors.red, AppColors.tomato],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -142,7 +142,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
                 flexibleSpace: Container(
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
+                      colors: [AppColors.red, AppColors.tomato],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
@@ -249,7 +249,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
               flexibleSpace: Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
+                    colors: [AppColors.red, AppColors.tomato],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),

@@ -34,9 +34,9 @@ class HomeHeader extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                AppColors.cherry.withValues(alpha: 0.98),
-                AppColors.azure.withValues(alpha: 0.98),
-                AppColors.burgundy.withValues(alpha: 0.96),
+                AppColors.red.withValues(alpha: 1),
+                AppColors.red.withValues(alpha: 1),
+                AppColors.tomato.withValues(alpha: 1),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -54,7 +54,7 @@ class HomeHeader extends StatelessWidget {
                     shape: BoxShape.circle,
                     gradient: RadialGradient(
                       colors: [
-                        Colors.white.withValues(alpha: 0.18),
+                        AppColors.kids.withValues(alpha: 0.18),
                         Colors.transparent,
                       ],
                     ),

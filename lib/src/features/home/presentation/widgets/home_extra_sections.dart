@@ -36,11 +36,7 @@ class HomeExtraSections extends StatelessWidget {
             _buildModernCard(
               title: 'Statistik belajar',
               icon: Icons.insights_rounded,
-              gradient: const LinearGradient(
-                colors: [Color(0xFFFFF7F4), Color(0xFFFFE9E6)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: AppColors.bubblegum,
               child: Column(
                 children: [
                   _buildMetricRowModern(
@@ -61,11 +57,7 @@ class HomeExtraSections extends StatelessWidget {
             _buildModernCard(
               title: 'Gabung Kelas',
               icon: Icons.groups_2_rounded,
-              gradient: const LinearGradient(
-                colors: [Color(0xFFFFF8E7), Color(0xFFFFF1C7)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: const Color(0xFFFFF8E7),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -176,11 +168,7 @@ class HomeExtraSections extends StatelessWidget {
                   ),
                 ),
               ),
-              gradient: const LinearGradient(
-                colors: [Color(0xFFFFF7F4), Color(0xFFFFE9E1)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: const Color(0xFFFFF7F4),
               child: completedCourses.isEmpty
                   ? Container(
                       width: double.infinity,
@@ -263,21 +251,21 @@ class HomeExtraSections extends StatelessWidget {
   Widget _buildModernCard({
     required String title,
     required IconData icon,
-    required LinearGradient gradient,
+    required Color color,
     required Widget child,
     Widget? trailing,
   }) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: gradient,
+        color: color,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.white.withValues(alpha: 0.8)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 2,
+            offset: const Offset(4, 4),
           ),
         ],
       ),

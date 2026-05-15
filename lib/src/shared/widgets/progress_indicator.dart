@@ -64,7 +64,7 @@ class CourseProgressIndicator extends StatelessWidget {
                      height: 8,
                      decoration: BoxDecoration(
                        gradient: LinearGradient(
-                         colors: [AppColors.violet, AppColors.azure],
+                         colors: [AppColors.red, AppColors.tomato],
                          begin: Alignment.centerLeft,
                          end: Alignment.centerRight,
                        ),

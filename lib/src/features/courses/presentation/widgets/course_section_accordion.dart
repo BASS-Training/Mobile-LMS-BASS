@@ -45,7 +45,7 @@ class CourseSectionAccordion extends StatelessWidget {
                 height: 36,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.violet,
+                  color: AppColors.tomato,
                 ),
                 child: Center(
                   child: Text(

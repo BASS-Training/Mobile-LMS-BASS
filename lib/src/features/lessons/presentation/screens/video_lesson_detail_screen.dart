@@ -145,7 +145,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
           flexibleSpace: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
+                colors: [AppColors.red, AppColors.tomato],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -184,7 +184,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
                   Icon(
                     Icons.ondemand_video_outlined,
                     size: 64,
-                    color: AppColors.violet,
+                    color: AppColors.red,
                   ),
                   SizedBox(height: 16),
                   Text(
@@ -208,10 +208,10 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
       player: YoutubePlayer(
         controller: _controller,
         showVideoProgressIndicator: true,
-        progressIndicatorColor: AppColors.violet,
+        progressIndicatorColor: AppColors.red,
         progressColors: const ProgressBarColors(
-          playedColor: AppColors.violet,
-          handleColor: AppColors.violet,
+          playedColor: AppColors.red,
+          handleColor: AppColors.red,
         ),
       ),
       builder: (context, player) {
@@ -234,23 +234,21 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
           ),
           backgroundColor: const Color(0xFFF6F8FF),
           appBar: AppBar(
-            title: Text(widget.course.title),
+            title: Text(
+              widget.course.title,
+              style: TextStyle(color: Colors.white),
+            ),
+
             elevation: 0,
             backgroundColor: Colors.transparent,
             surfaceTintColor: Colors.transparent,
             automaticallyImplyLeading: false,
             flexibleSpace: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
+              decoration: const BoxDecoration(color: AppColors.red),
             ),
             leading: GestureDetector(
               onTap: () => Navigator.pop(context),
-              child: const Icon(Icons.arrow_back),
+              child: const Icon(Icons.arrow_back, color: Colors.white),
             ),
             actions: [
               Padding(
@@ -258,7 +256,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
                 child: Center(
                   child: GestureDetector(
                     onTap: () => _scaffoldKey.currentState?.openDrawer(),
-                    child: const Icon(Icons.list_alt, size: 24),
+                    child: const Icon(Icons.list_alt, size: 24, color: Colors.white),
                   ),
                 ),
               ),

@@ -52,69 +52,25 @@ class _LoginScreenState extends State<LoginScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: AppColors.crimson,
+                backgroundColor: AppColors.red,
                 duration: Duration(seconds: 3),
               ),
             );
           }
         },
         child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [AppColors.violet, AppColors.azure],
-            ),
-          ),
+          decoration: BoxDecoration(color: AppColors.red),
           child: SafeArea(
             child: SingleChildScrollView(
               child: Padding(
-                padding: EdgeInsets.all(AppMeasures.paddingLarge),
+                padding: EdgeInsets.all(50),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    SizedBox(height: 40),
+                    // SizedBox(height: 40),
+
                     // Header
-                    Column(
-                      children: [
-                        Image.asset(
-                          'assets/images/BassLogo.webp',
-                          height: 80,
-                          width: 80,
-                          fit: BoxFit.contain,
-                          semanticLabel: AppStrings.appName,
-                          errorBuilder: (context, error, stackTrace) =>
-                              SizedBox(
-                                width: 80,
-                                height: 80,
-                                child: Center(
-                                  child: Text(
-                                    '📚',
-                                    style: TextStyle(fontSize: 80),
-                                  ),
-                                ),
-                              ),
-                        ),
-                        SizedBox(height: 24),
-                        Text(
-                          AppStrings.appName,
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          'Welcome Back',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white.withValues(alpha: 0.9),
-                          ),
-                        ),
-                      ],
-                    ),
                     SizedBox(height: 60),
                     // Form
                     Container(
@@ -135,6 +91,45 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
+                            Column(
+                              children: [
+                                Image.asset(
+                                  'assets/images/bass_logo2.png',
+                                  height: 200,
+                                  width: 200,
+                                  fit: BoxFit.contain,
+                                  semanticLabel: AppStrings.appName,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      SizedBox(
+                                        width: 80,
+                                        height: 80,
+                                        child: Center(
+                                          child: Text(
+                                            '📚',
+                                            style: TextStyle(fontSize: 80),
+                                          ),
+                                        ),
+                                      ),
+                                ),
+                                // SizedBox(height: 24),
+                                Text(
+                                  AppStrings.appName,
+                                  style: TextStyle(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black.withValues(alpha: 0.9),
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  'Welcome Back',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black.withValues(alpha: 0.9),
+                                  ),
+                                ),
+                              ],
+                            ),
                             Text(
                               AppStrings.login,
                               style: TextStyle(
@@ -151,7 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               decoration: InputDecoration(
                                 hintText: AppStrings.email,
                                 prefixIcon: Icon(Icons.email_outlined),
-                                prefixIconColor: AppColors.violet,
+                                prefixIconColor: AppColors.tomato,
                               ),
                               validator: Validators.validateEmail,
                               onChanged: (_) {
@@ -168,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               decoration: InputDecoration(
                                 hintText: AppStrings.password,
                                 prefixIcon: Icon(Icons.lock_outlined),
-                                prefixIconColor: AppColors.violet,
+                                prefixIconColor: AppColors.tomato,
                                 suffixIcon: GestureDetector(
                                   onTap: () {
                                     setState(() {
@@ -199,7 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: Text(
                                   'Forgot Password?',
                                   style: TextStyle(
-                                    color: AppColors.violet,
+                                    color: AppColors.tomato,
                                     fontSize: 13,
                                   ),
                                 ),
@@ -211,6 +206,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               builder: (context, state) {
                                 final isLoading = state is AuthLoading;
                                 return ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.red,
+                                    padding: EdgeInsets.symmetric(vertical: 14),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
                                   onPressed: isLoading
                                       ? null
                                       : () => _handleLogin(context),
@@ -285,7 +287,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 20),
+                    SizedBox(height: 1000),
                   ],
                 ),
               ),

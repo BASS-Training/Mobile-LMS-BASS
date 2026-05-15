@@ -266,4 +266,11 @@ class AppColors {
   static const Color iris = Color(0xFF5A4FCF);
   static const Color heather = Color(0xFFB7C3D0);
   static const Color byzantium = Color(0xFF702963);
+
+  //Main Theme Colors
+
+  static const Color red = Color(0xFFDC0000);
+  static const Color yellowTheme = Color(0xFFFFDB89);
+  static const Color maroon = Color(0xFF850000);
+  static const Color kids = Color(0xFFFFF6C3);
 }

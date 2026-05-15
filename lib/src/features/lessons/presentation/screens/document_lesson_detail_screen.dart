@@ -140,7 +140,7 @@ class _DocumentLessonDetailScreenState
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFC1121F), Color(0xFFC9A227)],
+              colors: [AppColors.red, AppColors.red],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -222,9 +222,9 @@ class _DocumentLessonDetailScreenState
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                AppColors.cherry.withValues(alpha: 0.96),
-                AppColors.azure.withValues(alpha: 0.96),
-                AppColors.burgundy.withValues(alpha: 0.92),
+                AppColors.red.withValues(alpha: 0.96),
+                AppColors.red.withValues(alpha: 0.96),
+                AppColors.tomato.withValues(alpha: 0.96),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -373,7 +373,7 @@ class _DocumentLessonDetailScreenState
                 height: 40,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [AppColors.cherry, AppColors.azure],
+                    colors: [AppColors.red, AppColors.tomato],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -481,7 +481,7 @@ class _DocumentLessonDetailScreenState
                 height: 42,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [AppColors.cherry, AppColors.azure],
+                    colors: [AppColors.red, AppColors.tomato],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -517,7 +517,7 @@ class _DocumentLessonDetailScreenState
                       height: 4,
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                          colors: [AppColors.cherry, AppColors.azure],
+                          colors: [AppColors.cherry, AppColors.tomato],
                         ),
                         borderRadius: BorderRadius.circular(999),
                       ),
@@ -561,7 +561,7 @@ class _DocumentLessonDetailScreenState
                         child: Icon(
                           Icons.check_rounded,
                           size: 12,
-                          color: AppColors.cherry,
+                          color: AppColors.red,
                         ),
                       ),
                     ),
@@ -726,7 +726,7 @@ class _DocumentLessonDetailScreenState
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    AppColors.azure.withValues(alpha: 0.18),
+                    AppColors.tomato.withValues(alpha: 0.18),
                     Colors.transparent,
                   ],
                 ),
@@ -743,7 +743,7 @@ class _DocumentLessonDetailScreenState
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    AppColors.cherry.withValues(alpha: 0.14),
+                    AppColors.red.withValues(alpha: 0.14),
                     Colors.transparent,
                   ],
                 ),

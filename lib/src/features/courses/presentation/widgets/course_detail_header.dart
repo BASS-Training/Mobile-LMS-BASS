@@ -12,15 +12,15 @@ class CourseDetailHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = AppColors.cherry;
-    final secondaryColor = AppColors.azure;
-    final accentColor = AppColors.burgundy;
+    final primaryColor = AppColors.red;
+    final secondaryColor = AppColors.tomato;
+    final accentColor = AppColors.red;
 
     return Container(
       height: 280,
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [primaryColor, secondaryColor, accentColor],
+          colors: [secondaryColor, primaryColor,  accentColor, secondaryColor,],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
