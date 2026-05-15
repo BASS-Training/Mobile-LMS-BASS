@@ -62,3 +62,13 @@ class LessonFailure extends LessonState {
   @override
   List<Object?> get props => [message];
 }
+
+class LessonNavigationIntent extends LessonState {
+  final String? lessonId;
+  final int? lessonIndex;
+
+  const LessonNavigationIntent({this.lessonId, this.lessonIndex});
+
+  @override
+  List<Object?> get props => [lessonId ?? '', lessonIndex ?? -1];
+}

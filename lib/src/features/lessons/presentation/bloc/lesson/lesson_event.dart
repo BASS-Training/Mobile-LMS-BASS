@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 
 abstract class LessonEvent extends Equatable {
   const LessonEvent();
@@ -45,4 +46,30 @@ class RefreshLessonCompletionEvent extends LessonEvent {
 
   @override
   List<Object?> get props => [];
+}
+
+class RequestNavigateNextEvent extends LessonEvent {
+  final CourseEntity course;
+  final int currentIndex;
+
+  const RequestNavigateNextEvent({
+    required this.course,
+    required this.currentIndex,
+  });
+
+  @override
+  List<Object?> get props => [course, currentIndex];
+}
+
+class RequestNavigatePreviousEvent extends LessonEvent {
+  final CourseEntity course;
+  final int currentIndex;
+
+  const RequestNavigatePreviousEvent({
+    required this.course,
+    required this.currentIndex,
+  });
+
+  @override
+  List<Object?> get props => [course, currentIndex];
 }
