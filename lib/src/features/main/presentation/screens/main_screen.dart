@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/profile_screen.dart';
+import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_bloc.dart';
+import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_state.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/screens/course_list_screen.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/screens/saved_courses_screen.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/screens/home_screen.dart';
@@ -16,14 +19,17 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   late int _selectedIndex;
-  late final List<Widget> _screens;
 
   @override
   void initState() {
     super.initState();
     _selectedIndex = widget.initialTab;
-    _screens = [
+  }
+
+  List<Widget> _buildScreens(String role) {
+    return [
       HomeScreen(
+        accountRole: role,
         onShowCourses: () {
           setState(() {
             _selectedIndex = 1;
@@ -38,16 +44,23 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _screens[_selectedIndex],
-      bottomNavigationBar: CustomBottomNavBar(
-        currentIndex: _selectedIndex,
-        onItemSelected: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-      ),
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        final role = state is AuthSuccess ? state.user.role : 'participant';
+        final screens = _buildScreens(role);
+
+        return Scaffold(
+          body: screens[_selectedIndex],
+          bottomNavigationBar: CustomBottomNavBar(
+            currentIndex: _selectedIndex,
+            onItemSelected: (index) {
+              setState(() {
+                _selectedIndex = index;
+              });
+            },
+          ),
+        );
+      },
     );
   }
 }

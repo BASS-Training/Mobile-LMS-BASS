@@ -1,11 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
+import 'package:lms_mobile_app/src/core/di/injector.dart';
 import 'package:lms_mobile_app/src/core/di/modules/lesson_module.dart';
+import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_bloc.dart';
+import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_state.dart';
 
 // Screen imports
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/login_screen.dart';
+import 'package:lms_mobile_app/src/features/authentication/presentation/screens/register_screen.dart';
 import 'package:lms_mobile_app/src/features/main/presentation/screens/main_screen.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/screens/course_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/essay/essay_bloc.dart';
@@ -31,17 +37,38 @@ import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_attem
 class AppRouter {
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
+  static AuthBloc get _authBloc => ServiceLocator().authBloc;
+
   static final GoRouter router = GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: AppRoutes.login,
+    refreshListenable: _GoRouterRefreshStream(_authBloc.stream),
     redirect: (context, state) {
-      // TODO: Tambahkan auth guard ketika state auth sudah siap.
+      final authState = _authBloc.state;
+      final isOnAuthRoute =
+          state.matchedLocation == AppRoutes.login ||
+          state.matchedLocation == AppRoutes.register;
+
+      final isAuthenticated = authState is AuthSuccess;
+
+      if (!isAuthenticated && !isOnAuthRoute) {
+        return AppRoutes.login;
+      }
+
+      if (isAuthenticated && isOnAuthRoute) {
+        return AppRoutes.main;
+      }
+
       return null;
     },
     routes: [
       GoRoute(
         path: AppRoutes.login,
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.register,
+        builder: (context, state) => const RegisterScreen(),
       ),
       GoRoute(
         path: AppRoutes.main,
@@ -264,4 +291,20 @@ class AppRouter {
       ),
     ],
   );
+}
+
+class _GoRouterRefreshStream extends ChangeNotifier {
+  _GoRouterRefreshStream(Stream<dynamic> stream) {
+    _subscription = stream.listen((_) {
+      notifyListeners();
+    });
+  }
+
+  late final StreamSubscription<dynamic> _subscription;
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
 }

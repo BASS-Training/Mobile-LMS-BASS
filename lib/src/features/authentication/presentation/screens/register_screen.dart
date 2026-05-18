@@ -10,32 +10,37 @@ import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/aut
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  final String _role = 'participant';
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  void _handleLogin(BuildContext context) {
+  void _handleRegister(BuildContext context) {
     if (_formKey.currentState!.validate()) {
       context.read<AuthBloc>().add(
-        AuthLoginEvent(
+        AuthRegisterEvent(
+          name: _nameController.text.trim(),
           email: _emailController.text.trim(),
           password: _passwordController.text,
+          role: _role,
         ),
       );
     }
@@ -46,33 +51,34 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
-          if (state is AuthSuccess) {
-            context.go(AppRoutes.main);
+          if (state is AuthRegisterSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Akun berhasil dibuat. Silakan login.'),
+                backgroundColor: AppColors.emerald,
+              ),
+            );
+            context.go(AppRoutes.login);
           } else if (state is AuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
                 backgroundColor: AppColors.red,
-                duration: Duration(seconds: 3),
+                duration: const Duration(seconds: 3),
               ),
             );
           }
         },
         child: Container(
-          decoration: BoxDecoration(color: AppColors.red),
+          decoration: const BoxDecoration(color: AppColors.red),
           child: SafeArea(
             child: SingleChildScrollView(
               child: Padding(
-                padding: EdgeInsets.all(50),
+                padding: const EdgeInsets.all(50),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // SizedBox(height: 40),
-
-                    // Header
-                    SizedBox(height: 60),
-                    // Form
+                    const SizedBox(height: 60),
                     Container(
                       padding: EdgeInsets.all(AppMeasures.paddingLarge),
                       decoration: BoxDecoration(
@@ -82,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.2),
                             blurRadius: 16,
-                            offset: Offset(0, 8),
+                            offset: const Offset(0, 8),
                           ),
                         ],
                       ),
@@ -95,12 +101,12 @@ class _LoginScreenState extends State<LoginScreen> {
                               children: [
                                 Image.asset(
                                   'assets/images/bass_logo2.png',
-                                  height: 200,
-                                  width: 200,
+                                  height: 160,
+                                  width: 160,
                                   fit: BoxFit.contain,
                                   semanticLabel: AppStrings.appName,
                                   errorBuilder: (context, error, stackTrace) =>
-                                      SizedBox(
+                                      const SizedBox(
                                         width: 80,
                                         height: 80,
                                         child: Center(
@@ -111,7 +117,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                         ),
                                       ),
                                 ),
-                                // SizedBox(height: 24),
                                 Text(
                                   AppStrings.appName,
                                   style: TextStyle(
@@ -120,30 +125,40 @@ class _LoginScreenState extends State<LoginScreen> {
                                     color: Colors.black.withValues(alpha: 0.9),
                                   ),
                                 ),
-                                SizedBox(height: 8),
-                                Text(
-                                  'Welcome Back',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black.withValues(alpha: 0.9),
-                                  ),
+                                const SizedBox(height: 8),
+                                const Text(
+                                  'Buat akun peserta sementara',
+                                  style: TextStyle(fontSize: 16),
                                 ),
                               ],
                             ),
-                            Text(
-                              AppStrings.login,
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.charcoal,
+                            const SizedBox(height: 24),
+                            TextFormField(
+                              controller: _nameController,
+                              textInputAction: TextInputAction.next,
+                              decoration: const InputDecoration(
+                                hintText: 'Nama Lengkap',
+                                prefixIcon: Icon(Icons.person_outlined),
+                                prefixIconColor: AppColors.tomato,
                               ),
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Nama wajib diisi';
+                                }
+                                return null;
+                              },
+                              onChanged: (_) {
+                                context.read<AuthBloc>().add(
+                                  const AuthClearErrorEvent(),
+                                );
+                              },
                             ),
-                            SizedBox(height: 24),
-                            // Email Field
+                            const SizedBox(height: 16),
                             TextFormField(
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
-                              decoration: InputDecoration(
+                              textInputAction: TextInputAction.next,
+                              decoration: const InputDecoration(
                                 hintText: AppStrings.email,
                                 prefixIcon: Icon(Icons.email_outlined),
                                 prefixIconColor: AppColors.tomato,
@@ -151,18 +166,17 @@ class _LoginScreenState extends State<LoginScreen> {
                               validator: Validators.validateEmail,
                               onChanged: (_) {
                                 context.read<AuthBloc>().add(
-                                  AuthClearErrorEvent(),
+                                  const AuthClearErrorEvent(),
                                 );
                               },
                             ),
-                            SizedBox(height: 16),
-                            // Password Field
+                            const SizedBox(height: 16),
                             TextFormField(
                               controller: _passwordController,
                               obscureText: _obscurePassword,
                               decoration: InputDecoration(
                                 hintText: AppStrings.password,
-                                prefixIcon: Icon(Icons.lock_outlined),
+                                prefixIcon: const Icon(Icons.lock_outlined),
                                 prefixIconColor: AppColors.tomato,
                                 suffixIcon: GestureDetector(
                                   onTap: () {
@@ -181,45 +195,45 @@ class _LoginScreenState extends State<LoginScreen> {
                               validator: Validators.validatePassword,
                               onChanged: (_) {
                                 context.read<AuthBloc>().add(
-                                  AuthClearErrorEvent(),
+                                  const AuthClearErrorEvent(),
                                 );
                               },
                             ),
-                            SizedBox(height: 8),
-                            // Forgot Password Link
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: TextButton(
-                                onPressed: () {
-                                  context.go(AppRoutes.register);
-                                },
-                                child: Text(
-                                  'Create an account',
-                                  style: TextStyle(
-                                    color: AppColors.tomato,
-                                    fontSize: 13,
-                                  ),
+                            const SizedBox(height: 12),
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: AppColors.mist,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: AppColors.pearl),
+                              ),
+                              child: const Text(
+                                'Role default saat register adalah peserta. Akun instruktur akan diaktifkan manual dari Firestore.',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.slate,
                                 ),
                               ),
                             ),
-                            SizedBox(height: 16),
-                            // Login Button
+                            const SizedBox(height: 24),
                             BlocBuilder<AuthBloc, AuthState>(
                               builder: (context, state) {
                                 final isLoading = state is AuthLoading;
                                 return ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.red,
-                                    padding: EdgeInsets.symmetric(vertical: 14),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 14,
+                                    ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                   ),
                                   onPressed: isLoading
                                       ? null
-                                      : () => _handleLogin(context),
+                                      : () => _handleRegister(context),
                                   child: isLoading
-                                      ? SizedBox(
+                                      ? const SizedBox(
                                           height: 20,
                                           width: 20,
                                           child: CircularProgressIndicator(
@@ -229,8 +243,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                             strokeWidth: 2,
                                           ),
                                         )
-                                      : Text(
-                                          AppStrings.login,
+                                      : const Text(
+                                          'Register',
                                           style: TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
@@ -239,65 +253,21 @@ class _LoginScreenState extends State<LoginScreen> {
                                 );
                               },
                             ),
-                            SizedBox(height: 16),
-                            // Divider
-                            Row(
-                              children: [
-                                Expanded(child: Divider()),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 8),
-                                  child: Text(
-                                    'OR',
-                                    style: TextStyle(color: AppColors.silver),
-                                  ),
-                                ),
-                                Expanded(child: Divider()),
-                              ],
-                            ),
-                            SizedBox(height: 16),
-                            // Demo credentials hint
-                            Container(
-                              padding: EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: AppColors.mist,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: AppColors.pearl),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Demo Credentials:',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: AppColors.charcoal,
-                                    ),
-                                  ),
-                                  SizedBox(height: 4),
-                                  Text(
-                                    'Email: demo@example.com\nPassword: demo123',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: AppColors.slate,
-                                    ),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    'Akun instruktur akan dibedakan dari role di Firestore.',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: AppColors.slate,
-                                    ),
-                                  ),
-                                ],
+                            const SizedBox(height: 16),
+                            TextButton(
+                              onPressed: () {
+                                context.go(AppRoutes.login);
+                              },
+                              child: const Text(
+                                'Sudah punya akun? Login',
+                                style: TextStyle(color: AppColors.tomato),
                               ),
                             ),
                           ],
                         ),
                       ),
                     ),
-                    SizedBox(height: 1000),
+                    const SizedBox(height: 40),
                   ],
                 ),
               ),

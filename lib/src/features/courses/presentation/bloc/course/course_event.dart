@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../../domain/entities/course_entity.dart';
 
 abstract class CourseEvent extends Equatable {
   const CourseEvent();
@@ -6,6 +7,13 @@ abstract class CourseEvent extends Equatable {
 
 class GetCoursesEvent extends CourseEvent {
   const GetCoursesEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class WatchCoursesEvent extends CourseEvent {
+  const WatchCoursesEvent();
 
   @override
   List<Object?> get props => [];
@@ -41,4 +49,13 @@ class RefreshCoursesEvent extends CourseEvent {
 
   @override
   List<Object?> get props => [];
+}
+
+class AddCourseEvent extends CourseEvent {
+  final CourseEntity course;
+
+  const AddCourseEvent({required this.course});
+
+  @override
+  List<Object?> get props => [course];
 }

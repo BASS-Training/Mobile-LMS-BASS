@@ -15,12 +15,18 @@ class AuthModule {
 
     // Use Cases
     LoginUseCase loginUseCase = LoginUseCase(authRepository);
+    RegisterUseCase registerUseCase = RegisterUseCase(authRepository);
     LogoutUseCase logoutUseCase = LogoutUseCase(authRepository);
+    GetCurrentUserUseCase getCurrentUserUseCase = GetCurrentUserUseCase(
+      authRepository,
+    );
 
     // Presentation Layer
     _authBloc = AuthBloc(
       loginUseCase: loginUseCase,
+      registerUseCase: registerUseCase,
       logoutUseCase: logoutUseCase,
+      getCurrentUserUseCase: getCurrentUserUseCase,
     );
   }
 

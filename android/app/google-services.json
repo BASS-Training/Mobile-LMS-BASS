@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "567057499249",
+    "project_id": "bass-lms-mobile-app",
+    "storage_bucket": "bass-lms-mobile-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:567057499249:android:f663cc38e97a20896fc7d0",
+        "android_client_info": {
+          "package_name": "com.example.lms_mobile_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgCJuqu6qSS-LFe1_38DRZwMutQP7LRkM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

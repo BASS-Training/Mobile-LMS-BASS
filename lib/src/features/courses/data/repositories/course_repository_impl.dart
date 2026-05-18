@@ -34,6 +34,14 @@ class CourseRepositoryImpl implements CourseRepository {
   }
 
   @override
+  Stream<List<CourseEntity>> watchCourses() async* {
+    await for (final courses in remoteDataSource.watchCourses()) {
+      _updateCompletionStatus(courses);
+      yield _mapCoursesToEntities(courses);
+    }
+  }
+
+  @override
   Future<CourseEntity?> getCourseById(String id) async {
     try {
       // Coba remote dulu
@@ -86,6 +94,13 @@ class CourseRepositoryImpl implements CourseRepository {
     } catch (e) {
       // Biarkan sync nanti atau ignore jika offline
     }
+  }
+
+  @override
+  Future<void> addCourse(CourseEntity course) async {
+    final model = CourseMapper.fromDomain(course);
+    await remoteDataSource.addCourse(model);
+    await localDataSource.saveCourse(model);
   }
 
   @override

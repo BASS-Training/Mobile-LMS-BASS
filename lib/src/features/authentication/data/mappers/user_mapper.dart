@@ -7,6 +7,7 @@ class UserMapper {
       id: model.id,
       name: model.name,
       email: model.email,
+      role: model.role,
     );
   }
 
@@ -15,6 +16,7 @@ class UserMapper {
       id: entity.id,
       name: entity.name,
       email: entity.email,
+      role: entity.role,
     );
   }
 }

@@ -1,8 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
+import 'package:lms_mobile_app/src/features/courses/domain/usecases/add_course_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/get_courses_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/get_saved_courses_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/refresh_courses_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/search_courses_usecase.dart';
+import 'package:lms_mobile_app/src/features/courses/domain/usecases/watch_courses_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/toggle_save_course_usecase.dart';
 import 'course_event.dart';
 import 'course_state.dart';
@@ -13,6 +16,8 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
   final ToggleSaveCourseUseCase toggleSaveCourseUseCase;
   final GetSavedCoursesUseCase getSavedCoursesUseCase;
   final RefreshCoursesUseCase refreshCoursesUseCase;
+  final WatchCoursesUseCase watchCoursesUseCase;
+  final AddCourseUseCase addCourseUseCase;
 
   CourseBloc({
     required this.getCoursesUseCase,
@@ -20,12 +25,18 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
     required this.toggleSaveCourseUseCase,
     required this.getSavedCoursesUseCase,
     required this.refreshCoursesUseCase,
+    required this.watchCoursesUseCase,
+    required this.addCourseUseCase,
   }) : super(const CourseInitial()) {
     on<GetCoursesEvent>(_onGetCourses);
+    on<WatchCoursesEvent>(_onWatchCourses);
     on<SearchCoursesEvent>(_onSearchCourses);
     on<ToggleSaveCourseEvent>(_onToggleSaveCourse);
     on<GetSavedCoursesEvent>(_onGetSavedCourses);
     on<RefreshCoursesEvent>(_onRefreshCourses);
+    on<AddCourseEvent>(_onAddCourse);
+
+    Future.microtask(() => add(const WatchCoursesEvent()));
   }
 
   Future<void> _onGetCourses(
@@ -40,6 +51,21 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
     } catch (e) {
       emit(CourseFailure(message: 'Failed to load courses'));
     }
+  }
+
+  Future<void> _onWatchCourses(
+    WatchCoursesEvent event,
+    Emitter<CourseState> emit,
+  ) async {
+    await emit.forEach<List<CourseEntity>>(
+      watchCoursesUseCase(),
+      onData: (courses) => CourseLoaded(courses: courses),
+      onError: (error, stackTrace) {
+        return const CourseFailure(
+          message: 'Failed to sync courses from Firestore',
+        );
+      },
+    );
   }
 
   Future<void> _onSearchCourses(
@@ -107,6 +133,18 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
       emit(CourseLoaded(courses: courses));
     } catch (e) {
       emit(CourseFailure(message: 'Failed to refresh courses'));
+    }
+  }
+
+  Future<void> _onAddCourse(
+    AddCourseEvent event,
+    Emitter<CourseState> emit,
+  ) async {
+    try {
+      await addCourseUseCase(event.course);
+      await refreshCoursesUseCase();
+    } catch (e) {
+      emit(CourseFailure(message: 'Failed to add course'));
     }
   }
 }

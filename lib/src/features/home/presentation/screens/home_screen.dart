@@ -18,8 +18,13 @@ import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback? onShowCourses;
+  final String accountRole;
 
-  const HomeScreen({super.key, this.onShowCourses});
+  const HomeScreen({
+    super.key,
+    this.onShowCourses,
+    this.accountRole = 'participant',
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -53,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
     context.push(AppRoutes.courses);
   }
 
-  void _handleHomeBlocListener(context, state) {
+  void _handleHomeBlocListener(BuildContext context, HomeState state) {
     if (state is HomeJoinClassSuccess) {
       ScaffoldMessenger.of(
         context,
@@ -93,6 +98,41 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 // Header with greeting and search
                 HomeHeader(searchController: _searchController),
+                if (widget.accountRole == 'instructor')
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AppMeasures.paddingLarge,
+                    ),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.charcoal,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Mode Instruktur Aktif',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'Kelola materi, kursus, dan update konten untuk peserta.',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 SizedBox(height: AppMeasures.paddingLarge),
 
                 // Single BlocBuilder for entire content area

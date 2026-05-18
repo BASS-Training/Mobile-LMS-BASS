@@ -66,7 +66,7 @@ class HomeHeader extends StatelessWidget {
                 children: [
                   _buildGreetingSection(),
                   const SizedBox(height: 20),
-                  _buildSearchBar(context),
+                  // _buildSearchBar(context),
                 ],
               ),
             ],

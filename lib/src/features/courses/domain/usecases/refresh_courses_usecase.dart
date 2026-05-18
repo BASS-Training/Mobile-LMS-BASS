@@ -1,4 +1,3 @@
-
 import 'package:lms_mobile_app/src/features/courses/domain/repositories/course_repository.dart';
 
 class RefreshCoursesUseCase {
