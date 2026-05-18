@@ -131,6 +131,67 @@ class AuthRepositoryImpl implements AuthRepository {
     return UserMapper.toDomain(_fallbackCurrentUser!);
   }
 
+  @override
+  Stream<UserEntity?> watchCurrentUser() async* {
+    final isReady = await _ensureFirebaseReady();
+    if (!isReady) {
+      // Fallback: emit current fallback user if available, then close.
+      if (_fallbackCurrentUser != null) {
+        yield UserMapper.toDomain(_fallbackCurrentUser!);
+      } else {
+        yield null;
+      }
+      return;
+    }
+
+    await for (final firebaseUser in _firebaseAuth.authStateChanges()) {
+      if (firebaseUser == null) {
+        yield null;
+        continue;
+      }
+
+      final docStream = _firestore
+          .collection('users')
+          .doc(firebaseUser.uid)
+          .snapshots();
+      await for (final doc in docStream) {
+        if (doc.exists && doc.data() != null) {
+          final data = doc.data()!;
+          final storedName = data['name']?.toString().trim();
+          final storedEmail = data['email']?.toString().trim();
+          final user = User(
+            id: firebaseUser.uid,
+            name: storedName != null && storedName.isNotEmpty
+                ? storedName
+                : (firebaseUser.displayName ??
+                      _fallbackDisplayName(firebaseUser.email ?? '')),
+            email: storedEmail != null && storedEmail.isNotEmpty
+                ? storedEmail
+                : (firebaseUser.email ?? ''),
+            role: _normalizeRole(data['role']?.toString()),
+          );
+          yield UserMapper.toDomain(user);
+        } else {
+          final fallback = User(
+            id: firebaseUser.uid,
+            name:
+                firebaseUser.displayName ??
+                _fallbackDisplayName(firebaseUser.email ?? ''),
+            email: firebaseUser.email ?? '',
+            role: 'participant',
+          );
+          // Best-effort create the profile document if missing.
+          _firestore
+              .collection('users')
+              .doc(firebaseUser.uid)
+              .set(fallback.toJson())
+              .catchError((_) {});
+          yield UserMapper.toDomain(fallback);
+        }
+      }
+    }
+  }
+
   bool _isValidEmail(String email) {
     final pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
     final regex = RegExp(pattern);

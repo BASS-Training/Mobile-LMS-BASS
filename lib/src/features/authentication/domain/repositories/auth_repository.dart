@@ -10,4 +10,5 @@ abstract class AuthRepository {
   );
   Future<void> logout();
   Future<UserEntity?> getCurrentUser();
+  Stream<UserEntity?> watchCurrentUser();
 }
