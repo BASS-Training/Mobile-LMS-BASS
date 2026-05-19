@@ -15,6 +15,7 @@ import 'package:lms_mobile_app/src/features/courses/domain/usecases/search_cours
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/toggle_save_course_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/watch_courses_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
+import 'package:http/http.dart' as http;
 
 class CourseModule {
   /// Register semua course dependencies
@@ -27,7 +28,7 @@ class CourseModule {
     final CourseLocalDataSource courseLocalDataSource =
         CourseLocalDataSourceImpl();
     final CourseRemoteDataSource courseRemoteDataSource =
-        CourseRemoteDataSourceImpl();
+        CourseRemoteDataSourceImpl(client: http.Client());
 
     // Repository
     final CourseRepository courseRepository = CourseRepositoryImpl(

@@ -45,9 +45,11 @@ class FlavorConfig {
 
 /// Development configuration
 class DevelopmentFlavorConfig {
-  static const String apiBaseUrl = 'http://localhost:3000/api';
+  static const String apiBaseUrl = 'http://192.168.31.119:8000/api/mobile';
+
   static const bool enableLogging = true;
-  static const bool enableMockData = true;
+  static const bool enableMockData =
+      false; // Pastikan ini false agar tidak pakai dummy lagi
 
   static FlavorConfig get config => FlavorConfig(
     flavor: AppFlavor.development,
@@ -73,7 +75,7 @@ class StagingFlavorConfig {
 
 /// Production configuration
 class ProductionFlavorConfig {
-  static const String apiBaseUrl = 'https://api.example.com/api';
+  static const String apiBaseUrl = 'https://lms.basstrainingacademy.com/api/mobile';
   static const bool enableLogging = false;
   static const bool enableMockData = false;
 

@@ -1,134 +1,81 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-import 'package:lms_mobile_app/src/core/services/firebase_initializer.dart';
-import 'package:lms_mobile_app/src/features/courses/data/datasources/course_remote_data_source.dart';
-import 'package:lms_mobile_app/src/features/courses/data/datasources/dummy_data.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:lms_mobile_app/src/core/config/constants/api_endpoints.dart';
+import 'package:lms_mobile_app/src/core/config/flavor_config.dart';
 import '../models/course.dart';
+import 'course_remote_data_source.dart';
 
-/// Firebase Firestore-backed course data source dengan fallback ke dummy data.
 class CourseRemoteDataSourceImpl implements CourseRemoteDataSource {
-  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
+  final http.Client client;
+
+  CourseRemoteDataSourceImpl({required this.client});
 
   @override
   Future<List<Course>> getCourses() async {
-    if (!await _isFirebaseReady()) {
-      return DummyData.getCourses();
-    }
+    try {
+      // 1. Ambil Base URL dari Flavor yang sedang aktif (Dev/Prod)
+      final baseUrl = FlavorConfig.instance.apiBaseUrl;
+      
+      // 2. Gabungkan dengan endpoint /courses (Hasilnya: http://127.0.0.1:8000/api/mobile/courses)
+      final url = Uri.parse('$baseUrl${ApiEndpoints.getCourses}');
+      
+      final response = await client.get(url);
 
-    final snapshot = await _firestore.collection('courses').get();
-    if (snapshot.docs.isEmpty) {
-      return DummyData.getCourses();
-    }
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        final List<dynamic> courseList = jsonResponse['data'];
 
-    return _mergeWithDummyCourses(snapshot.docs.map(_courseFromDoc).toList());
+        return courseList.map((json) {
+          // PASTIKAN ID DIUBAH KE STRING (Karena MySQL kirim angka/int, sedangkan Dart butuh String)
+          json['id'] = json['id'].toString(); 
+          return Course.fromJson(json);
+        }).toList();
+      } else {
+        throw Exception('Gagal mengambil data dari Server: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Terjadi kesalahan jaringan: $e');
+    }
   }
 
   @override
-  Stream<List<Course>> watchCourses() {
-    return _watchCoursesFromFirestore().handleError((_) {
-      return DummyData.getCourses();
-    });
+  Stream<List<Course>> watchCourses() async* {
+    // REST API tidak punya Realtime Stream seperti Firebase.
+    // Jadi kita panggil getCourses() sekali untuk mengisi stream awal.
+    yield await getCourses();
   }
 
   @override
   Future<Course?> getCourseById(String id) async {
-    if (!await _isFirebaseReady()) {
-      return _findDummyCourseById(id);
-    }
-
-    final doc = await _firestore.collection('courses').doc(id).get();
-    if (doc.exists && doc.data() != null) {
-      return _courseFromMap(doc.data()!, fallbackId: doc.id);
-    }
-
-    return _findDummyCourseById(id);
+    // Nanti bisa dibuatkan API /courses/{id} di Laravel
+    throw UnimplementedError('API getCourseById belum dibuat di Laravel');
   }
 
   @override
   Future<List<Course>> searchCourses(String query) async {
+    // Nanti bisa dibuatkan API search di Laravel
+    // Sementara kita filter manual dari semua data
     final courses = await getCourses();
-    if (query.trim().isEmpty) {
-      return courses;
-    }
-
     final normalized = query.toLowerCase();
-    return courses
-        .where(
-          (course) =>
-              course.title.toLowerCase().contains(normalized) ||
-              course.description.toLowerCase().contains(normalized) ||
-              course.instructor.toLowerCase().contains(normalized),
-        )
-        .toList();
+    
+    return courses.where((course) =>
+        course.title.toLowerCase().contains(normalized) ||
+        course.description.toLowerCase().contains(normalized)).toList();
   }
 
   @override
   Future<void> toggleSaveCourse(String courseId) async {
-    // Phase 2 fokus sync course content; save state tetap ditangani local storage.
+    // Biarkan kosong, karena save logic di-handle LocalStorage di RepositoryImpl-mu
   }
 
   @override
   Future<void> addCourse(Course course) async {
-    if (!await _isFirebaseReady()) {
-      return;
-    }
-
-    await _firestore.collection('courses').doc(course.id).set(course.toJson());
+    // Nanti dibuatkan API POST /courses di Laravel
+    throw UnimplementedError('API POST course belum dibuat di Laravel');
   }
 
   @override
   Future<List<Course>> getSavedCourses() async {
-    // Saved state masih dikelola di local storage.
     throw UnimplementedError('Saved courses masih local-only');
-  }
-
-  Stream<List<Course>> _watchCoursesFromFirestore() {
-    return _firestore.collection('courses').snapshots().map((snapshot) {
-      if (snapshot.docs.isEmpty) {
-        return DummyData.getCourses();
-      }
-      return _mergeWithDummyCourses(snapshot.docs.map(_courseFromDoc).toList());
-    });
-  }
-
-  Future<bool> _isFirebaseReady() async {
-    await FirebaseInitializer.ensureInitialized();
-    return FirebaseInitializer.isInitialized;
-  }
-
-  Course _courseFromDoc(QueryDocumentSnapshot<Map<String, dynamic>> doc) {
-    return _courseFromMap(doc.data(), fallbackId: doc.id);
-  }
-
-  Course _courseFromMap(
-    Map<String, dynamic> data, {
-    required String fallbackId,
-  }) {
-    final payload = Map<String, dynamic>.from(data);
-    payload['id'] = payload['id'] ?? fallbackId;
-    return Course.fromJson(payload);
-  }
-
-  Course? _findDummyCourseById(String id) {
-    for (final course in DummyData.getCourses()) {
-      if (course.id == id) {
-        return course;
-      }
-    }
-    return null;
-  }
-
-  List<Course> _mergeWithDummyCourses(List<Course> remoteCourses) {
-    final mergedCourses = <String, Course>{};
-
-    for (final course in DummyData.getCourses()) {
-      mergedCourses[course.id] = course;
-    }
-
-    for (final course in remoteCourses) {
-      mergedCourses[course.id] = course;
-    }
-
-    return mergedCourses.values.toList();
   }
 }

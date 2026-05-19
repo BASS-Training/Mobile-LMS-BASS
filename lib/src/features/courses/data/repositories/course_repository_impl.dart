@@ -27,6 +27,7 @@ class CourseRepositoryImpl implements CourseRepository {
       return _mapCoursesToEntities(remoteCourses);
     } catch (e) {
       // Fallback ke local cache jika remote gagal
+      print("===== ERROR DARI LARAVEL: $e =====");
       final localCourses = await localDataSource.getCourses();
       _updateCompletionStatus(localCourses);
       return _mapCoursesToEntities(localCourses);

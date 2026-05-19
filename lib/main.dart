@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_strings.dart';
+import 'package:lms_mobile_app/src/core/config/flavor_config.dart';
 
 // Core - Theme & DI
 import 'package:lms_mobile_app/src/shared/styles/app_theme.dart';
@@ -17,6 +19,24 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/les
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  if (kReleaseMode) {
+    // Jika aplikasi di-build untuk rilis (Production)
+    FlavorConfig.init(
+      flavor: ProductionFlavorConfig.config.flavor,
+      apiBaseUrl: ProductionFlavorConfig.config.apiBaseUrl,
+      enableLogging: ProductionFlavorConfig.config.enableLogging,
+      enableMockData: ProductionFlavorConfig.config.enableMockData,
+    );
+  } else {
+    // Jika aplikasi di-run dari VS Code (Development)
+    FlavorConfig.init(
+      flavor: DevelopmentFlavorConfig.config.flavor,
+      apiBaseUrl: DevelopmentFlavorConfig.config.apiBaseUrl,
+      enableLogging: DevelopmentFlavorConfig.config.enableLogging,
+      enableMockData: DevelopmentFlavorConfig.config.enableMockData,
+    );
+  }
 
   await FirebaseInitializer.ensureInitialized();
 
