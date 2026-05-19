@@ -1,5 +1,6 @@
-/// Lesson module - dependency injection untuk lesson feature
-/// Berisi: LessonRepository, UseCases, BLoC
+// Lesson module - dependency injection untuk lesson feature
+// Berisi: LessonRepository, UseCases, BLoC
+import 'package:get_it/get_it.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/essay_local_data_source.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/quiz_local_datasource_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/video_repository_impl.dart';
@@ -22,76 +23,66 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/quiz/quiz_
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/video/video_bloc.dart';
 
 class LessonModule {
-  static late LessonBloc _lessonBloc;
-  static final LessonResultRepository _lessonResultRepository =
-      const LessonResultRepositoryImpl();
-
   /// Register semua lesson dependencies
-  static void register() {
+  static void register(GetIt getIt) {
+    if (getIt.isRegistered<LessonBloc>()) {
+      return;
+    }
+
     // Repository
-    LessonRepository lessonRepository = LessonRepositoryImpl();
+    final LessonRepository lessonRepository = LessonRepositoryImpl();
+    getIt.registerLazySingleton<LessonResultRepository>(
+      () => const LessonResultRepositoryImpl(),
+    );
+    final lessonResultRepository = getIt<LessonResultRepository>();
 
     // Use Cases
-    IsLessonCompletedUseCase isLessonCompletedUseCase =
-        IsLessonCompletedUseCase(lessonRepository);
-    ToggleLessonCompletionUseCase toggleLessonCompletionUseCase =
-        ToggleLessonCompletionUseCase(lessonRepository);
-    MarkLessonCompleteUseCase markLessonCompleteUseCase =
-        MarkLessonCompleteUseCase(lessonRepository);
-    MarkLessonIncompleteUseCase markLessonIncompleteUseCase =
-        MarkLessonIncompleteUseCase(lessonRepository);
-    RefreshLessonCompletionUseCase refreshLessonCompletionUseCase =
-        RefreshLessonCompletionUseCase(lessonRepository);
+    final isLessonCompletedUseCase = IsLessonCompletedUseCase(lessonRepository);
+    final toggleLessonCompletionUseCase = ToggleLessonCompletionUseCase(
+      lessonRepository,
+    );
+    final markLessonCompleteUseCase = MarkLessonCompleteUseCase(
+      lessonRepository,
+    );
+    final markLessonIncompleteUseCase = MarkLessonIncompleteUseCase(
+      lessonRepository,
+    );
+    final refreshLessonCompletionUseCase = RefreshLessonCompletionUseCase(
+      lessonRepository,
+    );
 
     // BLoC
-    _lessonBloc = LessonBloc(
-      isLessonCompletedUseCase: isLessonCompletedUseCase,
-      toggleLessonCompletionUseCase: toggleLessonCompletionUseCase,
-      markLessonCompleteUseCase: markLessonCompleteUseCase,
-      markLessonIncompleteUseCase: markLessonIncompleteUseCase,
-      refreshLessonCompletionUseCase: refreshLessonCompletionUseCase,
-    );
-  }
-
-  /// Get LessonBloc instance
-  static LessonBloc get lessonBloc => _lessonBloc;
-  static QuizBloc get quizBloc {
-    final quizDataSource = QuizLocalDataSourceImpl();
-    final quizRepository = QuizRepositoryImpl(localDataSource: quizDataSource);
-    return QuizBloc(
-      getQuizUseCase: GetQuizUseCase(
-        // Pastikan repository kuis juga sudah diinisialisasi di module ini
-        repository: quizRepository,
+    getIt.registerLazySingleton<LessonBloc>(
+      () => LessonBloc(
+        isLessonCompletedUseCase: isLessonCompletedUseCase,
+        toggleLessonCompletionUseCase: toggleLessonCompletionUseCase,
+        markLessonCompleteUseCase: markLessonCompleteUseCase,
+        markLessonIncompleteUseCase: markLessonIncompleteUseCase,
+        refreshLessonCompletionUseCase: refreshLessonCompletionUseCase,
       ),
-      resultRepository: _lessonResultRepository,
     );
-  }
 
-  // Tambahkan getter untuk EssayBloc
-  static EssayBloc get essayBloc {
-    // 1. Inisialisasi Data Source
-    final localDataSource = EssayLocalDataSourceImpl();
+    getIt.registerFactory<QuizBloc>(() {
+      final quizDataSource = QuizLocalDataSourceImpl();
+      final quizRepository = QuizRepositoryImpl(
+        localDataSource: quizDataSource,
+      );
+      return QuizBloc(
+        getQuizUseCase: GetQuizUseCase(repository: quizRepository),
+        resultRepository: lessonResultRepository,
+      );
+    });
 
-    // 2. Inisialisasi Repository
-    final repository = EssayRepositoryImpl(localDataSource);
+    getIt.registerFactory<EssayBloc>(() {
+      final localDataSource = EssayLocalDataSourceImpl();
+      final repository = EssayRepositoryImpl(localDataSource);
+      return EssayBloc(
+        repository: repository,
+        submitUseCase: SubmitEssayUseCase(repository),
+        resultRepository: lessonResultRepository,
+      );
+    });
 
-    // 3. Inisialisasi UseCase
-    final submitUseCase = SubmitEssayUseCase(repository);
-
-    // 4. Return BLoC-nya
-    return EssayBloc(
-      repository: repository,
-      submitUseCase: submitUseCase,
-      resultRepository: _lessonResultRepository,
-    );
-  }
-
-  static LessonResultRepository get lessonResultRepository =>
-      _lessonResultRepository;
-
-  // Di dalam class LessonModule:
-  static VideoBloc get videoBloc {
-    final repository = VideoRepositoryImpl();
-    return VideoBloc(repository);
+    getIt.registerFactory<VideoBloc>(() => VideoBloc(VideoRepositoryImpl()));
   }
 }

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
-import 'package:lms_mobile_app/src/core/di/modules/lesson_module.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_attempt_entity.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_result_repository.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/utils/app_date_formatter.dart';
 
@@ -40,7 +41,7 @@ class ResultsListScreen extends StatelessWidget {
           ),
         ),
         child: FutureBuilder<List<LessonAttempt>>(
-          future: LessonModule.lessonResultRepository.getAttemptsByCourse(
+          future: GetIt.instance<LessonResultRepository>().getAttemptsByCourse(
             course.id,
           ),
           builder: (context, snapshot) {
@@ -56,7 +57,7 @@ class ResultsListScreen extends StatelessWidget {
             return ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: attempts.length + 1,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              separatorBuilder: (context, _) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 if (index == 0) {
                   return _buildHeaderCard(attempts.length);

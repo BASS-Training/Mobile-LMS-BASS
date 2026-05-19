@@ -32,18 +32,14 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final serviceLocator = ServiceLocator();
+    final sl = ServiceLocator().locator;
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AuthBloc>(create: (context) => serviceLocator.authBloc),
-        BlocProvider<CourseBloc>(
-          create: (context) => serviceLocator.courseBloc,
-        ),
-        BlocProvider<HomeBloc>(create: (context) => serviceLocator.homeBloc),
-        BlocProvider<LessonBloc>(
-          create: (context) => serviceLocator.lessonBloc,
-        ),
+        BlocProvider<AuthBloc>(create: (context) => sl<AuthBloc>()),
+        BlocProvider<CourseBloc>(create: (context) => sl<CourseBloc>()),
+        BlocProvider<HomeBloc>(create: (context) => sl<HomeBloc>()),
+        BlocProvider<LessonBloc>(create: (context) => sl<LessonBloc>()),
       ],
       child: MaterialApp.router(
         title: AppStrings.appName,

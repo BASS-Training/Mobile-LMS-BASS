@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:lms_mobile_app/src/core/di/modules/lesson_module.dart';
+import 'package:get_it/get_it.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_attempt_entity.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_result_repository.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/utils/app_date_formatter.dart';
 
@@ -21,10 +22,11 @@ class _QuizResultDetailScreenState extends State<QuizResultDetailScreen> {
   void initState() {
     super.initState();
     _selectedAttempt = widget.attempt;
-    _attemptsFuture = LessonModule.lessonResultRepository.getAttemptsByLesson(
-      courseId: widget.attempt.courseId,
-      lessonId: widget.attempt.lessonId,
-    );
+    _attemptsFuture = GetIt.instance<LessonResultRepository>()
+        .getAttemptsByLesson(
+          courseId: widget.attempt.courseId,
+          lessonId: widget.attempt.lessonId,
+        );
   }
 
   @override
@@ -152,7 +154,7 @@ class _QuizResultDetailScreenState extends State<QuizResultDetailScreen> {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: attempts.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        separatorBuilder: (context, _) => const SizedBox(width: 10),
         itemBuilder: (context, index) {
           final attempt = attempts[index];
           final isSelected = attempt.id == _selectedAttempt.id;
@@ -188,14 +190,14 @@ class _QuizResultDetailScreenState extends State<QuizResultDetailScreen> {
         Expanded(
           child: _buildSummaryCard(
             'Benar',
-            '${attempt.score?.toStringAsFixed(0) ?? '0'}',
+            attempt.score?.toStringAsFixed(0) ?? '0',
           ),
         ),
         const SizedBox(width: 12),
         Expanded(
           child: _buildSummaryCard(
             'Total',
-            '${attempt.maxScore?.toStringAsFixed(0) ?? '0'}',
+            attempt.maxScore?.toStringAsFixed(0) ?? '0',
           ),
         ),
       ],

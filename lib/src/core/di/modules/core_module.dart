@@ -1,5 +1,5 @@
-/// Core module untuk shared dependencies lintas fitur
-/// Berisi: router, storage, config, logger
+// Core module untuk shared dependencies lintas fitur
+// Berisi: router, storage, config, logger
 import 'package:lms_mobile_app/src/core/config/flavor_config.dart';
 import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 

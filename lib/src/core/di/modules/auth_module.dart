@@ -1,35 +1,35 @@
-/// Auth module - dependency injection untuk authentication feature
-/// Berisi: AuthRepository, DataSources, UseCases, BLoC
+// Auth module - dependency injection untuk authentication feature
+// Berisi: AuthRepository, DataSources, UseCases, BLoC
+import 'package:get_it/get_it.dart';
 import 'package:lms_mobile_app/src/features/authentication/data/repositories/auth_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/authentication/domain/repositories/auth_repository.dart';
 import 'package:lms_mobile_app/src/features/authentication/domain/usecases/auth_usecase.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_bloc.dart';
 
 class AuthModule {
-  static late AuthBloc _authBloc;
-
   /// Register semua auth dependencies
-  static void register() {
+  static void register(GetIt getIt) {
+    if (getIt.isRegistered<AuthBloc>()) {
+      return;
+    }
+
     // Data Layer
-    AuthRepository authRepository = AuthRepositoryImpl();
+    final AuthRepository authRepository = AuthRepositoryImpl();
 
     // Use Cases
-    LoginUseCase loginUseCase = LoginUseCase(authRepository);
-    RegisterUseCase registerUseCase = RegisterUseCase(authRepository);
-    LogoutUseCase logoutUseCase = LogoutUseCase(authRepository);
-    GetCurrentUserUseCase getCurrentUserUseCase = GetCurrentUserUseCase(
-      authRepository,
-    );
+    final loginUseCase = LoginUseCase(authRepository);
+    final registerUseCase = RegisterUseCase(authRepository);
+    final logoutUseCase = LogoutUseCase(authRepository);
+    final getCurrentUserUseCase = GetCurrentUserUseCase(authRepository);
 
     // Presentation Layer
-    _authBloc = AuthBloc(
-      loginUseCase: loginUseCase,
-      registerUseCase: registerUseCase,
-      logoutUseCase: logoutUseCase,
-      getCurrentUserUseCase: getCurrentUserUseCase,
+    getIt.registerLazySingleton<AuthBloc>(
+      () => AuthBloc(
+        loginUseCase: loginUseCase,
+        registerUseCase: registerUseCase,
+        logoutUseCase: logoutUseCase,
+        getCurrentUserUseCase: getCurrentUserUseCase,
+      ),
     );
   }
-
-  /// Get AuthBloc instance
-  static AuthBloc get authBloc => _authBloc;
 }

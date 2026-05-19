@@ -1,5 +1,6 @@
-/// Course module - dependency injection untuk course feature
-/// Berisi: CourseRepository, DataSources, UseCases, BLoC
+// Course module - dependency injection untuk course feature
+// Berisi: CourseRepository, DataSources, UseCases, BLoC
+import 'package:get_it/get_it.dart';
 import 'package:lms_mobile_app/src/features/courses/data/repositories/course_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/courses/data/datasources/course_local_data_source.dart';
 import 'package:lms_mobile_app/src/features/courses/data/datasources/course_local_data_source_impl.dart';
@@ -16,52 +17,44 @@ import 'package:lms_mobile_app/src/features/courses/domain/usecases/watch_course
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 
 class CourseModule {
-  static late CourseBloc _courseBloc;
-
   /// Register semua course dependencies
-  static void register() {
+  static void register(GetIt getIt) {
+    if (getIt.isRegistered<CourseBloc>()) {
+      return;
+    }
+
     // Data Sources
-    CourseLocalDataSource courseLocalDataSource = CourseLocalDataSourceImpl();
-    CourseRemoteDataSource courseRemoteDataSource =
+    final CourseLocalDataSource courseLocalDataSource =
+        CourseLocalDataSourceImpl();
+    final CourseRemoteDataSource courseRemoteDataSource =
         CourseRemoteDataSourceImpl();
 
     // Repository
-    CourseRepository courseRepository = CourseRepositoryImpl(
+    final CourseRepository courseRepository = CourseRepositoryImpl(
       localDataSource: courseLocalDataSource,
       remoteDataSource: courseRemoteDataSource,
     );
 
     // Use Cases
-    GetCoursesUseCase getCoursesUseCase = GetCoursesUseCase(courseRepository);
-    SearchCoursesUseCase searchCoursesUseCase = SearchCoursesUseCase(
-      courseRepository,
-    );
-    ToggleSaveCourseUseCase toggleSaveCourseUseCase = ToggleSaveCourseUseCase(
-      courseRepository,
-    );
-    GetSavedCoursesUseCase getSavedCoursesUseCase = GetSavedCoursesUseCase(
-      courseRepository,
-    );
-    RefreshCoursesUseCase refreshCoursesUseCase = RefreshCoursesUseCase(
-      courseRepository,
-    );
-    WatchCoursesUseCase watchCoursesUseCase = WatchCoursesUseCase(
-      courseRepository,
-    );
-    AddCourseUseCase addCourseUseCase = AddCourseUseCase(courseRepository);
+    final getCoursesUseCase = GetCoursesUseCase(courseRepository);
+    final searchCoursesUseCase = SearchCoursesUseCase(courseRepository);
+    final toggleSaveCourseUseCase = ToggleSaveCourseUseCase(courseRepository);
+    final getSavedCoursesUseCase = GetSavedCoursesUseCase(courseRepository);
+    final refreshCoursesUseCase = RefreshCoursesUseCase(courseRepository);
+    final watchCoursesUseCase = WatchCoursesUseCase(courseRepository);
+    final addCourseUseCase = AddCourseUseCase(courseRepository);
 
     // BLoC
-    _courseBloc = CourseBloc(
-      getCoursesUseCase: getCoursesUseCase,
-      searchCoursesUseCase: searchCoursesUseCase,
-      toggleSaveCourseUseCase: toggleSaveCourseUseCase,
-      getSavedCoursesUseCase: getSavedCoursesUseCase,
-      refreshCoursesUseCase: refreshCoursesUseCase,
-      watchCoursesUseCase: watchCoursesUseCase,
-      addCourseUseCase: addCourseUseCase,
+    getIt.registerFactory<CourseBloc>(
+      () => CourseBloc(
+        getCoursesUseCase: getCoursesUseCase,
+        searchCoursesUseCase: searchCoursesUseCase,
+        toggleSaveCourseUseCase: toggleSaveCourseUseCase,
+        getSavedCoursesUseCase: getSavedCoursesUseCase,
+        refreshCoursesUseCase: refreshCoursesUseCase,
+        watchCoursesUseCase: watchCoursesUseCase,
+        addCourseUseCase: addCourseUseCase,
+      ),
     );
   }
-
-  /// Get CourseBloc instance
-  static CourseBloc get courseBloc => _courseBloc;
 }

@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 import 'package:lms_mobile_app/src/core/di/injector.dart';
-import 'package:lms_mobile_app/src/core/di/modules/lesson_module.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_bloc.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_state.dart';
 
@@ -37,7 +36,8 @@ import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_attem
 class AppRouter {
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
-  static AuthBloc get _authBloc => ServiceLocator().authBloc;
+  static final _sl = ServiceLocator().locator;
+  static AuthBloc get _authBloc => _sl<AuthBloc>();
 
   static final GoRouter router = GoRouter(
     navigatorKey: _rootNavigatorKey,
@@ -107,7 +107,7 @@ class AppRouter {
           return CustomTransitionPage(
             key: state.pageKey,
             child: BlocProvider<VideoBloc>(
-              create: (context) => LessonModule.videoBloc,
+              create: (context) => _sl<VideoBloc>(),
               child: VideoLessonDetailScreen(
                 lesson: lesson,
                 course: course,
@@ -171,7 +171,7 @@ class AppRouter {
           return CustomTransitionPage(
             key: state.pageKey,
             child: BlocProvider<QuizBloc>(
-              create: (context) => LessonModule.quizBloc,
+              create: (context) => _sl<QuizBloc>(),
               child: QuizLessonDetailScreen(
                 lesson: args['lesson'],
                 course: args['course'],
@@ -203,7 +203,7 @@ class AppRouter {
           return CustomTransitionPage(
             key: state.pageKey,
             child: BlocProvider<EssayBloc>(
-              create: (context) => LessonModule.essayBloc,
+              create: (context) => _sl<EssayBloc>(),
               child: EssayLessonDetailScreen(
                 lesson: args['lesson'],
                 course: args['course'],

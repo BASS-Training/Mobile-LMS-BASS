@@ -1,5 +1,5 @@
-
-
+// Home module - dependency injection untuk home feature
+import 'package:get_it/get_it.dart';
 import 'package:lms_mobile_app/src/features/home/data/datasources/home_remote_data_source.dart';
 import 'package:lms_mobile_app/src/features/home/data/datasources/home_remote_data_source_impl.dart';
 import 'package:lms_mobile_app/src/features/home/data/repositories/home_repository_impl.dart';
@@ -7,21 +7,23 @@ import 'package:lms_mobile_app/src/features/home/domain/usecases/join_class_usec
 import 'package:lms_mobile_app/src/features/home/presentation/bloc/home_bloc.dart';
 
 class HomeModule {
-  static late HomeBloc _homeBloc;
+  static void register(GetIt getIt) {
+    if (getIt.isRegistered<HomeBloc>()) {
+      return;
+    }
 
-  static void register() {
     // Data Source
-    HomeRemoteDataSource remoteDataSource = HomeRemoteDataSourceImpl();
-    
+    final HomeRemoteDataSource remoteDataSource = HomeRemoteDataSourceImpl();
+
     // Repository
     final repository = HomeRepositoryImpl(remoteDataSource: remoteDataSource);
-    
+
     // Use Case
     final joinClassUseCase = JoinClassUseCase(repository);
-    
-    // Bloc
-    _homeBloc = HomeBloc(joinClassUseCase: joinClassUseCase);
-  }
 
-  static HomeBloc get homeBloc => _homeBloc;
+    // Bloc
+    getIt.registerFactory<HomeBloc>(
+      () => HomeBloc(joinClassUseCase: joinClassUseCase),
+    );
+  }
 }

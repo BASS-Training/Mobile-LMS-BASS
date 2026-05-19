@@ -1,16 +1,17 @@
-/// Network module untuk API client dan interceptors
-/// Berisi: Dio client, request/response interceptors, API response model
+// Network module untuk API client dan interceptors
+// Berisi: Dio client, request/response interceptors, API response model
 import 'package:dio/dio.dart';
+import 'package:get_it/get_it.dart';
 import 'package:lms_mobile_app/src/core/config/flavor_config.dart';
 
 class NetworkModule {
   /// Register network dependencies
-  static Future<void> register() async {
-    // TODO: Initialize Dio client dengan base URL dari FlavorConfig
-    // TODO: Setup interceptors untuk logging, error handling, auth token
+  static Future<void> register(GetIt getIt) async {
+    if (getIt.isRegistered<Dio>()) {
+      return;
+    }
 
-    // For now: Placeholder
-    print('NetworkModule initialized');
+    getIt.registerLazySingleton<Dio>(createDioClient);
   }
 
   /// Get Dio instance (untuk future implementation)
@@ -39,9 +40,12 @@ class NetworkModule {
 class LoggingInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    // ignore: avoid_print
     print('>>> REQUEST: ${options.method} ${options.path}');
+    // ignore: avoid_print
     print('>>> HEADERS: ${options.headers}');
     if (options.data != null) {
+      // ignore: avoid_print
       print('>>> BODY: ${options.data}');
     }
     super.onRequest(options, handler);
@@ -49,16 +53,20 @@ class LoggingInterceptor extends Interceptor {
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
+    // ignore: avoid_print
     print(
       '<<< RESPONSE: ${response.statusCode} ${response.requestOptions.path}',
     );
+    // ignore: avoid_print
     print('<<< DATA: ${response.data}');
     super.onResponse(response, handler);
   }
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
+    // ignore: avoid_print
     print('!!! ERROR: ${err.message}');
+    // ignore: avoid_print
     print('!!! STATUS: ${err.response?.statusCode}');
     super.onError(err, handler);
   }
