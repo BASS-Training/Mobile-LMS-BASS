@@ -94,8 +94,10 @@ class QuizQuestionsWidget extends StatelessWidget {
           QuestionNavigatorWidget(
             totalQuestions: quiz.questions.length,
             currentQuestionIndex: currentQuestionIndex,
-            answers: answers,
+            completedQuestionIndexes: answers.keys.toSet(),
             onQuestionSelected: onQuestionNavigate,
+            completedLabel: 'Terjawab',
+            pendingLabel: 'Belum',
           ),
           const SizedBox(height: 24),
 

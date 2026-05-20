@@ -2,19 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 
 /// Widget untuk navigasi nomor soal
-/// Menampilkan grid/list nomor soal yang bisa diklik untuk jump ke soal tertentu
+/// Menampilkan carousel horizontal nomor soal yang sinkron dengan soal aktif.
 class QuestionNavigatorWidget extends StatefulWidget {
   final int totalQuestions;
   final int currentQuestionIndex;
-  final Map<int, int?> answers; // index -> selectedOptionIndex
+  final Set<int> completedQuestionIndexes; // index soal yang sudah terjawab
   final Function(int) onQuestionSelected;
+  final String completedLabel;
+  final String pendingLabel;
 
   const QuestionNavigatorWidget({
     super.key,
     required this.totalQuestions,
     required this.currentQuestionIndex,
-    required this.answers,
+    required this.completedQuestionIndexes,
     required this.onQuestionSelected,
+    this.completedLabel = 'Terjawab',
+    this.pendingLabel = 'Belum',
   });
 
   @override
@@ -22,46 +26,51 @@ class QuestionNavigatorWidget extends StatefulWidget {
 }
 
 class _QuestionNavigatorState extends State<QuestionNavigatorWidget> {
-  late ScrollController _scrollController;
-  late Map<int, GlobalKey> _itemKeys;
+  static const double _itemSize = 38;
+  static const double _itemSpacing = 8;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController();
-    _itemKeys = {
-      for (int i = 0; i < widget.totalQuestions; i++) i: GlobalKey(),
-    };
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToCurrentQuestion(animated: false);
+    });
   }
 
   @override
   void didUpdateWidget(QuestionNavigatorWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // Jika totalQuestions berubah, update _itemKeys
-    if (oldWidget.totalQuestions != widget.totalQuestions) {
-      _itemKeys = {
-        for (int i = 0; i < widget.totalQuestions; i++) i: GlobalKey(),
-      };
-    }
-
-    // Jika currentQuestionIndex berubah, scroll ke item aktif
-    if (oldWidget.currentQuestionIndex != widget.currentQuestionIndex) {
+    if (oldWidget.currentQuestionIndex != widget.currentQuestionIndex ||
+        oldWidget.totalQuestions != widget.totalQuestions) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _scrollToCurrentQuestion();
       });
     }
   }
 
-  void _scrollToCurrentQuestion() {
-    final currentKey = _itemKeys[widget.currentQuestionIndex];
-    if (currentKey?.currentContext != null) {
-      Scrollable.ensureVisible(
-        currentKey!.currentContext!,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-        alignment: 0.5, // center the item in viewport
+  void _scrollToCurrentQuestion({bool animated = true}) {
+    if (!_scrollController.hasClients || widget.totalQuestions <= 0) {
+      return;
+    }
+
+    final viewport = _scrollController.position.viewportDimension;
+    final itemExtent = _itemSize + _itemSpacing;
+    final target = (widget.currentQuestionIndex * itemExtent) -
+        ((viewport - _itemSize) / 2);
+    final minScroll = _scrollController.position.minScrollExtent;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final offset = target.clamp(minScroll, maxScroll).toDouble();
+
+    if (animated) {
+      _scrollController.animateTo(
+        offset,
+        duration: const Duration(milliseconds: 260),
+        curve: Curves.easeOutCubic,
       );
+    } else {
+      _scrollController.jumpTo(offset);
     }
   }
 
@@ -76,66 +85,56 @@ class _QuestionNavigatorState extends State<QuestionNavigatorWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 12),
-        // Legend di atas untuk visibility lebih baik
+        const SizedBox(height: 8),
         _buildLegend(),
         const SizedBox(height: 8),
-        // Grid vertical with 5 columns. Show up to 6 rows height and allow internal vertical scroll.
         SizedBox(
-          height: (46 * 6) + (8 * 5), // 6 rows of 46px height + spacing
-          child: GridView.builder(
+          height: _itemSize,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
             controller: _scrollController,
             padding: EdgeInsets.zero,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 5,
-              mainAxisSpacing: 8,
-              crossAxisSpacing: 8,
-              childAspectRatio: 1,
-            ),
             itemCount: widget.totalQuestions,
+            separatorBuilder: (_, __) => const SizedBox(width: _itemSpacing),
             itemBuilder: (context, index) {
               final isCurrentQuestion = index == widget.currentQuestionIndex;
-              final isAnswered = widget.answers[index] != null;
+              final isAnswered = widget.completedQuestionIndexes.contains(index);
 
-              return Material(
-                key: _itemKeys[index],
-                color: Colors.transparent,
+              return Semantics(
+                label: 'Soal ${index + 1}',
+                selected: isCurrentQuestion,
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(10),
                   onTap: () => widget.onQuestionSelected(index),
-                  child: Semantics(
-                    label: 'Soal ${index + 1}',
-                    selected: isCurrentQuestion,
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 160),
-                      decoration: BoxDecoration(
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    width: _itemSize,
+                    height: _itemSize,
+                    decoration: BoxDecoration(
+                      color: isCurrentQuestion
+                          ? AppColors.violet
+                          : (isAnswered ? Colors.green.shade100 : AppColors.mist),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
                         color: isCurrentQuestion
                             ? AppColors.violet
                             : (isAnswered
-                                  ? Colors.green.shade100
-                                  : Colors.grey[200]),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: isCurrentQuestion
-                              ? AppColors.violet
-                              : (isAnswered
-                                    ? Colors.green.shade200
-                                    : Colors.transparent),
-                          width: isCurrentQuestion || isAnswered ? 2 : 1,
-                        ),
+                                ? Colors.green.shade300
+                                : AppColors.pearl),
+                        width: isCurrentQuestion ? 2 : 1,
                       ),
-                      child: Center(
-                        child: Text(
-                          '${index + 1}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: isCurrentQuestion
-                                ? Colors.white
-                                : (isAnswered
-                                      ? Colors.green.shade800
-                                      : AppColors.charcoal),
-                          ),
+                    ),
+                    child: Center(
+                      child: Text(
+                        '${index + 1}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: isCurrentQuestion
+                              ? Colors.white
+                              : (isAnswered
+                                  ? Colors.green.shade800
+                                  : AppColors.slate),
                         ),
                       ),
                     ),
@@ -155,9 +154,9 @@ class _QuestionNavigatorState extends State<QuestionNavigatorWidget> {
       children: [
         _buildLegendItem(color: AppColors.violet, label: 'Aktif'),
         const SizedBox(width: 16),
-        _buildLegendItem(color: Colors.green[100]!, label: 'Terjawab'),
+        _buildLegendItem(color: Colors.green[100]!, label: widget.completedLabel),
         const SizedBox(width: 16),
-        _buildLegendItem(color: Colors.grey[200]!, label: 'Belum'),
+        _buildLegendItem(color: AppColors.mist, label: widget.pendingLabel),
       ],
     );
   }

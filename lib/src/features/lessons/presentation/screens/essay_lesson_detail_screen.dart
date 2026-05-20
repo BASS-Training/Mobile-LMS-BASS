@@ -11,7 +11,7 @@ import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/cou
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_event.dart';
-import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/essay/essay_question_navigator_widget.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/question_navigator_widget.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 
@@ -644,12 +644,14 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          EssayQuestionNavigatorWidget(
+          QuestionNavigatorWidget(
             totalQuestions: state.totalQuestions,
             currentQuestionIndex: state.currentQuestionIndex,
             completedQuestionIndexes: state.savedQuestionIndexes,
             onQuestionSelected: (index) =>
                 context.read<EssayBloc>().add(ChangeQuestion(index)),
+            completedLabel: 'Sudah disimpan',
+            pendingLabel: 'Belum disimpan',
           ),
         ],
       ),
