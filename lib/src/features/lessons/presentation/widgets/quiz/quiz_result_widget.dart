@@ -96,7 +96,9 @@ class QuizResultWidget extends StatelessWidget {
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
+                border: Border.all(
+                  color: AppColors.pearl.withValues(alpha: 0.8),
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.05),
@@ -154,34 +156,34 @@ class QuizResultWidget extends StatelessWidget {
                 FadeSlideIn(
                   delayMs: 120,
                   child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.green[50],
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.green[200]!),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.check_circle,
-                        color: Colors.green[600],
-                        size: 20,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'Kuis telah selesai! Lesson ini sudah ditandai sebagai selesai.',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.green[700],
-                            fontWeight: FontWeight.w500,
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.green[50],
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.green[200]!),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.check_circle,
+                          color: Colors.green[600],
+                          size: 20,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Kuis telah selesai! Lesson ini sudah ditandai sebagai selesai.',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.green[700],
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
                 ),
                 const SizedBox(height: 16),
                 if (canGoNext)
@@ -223,30 +225,30 @@ class QuizResultWidget extends StatelessWidget {
                 FadeSlideIn(
                   delayMs: 120,
                   child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.orange[50],
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.orange[200]!),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.info, color: Colors.orange[600], size: 20),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          'Nilai Anda belum mencukupi KKM (70%). Silakan coba lagi.',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.orange[700],
-                            fontWeight: FontWeight.w500,
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.orange[50],
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.orange[200]!),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.info, color: Colors.orange[600], size: 20),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            'Nilai Anda belum mencukupi KKM (70%). Silakan coba lagi.',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.orange[700],
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
                 ),
                 const SizedBox(height: 16),
                 PressScale(

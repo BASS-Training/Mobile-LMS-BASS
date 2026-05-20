@@ -81,11 +81,20 @@ class _EssayResultDetailScreenState extends State<EssayResultDetailScreen> {
                   FadeSlideIn(child: _buildHeroCard(_selectedAttempt)),
                   const SizedBox(height: 16),
                   if (attempts.length > 1)
-                    FadeSlideIn(delayMs: 60, child: _buildHistoryChips(attempts)),
+                    FadeSlideIn(
+                      delayMs: 60,
+                      child: _buildHistoryChips(attempts),
+                    ),
                   const SizedBox(height: 16),
-                  FadeSlideIn(delayMs: 100, child: _buildSummaryCards(_selectedAttempt)),
+                  FadeSlideIn(
+                    delayMs: 100,
+                    child: _buildSummaryCards(_selectedAttempt),
+                  ),
                   const SizedBox(height: 16),
-                  FadeSlideIn(delayMs: 130, child: _buildOverviewBanner(_selectedAttempt)),
+                  FadeSlideIn(
+                    delayMs: 130,
+                    child: _buildOverviewBanner(_selectedAttempt),
+                  ),
                   const SizedBox(height: 16),
                   const Text(
                     'Pertanyaan dan Jawaban',

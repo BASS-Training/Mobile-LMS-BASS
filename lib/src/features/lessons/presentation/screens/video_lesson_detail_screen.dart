@@ -450,14 +450,14 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
           Expanded(
             child: PressScale(
               child: OutlinedButton.icon(
-              onPressed: () {
-                Navigator.pop(context);
-                Future.delayed(const Duration(milliseconds: 200), () {
-                  _openLesson(previousLesson!, widget.lessonIndex - 1);
-                });
-              },
-              icon: const Icon(Icons.arrow_back),
-              label: const Text('Previous'),
+                onPressed: () {
+                  Navigator.pop(context);
+                  Future.delayed(const Duration(milliseconds: 200), () {
+                    _openLesson(previousLesson!, widget.lessonIndex - 1);
+                  });
+                },
+                icon: const Icon(Icons.arrow_back),
+                label: const Text('Previous'),
               ),
             ),
           ),
@@ -466,26 +466,26 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
           Expanded(
             child: PressScale(
               child: ElevatedButton.icon(
-              onPressed: (!state.canProceed && !widget.lesson.isCompleted)
-                  ? null
-                  : () {
-                      if (!widget.lesson.isCompleted) {
-                        context.read<LessonBloc>().add(
-                          MarkLessonCompleteEvent(lessonId: widget.lesson.id),
-                        );
-                        context.read<CourseBloc>().add(
-                          const RefreshCoursesEvent(),
-                        );
-                      }
-                      Navigator.pop(context);
-                      Future.delayed(const Duration(milliseconds: 200), () {
-                        _openLesson(nextLesson!, widget.lessonIndex + 1);
-                      });
-                    },
-              icon: const Icon(Icons.arrow_forward),
-              label: const Text('Next'),
-                    ),
-                  ),
+                onPressed: (!state.canProceed && !widget.lesson.isCompleted)
+                    ? null
+                    : () {
+                        if (!widget.lesson.isCompleted) {
+                          context.read<LessonBloc>().add(
+                            MarkLessonCompleteEvent(lessonId: widget.lesson.id),
+                          );
+                          context.read<CourseBloc>().add(
+                            const RefreshCoursesEvent(),
+                          );
+                        }
+                        Navigator.pop(context);
+                        Future.delayed(const Duration(milliseconds: 200), () {
+                          _openLesson(nextLesson!, widget.lessonIndex + 1);
+                        });
+                      },
+                icon: const Icon(Icons.arrow_forward),
+                label: const Text('Next'),
+              ),
+            ),
           ),
       ],
     );

@@ -33,57 +33,57 @@ class CommentItemWidget extends StatelessWidget {
           ],
         ),
         child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CircleAvatar(
-            radius: 18,
-            backgroundColor: AppColors.red.withValues(alpha: 0.15),
-            child: Text(
-              comment.userName.characters.first.toUpperCase(),
-              style: const TextStyle(
-                color: AppColors.red,
-                fontWeight: FontWeight.w700,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CircleAvatar(
+              radius: 18,
+              backgroundColor: AppColors.red.withValues(alpha: 0.15),
+              child: Text(
+                comment.userName.characters.first.toUpperCase(),
+                style: const TextStyle(
+                  color: AppColors.red,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      comment.userName,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.charcoal,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        comment.userName,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.charcoal,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      comment.timeLabel,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: AppColors.slate,
+                      const SizedBox(width: 8),
+                      Text(
+                        comment.timeLabel,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: AppColors.slate,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  comment.message,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    height: 1.5,
-                    color: AppColors.charcoal,
+                    ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 6),
+                  Text(
+                    comment.message,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      height: 1.5,
+                      color: AppColors.charcoal,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
         ),
       ),
     );
