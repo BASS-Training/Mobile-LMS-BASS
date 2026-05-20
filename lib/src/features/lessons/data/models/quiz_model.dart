@@ -27,13 +27,16 @@ class Question {
 class QuizResult {
   final int score;
   final int total;
+  final int passingScore; // Dynamic dari database
 
   double get percentage => (score / total) * 100;
   bool get passed => percentage >= passingScore;
 
-  static const int passingScore = 70;
-
-  QuizResult({required this.score, required this.total});
+  QuizResult({
+    required this.score,
+    required this.total,
+    this.passingScore = 70, // Default 70 jika tidak diberikan
+  });
 }
 
 class Quiz {

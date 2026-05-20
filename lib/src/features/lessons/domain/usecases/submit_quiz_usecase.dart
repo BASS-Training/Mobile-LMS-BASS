@@ -40,7 +40,9 @@ class SubmitQuizUseCase {
           questions: questions,
           score: result.score,
           maxScore: result.total,
-          passed: result.percentage >= QuizResult.passingScore,
+          passed: result
+              .passed, // Safe: passed is bool getter with non-nullable inputs
+          // (percentage is always double, passingScore always int with default 70)
         );
       } catch (_) {}
     }

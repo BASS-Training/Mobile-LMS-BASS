@@ -428,13 +428,20 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(
-                      'Telah dijawab $answeredCount/$totalCount',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey,
-                      ),
+                    // Timer display
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Telah dijawab $answeredCount/$totalCount',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        _buildTimerDisplay(quizState.remainingSeconds),
+                      ],
                     ),
                     const SizedBox(height: 8),
                     ClipRRect(
@@ -637,6 +644,41 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
               label: const Text('Lihat Hasil'),
             )
           : null,
+    );
+  }
+
+  /// Build timer display widget
+  /// Shows time remaining in MM:SS format with color warnings
+  Widget _buildTimerDisplay(int remainingSeconds) {
+    final minutes = remainingSeconds ~/ 60;
+    final seconds = remainingSeconds % 60;
+    final timeString = '$minutes:${seconds.toString().padLeft(2, '0')}';
+
+    // Determine color based on remaining time
+    Color timerColor = Colors.green; // Normal
+    if (remainingSeconds < 300) {
+      // Less than 5 minutes
+      timerColor = Colors.orange;
+    }
+    if (remainingSeconds < 60) {
+      // Less than 1 minute
+      timerColor = Colors.red;
+    }
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.timer_outlined, size: 14, color: timerColor),
+        const SizedBox(width: 6),
+        Text(
+          timeString,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: timerColor,
+          ),
+        ),
+      ],
     );
   }
 }

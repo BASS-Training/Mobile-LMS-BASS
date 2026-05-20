@@ -102,7 +102,11 @@ class QuizRepositoryImpl implements QuizRepository {
         );
         final score = (data['score'] as num?)?.toInt() ?? 0;
         final total = (data['total'] as num?)?.toInt() ?? quiz.totalQuestions;
-        return QuizResult(score: score, total: total);
+        return QuizResult(
+          score: score,
+          total: total,
+          passingScore: quiz.passingScore,
+        );
       } catch (_) {
         // fallthrough to client-side grading
       }
@@ -117,6 +121,10 @@ class QuizRepositoryImpl implements QuizRepository {
       }
     }
 
-    return QuizResult(score: correctCount, total: quiz.totalQuestions);
+    return QuizResult(
+      score: correctCount,
+      total: quiz.totalQuestions,
+      passingScore: quiz.passingScore,
+    );
   }
 }

@@ -3,10 +3,9 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'dart:async';
 import 'package:lms_mobile_app/src/features/lessons/data/models/quiz_model.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/submit_quiz_usecase.dart';
-import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_attempt_entity.dart';
-import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_result_repository.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/get_quiz_usecase.dart';
 
 part 'quiz_event.dart';
@@ -19,6 +18,7 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
   String _courseId = '';
   String _courseTitle = '';
   String _lessonTitle = '';
+  Timer? _timer;
 
   QuizBloc({required this.getQuizUseCase, required this.submitQuizUseCase})
     : super(const QuizInitial()) {
@@ -30,6 +30,13 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
     on<GoToQuestionEvent>(_onGoToQuestion);
     on<SubmitQuizEvent>(_onSubmitQuiz);
     on<ResetQuizEvent>(_onResetQuiz);
+    on<TimerTickEvent>(_onTimerTick);
+  }
+
+  @override
+  Future<void> close() {
+    _timer?.cancel();
+    return super.close();
   }
 
   /// Handle FetchQuizEvent - Load quiz dari data source
@@ -58,7 +65,32 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
   ) async {
     if (state is QuizLoaded) {
       final currentState = state as QuizLoaded;
-      emit(currentState.copyWith(isStarted: true));
+      // timeLimit dari server (menit), konversi ke detik; default 30 menit jika 0
+      final minutes = currentState.quiz.timeLimit > 0
+          ? currentState.quiz.timeLimit
+          : 30;
+      final totalSeconds = minutes * 60;
+
+      // Cancel previous timer jika ada
+      _timer?.cancel();
+
+      // Emit state dengan timer dimulai
+      emit(
+        currentState.copyWith(isStarted: true, remainingSeconds: totalSeconds),
+      );
+
+      // Start countdown timer
+      int remaining = totalSeconds;
+      _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+        if (remaining > 0) {
+          remaining--;
+          add(TimerTickEvent(remainingSeconds: remaining));
+        } else {
+          timer.cancel();
+          // Auto submit ketika timer habis
+          add(const SubmitQuizEvent());
+        }
+      });
     }
   }
 
@@ -126,6 +158,9 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
     Emitter<QuizState> emit,
   ) async {
     if (state is QuizLoaded) {
+      // Cancel timer untuk mencegah memory leak dan auto-submit ganda
+      _timer?.cancel();
+
       final currentState = state as QuizLoaded;
       emit(const QuizLoading());
       try {
@@ -157,6 +192,18 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
     ResetQuizEvent event,
     Emitter<QuizState> emit,
   ) async {
+    _timer?.cancel();
     emit(const QuizInitial());
+  }
+
+  /// Handle TimerTickEvent - Update remaining seconds
+  Future<void> _onTimerTick(
+    TimerTickEvent event,
+    Emitter<QuizState> emit,
+  ) async {
+    if (state is QuizLoaded) {
+      final currentState = state as QuizLoaded;
+      emit(currentState.copyWith(remainingSeconds: event.remainingSeconds));
+    }
   }
 }

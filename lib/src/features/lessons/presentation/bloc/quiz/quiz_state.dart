@@ -26,12 +26,14 @@ class QuizLoaded extends QuizState {
   final int currentQuestionIndex;
   final Map<int, int> answers; // <questionIndex, selectedOptionIndex>
   final bool isStarted;
+  final int remainingSeconds; // Timer countdown
 
   const QuizLoaded({
     required this.quiz,
     this.currentQuestionIndex = 0,
     this.answers = const {},
     this.isStarted = false,
+    this.remainingSeconds = 0,
   });
 
   /// Copy with - untuk membuat copy state dengan perubahan tertentu
@@ -40,17 +42,25 @@ class QuizLoaded extends QuizState {
     int? currentQuestionIndex,
     Map<int, int>? answers,
     bool? isStarted,
+    int? remainingSeconds,
   }) {
     return QuizLoaded(
       quiz: quiz ?? this.quiz,
       currentQuestionIndex: currentQuestionIndex ?? this.currentQuestionIndex,
       answers: answers ?? this.answers,
       isStarted: isStarted ?? this.isStarted,
+      remainingSeconds: remainingSeconds ?? this.remainingSeconds,
     );
   }
 
   @override
-  List<Object?> get props => [quiz, currentQuestionIndex, answers, isStarted];
+  List<Object?> get props => [
+    quiz,
+    currentQuestionIndex,
+    answers,
+    isStarted,
+    remainingSeconds,
+  ];
 }
 
 /// Submitted state - quiz telah disubmit

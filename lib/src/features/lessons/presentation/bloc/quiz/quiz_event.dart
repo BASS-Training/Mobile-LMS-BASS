@@ -78,3 +78,13 @@ class SubmitQuizEvent extends QuizEvent {
 class ResetQuizEvent extends QuizEvent {
   const ResetQuizEvent();
 }
+
+/// Event: Timer tick (countdown 1 detik)
+class TimerTickEvent extends QuizEvent {
+  final int remainingSeconds;
+
+  const TimerTickEvent({required this.remainingSeconds});
+
+  @override
+  List<Object?> get props => [remainingSeconds];
+}
