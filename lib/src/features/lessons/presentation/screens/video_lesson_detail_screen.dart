@@ -12,6 +12,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discuss
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
+import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -291,7 +292,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
                       const SizedBox(height: 12),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: _buildHeroSummary(),
+                        child: FadeSlideIn(child: _buildHeroSummary()),
                       ),
                       const SizedBox(height: 12),
                       Padding(
@@ -312,7 +313,10 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _buildInfoCard(widget.lesson.title),
+                              FadeSlideIn(
+                                delayMs: 40,
+                                child: _buildInfoCard(widget.lesson.title),
+                              ),
                               const SizedBox(height: 16),
                               DiscussionCard(
                                 onSend: (komentarTeks) {
@@ -540,7 +544,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withValues(alpha: 0.1),
+                  color: AppColors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: const Text(
@@ -548,7 +552,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: Colors.blue,
+                    color: AppColors.red,
                   ),
                 ),
               ),

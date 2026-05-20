@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/models/quiz_model.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/score_item_widget.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
+import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
 /// Widget untuk menampilkan halaman hasil/skor kuis
 class QuizResultWidget extends StatelessWidget {
@@ -27,88 +29,118 @@ class QuizResultWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Result header
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: result.passed
-                    ? [Colors.green[600]!, Colors.green[400]!]
-                    : [Colors.orange[600]!, Colors.orange[400]!],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+          FadeSlideIn(
+            delayMs: 0,
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: result.passed
+                      ? [AppColors.red, AppColors.tomato]
+                      : [AppColors.cherry, AppColors.coral],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(18),
+                boxShadow: [
+                  BoxShadow(
+                    color: (result.passed ? AppColors.red : AppColors.cherry)
+                        .withValues(alpha: 0.18),
+                    blurRadius: 22,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
               ),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(
-                  result.passed ? Icons.check_circle : Icons.info,
-                  color: Colors.white,
-                  size: 64,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  result.passed ? 'Selamat!' : 'Tidak Lulus',
-                  style: const TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(
+                    result.passed ? Icons.check_circle : Icons.info,
                     color: Colors.white,
+                    size: 64,
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  result.passed
-                      ? 'Anda telah lulus kuis ini'
-                      : 'Silakan coba lagi',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white.withValues(alpha: 0.9),
+                  const SizedBox(height: 16),
+                  Text(
+                    result.passed ? 'Selamat!' : 'Tidak Lulus',
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  Text(
+                    result.passed
+                        ? 'Anda telah lulus kuis ini'
+                        : 'Silakan coba lagi',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.white.withValues(alpha: 0.9),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 24),
 
           // Score card
-          Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Hasil Kuis Anda',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      ScoreItemWidget(
-                        label: 'Nilai',
-                        value: '${result.percentage.toStringAsFixed(0)}%',
-                        color: AppColors.red,
-                      ),
-                      ScoreItemWidget(
-                        label: 'Benar',
-                        value: '${result.score}',
-                        color: Colors.green,
-                      ),
-                      ScoreItemWidget(
-                        label: 'Total',
-                        value: '${result.total}',
-                        color: Colors.blue,
-                      ),
-                    ],
+          FadeSlideIn(
+            delayMs: 70,
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Colors.white, Color(0xFFF9FAFF)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 18,
+                    offset: const Offset(0, 8),
                   ),
                 ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Hasil Kuis Anda',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.charcoal,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        ScoreItemWidget(
+                          label: 'Nilai',
+                          value: '${result.percentage.toStringAsFixed(0)}%',
+                          color: AppColors.red,
+                        ),
+                        ScoreItemWidget(
+                          label: 'Benar',
+                          value: '${result.score}',
+                          color: AppColors.jade,
+                        ),
+                        ScoreItemWidget(
+                          label: 'Total',
+                          value: '${result.total}',
+                          color: AppColors.tomato,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -119,7 +151,9 @@ class QuizResultWidget extends StatelessWidget {
             Column(
               children: [
                 // Info box
-                Container(
+                FadeSlideIn(
+                  delayMs: 120,
+                  child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -148,30 +182,35 @@ class QuizResultWidget extends StatelessWidget {
                     ],
                   ),
                 ),
+                ),
                 const SizedBox(height: 16),
                 if (canGoNext)
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton.icon(
-                      onPressed: onNextLesson,
-                      icon: const Icon(Icons.arrow_forward),
-                      label: const Text('Pelajaran Berikutnya'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.red,
+                  PressScale(
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton.icon(
+                        onPressed: onNextLesson,
+                        icon: const Icon(Icons.arrow_forward),
+                        label: const Text('Pelajaran Berikutnya'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.red,
+                        ),
                       ),
                     ),
                   )
                 else
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton.icon(
-                      onPressed: onBackToCourse,
-                      icon: const Icon(Icons.home),
-                      label: const Text('Kembali ke Kursus'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.red,
+                  PressScale(
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton.icon(
+                        onPressed: onBackToCourse,
+                        icon: const Icon(Icons.home),
+                        label: const Text('Kembali ke Kursus'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.red,
+                        ),
                       ),
                     ),
                   ),
@@ -181,7 +220,9 @@ class QuizResultWidget extends StatelessWidget {
             Column(
               children: [
                 // Info box untuk tidak lulus
-                Container(
+                FadeSlideIn(
+                  delayMs: 120,
+                  child: Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -206,16 +247,19 @@ class QuizResultWidget extends StatelessWidget {
                     ],
                   ),
                 ),
+                ),
                 const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton.icon(
-                    onPressed: onBackToCourse,
-                    icon: const Icon(Icons.home),
-                    label: const Text('Kembali ke Kursus'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.red,
+                PressScale(
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: ElevatedButton.icon(
+                      onPressed: onBackToCourse,
+                      icon: const Icon(Icons.home),
+                      label: const Text('Kembali ke Kursus'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.red,
+                      ),
                     ),
                   ),
                 ),

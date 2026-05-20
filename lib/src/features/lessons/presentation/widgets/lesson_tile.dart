@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_entity.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
 class LessonTile extends StatelessWidget {
   final LessonEntity lesson;
@@ -18,9 +19,10 @@ class LessonTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
+    return PressScale(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
         margin: EdgeInsets.symmetric(vertical: 8),
         padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
@@ -52,7 +54,7 @@ class LessonTile extends StatelessWidget {
                           AppColors.emerald,
                           AppColors.emerald.withValues(alpha: 0.7),
                         ]
-                      : [AppColors.violet, AppColors.lavender],
+                      : [AppColors.red, AppColors.tomato],
                 ),
               ),
               child: Center(
@@ -151,6 +153,7 @@ class LessonTile extends StatelessWidget {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

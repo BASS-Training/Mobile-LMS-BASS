@@ -4,6 +4,7 @@ import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_attem
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_result_repository.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/utils/app_date_formatter.dart';
+import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
 
 class QuizResultDetailScreen extends StatefulWidget {
   final LessonAttempt attempt;
@@ -41,7 +42,7 @@ class _QuizResultDetailScreenState extends State<QuizResultDetailScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
+              colors: [AppColors.red, AppColors.tomato],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -71,18 +72,19 @@ class _QuizResultDetailScreenState extends State<QuizResultDetailScreen> {
               );
             }
 
-            return SingleChildScrollView(
+              return SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildHeroCard(_selectedAttempt),
+                  FadeSlideIn(child: _buildHeroCard(_selectedAttempt)),
                   const SizedBox(height: 16),
-                  if (attempts.length > 1) _buildHistoryChips(attempts),
+                  if (attempts.length > 1)
+                    FadeSlideIn(delayMs: 60, child: _buildHistoryChips(attempts)),
                   const SizedBox(height: 16),
-                  _buildSummaryCards(_selectedAttempt),
+                  FadeSlideIn(delayMs: 100, child: _buildSummaryCards(_selectedAttempt)),
                   const SizedBox(height: 16),
-                  _buildOverviewBanner(_selectedAttempt),
+                  FadeSlideIn(delayMs: 130, child: _buildOverviewBanner(_selectedAttempt)),
                   const SizedBox(height: 16),
                   const Text(
                     'Tinjauan Jawaban',
@@ -166,9 +168,9 @@ class _QuizResultDetailScreenState extends State<QuizResultDetailScreen> {
                 _selectedAttempt = attempt;
               });
             },
-            selectedColor: AppColors.violet.withValues(alpha: 0.16),
+            selectedColor: AppColors.red.withValues(alpha: 0.16),
             labelStyle: TextStyle(
-              color: isSelected ? AppColors.violet : AppColors.slate,
+              color: isSelected ? AppColors.red : AppColors.slate,
               fontWeight: FontWeight.w700,
             ),
           );
@@ -288,7 +290,7 @@ class _QuizResultDetailScreenState extends State<QuizResultDetailScreen> {
             'Soal ${question.questionIndex + 1}',
             style: const TextStyle(
               fontSize: 12,
-              color: AppColors.violet,
+              color: AppColors.red,
               fontWeight: FontWeight.w800,
             ),
           ),
