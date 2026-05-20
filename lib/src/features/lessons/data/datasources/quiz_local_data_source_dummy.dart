@@ -1,6 +1,6 @@
 import 'package:lms_mobile_app/src/features/lessons/data/models/quiz_model.dart';
 
-class QuizLocalDataSOurce {
+class QuizLocalDataSourceDummy {
   Quiz getQuizByLessonId(String lessonId) {
     switch (lessonId) {
       // Accounting Course Quizzes

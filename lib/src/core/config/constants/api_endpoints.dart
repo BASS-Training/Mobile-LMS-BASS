@@ -19,6 +19,12 @@ class ApiEndpoints {
   static const String markLessonComplete = '/lessons/{id}/complete';
   static const String markLessonIncomplete = '/lessons/{id}/incomplete';
 
+  // Quizzes
+  static const String getQuizByLesson = '/quizzes/by-lesson/{id}';
+  static const String startQuizAttempt = '/quizzes/{quiz}/attempts';
+  static const String submitQuizAttempt =
+      '/quizzes/{quiz}/attempts/{attempt}/submit';
+
   // Certificates
   static const String getCertificates = '/certificates';
   static const String getCertificateById = '/certificates/{id}';

@@ -15,59 +15,46 @@ class QuizRepositoryImpl implements QuizRepository {
     try {
       // Get data dari local data source
       final quizData = await localDataSource.getQuizByLessonId(lessonId);
-      final baseQuestions = (quizData['questions'] as List<dynamic>)
-          .map(
-            (q) => Question(
-              text: q['text'] as String,
-              options: List<String>.from(q['options'] as List<dynamic>),
-              correctIndex: q['correctIndex'] as int,
-            ),
-          )
-          .toList();
+      final baseQuestions = (quizData['questions'] as List<dynamic>).map((q) {
+        final options = <String>[];
+        try {
+          options.addAll(List<String>.from(q['options'] as List<dynamic>));
+        } catch (_) {}
 
-      final expandedQuestions = _expandQuestions(baseQuestions, 30);
+        int? correct;
+        if (q.containsKey('correctIndex')) {
+          try {
+            correct = q['correctIndex'] as int;
+          } catch (_) {
+            correct = null;
+          }
+        }
+
+        return Question(
+          id: q.containsKey('id') ? q['id'].toString() : null,
+          text: q['text'] as String,
+          options: options,
+          optionIds: q.containsKey('optionIds')
+              ? List<String>.from(q['optionIds'] as List<dynamic>)
+              : null,
+          correctIndex: correct,
+        );
+      }).toList();
+
+      // Use questions exactly as returned from backend / database
+      final questions = baseQuestions;
 
       // Convert to Quiz model
       return Quiz(
+        id: quizData.containsKey('id') ? quizData['id'].toString() : null,
         title: quizData['title'] as String,
-        totalQuestions: expandedQuestions.length,
+        totalQuestions: questions.length,
         timeLimit: quizData['timeLimit'] as int,
         passingScore: quizData['passingScore'] as int,
-        questions: expandedQuestions,
+        questions: questions,
       );
     } catch (e) {
       throw Exception('Failed to get quiz: $e');
     }
-  }
-
-  List<Question> _expandQuestions(
-    List<Question> baseQuestions,
-    int targetCount,
-  ) {
-    if (baseQuestions.isEmpty) return baseQuestions;
-    if (baseQuestions.length >= targetCount) return baseQuestions;
-
-    final expanded = <Question>[];
-    var round = 0;
-
-    while (expanded.length < targetCount) {
-      round++;
-      for (
-        var i = 0;
-        i < baseQuestions.length && expanded.length < targetCount;
-        i++
-      ) {
-        final question = baseQuestions[i];
-        expanded.add(
-          Question(
-            text: '${question.text} (Bagian $round)',
-            options: question.options,
-            correctIndex: question.correctIndex,
-          ),
-        );
-      }
-    }
-
-    return expanded;
   }
 }

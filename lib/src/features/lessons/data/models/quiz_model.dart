@@ -7,14 +7,19 @@
 
 /// Model untuk pertanyaan
 class Question {
+  final String? id;
   final String text;
   final List<String> options;
-  final int correctIndex;
+  final List<String>? optionIds;
+  final int?
+  correctIndex; // nullable because server may not expose correct answer
 
   Question({
+    this.id,
     required this.text,
     required this.options,
-    required this.correctIndex,
+    this.optionIds,
+    this.correctIndex,
   });
 }
 
@@ -32,6 +37,7 @@ class QuizResult {
 }
 
 class Quiz {
+  final String? id;
   final String title;
   final int totalQuestions;
   final int timeLimit;
@@ -39,6 +45,7 @@ class Quiz {
   final List<Question> questions;
 
   Quiz({
+    this.id,
     required this.title,
     required this.totalQuestions,
     required this.timeLimit,
@@ -46,4 +53,3 @@ class Quiz {
     required this.questions,
   });
 }
-
