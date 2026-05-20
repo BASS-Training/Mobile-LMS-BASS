@@ -3,6 +3,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/essay_local_data_source.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/quiz_local_datasource_impl.dart';
+import 'package:lms_mobile_app/src/features/lessons/data/datasources/quiz_remote_datasource_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/video_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/essay_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/lesson_result_repository_impl.dart';
@@ -11,6 +12,8 @@ import 'package:lms_mobile_app/src/features/lessons/data/repositories/quiz_repos
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_repository.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_result_repository.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/get_quiz_usecase.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/usecases/submit_quiz_usecase.dart';
+import 'package:http/http.dart' as http;
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/is_lesson_completed_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/mark_lesson_complete_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/mark_lesson_incomplete_usecase.dart';
@@ -64,12 +67,20 @@ class LessonModule {
 
     getIt.registerFactory<QuizBloc>(() {
       final quizDataSource = QuizLocalDataSourceImpl();
+      final quizRemote = QuizRemoteDataSourceImpl(client: http.Client());
       final quizRepository = QuizRepositoryImpl(
         localDataSource: quizDataSource,
+        remoteDataSource: quizRemote,
       );
+
+      final submitUseCase = SubmitQuizUseCase(
+        repository: quizRepository,
+        resultRepository: lessonResultRepository,
+      );
+
       return QuizBloc(
         getQuizUseCase: GetQuizUseCase(repository: quizRepository),
-        resultRepository: lessonResultRepository,
+        submitQuizUseCase: submitUseCase,
       );
     });
 

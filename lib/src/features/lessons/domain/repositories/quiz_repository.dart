@@ -8,4 +8,7 @@ abstract class QuizRepository {
   /// Returns [Quiz] jika berhasil
   /// Throws [Exception] jika gagal
   Future<Quiz> getQuizByLessonId(String lessonId);
+
+  /// Submit quiz answers. Returns a [QuizResult] computed either by server or locally.
+  Future<QuizResult> submitQuiz(Quiz quiz, Map<int, int> answers);
 }
