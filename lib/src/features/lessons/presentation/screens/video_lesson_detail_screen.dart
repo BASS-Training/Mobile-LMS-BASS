@@ -43,6 +43,14 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _markedCompleteTriggered = false;
 
+  String? _resolveYoutubeVideoId(String? source) {
+    final value = source?.trim();
+    if (value == null || value.isEmpty) {
+      return null;
+    }
+    return YoutubePlayer.convertUrlToId(value) ?? value;
+  }
+
   bool get canGoNext =>
       widget.lessonIndex < widget.course.allLessons.length - 1;
   bool get canGoPrevious => widget.lessonIndex > 0;
@@ -69,7 +77,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
       InitVideoLesson(widget.lesson.id, widget.lesson.isCompleted),
     );
 
-    final videoId = widget.lesson.youtubeVideoId ?? '';
+    final videoId = _resolveYoutubeVideoId(widget.lesson.youtubeVideoId) ?? '';
     _controller = YoutubePlayerController(
       initialVideoId: videoId,
       flags: const YoutubePlayerFlags(
@@ -256,7 +264,11 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
                 child: Center(
                   child: GestureDetector(
                     onTap: () => _scaffoldKey.currentState?.openDrawer(),
-                    child: const Icon(Icons.list_alt, size: 24, color: Colors.white),
+                    child: const Icon(
+                      Icons.list_alt,
+                      size: 24,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),

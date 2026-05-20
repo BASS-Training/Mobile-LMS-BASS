@@ -86,9 +86,13 @@ class _DocumentLessonDetailScreenState
   Widget build(BuildContext context) {
     final lesson = widget.lesson;
 
-    final List<DocumentSectionEntity> sections = _buildDummySections(
-      lesson.content,
-    );
+    final List<DocumentSectionEntity> sections = [
+      DocumentSectionEntity(
+        title: '',
+        paragraphs: [lesson.content],
+        bullets: const [],
+      ),
+    ];
 
     return Scaffold(
       key: _scaffoldKey,
@@ -473,61 +477,6 @@ class _DocumentLessonDetailScreenState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [AppColors.red, AppColors.tomato],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Center(
-                  child: Text(
-                    '${index + 1}',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      section.title,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.charcoal,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Container(
-                      width: 52,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [AppColors.cherry, AppColors.tomato],
-                        ),
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
           ...section.paragraphs.map(
             (paragraph) => Padding(
               padding: const EdgeInsets.only(bottom: 12),
@@ -753,37 +702,5 @@ class _DocumentLessonDetailScreenState
         ],
       ),
     );
-  }
-
-  List<DocumentSectionEntity> _buildDummySections(String content) {
-    return [
-      DocumentSectionEntity(
-        title: 'Ringkasan Materi',
-        paragraphs: [
-          content.isNotEmpty
-              ? content
-              : 'Materi utama akan diambil dari backend. Untuk saat ini, ini adalah dummy content sebagai contoh tampilan teks yang rapi.',
-          'Bagian ini menjelaskan konsep inti pembelajaran secara singkat agar mudah dipahami sebelum masuk ke poin yang lebih detail.',
-        ],
-        bullets: const [],
-      ),
-      DocumentSectionEntity(
-        title: 'Poin Penting',
-        paragraphs: const [],
-        bullets: const [
-          'Pahami definisi dasar dan tujuan materi.',
-          'Perhatikan alur penjelasan dari awal sampai akhir.',
-          'Catat istilah penting yang muncul di dalam materi.',
-        ],
-      ),
-      DocumentSectionEntity(
-        title: 'Kesimpulan',
-        paragraphs: const [
-          'Setelah membaca materi ini, diharapkan Anda sudah memahami inti pembahasan dan siap lanjut ke lesson berikutnya.',
-          'Jika ada yang belum jelas, gunakan ruang diskusi pada lesson video atau diskusi terpisah di backend nanti.',
-        ],
-        bullets: const [],
-      ),
-    ];
   }
 }

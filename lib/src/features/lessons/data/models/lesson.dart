@@ -20,14 +20,20 @@ class Lesson {
   });
 
   factory Lesson.fromJson(Map<String, dynamic> json) {
+    final content = (json['content'] ?? json['body'] ?? '') as String;
+    final videoSource =
+        json['youtubeVideoId'] ??
+        json['youtubeVideoUrl'] ??
+        (json['type'] == 'video' ? content : null);
+
     return Lesson(
       id: json['id'] ?? '',
       courseId: json['courseId'] ?? '',
       title: json['title'] ?? '',
-      content: json['content'] ?? '',
+      content: content,
       duration: json['duration'] ?? '0 min',
       type: json['type'] ?? 'document',
-      youtubeVideoId: json['youtubeVideoId'],
+      youtubeVideoId: videoSource,
       isCompleted: json['isCompleted'] ?? false,
     );
   }

@@ -24,6 +24,8 @@ class LessonEntity extends Equatable {
     this.documentSections,
   });
 
+  bool get hasVideo => type == 'video' && (youtubeVideoId?.isNotEmpty ?? false);
+
   LessonEntity copyWith({
     bool? isCompleted,
     String? type,
