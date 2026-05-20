@@ -40,7 +40,18 @@ class QuizRemoteDataSourceImpl implements QuizRemoteDataSource {
 
     final response = await client.get(url);
     if (response.statusCode != 200) {
-      throw Exception('Gagal memanggil API quiz: HTTP ${response.statusCode}');
+      // Try to extract error message from response
+      String errorMessage = 'Gagal memanggil API quiz: HTTP ${response.statusCode}';
+      try {
+        final Map<String, dynamic> errorResp =
+            json.decode(response.body) as Map<String, dynamic>;
+        if (errorResp.containsKey('message')) {
+          errorMessage = errorResp['message'].toString();
+        }
+      } catch (_) {
+        // Keep default error message if response parsing fails
+      }
+      throw Exception(errorMessage);
     }
 
     final Map<String, dynamic> jsonResp =
