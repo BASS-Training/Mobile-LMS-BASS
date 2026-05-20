@@ -15,6 +15,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/qu
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/quiz_result_widget.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
+import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
 /// Screen utama untuk Quiz Lesson - Dengan BLoC State Management
 /// Bertanggung jawab untuk mengelola routing dan side effects,
@@ -290,7 +291,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
           flexibleSpace: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
+                colors: [AppColors.red, AppColors.tomato],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -328,29 +329,34 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
             );
           },
         ),
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+        body: Stack(
+          children: [
+            _buildBackgroundDecorations(),
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
             ),
-          ),
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 280),
-            switchInCurve: Curves.easeOutCubic,
-            switchOutCurve: Curves.easeInCubic,
-            child: QuizIntroWidget(
-              key: const ValueKey('quiz_intro'),
-              courseTitle: widget.course.title,
-              lessonTitle: widget.lesson.title,
-              lessonIndex: widget.lessonIndex,
-              quiz: quizState.quiz,
-              onStartQuiz: () {
-                context.read<QuizBloc>().add(const StartQuizEvent());
-              },
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 280),
+              switchInCurve: Curves.easeOutCubic,
+              switchOutCurve: Curves.easeInCubic,
+              child: QuizIntroWidget(
+                key: const ValueKey('quiz_intro'),
+                courseTitle: widget.course.title,
+                lessonTitle: widget.lesson.title,
+                lessonIndex: widget.lessonIndex,
+                quiz: quizState.quiz,
+                onStartQuiz: () {
+                  context.read<QuizBloc>().add(const StartQuizEvent());
+                },
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -376,130 +382,218 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
         return false;
       },
       child: Scaffold(
+        key: _scaffoldKey,
         backgroundColor: const Color(0xFFF6F8FF),
         appBar: AppBar(
           title: Text('${widget.course.title} - Kuis'),
           elevation: 0,
           backgroundColor: Colors.transparent,
           surfaceTintColor: Colors.transparent,
+          leading: GestureDetector(
+            onTap: _backToCourse,
+            child: const Icon(Icons.arrow_back),
+          ),
           flexibleSpace: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
+                colors: [AppColors.red, AppColors.tomato],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
             ),
           ),
-          actions: const [],
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: Center(
+                child: GestureDetector(
+                  onTap: () => _scaffoldKey.currentState?.openDrawer(),
+                  child: const Icon(Icons.list_alt, size: 24),
+                ),
+              ),
+            ),
+          ],
+        ),
+        drawer: LessonDrawer(
+          course: widget.course,
+          currentLessonIndex: widget.lessonIndex,
+          onSelectLesson: (lesson, index) {
+            final route = LessonRouteResolver.routeForType(lesson.type);
+            Navigator.pop(context);
+            context.push(
+              route,
+              extra: {
+                'lesson': lesson,
+                'course': widget.course,
+                'lessonIndex': index,
+              },
+            );
+          },
         ),
         bottomNavigationBar: _buildBottomActionBar(quizState),
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
-          child: Column(
-            children: [
-              Container(
-                margin: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Colors.white, Color(0xFFF8FAFF)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: AppColors.pearl.withValues(alpha: 0.8),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 16,
-                      offset: const Offset(0, 6),
-                    ),
-                  ],
+        body: Stack(
+          children: [
+            _buildBackgroundDecorations(),
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    // Timer display
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Telah dijawab $answeredCount/$totalCount',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        _buildTimerDisplay(quizState.remainingSeconds),
+              ),
+            ),
+            Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.fromLTRB(16, 14, 16, 0),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    gradient: LinearGradient(
+                      colors: [
+                        AppColors.red.withValues(alpha: 0.92),
+                        AppColors.tomato.withValues(alpha: 0.92),
                       ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                    const SizedBox(height: 8),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child: LinearProgressIndicator(
-                        value: progressPercent,
-                        minHeight: 6,
-                        backgroundColor: Colors.grey.withValues(alpha: 0.18),
-                        valueColor: const AlwaysStoppedAnimation<Color>(
-                          Color(0xFF4F8CFF),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.red.withValues(alpha: 0.2),
+                        blurRadius: 18,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 38,
+                        height: 38,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.18),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(
+                          Icons.quiz_outlined,
+                          color: Colors.white,
+                          size: 20,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 250),
-                  switchInCurve: Curves.easeOutCubic,
-                  switchOutCurve: Curves.easeInCubic,
-                  child: QuizQuestionsWidget(
-                    key: ValueKey(
-                      '${quizState.currentQuestionIndex}-${quizState.answers.length}',
-                    ),
-                    quiz: quizState.quiz,
-                    currentQuestionIndex: quizState.currentQuestionIndex,
-                    answers: quizState.answers,
-                    showNavigationButtons: false,
-                    onSelectAnswer: (selectedOptionIndex) {
-                      context.read<QuizBloc>().add(
-                        SelectAnswerEvent(
-                          questionIndex: quizState.currentQuestionIndex,
-                          selectedOptionIndex: selectedOptionIndex,
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          widget.lesson.title,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
                         ),
-                      );
-                    },
-                    onNextQuestion: () {
-                      context.read<QuizBloc>().add(const NextQuestionEvent());
-                    },
-                    onPreviousQuestion: () {
-                      context.read<QuizBloc>().add(
-                        const PreviousQuestionEvent(),
-                      );
-                    },
-                    onSubmitQuiz: () {
-                      context.read<QuizBloc>().add(const SubmitQuizEvent());
-                    },
-                    onQuestionNavigate: (questionIndex) {
-                      context.read<QuizBloc>().add(
-                        GoToQuestionEvent(questionIndex: questionIndex),
-                      );
-                    },
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ],
-          ),
+                Container(
+                  margin: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Colors.white, Color(0xFFF8FAFF)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: AppColors.pearl.withValues(alpha: 0.8),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      // Timer display
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Telah dijawab $answeredCount/$totalCount',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          _buildTimerDisplay(quizState.remainingSeconds),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          value: progressPercent,
+                          minHeight: 6,
+                          backgroundColor: Colors.grey.withValues(alpha: 0.18),
+                          valueColor: const AlwaysStoppedAnimation<Color>(
+                            AppColors.tomato,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 250),
+                    switchInCurve: Curves.easeOutCubic,
+                    switchOutCurve: Curves.easeInCubic,
+                    child: QuizQuestionsWidget(
+                      key: ValueKey(
+                        '${quizState.currentQuestionIndex}-${quizState.answers.length}',
+                      ),
+                      quiz: quizState.quiz,
+                      currentQuestionIndex: quizState.currentQuestionIndex,
+                      answers: quizState.answers,
+                      showNavigationButtons: false,
+                      onSelectAnswer: (selectedOptionIndex) {
+                        context.read<QuizBloc>().add(
+                          SelectAnswerEvent(
+                            questionIndex: quizState.currentQuestionIndex,
+                            selectedOptionIndex: selectedOptionIndex,
+                          ),
+                        );
+                      },
+                      onNextQuestion: () {
+                        context.read<QuizBloc>().add(const NextQuestionEvent());
+                      },
+                      onPreviousQuestion: () {
+                        context.read<QuizBloc>().add(
+                          const PreviousQuestionEvent(),
+                        );
+                      },
+                      onSubmitQuiz: () {
+                        context.read<QuizBloc>().add(const SubmitQuizEvent());
+                      },
+                      onQuestionNavigate: (questionIndex) {
+                        context.read<QuizBloc>().add(
+                          GoToQuestionEvent(questionIndex: questionIndex),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -530,7 +624,9 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
         child: Row(
           children: [
             Expanded(
-              child: OutlinedButton.icon(
+              child: PressScale(
+                enabled: quizState.currentQuestionIndex > 0,
+                child: OutlinedButton.icon(
                 onPressed: quizState.currentQuestionIndex > 0
                     ? () {
                         context.read<QuizBloc>().add(
@@ -548,11 +644,17 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
                   backgroundColor: Colors.white,
                   foregroundColor: AppColors.charcoal,
                 ),
+                ),
               ),
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: ElevatedButton.icon(
+              child: PressScale(
+                enabled: isLastQuestion
+                    ? (quizState.answers.length ==
+                        quizState.quiz.questions.length)
+                    : true,
+                child: ElevatedButton.icon(
                 onPressed: isLastQuestion
                     ? (quizState.answers.length ==
                               quizState.quiz.questions.length
@@ -564,8 +666,8 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
                         context.read<QuizBloc>().add(const NextQuestionEvent());
                       },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.violet,
-                  shadowColor: AppColors.violet.withValues(alpha: 0.45),
+                  backgroundColor: AppColors.red,
+                  shadowColor: AppColors.red.withValues(alpha: 0.45),
                   elevation: 8,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
@@ -575,6 +677,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
                       : Icons.arrow_forward,
                 ),
                 label: Text(isLastQuestion ? 'Kirim Jawaban' : 'Selanjutnya'),
+                ),
               ),
             ),
           ],
@@ -597,7 +700,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
+              colors: [AppColors.red, AppColors.tomato],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -608,29 +711,34 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
           child: const Icon(Icons.arrow_back),
         ),
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+      body: Stack(
+        children: [
+          _buildBackgroundDecorations(),
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
           ),
-        ),
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          switchInCurve: Curves.easeOutCubic,
-          switchOutCurve: Curves.easeInCubic,
-          child: QuizResultWidget(
-            key: const ValueKey('quiz_result'),
-            courseTitle: widget.course.title,
-            result: quizState.result,
-            canGoNext: canProceed,
-            onNextLesson: () {
-              _openLesson(nextLesson!, widget.lessonIndex + 1);
-            },
-            onBackToCourse: _backToCourse,
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            switchInCurve: Curves.easeOutCubic,
+            switchOutCurve: Curves.easeInCubic,
+            child: QuizResultWidget(
+              key: const ValueKey('quiz_result'),
+              courseTitle: widget.course.title,
+              result: quizState.result,
+              canGoNext: canProceed,
+              onNextLesson: () {
+                _openLesson(nextLesson!, widget.lessonIndex + 1);
+              },
+              onBackToCourse: _backToCourse,
+            ),
           ),
-        ),
+        ],
       ),
       floatingActionButton: quizState.attempt != null
           ? FloatingActionButton.extended(
@@ -676,6 +784,47 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
             fontSize: 12,
             fontWeight: FontWeight.w600,
             color: timerColor,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBackgroundDecorations() {
+    return Stack(
+      children: [
+        Positioned(
+          top: -70,
+          right: -55,
+          child: Container(
+            width: 210,
+            height: 210,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  AppColors.tomato.withValues(alpha: 0.14),
+                  Colors.transparent,
+                ],
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: 100,
+          left: -60,
+          child: Container(
+            width: 185,
+            height: 185,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  AppColors.red.withValues(alpha: 0.12),
+                  Colors.transparent,
+                ],
+              ),
+            ),
           ),
         ),
       ],

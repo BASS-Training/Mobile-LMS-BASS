@@ -22,7 +22,7 @@ class InfoCardWidget extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Icon(icon, color: AppColors.violet, size: 28),
+            Icon(icon, color: AppColors.red, size: 28),
             const SizedBox(height: 8),
             Text(
               value,

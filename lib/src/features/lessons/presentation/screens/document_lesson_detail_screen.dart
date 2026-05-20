@@ -14,6 +14,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/les
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_event.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
 class DocumentLessonDetailScreen extends StatefulWidget {
   final LessonEntity lesson;
@@ -237,7 +238,7 @@ class _DocumentLessonDetailScreenState
             border: Border.all(color: Colors.white.withValues(alpha: 0.14)),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF5D67F4).withValues(alpha: 0.24),
+                color: AppColors.crimson.withValues(alpha: 0.24),
                 blurRadius: 24,
                 offset: const Offset(0, 10),
               ),
@@ -555,7 +556,8 @@ class _DocumentLessonDetailScreenState
         children: [
           if (canGoPrevious)
             Expanded(
-              child: OutlinedButton.icon(
+              child: PressScale(
+                child: OutlinedButton.icon(
                 onPressed: () {
                   Navigator.pop(context);
                   Future.delayed(const Duration(milliseconds: 200), () {
@@ -564,12 +566,14 @@ class _DocumentLessonDetailScreenState
                 },
                 icon: const Icon(Icons.arrow_back_rounded),
                 label: const Text('Previous'),
+                ),
               ),
             ),
           if (canGoPrevious && canGoNext) const SizedBox(width: 12),
           if (canGoNext)
             Expanded(
-              child: ElevatedButton.icon(
+              child: PressScale(
+                child: ElevatedButton.icon(
                 onPressed: () async {
                   _markComplete();
                   await Future.delayed(const Duration(milliseconds: 100));
@@ -581,6 +585,7 @@ class _DocumentLessonDetailScreenState
                 },
                 icon: const Icon(Icons.arrow_forward_rounded),
                 label: const Text('Next'),
+                ),
               ),
             ),
         ],
@@ -592,20 +597,22 @@ class _DocumentLessonDetailScreenState
     required IconData icon,
     required VoidCallback onTap,
   }) {
-    return Material(
-      color: Colors.white.withValues(alpha: 0.16),
-      borderRadius: BorderRadius.circular(14),
-      child: InkWell(
+    return PressScale(
+      child: Material(
+        color: Colors.white.withValues(alpha: 0.16),
         borderRadius: BorderRadius.circular(14),
-        onTap: onTap,
-        child: Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: onTap,
+          child: Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
+            ),
+            child: Icon(icon, color: Colors.white),
           ),
-          child: Icon(icon, color: Colors.white),
         ),
       ),
     );

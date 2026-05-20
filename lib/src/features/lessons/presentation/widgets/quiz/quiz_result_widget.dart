@@ -94,7 +94,7 @@ class QuizResultWidget extends StatelessWidget {
                       ScoreItemWidget(
                         label: 'Nilai',
                         value: '${result.percentage.toStringAsFixed(0)}%',
-                        color: AppColors.violet,
+                        color: AppColors.red,
                       ),
                       ScoreItemWidget(
                         label: 'Benar',
@@ -158,7 +158,7 @@ class QuizResultWidget extends StatelessWidget {
                       icon: const Icon(Icons.arrow_forward),
                       label: const Text('Pelajaran Berikutnya'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.violet,
+                        backgroundColor: AppColors.red,
                       ),
                     ),
                   )
@@ -171,7 +171,7 @@ class QuizResultWidget extends StatelessWidget {
                       icon: const Icon(Icons.home),
                       label: const Text('Kembali ke Kursus'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.violet,
+                        backgroundColor: AppColors.red,
                       ),
                     ),
                   ),
@@ -215,7 +215,7 @@ class QuizResultWidget extends StatelessWidget {
                     icon: const Icon(Icons.home),
                     label: const Text('Kembali ke Kursus'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.violet,
+                      backgroundColor: AppColors.red,
                     ),
                   ),
                 ),

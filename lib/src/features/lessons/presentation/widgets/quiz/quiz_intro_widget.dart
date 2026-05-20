@@ -34,7 +34,7 @@ class QuizIntroWidget extends StatelessWidget {
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [AppColors.violet, AppColors.azure],
+                colors: [AppColors.red, AppColors.tomato],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -131,7 +131,7 @@ class QuizIntroWidget extends StatelessWidget {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.violet,
+                backgroundColor: AppColors.red,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),

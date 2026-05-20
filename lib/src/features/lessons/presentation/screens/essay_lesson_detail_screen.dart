@@ -14,6 +14,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/les
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/question_navigator_widget.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
 import '../bloc/essay/essay_bloc.dart';
 import '../bloc/essay/essay_event.dart';
@@ -241,7 +242,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
       flexibleSpace: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
+            colors: [AppColors.red, AppColors.tomato],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -293,7 +294,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  const Color(0xFF6D5EF7).withValues(alpha: 0.16),
+                  AppColors.tomato.withValues(alpha: 0.16),
                   Colors.transparent,
                 ],
               ),
@@ -310,7 +311,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 colors: [
-                  const Color(0xFF4F8CFF).withValues(alpha: 0.12),
+                  AppColors.red.withValues(alpha: 0.12),
                   Colors.transparent,
                 ],
               ),
@@ -328,13 +329,13 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(18),
         gradient: const LinearGradient(
-          colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
+          colors: [AppColors.red, AppColors.tomato],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF6D5EF7).withValues(alpha: 0.22),
+            color: AppColors.red.withValues(alpha: 0.22),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -428,7 +429,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
               minHeight: 8,
               backgroundColor: AppColors.pearl.withValues(alpha: 0.7),
               valueColor: const AlwaysStoppedAnimation<Color>(
-                Color(0xFF4F8CFF),
+                AppColors.tomato,
               ),
             ),
           ),
@@ -514,7 +515,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
                   width: 34,
                   height: 34,
                   decoration: const BoxDecoration(
-                    color: AppColors.violet,
+                    color: AppColors.red,
                     shape: BoxShape.circle,
                   ),
                   child: Center(
@@ -620,7 +621,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.violet, width: 2),
+                borderSide: const BorderSide(color: AppColors.red, width: 2),
               ),
             ),
           ),
@@ -718,7 +719,9 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton.icon(
+                  child: PressScale(
+                    enabled: canGoBackAction,
+                    child: OutlinedButton.icon(
                     onPressed: canGoBackAction ? handlePreviousAction : null,
                     icon: const Icon(Icons.arrow_back),
                     label: const Text('Sebelumnya'),
@@ -730,15 +733,17 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
                       backgroundColor: Colors.white,
                       foregroundColor: AppColors.charcoal,
                     ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: ElevatedButton.icon(
+                  child: PressScale(
+                    child: ElevatedButton.icon(
                     onPressed: handleSaveAndNext,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.violet,
-                      shadowColor: AppColors.violet.withValues(alpha: 0.45),
+                      backgroundColor: AppColors.red,
+                      shadowColor: AppColors.red.withValues(alpha: 0.45),
                       elevation: 8,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
@@ -748,6 +753,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
                           ? 'Simpan & Lanjut'
                           : 'Simpan',
                     ),
+                    ),
                   ),
                 ),
               ],
@@ -755,7 +761,9 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
             const SizedBox(height: 10),
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton.icon(
+              child: PressScale(
+                enabled: !state.isSubmitting,
+                child: ElevatedButton.icon(
                 onPressed: state.isSubmitting
                     ? null
                     : () => context.read<EssayBloc>().add(SubmitEssayClicked()),
@@ -780,6 +788,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
                     : const Icon(Icons.check_circle_outline),
                 label: Text(
                   state.isSubmitting ? 'Mengirim...' : 'Kirim Semua Jawaban',
+                ),
                 ),
               ),
             ),

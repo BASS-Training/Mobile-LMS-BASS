@@ -11,6 +11,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/les
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion_card.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -364,14 +365,14 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF6D5EF7), Color(0xFF4F8CFF)],
+          colors: [AppColors.crimson, AppColors.tomato],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF6D5EF7).withValues(alpha: 0.18),
+            color: AppColors.crimson.withValues(alpha: 0.18),
             blurRadius: 18,
             offset: const Offset(0, 8),
           ),
@@ -443,7 +444,8 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
       children: [
         if (canGoPrevious)
           Expanded(
-            child: OutlinedButton.icon(
+            child: PressScale(
+              child: OutlinedButton.icon(
               onPressed: () {
                 Navigator.pop(context);
                 Future.delayed(const Duration(milliseconds: 200), () {
@@ -452,12 +454,14 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
               },
               icon: const Icon(Icons.arrow_back),
               label: const Text('Previous'),
+              ),
             ),
           ),
         if (canGoPrevious && canGoNext) const SizedBox(width: 12),
         if (canGoNext)
           Expanded(
-            child: ElevatedButton.icon(
+            child: PressScale(
+              child: ElevatedButton.icon(
               onPressed: (!state.canProceed && !widget.lesson.isCompleted)
                   ? null
                   : () {
@@ -476,7 +480,8 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
                     },
               icon: const Icon(Icons.arrow_forward),
               label: const Text('Next'),
-            ),
+                    ),
+                  ),
           ),
       ],
     );

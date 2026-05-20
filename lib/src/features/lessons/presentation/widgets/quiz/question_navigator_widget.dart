@@ -57,7 +57,8 @@ class _QuestionNavigatorState extends State<QuestionNavigatorWidget> {
 
     final viewport = _scrollController.position.viewportDimension;
     final itemExtent = _itemSize + _itemSpacing;
-    final target = (widget.currentQuestionIndex * itemExtent) -
+    final target =
+        (widget.currentQuestionIndex * itemExtent) -
         ((viewport - _itemSize) / 2);
     final minScroll = _scrollController.position.minScrollExtent;
     final maxScroll = _scrollController.position.maxScrollExtent;
@@ -98,7 +99,9 @@ class _QuestionNavigatorState extends State<QuestionNavigatorWidget> {
             separatorBuilder: (_, __) => const SizedBox(width: _itemSpacing),
             itemBuilder: (context, index) {
               final isCurrentQuestion = index == widget.currentQuestionIndex;
-              final isAnswered = widget.completedQuestionIndexes.contains(index);
+              final isAnswered = widget.completedQuestionIndexes.contains(
+                index,
+              );
 
               return Semantics(
                 label: 'Soal ${index + 1}',
@@ -112,15 +115,17 @@ class _QuestionNavigatorState extends State<QuestionNavigatorWidget> {
                     height: _itemSize,
                     decoration: BoxDecoration(
                       color: isCurrentQuestion
-                          ? AppColors.violet
-                          : (isAnswered ? Colors.green.shade100 : AppColors.mist),
+                          ? AppColors.red
+                          : (isAnswered
+                                ? Colors.green.shade100
+                                : AppColors.mist),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                         color: isCurrentQuestion
-                            ? AppColors.violet
+                            ? AppColors.red
                             : (isAnswered
-                                ? Colors.green.shade300
-                                : AppColors.pearl),
+                                  ? Colors.green.shade300
+                                  : AppColors.pearl),
                         width: isCurrentQuestion ? 2 : 1,
                       ),
                     ),
@@ -133,8 +138,8 @@ class _QuestionNavigatorState extends State<QuestionNavigatorWidget> {
                           color: isCurrentQuestion
                               ? Colors.white
                               : (isAnswered
-                                  ? Colors.green.shade800
-                                  : AppColors.slate),
+                                    ? Colors.green.shade800
+                                    : AppColors.slate),
                         ),
                       ),
                     ),
@@ -152,9 +157,12 @@ class _QuestionNavigatorState extends State<QuestionNavigatorWidget> {
   Widget _buildLegend() {
     return Row(
       children: [
-        _buildLegendItem(color: AppColors.violet, label: 'Aktif'),
+        _buildLegendItem(color: AppColors.red, label: 'Aktif'),
         const SizedBox(width: 16),
-        _buildLegendItem(color: Colors.green[100]!, label: widget.completedLabel),
+        _buildLegendItem(
+          color: Colors.green[100]!,
+          label: widget.completedLabel,
+        ),
         const SizedBox(width: 16),
         _buildLegendItem(color: AppColors.mist, label: widget.pendingLabel),
       ],
@@ -181,4 +189,3 @@ class _QuestionNavigatorState extends State<QuestionNavigatorWidget> {
     );
   }
 }
-

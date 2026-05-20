@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
 /// Widget untuk menampilkan option jawaban sebagai card interaktif
 class OptionCardWidget extends StatelessWidget {
@@ -20,29 +21,55 @@ class OptionCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Material(
-        child: InkWell(
+      child: PressScale(
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(12),
           child: Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: isSelected
-                  ? AppColors.violet.withValues(alpha: 0.1)
-                  : Colors.white,
+              gradient: LinearGradient(
+                colors: isSelected
+                    ? [
+                        AppColors.red.withValues(alpha: 0.14),
+                        AppColors.tomato.withValues(alpha: 0.12),
+                      ]
+                    : [Colors.white, const Color(0xFFF9FAFF)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isSelected ? AppColors.violet : Colors.grey[300]!,
+                color: isSelected ? AppColors.red : Colors.grey[300]!,
                 width: isSelected ? 2 : 1,
               ),
             ),
             child: Row(
               children: [
-                Radio<int>(
-                  value: index,
-                  groupValue: isSelected ? index : null,
-                  onChanged: (value) => onTap(),
-                  activeColor: AppColors.violet,
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isSelected ? AppColors.red : Colors.white,
+                    border: Border.all(
+                      color: isSelected ? AppColors.red : AppColors.pearl,
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      String.fromCharCode(65 + index),
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: isSelected ? Colors.white : AppColors.slate,
+                      ),
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -50,7 +77,7 @@ class OptionCardWidget extends StatelessWidget {
                     option,
                     style: TextStyle(
                       fontSize: 14,
-                      color: isSelected ? AppColors.violet : AppColors.charcoal,
+                      color: isSelected ? AppColors.red : AppColors.charcoal,
                       fontWeight: isSelected
                           ? FontWeight.w600
                           : FontWeight.w500,
@@ -59,6 +86,7 @@ class OptionCardWidget extends StatelessWidget {
                 ),
               ],
             ),
+          ),
           ),
         ),
       ),
