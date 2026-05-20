@@ -627,23 +627,23 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
               child: PressScale(
                 enabled: quizState.currentQuestionIndex > 0,
                 child: OutlinedButton.icon(
-                onPressed: quizState.currentQuestionIndex > 0
-                    ? () {
-                        context.read<QuizBloc>().add(
-                          const PreviousQuestionEvent(),
-                        );
-                      }
-                    : null,
-                icon: const Icon(Icons.arrow_back),
-                label: const Text('Sebelumnya'),
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(
-                    color: AppColors.pearl.withValues(alpha: 0.9),
+                  onPressed: quizState.currentQuestionIndex > 0
+                      ? () {
+                          context.read<QuizBloc>().add(
+                            const PreviousQuestionEvent(),
+                          );
+                        }
+                      : null,
+                  icon: const Icon(Icons.arrow_back),
+                  label: const Text('Sebelumnya'),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(
+                      color: AppColors.pearl.withValues(alpha: 0.9),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    backgroundColor: Colors.white,
+                    foregroundColor: AppColors.charcoal,
                   ),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  backgroundColor: Colors.white,
-                  foregroundColor: AppColors.charcoal,
-                ),
                 ),
               ),
             ),
@@ -652,31 +652,33 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
               child: PressScale(
                 enabled: isLastQuestion
                     ? (quizState.answers.length ==
-                        quizState.quiz.questions.length)
+                          quizState.quiz.questions.length)
                     : true,
                 child: ElevatedButton.icon(
-                onPressed: isLastQuestion
-                    ? (quizState.answers.length ==
-                              quizState.quiz.questions.length
-                          ? () => context.read<QuizBloc>().add(
-                              const SubmitQuizEvent(),
-                            )
-                          : null)
-                    : () {
-                        context.read<QuizBloc>().add(const NextQuestionEvent());
-                      },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.red,
-                  shadowColor: AppColors.red.withValues(alpha: 0.45),
-                  elevation: 8,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                icon: Icon(
-                  isLastQuestion
-                      ? Icons.check_circle_outline
-                      : Icons.arrow_forward,
-                ),
-                label: Text(isLastQuestion ? 'Kirim Jawaban' : 'Selanjutnya'),
+                  onPressed: isLastQuestion
+                      ? (quizState.answers.length ==
+                                quizState.quiz.questions.length
+                            ? () => context.read<QuizBloc>().add(
+                                const SubmitQuizEvent(),
+                              )
+                            : null)
+                      : () {
+                          context.read<QuizBloc>().add(
+                            const NextQuestionEvent(),
+                          );
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.red,
+                    shadowColor: AppColors.red.withValues(alpha: 0.45),
+                    elevation: 8,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  icon: Icon(
+                    isLastQuestion
+                        ? Icons.check_circle_outline
+                        : Icons.arrow_forward,
+                  ),
+                  label: Text(isLastQuestion ? 'Kirim Jawaban' : 'Selanjutnya'),
                 ),
               ),
             ),
