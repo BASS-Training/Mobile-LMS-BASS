@@ -67,7 +67,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         event.name,
         event.email,
         event.password,
-        event.role,
+        event.classInterest,
+        dateOfBirth: event.dateOfBirth,
+        gender: event.gender,
+        institutionName: event.institutionName,
+        occupation: event.occupation,
       ).timeout(const Duration(seconds: 15));
 
       if (user != null) {

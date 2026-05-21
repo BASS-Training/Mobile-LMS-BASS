@@ -36,8 +36,12 @@ class AuthRepositoryImpl implements AuthRepository {
     String name,
     String email,
     String password,
-    String role,
-  ) async {
+    String classInterest, {
+    required String dateOfBirth,
+    required String gender,
+    required String institutionName,
+    required String occupation,
+  }) async {
     final cleanedName = name.trim();
     final cleanedEmail = email.trim().toLowerCase();
     if (cleanedName.isEmpty || cleanedEmail.isEmpty || password.isEmpty) {
@@ -51,7 +55,12 @@ class AuthRepositoryImpl implements AuthRepository {
           'name': cleanedName,
           'email': cleanedEmail,
           'password': password,
-          'role': role,
+          'password_confirmation': password,
+          'class_interest': classInterest,
+          'date_of_birth': dateOfBirth,
+          'gender': gender,
+          'institution_name': institutionName,
+          'occupation': occupation,
         },
       );
 

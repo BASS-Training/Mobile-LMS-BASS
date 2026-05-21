@@ -6,8 +6,12 @@ abstract class AuthRepository {
     String name,
     String email,
     String password,
-    String role,
-  );
+    String classInterest, {
+    required String dateOfBirth,
+    required String gender,
+    required String institutionName,
+    required String occupation,
+  });
   Future<void> logout();
   Future<UserEntity?> getCurrentUser();
   Stream<UserEntity?> watchCurrentUser();

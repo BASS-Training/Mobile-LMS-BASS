@@ -20,9 +20,22 @@ class RegisterUseCase {
     String name,
     String email,
     String password,
-    String role,
-  ) async {
-    return await repository.register(name, email, password, role);
+    String classInterest, {
+    required String dateOfBirth,
+    required String gender,
+    required String institutionName,
+    required String occupation,
+  }) async {
+    return await repository.register(
+      name,
+      email,
+      password,
+      classInterest,
+      dateOfBirth: dateOfBirth,
+      gender: gender,
+      institutionName: institutionName,
+      occupation: occupation,
+    );
   }
 }
 
