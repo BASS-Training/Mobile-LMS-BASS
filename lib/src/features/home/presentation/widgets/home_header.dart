@@ -5,8 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_strings.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_bloc.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_state.dart';
-import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
-import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
 
@@ -177,66 +175,6 @@ class HomeHeader extends StatelessWidget {
       child: const Center(
         child: Icon(Icons.person_rounded, color: Colors.white, size: 28),
       ),
-    );
-  }
-
-  Widget _buildSearchBar(BuildContext context) {
-    return ValueListenableBuilder<TextEditingValue>(
-      valueListenable: searchController,
-      builder: (context, value, _) {
-        return Container(
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.16),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.12),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: TextField(
-            controller: searchController,
-            onChanged: (value) {
-              context.read<CourseBloc>().add(SearchCoursesEvent(query: value));
-            },
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
-            cursorColor: Colors.white,
-            decoration: InputDecoration(
-              hintText: AppStrings.searchCourses,
-              hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.75)),
-              prefixIcon: Icon(
-                Icons.search_rounded,
-                color: Colors.white.withValues(alpha: 0.92),
-              ),
-              suffixIcon: value.text.isNotEmpty
-                  ? IconButton(
-                      onPressed: () {
-                        searchController.clear();
-                        context.read<CourseBloc>().add(
-                          const SearchCoursesEvent(query: ''),
-                        );
-                      },
-                      icon: Icon(
-                        Icons.close_rounded,
-                        color: Colors.white.withValues(alpha: 0.85),
-                      ),
-                    )
-                  : null,
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 14,
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 }

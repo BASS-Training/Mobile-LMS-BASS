@@ -7,7 +7,6 @@ import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_attem
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_result_repository.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/utils/app_date_formatter.dart';
-import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
 import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
 class ResultsListScreen extends StatelessWidget {
