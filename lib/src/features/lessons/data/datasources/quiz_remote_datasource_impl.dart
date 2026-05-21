@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:lms_mobile_app/src/core/config/flavor_config.dart';
 import 'package:lms_mobile_app/src/core/config/constants/api_endpoints.dart';
+import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 import 'quiz_remote_datasource.dart';
 
 class QuizRemoteDataSourceImpl implements QuizRemoteDataSource {
@@ -18,10 +19,7 @@ class QuizRemoteDataSourceImpl implements QuizRemoteDataSource {
     );
     final startUrl = Uri.parse('$baseUrl$startEndpoint');
 
-    final startResp = await client.post(
-      startUrl,
-      headers: {'Content-Type': 'application/json'},
-    );
+    final startResp = await client.post(startUrl, headers: _authHeaders());
     if (!(startResp.statusCode == 200 || startResp.statusCode == 201)) {
       throw Exception('Start attempt failed ${startResp.statusCode}');
     }
@@ -96,7 +94,7 @@ class QuizRemoteDataSourceImpl implements QuizRemoteDataSource {
 
     final submitResp = await client.post(
       submitUrl,
-      headers: {'Content-Type': 'application/json'},
+      headers: _authHeaders(),
       body: json.encode({'answers': answers}),
     );
 
@@ -104,5 +102,19 @@ class QuizRemoteDataSourceImpl implements QuizRemoteDataSource {
       throw Exception('Submit failed ${submitResp.statusCode}');
     final jsonResponse = json.decode(submitResp.body) as Map<String, dynamic>;
     return jsonResponse['data'] as Map<String, dynamic>;
+  }
+
+  Map<String, String> _authHeaders() {
+    final headers = <String, String>{
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+
+    final token = LocalStorage.getAuthToken();
+    if (token != null && token.isNotEmpty) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+
+    return headers;
   }
 }
