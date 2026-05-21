@@ -47,7 +47,6 @@ class QuizQuestionsWidget extends StatelessWidget {
           //     value: (currentQuestionIndex + 1) / quiz.questions.length,
           //     minHeight: 8,
           //     backgroundColor: Colors.grey[300],
-          //     valueColor: AlwaysStoppedAnimation<Color>(AppColors.violet),
           //   ),
           // ),
           const SizedBox(height: 24),
