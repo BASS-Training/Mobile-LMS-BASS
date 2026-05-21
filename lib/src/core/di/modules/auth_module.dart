@@ -22,6 +22,10 @@ class AuthModule {
     final logoutUseCase = LogoutUseCase(authRepository);
     final getCurrentUserUseCase = GetCurrentUserUseCase(authRepository);
 
+    getIt.registerLazySingleton<GetCurrentUserUseCase>(
+      () => getCurrentUserUseCase,
+    );
+
     // Presentation Layer
     getIt.registerLazySingleton<AuthBloc>(
       () => AuthBloc(

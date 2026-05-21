@@ -14,6 +14,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/les
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/question_navigator_widget.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
 import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
 import '../bloc/essay/essay_bloc.dart';
@@ -188,6 +189,8 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
                               children: [
                                 header,
                                 const SizedBox(height: 14),
+                                _buildDescriptionCard(),
+                                const SizedBox(height: 14),
                                 sidePanel,
                                 const SizedBox(height: 14),
                                 mainPanel,
@@ -202,6 +205,8 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               header,
+                              const SizedBox(height: 14),
+                              _buildDescriptionCard(),
                               const SizedBox(height: 14),
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -387,6 +392,79 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
     );
   }
 
+  Widget _buildDescriptionCard() {
+    final description = widget.lesson.content.trim();
+
+    return FadeSlideIn(
+      delayMs: 50,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Colors.white, Color(0xFFF9FAFF)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: AppColors.red.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.description_rounded,
+                color: AppColors.red,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Deskripsi Lesson',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.charcoal,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    description.isNotEmpty
+                        ? description
+                        : 'Tidak ada deskripsi tambahan untuk lesson ini.',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      height: 1.5,
+                      color: AppColors.slate,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildSidePanel(EssayState state) {
     final progress = state.totalQuestions > 0
         ? (state.savedCount / state.totalQuestions) * 100
@@ -428,9 +506,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
               value: progress / 100,
               minHeight: 8,
               backgroundColor: AppColors.pearl.withValues(alpha: 0.7),
-              valueColor: const AlwaysStoppedAnimation<Color>(
-                AppColors.tomato,
-              ),
+              valueColor: const AlwaysStoppedAnimation<Color>(AppColors.tomato),
             ),
           ),
           const SizedBox(height: 8),
@@ -531,7 +607,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Pertanyaan ${state.currentQuestionIndex + 1} dari ${state.totalQuestions}',
+                    state.currentQuestion,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -722,17 +798,17 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
                   child: PressScale(
                     enabled: canGoBackAction,
                     child: OutlinedButton.icon(
-                    onPressed: canGoBackAction ? handlePreviousAction : null,
-                    icon: const Icon(Icons.arrow_back),
-                    label: const Text('Sebelumnya'),
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(
-                        color: AppColors.pearl.withValues(alpha: 0.9),
+                      onPressed: canGoBackAction ? handlePreviousAction : null,
+                      icon: const Icon(Icons.arrow_back),
+                      label: const Text('Sebelumnya'),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(
+                          color: AppColors.pearl.withValues(alpha: 0.9),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        backgroundColor: Colors.white,
+                        foregroundColor: AppColors.charcoal,
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      backgroundColor: Colors.white,
-                      foregroundColor: AppColors.charcoal,
-                    ),
                     ),
                   ),
                 ),
@@ -740,19 +816,19 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
                 Expanded(
                   child: PressScale(
                     child: ElevatedButton.icon(
-                    onPressed: handleSaveAndNext,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.red,
-                      shadowColor: AppColors.red.withValues(alpha: 0.45),
-                      elevation: 8,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                    ),
-                    icon: const Icon(Icons.save_outlined),
-                    label: Text(
-                      state.currentQuestionIndex < state.totalQuestions - 1
-                          ? 'Simpan & Lanjut'
-                          : 'Simpan',
-                    ),
+                      onPressed: handleSaveAndNext,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.red,
+                        shadowColor: AppColors.red.withValues(alpha: 0.45),
+                        elevation: 8,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      icon: const Icon(Icons.save_outlined),
+                      label: Text(
+                        state.currentQuestionIndex < state.totalQuestions - 1
+                            ? 'Simpan & Lanjut'
+                            : 'Simpan',
+                      ),
                     ),
                   ),
                 ),
@@ -764,31 +840,34 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
               child: PressScale(
                 enabled: !state.isSubmitting,
                 child: ElevatedButton.icon(
-                onPressed: state.isSubmitting
-                    ? null
-                    : () => context.read<EssayBloc>().add(SubmitEssayClicked()),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF16A34A),
-                  shadowColor: const Color(0xFF16A34A).withValues(alpha: 0.45),
-                  elevation: 10,
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                  onPressed: state.isSubmitting
+                      ? null
+                      : () =>
+                            context.read<EssayBloc>().add(SubmitEssayClicked()),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF16A34A),
+                    shadowColor: const Color(
+                      0xFF16A34A,
+                    ).withValues(alpha: 0.45),
+                    elevation: 10,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                ),
-                icon: state.isSubmitting
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : const Icon(Icons.check_circle_outline),
-                label: Text(
-                  state.isSubmitting ? 'Mengirim...' : 'Kirim Semua Jawaban',
-                ),
+                  icon: state.isSubmitting
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(Icons.check_circle_outline),
+                  label: Text(
+                    state.isSubmitting ? 'Mengirim...' : 'Kirim Semua Jawaban',
+                  ),
                 ),
               ),
             ),

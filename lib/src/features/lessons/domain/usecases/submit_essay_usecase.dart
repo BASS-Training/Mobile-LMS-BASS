@@ -1,3 +1,4 @@
+import 'package:lms_mobile_app/src/features/lessons/domain/entities/essay_question_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/essay_repository.dart';
 
 class SubmitEssayUseCase {
@@ -6,7 +7,13 @@ class SubmitEssayUseCase {
 
   SubmitEssayUseCase(this.repository);
 
-  Future<bool> execute(String lessonId, Map<int, String> answers, int totalQuestions) async {
+  Future<bool> execute(
+    String lessonId,
+    List<EssayQuestionEntity> questions,
+    Map<int, String> answers,
+    int totalQuestions, {
+    String? userEmail,
+  }) async {
     // Logika menghitung kata yang tadinya ada di UI pindah ke sini
     int validCount = 0;
     for (var answer in answers.values) {
@@ -19,7 +26,12 @@ class SubmitEssayUseCase {
       return false; // Gagal validasi
     }
 
-    await repository.submitEssayAnswers(lessonId, answers);
+    await repository.submitEssayAnswers(
+      lessonId,
+      questions,
+      answers,
+      userEmail: userEmail,
+    );
     return true; // Berhasil
   }
 

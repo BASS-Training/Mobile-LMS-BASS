@@ -1,8 +1,9 @@
 import 'package:equatable/equatable.dart';
+import '../../../domain/entities/essay_question_entity.dart';
 
 class EssayState extends Equatable {
   final String lessonId;
-  final List<String> questions;
+  final List<EssayQuestionEntity> questions;
   final Map<int, String> workingAnswers;
   final Map<int, String> savedDraftAnswers;
   final int currentQuestionIndex;
@@ -27,18 +28,19 @@ class EssayState extends Equatable {
 
   // Getter pembantu untuk UI agar UI tetap "bodoh"
   int get totalQuestions => questions.length;
-  String get currentQuestion => questions.isNotEmpty ? questions[currentQuestionIndex] : '';
+  String get currentQuestion =>
+      questions.isNotEmpty ? questions[currentQuestionIndex].text : '';
+  String get structuredCurrentQuestion => currentQuestion;
   String get currentAnswer => workingAnswers[currentQuestionIndex] ?? '';
-  
+
   bool get isDraftSaved {
     final working = (workingAnswers[currentQuestionIndex] ?? '').trim();
     final saved = (savedDraftAnswers[currentQuestionIndex] ?? '').trim();
     return working == saved;
   }
 
-  int get savedCount => savedDraftAnswers.entries
-      .where((e) => e.value.trim().isNotEmpty)
-      .length;
+  int get savedCount =>
+      savedDraftAnswers.entries.where((e) => e.value.trim().isNotEmpty).length;
 
   int get currentWordCount {
     final text = currentAnswer.trim();
@@ -55,7 +57,7 @@ class EssayState extends Equatable {
 
   EssayState copyWith({
     String? lessonId,
-    List<String>? questions,
+    List<EssayQuestionEntity>? questions,
     Map<int, String>? workingAnswers,
     Map<int, String>? savedDraftAnswers,
     int? currentQuestionIndex,
@@ -72,7 +74,8 @@ class EssayState extends Equatable {
       savedDraftAnswers: savedDraftAnswers ?? this.savedDraftAnswers,
       currentQuestionIndex: currentQuestionIndex ?? this.currentQuestionIndex,
       isSubmitting: isSubmitting ?? this.isSubmitting,
-      errorMessage: errorMessage, // Dibiarkan null jika tidak di-pass agar ke-reset
+      errorMessage:
+          errorMessage, // Dibiarkan null jika tidak di-pass agar ke-reset
       isSuccess: isSuccess ?? this.isSuccess,
       snackbarMessage: snackbarMessage,
       lastAttempt: lastAttempt ?? this.lastAttempt,
@@ -81,15 +84,15 @@ class EssayState extends Equatable {
 
   @override
   List<Object?> get props => [
-        lessonId,
-        questions,
-        workingAnswers,
-        savedDraftAnswers,
-        currentQuestionIndex,
-        isSubmitting,
-        errorMessage,
-      isSuccess,
-      lastAttempt,
-      snackbarMessage,
-      ];
+    lessonId,
+    questions,
+    workingAnswers,
+    savedDraftAnswers,
+    currentQuestionIndex,
+    isSubmitting,
+    errorMessage,
+    isSuccess,
+    lastAttempt,
+    snackbarMessage,
+  ];
 }

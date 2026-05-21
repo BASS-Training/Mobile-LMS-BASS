@@ -1,13 +1,31 @@
+import 'package:lms_mobile_app/src/core/config/flavor_config.dart';
+import 'package:lms_mobile_app/src/features/lessons/data/datasources/essay_remote_datasource.dart';
 import '../../domain/repositories/essay_repository.dart';
 import '../datasources/essay_local_data_source.dart';
+import '../../domain/entities/essay_question_entity.dart';
 
 class EssayRepositoryImpl implements EssayRepository {
   final EssayLocalDataSource localDataSource;
+  final EssayRemoteDataSource? remoteDataSource;
 
-  EssayRepositoryImpl(this.localDataSource);
+  EssayRepositoryImpl(this.localDataSource, {this.remoteDataSource});
 
   @override
-  List<String> getQuestions(String lessonId, String content) {
+  Future<List<EssayQuestionEntity>> getQuestions(
+    String lessonId,
+    String content,
+  ) async {
+    try {
+      if (!FlavorConfig.instance.enableMockData && remoteDataSource != null) {
+        final questions = await remoteDataSource!.getQuestionsByLessonId(lessonId);
+        if (questions.isNotEmpty) {
+          return questions;
+        }
+      }
+    } catch (_) {
+      // fallback ke local dummy saat API belum tersedia
+    }
+
     return localDataSource.getQuestions(lessonId, content);
   }
 
@@ -21,10 +39,38 @@ class EssayRepositoryImpl implements EssayRepository {
     await localDataSource.saveDraftAnswer(lessonId, questionIndex, answer);
   }
 
-  // Tambahkan/Ubah bagian ini agar sesuai dengan interface
   @override
-  Future<void> submitEssayAnswers(String lessonId, Map<int, String> answers) async {
-    // Memanggil method saveAllDraftAnswers dari localDataSource
+  Future<void> submitEssayAnswers(
+    String lessonId,
+    List<EssayQuestionEntity> questions,
+    Map<int, String> answers,
+    {String? userEmail}
+  ) async {
+    final payload = <Map<String, dynamic>>[];
+    for (int i = 0; i < questions.length; i++) {
+      final answer = answers[i]?.trim();
+      if (answer == null || answer.isEmpty) {
+        continue;
+      }
+
+      payload.add({
+        'question_id': questions[i].id,
+        'answer': answer,
+      });
+    }
+
+    if (payload.isEmpty) {
+      throw Exception('Tidak ada jawaban untuk dikirim.');
+    }
+
+    if (!FlavorConfig.instance.enableMockData && remoteDataSource != null) {
+      await remoteDataSource!.submitEssayAnswers(
+        lessonId: lessonId,
+        answers: payload,
+        userEmail: userEmail,
+      );
+    }
+
     await localDataSource.saveAllDraftAnswers(lessonId, answers);
   }
 }

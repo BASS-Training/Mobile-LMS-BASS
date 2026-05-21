@@ -25,6 +25,10 @@ class ApiEndpoints {
   static const String submitQuizAttempt =
       '/quizzes/{quiz}/attempts/{attempt}/submit';
 
+  // Essays
+  static const String getEssayByLesson = '/essays/by-lesson/{id}';
+  static const String submitEssay = '/essays/{id}/submit';
+
   // Certificates
   static const String getCertificates = '/certificates';
   static const String getCertificateById = '/certificates/{id}';

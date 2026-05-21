@@ -1,17 +1,22 @@
 import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/essay_dummy_data.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/entities/essay_question_entity.dart';
 
 abstract class EssayLocalDataSource {
-  List<String> getQuestions(String lessonId, String content);
+  List<EssayQuestionEntity> getQuestions(String lessonId, String content);
   Map<int, String> getDraftAnswers(String lessonId);
-  Future<void> saveDraftAnswer(String lessonId, int questionIndex, String answer);
+  Future<void> saveDraftAnswer(
+    String lessonId,
+    int questionIndex,
+    String answer,
+  );
   Future<void> saveAllDraftAnswers(String lessonId, Map<int, String> answers);
 }
 
 class EssayLocalDataSourceImpl implements EssayLocalDataSource {
   @override
-  List<String> getQuestions(String lessonId, String content) {
-    return EssayDummyData.getQuestions(lessonId, content);
+  List<EssayQuestionEntity> getQuestions(String lessonId, String content) {
+    return EssayDummyData.getQuestions(lessonId);
   }
 
   @override
@@ -20,7 +25,11 @@ class EssayLocalDataSourceImpl implements EssayLocalDataSource {
   }
 
   @override
-  Future<void> saveDraftAnswer(String lessonId, int questionIndex, String answer) async {
+  Future<void> saveDraftAnswer(
+    String lessonId,
+    int questionIndex,
+    String answer,
+  ) async {
     LocalStorage.saveEssayDraftAnswer(
       lessonId: lessonId,
       questionIndex: questionIndex,
@@ -29,7 +38,10 @@ class EssayLocalDataSourceImpl implements EssayLocalDataSource {
   }
 
   @override
-  Future<void> saveAllDraftAnswers(String lessonId, Map<int, String> answers) async {
+  Future<void> saveAllDraftAnswers(
+    String lessonId,
+    Map<int, String> answers,
+  ) async {
     await LocalStorage.saveEssayDraftAnswers(
       lessonId: lessonId,
       answers: answers,

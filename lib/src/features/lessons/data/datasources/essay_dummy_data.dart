@@ -1,19 +1,45 @@
+import 'package:lms_mobile_app/src/features/lessons/domain/entities/essay_question_entity.dart';
+
 class EssayDummyData {
   const EssayDummyData._();
 
-  static List<String> getQuestions(String lessonId, String fallbackPrompt) {
+  static List<EssayQuestionEntity> getQuestions(String lessonId) {
     final questions = _questionsByLessonId[lessonId];
     if (questions != null && questions.length >= 5) {
-      return List<String>.from(questions);
+      return questions
+          .asMap()
+          .entries
+          .map(
+            (entry) => EssayQuestionEntity(
+              id: 'local_${lessonId}_${entry.key + 1}',
+              text: entry.value,
+              order: entry.key + 1,
+              maxScore: 1,
+            ),
+          )
+          .toList();
     }
 
-    return [
-      fallbackPrompt,
-      'Jelaskan alasan utama dari jawaban Anda pada pertanyaan sebelumnya.',
-      'Apa risiko terbesar jika solusi Anda tidak dijalankan dengan benar?',
-      'Siapa pihak yang paling terdampak dan bagaimana dampaknya?',
-      'Tuliskan rencana tindakan konkret dalam 3 langkah singkat.',
+    const fallbackQuestions = [
+      'Jelaskan pemahaman Anda terhadap materi pada lesson ini.',
+      'Apa poin terpenting yang bisa Anda terapkan dari materi tersebut?',
+      'Berikan satu contoh penerapan dalam situasi nyata.',
+      'Apa tantangan yang mungkin muncul saat menerapkannya?',
+      'Tuliskan kesimpulan singkat dari jawaban Anda.',
     ];
+
+    return fallbackQuestions
+        .asMap()
+        .entries
+        .map(
+          (entry) => EssayQuestionEntity(
+            id: 'local_${lessonId}_${entry.key + 1}',
+            text: entry.value,
+            order: entry.key + 1,
+            maxScore: 1,
+          ),
+        )
+        .toList();
   }
 
   static const Map<String, List<String>> _questionsByLessonId = {
