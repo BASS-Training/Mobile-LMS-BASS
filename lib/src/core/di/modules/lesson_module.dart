@@ -1,5 +1,6 @@
 // Lesson module - dependency injection untuk lesson feature
 // Berisi: LessonRepository, UseCases, BLoC
+import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/essay_local_data_source.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/essay_remote_datasource_impl.dart';
@@ -14,7 +15,6 @@ import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_r
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_result_repository.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/get_quiz_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/submit_quiz_usecase.dart';
-import 'package:http/http.dart' as http;
 import 'package:lms_mobile_app/src/features/authentication/domain/usecases/auth_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/is_lesson_completed_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/mark_lesson_complete_usecase.dart';
@@ -69,7 +69,7 @@ class LessonModule {
 
     getIt.registerFactory<QuizBloc>(() {
       final quizDataSource = QuizLocalDataSourceImpl();
-      final quizRemote = QuizRemoteDataSourceImpl(client: http.Client());
+      final quizRemote = QuizRemoteDataSourceImpl(dio: getIt<Dio>());
       final quizRepository = QuizRepositoryImpl(
         localDataSource: quizDataSource,
         remoteDataSource: quizRemote,
@@ -88,7 +88,7 @@ class LessonModule {
 
     getIt.registerFactory<EssayBloc>(() {
       final localDataSource = EssayLocalDataSourceImpl();
-      final remoteDataSource = EssayRemoteDataSourceImpl(client: http.Client());
+      final remoteDataSource = EssayRemoteDataSourceImpl(dio: getIt<Dio>());
       final repository = EssayRepositoryImpl(
         localDataSource,
         remoteDataSource: remoteDataSource,

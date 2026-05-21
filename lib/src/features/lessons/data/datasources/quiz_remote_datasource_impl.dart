@@ -1,83 +1,66 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:lms_mobile_app/src/core/config/flavor_config.dart';
+import 'package:dio/dio.dart';
 import 'package:lms_mobile_app/src/core/config/constants/api_endpoints.dart';
-import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 import 'quiz_remote_datasource.dart';
 
 class QuizRemoteDataSourceImpl implements QuizRemoteDataSource {
-  final http.Client client;
+  final Dio dio;
 
-  QuizRemoteDataSourceImpl({required this.client});
+  QuizRemoteDataSourceImpl({required this.dio});
 
   @override
   Future<String> startQuizAttempt(String quizId) async {
-    final baseUrl = FlavorConfig.instance.apiBaseUrl;
     final startEndpoint = ApiEndpoints.startQuizAttempt.replaceFirst(
       '{quiz}',
       quizId,
     );
-    final startUrl = Uri.parse('$baseUrl$startEndpoint');
-
-    final startResp = await client.post(startUrl, headers: _authHeaders());
-    if (!(startResp.statusCode == 200 || startResp.statusCode == 201)) {
-      throw Exception('Start attempt failed ${startResp.statusCode}');
+    try {
+      final startResp = await dio.post(startEndpoint);
+      final jsonResponse = startResp.data as Map<String, dynamic>;
+      final data = jsonResponse['data'];
+      if (data is Map<String, dynamic>) {
+        return data['attemptId']?.toString() ?? '';
+      }
+      return '';
+    } on DioException catch (error) {
+      throw Exception(_extractErrorMessage(error, 'Start attempt failed'));
     }
-    final jsonResponse = json.decode(startResp.body) as Map<String, dynamic>;
-    return jsonResponse['data']?['attemptId']?.toString() ?? '';
   }
 
   @override
   Future<Map<String, dynamic>> getQuizByLessonId(String lessonId) async {
-    final baseUrl = FlavorConfig.instance.apiBaseUrl;
     final endpoint = ApiEndpoints.getQuizByLesson.replaceFirst(
       '{id}',
       lessonId,
     );
-    final url = Uri.parse('$baseUrl$endpoint');
+    try {
+      final response = await dio.get(endpoint);
+      final jsonResp = response.data as Map<String, dynamic>;
+      final data = jsonResp['data'] as Map<String, dynamic>;
 
-    final response = await client.get(url);
-    if (response.statusCode != 200) {
-      // Try to extract error message from response
-      String errorMessage =
-          'Gagal memanggil API quiz: HTTP ${response.statusCode}';
-      try {
-        final Map<String, dynamic> errorResp =
-            json.decode(response.body) as Map<String, dynamic>;
-        if (errorResp.containsKey('message')) {
-          errorMessage = errorResp['message'].toString();
-        }
-      } catch (_) {
-        // Keep default error message if response parsing fails
-      }
-      throw Exception(errorMessage);
+      return {
+        'title': data['title'] ?? '',
+        'totalQuestions': data['totalQuestions'] ?? 0,
+        'timeLimit': data['timeLimit'] ?? 0,
+        'passingScore': data['passingScore'] ?? 0,
+        'questions': (data['questions'] as List<dynamic>).map((q) {
+          return {
+            'id': q['id'].toString(),
+            'text': q['text'],
+            'options': (q['options'] as List<dynamic>)
+                .map((o) => o['text'])
+                .toList(),
+            'optionIds': (q['options'] as List<dynamic>)
+                .map((o) => o['id'].toString())
+                .toList(),
+            'correctIndex': q.containsKey('correctIndex')
+                ? q['correctIndex']
+                : null,
+          };
+        }).toList(),
+      };
+    } on DioException catch (error) {
+      throw Exception(_extractErrorMessage(error, 'Gagal memanggil API quiz'));
     }
-
-    final Map<String, dynamic> jsonResp =
-        json.decode(response.body) as Map<String, dynamic>;
-    final data = jsonResp['data'] as Map<String, dynamic>;
-
-    return {
-      'title': data['title'] ?? '',
-      'totalQuestions': data['totalQuestions'] ?? 0,
-      'timeLimit': data['timeLimit'] ?? 0,
-      'passingScore': data['passingScore'] ?? 0,
-      'questions': (data['questions'] as List<dynamic>).map((q) {
-        return {
-          'id': q['id'].toString(),
-          'text': q['text'],
-          'options': (q['options'] as List<dynamic>)
-              .map((o) => o['text'])
-              .toList(),
-          'optionIds': (q['options'] as List<dynamic>)
-              .map((o) => o['id'].toString())
-              .toList(),
-          'correctIndex': q.containsKey('correctIndex')
-              ? q['correctIndex']
-              : null,
-        };
-      }).toList(),
-    };
   }
 
   @override
@@ -86,35 +69,30 @@ class QuizRemoteDataSourceImpl implements QuizRemoteDataSource {
     String attemptId,
     List<Map<String, dynamic>> answers,
   ) async {
-    final baseUrl = FlavorConfig.instance.apiBaseUrl;
     final submitEndpoint = ApiEndpoints.submitQuizAttempt
         .replaceFirst('{quiz}', quizId)
         .replaceFirst('{attempt}', attemptId);
-    final submitUrl = Uri.parse('$baseUrl$submitEndpoint');
-
-    final submitResp = await client.post(
-      submitUrl,
-      headers: _authHeaders(),
-      body: json.encode({'answers': answers}),
-    );
-
-    if (submitResp.statusCode != 200)
-      throw Exception('Submit failed ${submitResp.statusCode}');
-    final jsonResponse = json.decode(submitResp.body) as Map<String, dynamic>;
-    return jsonResponse['data'] as Map<String, dynamic>;
+    try {
+      final submitResp = await dio.post(
+        submitEndpoint,
+        data: {'answers': answers},
+      );
+      final jsonResponse = submitResp.data as Map<String, dynamic>;
+      return jsonResponse['data'] as Map<String, dynamic>;
+    } on DioException catch (error) {
+      throw Exception(_extractErrorMessage(error, 'Submit failed'));
+    }
   }
 
-  Map<String, String> _authHeaders() {
-    final headers = <String, String>{
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    };
-
-    final token = LocalStorage.getAuthToken();
-    if (token != null && token.isNotEmpty) {
-      headers['Authorization'] = 'Bearer $token';
+  String _extractErrorMessage(DioException error, String fallback) {
+    final data = error.response?.data;
+    if (data is Map<String, dynamic>) {
+      final message = data['message']?.toString().trim();
+      if (message != null && message.isNotEmpty) {
+        return message;
+      }
     }
 
-    return headers;
+    return fallback;
   }
 }

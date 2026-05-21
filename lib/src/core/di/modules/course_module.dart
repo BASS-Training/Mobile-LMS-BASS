@@ -1,5 +1,6 @@
 // Course module - dependency injection untuk course feature
 // Berisi: CourseRepository, DataSources, UseCases, BLoC
+import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lms_mobile_app/src/features/courses/data/repositories/course_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/courses/data/datasources/course_local_data_source.dart';
@@ -15,7 +16,6 @@ import 'package:lms_mobile_app/src/features/courses/domain/usecases/search_cours
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/toggle_save_course_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/watch_courses_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
-import 'package:http/http.dart' as http;
 
 class CourseModule {
   /// Register semua course dependencies
@@ -28,7 +28,7 @@ class CourseModule {
     final CourseLocalDataSource courseLocalDataSource =
         CourseLocalDataSourceImpl();
     final CourseRemoteDataSource courseRemoteDataSource =
-        CourseRemoteDataSourceImpl(client: http.Client());
+        CourseRemoteDataSourceImpl(dio: getIt<Dio>());
 
     // Repository
     final CourseRepository courseRepository = CourseRepositoryImpl(

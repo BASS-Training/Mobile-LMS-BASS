@@ -1,40 +1,29 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'package:lms_mobile_app/src/core/config/constants/api_endpoints.dart';
-import 'package:lms_mobile_app/src/core/config/flavor_config.dart';
 import '../models/course.dart';
 import 'course_remote_data_source.dart';
 
 class CourseRemoteDataSourceImpl implements CourseRemoteDataSource {
-  final http.Client client;
+  final Dio dio;
 
-  CourseRemoteDataSourceImpl({required this.client});
+  CourseRemoteDataSourceImpl({required this.dio});
 
   @override
   Future<List<Course>> getCourses() async {
     try {
-      // 1. Ambil Base URL dari Flavor yang sedang aktif (Dev/Prod)
-      final baseUrl = FlavorConfig.instance.apiBaseUrl;
+      final response = await dio.get(ApiEndpoints.getCourses);
+      final data = response.data as Map<String, dynamic>;
+      final List<dynamic> courseList = data['data'] as List<dynamic>? ?? [];
 
-      // 2. Gabungkan dengan endpoint /courses (Hasilnya: http://127.0.0.1:8000/api/mobile/courses)
-      final url = Uri.parse('$baseUrl${ApiEndpoints.getCourses}');
-
-      final response = await client.get(url);
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = json.decode(response.body);
-        final List<dynamic> courseList = jsonResponse['data'];
-
-        return courseList.map((json) {
-          // PASTIKAN ID DIUBAH KE STRING (Karena MySQL kirim angka/int, sedangkan Dart butuh String)
-          json['id'] = json['id'].toString();
-          return Course.fromJson(json);
-        }).toList();
-      } else {
-        throw Exception(
-          'Gagal mengambil data dari Server: ${response.statusCode}',
-        );
-      }
+      return courseList.map((courseJson) {
+        final json = Map<String, dynamic>.from(courseJson as Map);
+        json['id'] = json['id'].toString();
+        return Course.fromJson(json);
+      }).toList();
+    } on DioException catch (error) {
+      throw Exception(
+        _extractErrorMessage(error, 'Terjadi kesalahan jaringan'),
+      );
     } catch (e) {
       throw Exception('Terjadi kesalahan jaringan: $e');
     }
@@ -83,5 +72,17 @@ class CourseRemoteDataSourceImpl implements CourseRemoteDataSource {
   @override
   Future<List<Course>> getSavedCourses() async {
     throw UnimplementedError('Saved courses masih local-only');
+  }
+
+  String _extractErrorMessage(DioException error, String fallback) {
+    final data = error.response?.data;
+    if (data is Map<String, dynamic>) {
+      final message = data['message']?.toString().trim();
+      if (message != null && message.isNotEmpty) {
+        return message;
+      }
+    }
+
+    return fallback;
   }
 }

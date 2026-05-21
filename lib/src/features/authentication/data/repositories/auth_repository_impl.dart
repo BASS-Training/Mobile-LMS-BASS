@@ -1,8 +1,5 @@
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'package:lms_mobile_app/src/core/config/constants/api_endpoints.dart';
-import 'package:lms_mobile_app/src/core/config/flavor_config.dart';
 import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -10,9 +7,9 @@ import '../mappers/user_mapper.dart';
 import '../models/user.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  final http.Client _client;
+  final Dio _dio;
 
-  AuthRepositoryImpl({http.Client? client}) : _client = client ?? http.Client();
+  AuthRepositoryImpl({required Dio dio}) : _dio = dio;
 
   @override
   Future<UserEntity?> login(String email, String password) async {
@@ -21,18 +18,17 @@ class AuthRepositoryImpl implements AuthRepository {
       return null;
     }
 
-    final response = await _client.post(
-      Uri.parse('${FlavorConfig.instance.apiBaseUrl}${ApiEndpoints.login}'),
-      headers: _jsonHeaders(),
-      body: jsonEncode({'email': cleanedEmail, 'password': password}),
-    );
+    try {
+      final response = await _dio.post(
+        ApiEndpoints.login,
+        data: {'email': cleanedEmail, 'password': password},
+      );
 
-    final payload = _decodeResponse(response.body);
-    if (!_isSuccessStatus(response.statusCode)) {
-      throw Exception(_extractMessage(payload, 'Login gagal.'));
+      final payload = _decodeResponse(response.data);
+      return _persistSessionFromPayload(payload);
+    } on DioException catch (error) {
+      throw Exception(_extractMessageFromException(error, 'Login gagal.'));
     }
-
-    return _persistSessionFromPayload(payload);
   }
 
   @override
@@ -48,39 +44,30 @@ class AuthRepositoryImpl implements AuthRepository {
       return null;
     }
 
-    final response = await _client.post(
-      Uri.parse('${FlavorConfig.instance.apiBaseUrl}${ApiEndpoints.register}'),
-      headers: _jsonHeaders(),
-      body: jsonEncode({
-        'name': cleanedName,
-        'email': cleanedEmail,
-        'password': password,
-        'role': role,
-      }),
-    );
+    try {
+      final response = await _dio.post(
+        ApiEndpoints.register,
+        data: {
+          'name': cleanedName,
+          'email': cleanedEmail,
+          'password': password,
+          'role': role,
+        },
+      );
 
-    final payload = _decodeResponse(response.body);
-    if (!_isSuccessStatus(response.statusCode)) {
-      throw Exception(_extractMessage(payload, 'Register gagal.'));
+      final payload = _decodeResponse(response.data);
+      return _persistSessionFromPayload(payload);
+    } on DioException catch (error) {
+      throw Exception(_extractMessageFromException(error, 'Register gagal.'));
     }
-
-    return _persistSessionFromPayload(payload);
   }
 
   @override
   Future<void> logout() async {
-    final token = LocalStorage.getAuthToken();
-    if (token != null) {
-      try {
-        await _client.post(
-          Uri.parse(
-            '${FlavorConfig.instance.apiBaseUrl}${ApiEndpoints.logout}',
-          ),
-          headers: _jsonHeaders(token: token),
-        );
-      } catch (_) {
-        // Best effort logout; local session still cleared below.
-      }
+    try {
+      await _dio.post(ApiEndpoints.logout);
+    } on DioException {
+      // Best effort logout; local session still cleared below.
     }
 
     await LocalStorage.clearAuthSession();
@@ -100,19 +87,8 @@ class AuthRepositoryImpl implements AuthRepository {
     }
 
     try {
-      final response = await _client.get(
-        Uri.parse(
-          '${FlavorConfig.instance.apiBaseUrl}${ApiEndpoints.getCurrentUser}',
-        ),
-        headers: _jsonHeaders(token: token),
-      );
-
-      final payload = _decodeResponse(response.body);
-      if (!_isSuccessStatus(response.statusCode)) {
-        await LocalStorage.clearAuthSession();
-        return null;
-      }
-
+      final response = await _dio.get(ApiEndpoints.getCurrentUser);
+      final payload = _decodeResponse(response.data);
       final data = payload['data'];
       if (data is Map<String, dynamic>) {
         final user = _normalizeUser(
@@ -123,6 +99,9 @@ class AuthRepositoryImpl implements AuthRepository {
         await LocalStorage.saveAuthSession(token: token, user: user.toJson());
         return UserMapper.toDomain(user);
       }
+    } on DioException catch (_) {
+      await LocalStorage.clearAuthSession();
+      return null;
     } catch (_) {
       return UserMapper.toDomain(User.fromJson(storedUser));
     }
@@ -175,36 +154,26 @@ class AuthRepositoryImpl implements AuthRepository {
     );
   }
 
-  Map<String, dynamic> _decodeResponse(String body) {
-    try {
-      final decoded = jsonDecode(body);
-      if (decoded is Map<String, dynamic>) {
-        return decoded;
-      }
-      if (decoded is Map) {
-        return decoded.map((key, value) => MapEntry(key.toString(), value));
-      }
-    } catch (_) {}
+  Map<String, dynamic> _decodeResponse(dynamic body) {
+    if (body is Map<String, dynamic>) {
+      return body;
+    }
+    if (body is Map) {
+      return body.map((key, value) => MapEntry(key.toString(), value));
+    }
     return <String, dynamic>{};
   }
 
-  Map<String, String> _jsonHeaders({String? token}) {
-    final headers = <String, String>{
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    };
-    if (token != null && token.isNotEmpty) {
-      headers['Authorization'] = 'Bearer $token';
+  String _extractMessageFromException(DioException error, String fallback) {
+    final data = error.response?.data;
+    if (data is Map<String, dynamic>) {
+      final message = data['message']?.toString().trim();
+      if (message != null && message.isNotEmpty) {
+        return message;
+      }
     }
-    return headers;
-  }
 
-  bool _isSuccessStatus(int statusCode) {
-    return statusCode == 200 || statusCode == 201;
-  }
-
-  String _extractMessage(Map<String, dynamic> payload, String fallback) {
-    final message = payload['message']?.toString().trim();
+    final message = error.message?.trim();
     return message != null && message.isNotEmpty ? message : fallback;
   }
 }

@@ -1,5 +1,6 @@
 // Auth module - dependency injection untuk authentication feature
 // Berisi: AuthRepository, DataSources, UseCases, BLoC
+import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lms_mobile_app/src/features/authentication/data/repositories/auth_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/authentication/domain/repositories/auth_repository.dart';
@@ -14,7 +15,7 @@ class AuthModule {
     }
 
     // Data Layer
-    final AuthRepository authRepository = AuthRepositoryImpl();
+    final AuthRepository authRepository = AuthRepositoryImpl(dio: getIt<Dio>());
 
     // Use Cases
     final loginUseCase = LoginUseCase(authRepository);

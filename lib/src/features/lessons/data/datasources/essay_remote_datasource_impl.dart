@@ -1,49 +1,44 @@
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'package:lms_mobile_app/src/core/config/constants/api_endpoints.dart';
-import 'package:lms_mobile_app/src/core/config/flavor_config.dart';
-import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/essay_remote_datasource.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/essay_question_entity.dart';
 
 class EssayRemoteDataSourceImpl implements EssayRemoteDataSource {
-  final http.Client client;
+  final Dio dio;
 
-  EssayRemoteDataSourceImpl({required this.client});
+  EssayRemoteDataSourceImpl({required this.dio});
 
   @override
   Future<List<EssayQuestionEntity>> getQuestionsByLessonId(
     String lessonId,
   ) async {
-    final baseUrl = FlavorConfig.instance.apiBaseUrl;
-    final endpoint = ApiEndpoints.getEssayByLesson.replaceFirst(
-      '{id}',
-      lessonId,
-    );
-    final url = Uri.parse('$baseUrl$endpoint');
+    try {
+      final endpoint = ApiEndpoints.getEssayByLesson.replaceFirst(
+        '{id}',
+        lessonId,
+      );
+      final response = await dio.get(endpoint);
+      final jsonResp = response.data as Map<String, dynamic>;
+      final data = jsonResp['data'] as Map<String, dynamic>;
+      final questions = (data['questions'] as List<dynamic>? ?? const []);
 
-    final response = await client.get(url);
-    if (response.statusCode != 200) {
-      throw Exception('Gagal memuat soal essay: HTTP ${response.statusCode}');
+      return questions
+          .whereType<Map<String, dynamic>>()
+          .map(
+            (question) => EssayQuestionEntity(
+              id: question['id']?.toString() ?? '',
+              text: question['text']?.toString() ?? '',
+              order: (question['order'] as num?)?.toInt() ?? 0,
+              maxScore: (question['maxScore'] as num?)?.toInt() ?? 1,
+            ),
+          )
+          .where(
+            (question) => question.id.isNotEmpty && question.text.isNotEmpty,
+          )
+          .toList();
+    } on DioException catch (error) {
+      throw Exception(_extractErrorMessage(error, 'Gagal memuat soal essay'));
     }
-
-    final jsonResp = json.decode(response.body) as Map<String, dynamic>;
-    final data = jsonResp['data'] as Map<String, dynamic>;
-    final questions = (data['questions'] as List<dynamic>? ?? const []);
-
-    return questions
-        .whereType<Map<String, dynamic>>()
-        .map(
-          (question) => EssayQuestionEntity(
-            id: question['id']?.toString() ?? '',
-            text: question['text']?.toString() ?? '',
-            order: (question['order'] as num?)?.toInt() ?? 0,
-            maxScore: (question['maxScore'] as num?)?.toInt() ?? 1,
-          ),
-        )
-        .where((question) => question.id.isNotEmpty && question.text.isNotEmpty)
-        .toList();
   }
 
   @override
@@ -52,32 +47,28 @@ class EssayRemoteDataSourceImpl implements EssayRemoteDataSource {
     required List<Map<String, dynamic>> answers,
     String? userEmail,
   }) async {
-    final baseUrl = FlavorConfig.instance.apiBaseUrl;
     final endpoint = ApiEndpoints.submitEssay.replaceFirst('{id}', lessonId);
-    final url = Uri.parse('$baseUrl$endpoint');
+    try {
+      final response = await dio.post(endpoint, data: {'answers': answers});
 
-    final payload = <String, dynamic>{'answers': answers};
+      final jsonResp = response.data as Map<String, dynamic>;
+      return jsonResp['data'] as Map<String, dynamic>;
+    } on DioException catch (error) {
+      throw Exception(
+        _extractErrorMessage(error, 'Gagal mengirim jawaban essay'),
+      );
+    }
+  }
 
-    final response = await client.post(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        if (LocalStorage.getAuthToken() != null)
-          'Authorization': 'Bearer ${LocalStorage.getAuthToken()}',
-      },
-      body: json.encode(payload),
-    );
-
-    if (response.statusCode != 200 && response.statusCode != 201) {
-      String errorMessage = 'Gagal mengirim jawaban essay';
-      try {
-        final errorResp = json.decode(response.body) as Map<String, dynamic>;
-        errorMessage = errorResp['message']?.toString() ?? errorMessage;
-      } catch (_) {}
-      throw Exception(errorMessage);
+  String _extractErrorMessage(DioException error, String fallback) {
+    final data = error.response?.data;
+    if (data is Map<String, dynamic>) {
+      final message = data['message']?.toString().trim();
+      if (message != null && message.isNotEmpty) {
+        return message;
+      }
     }
 
-    final jsonResp = json.decode(response.body) as Map<String, dynamic>;
-    return jsonResp['data'] as Map<String, dynamic>;
+    return fallback;
   }
 }

@@ -3,6 +3,7 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lms_mobile_app/src/core/config/flavor_config.dart';
+import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 
 class NetworkModule {
   /// Register network dependencies
@@ -27,12 +28,25 @@ class NetworkModule {
 
     final dio = Dio(baseOptions);
 
-    // Add interceptors di sini
+    dio.interceptors.add(AuthInterceptor());
+
     if (config.enableLogging) {
       dio.interceptors.add(LoggingInterceptor());
     }
 
     return dio;
+  }
+}
+
+class AuthInterceptor extends Interceptor {
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    final token = LocalStorage.getAuthToken();
+    if (token != null && token.isNotEmpty) {
+      options.headers['Authorization'] = 'Bearer $token';
+    }
+
+    super.onRequest(options, handler);
   }
 }
 
