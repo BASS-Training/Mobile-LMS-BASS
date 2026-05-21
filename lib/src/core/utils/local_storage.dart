@@ -9,6 +9,7 @@ class LocalStorage {
   static const String _lessonAttemptPrefix = 'lesson_attempts_';
   static const String _authTokenKey = 'auth_token';
   static const String _authUserKey = 'auth_user';
+  static const String _introSeenKey = 'intro_seen';
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -81,6 +82,14 @@ class LocalStorage {
   static Future<void> clearAuthSession() async {
     await _box.delete(_authTokenKey);
     await _box.delete(_authUserKey);
+  }
+
+  static bool hasSeenIntro() {
+    return _box.get(_introSeenKey, defaultValue: false) == true;
+  }
+
+  static Future<void> markIntroSeen() async {
+    await _box.put(_introSeenKey, true);
   }
 
   // Get progress statistics

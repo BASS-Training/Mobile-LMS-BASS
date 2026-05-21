@@ -1,6 +1,9 @@
 /// Route name constants
 /// Digunakan untuk navigation di seluruh app
 class AppRoutes {
+  // Intro
+  static const String intro = '/intro';
+
   // Auth
   static const String login = '/login';
   static const String register = '/register';

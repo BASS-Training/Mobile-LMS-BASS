@@ -9,6 +9,7 @@ import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/aut
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_state.dart';
 
 // Screen imports
+import 'package:lms_mobile_app/src/features/authentication/presentation/screens/intro_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/login_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/register_screen.dart';
 import 'package:lms_mobile_app/src/features/main/presentation/screens/main_screen.dart';
@@ -41,18 +42,19 @@ class AppRouter {
 
   static final GoRouter router = GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: AppRoutes.login,
+    initialLocation: AppRoutes.intro,
     refreshListenable: _GoRouterRefreshStream(_authBloc.stream),
     redirect: (context, state) {
       final authState = _authBloc.state;
       final isOnAuthRoute =
+          state.matchedLocation == AppRoutes.intro ||
           state.matchedLocation == AppRoutes.login ||
           state.matchedLocation == AppRoutes.register;
 
       final isAuthenticated = authState is AuthSuccess;
 
       if (!isAuthenticated && !isOnAuthRoute) {
-        return AppRoutes.login;
+        return AppRoutes.intro;
       }
 
       if (isAuthenticated && isOnAuthRoute) {
@@ -62,6 +64,10 @@ class AppRouter {
       return null;
     },
     routes: [
+      GoRoute(
+        path: AppRoutes.intro,
+        builder: (context, state) => const IntroScreen(),
+      ),
       GoRoute(
         path: AppRoutes.login,
         builder: (context, state) => const LoginScreen(),

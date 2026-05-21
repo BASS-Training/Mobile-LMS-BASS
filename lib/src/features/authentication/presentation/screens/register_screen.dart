@@ -202,7 +202,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [AppColors.red, Color(0xFF8F1111)],
+              colors: [Color(0xFFFFF7F5), Color(0xFFFFFFFF), Color(0xFFFFEAEA)],
             ),
           ),
           child: SafeArea(
@@ -250,8 +250,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: const Text(
                           'Sudah punya akun? Masuk di sini',
                           style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
+                            color: AppColors.red,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
@@ -267,47 +267,141 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Widget _buildHeader() {
-    return Column(
-      children: [
-        Container(
-          width: 96,
-          height: 96,
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.14),
-            shape: BoxShape.circle,
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.red.withValues(alpha: 0.95),
+            const Color(0xFF9E1117),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(32),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.red.withValues(alpha: 0.18),
+            blurRadius: 24,
+            offset: const Offset(0, 14),
           ),
-          alignment: Alignment.center,
-          child: Image.asset(
-            'assets/images/bass_logo2.png',
-            width: 68,
-            height: 68,
-            fit: BoxFit.contain,
-            semanticLabel: AppStrings.appName,
-            errorBuilder: (context, error, stackTrace) => const Icon(
-              Icons.school_outlined,
-              size: 44,
-              color: Colors.white,
+        ],
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            top: -28,
+            right: -20,
+            child: Container(
+              width: 92,
+              height: 92,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.12),
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          AppStrings.appName,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontSize: 30,
-            fontWeight: FontWeight.w800,
-            color: Colors.white,
-            letterSpacing: 0.3,
+          Positioned(
+            bottom: -34,
+            left: -8,
+            child: Container(
+              width: 76,
+              height: 76,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.10),
+              ),
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-        const Text(
-          'Buat akun baru untuk masuk ke web dan mobile dengan database yang sama.',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 14, color: Colors.white70, height: 1.4),
-        ),
-      ],
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 58,
+                    height: 58,
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    child: Image.asset(
+                      'assets/images/bass_logo2.png',
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) => const Icon(
+                        Icons.school_outlined,
+                        color: AppColors.red,
+                        size: 30,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Daftar Akun Baru',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          'Satu akun Laravel untuk web dan mobile dengan data yang sama.',
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 12.5,
+                            height: 1.35,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.14),
+                  ),
+                ),
+                child: const Row(
+                  children: [
+                    Expanded(
+                      child: _HeaderBadge(
+                        icon: Icons.person_outline,
+                        label: 'Data akun',
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: _HeaderBadge(
+                        icon: Icons.badge_outlined,
+                        label: 'Data diri',
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: _HeaderBadge(
+                        icon: Icons.work_outline,
+                        label: 'Pekerjaan',
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -990,6 +1084,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ),
           ),
+      ],
+    );
+  }
+}
+
+class _HeaderBadge extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _HeaderBadge({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Icon(icon, color: Colors.white, size: 20),
+        const SizedBox(height: 6),
+        Text(
+          label,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
       ],
     );
   }
