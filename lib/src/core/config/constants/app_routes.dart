@@ -5,6 +5,7 @@ class AppRoutes {
   static const String intro = '/intro';
 
   // Auth
+  static const String authHub = '/auth-hub';
   static const String login = '/login';
   static const String register = '/register';
 
