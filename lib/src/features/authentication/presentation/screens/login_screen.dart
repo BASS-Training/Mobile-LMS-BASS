@@ -240,59 +240,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               },
                             ),
                             SizedBox(height: 16),
-                            // Divider
-                            // Row(
-                            //   children: [
-                            //     Expanded(child: Divider()),
-                            //     Padding(
-                            //       padding: EdgeInsets.symmetric(horizontal: 8),
-                            //       child: Text(
-                            //         'OR',
-                            //         style: TextStyle(color: AppColors.silver),
-                            //       ),
-                            //     ),
-                            //     Expanded(child: Divider()),
-                            //   ],
-                            // ),
-                            // SizedBox(height: 16),
-                            // Demo credentials hint
-                            // Container(
-                            //   padding: EdgeInsets.all(12),
-                            //   decoration: BoxDecoration(
-                            //     color: AppColors.mist,
-                            //     borderRadius: BorderRadius.circular(8),
-                            //     border: Border.all(color: AppColors.pearl),
-                            //   ),
-                            //   child: Column(
-                            //     crossAxisAlignment: CrossAxisAlignment.start,
-                            //     children: [
-                            //       Text(
-                            //         'Demo Credentials:',
-                            //         style: TextStyle(
-                            //           fontSize: 12,
-                            //           fontWeight: FontWeight.w600,
-                            //           color: AppColors.charcoal,
-                            //         ),
-                            //       ),
-                            //       SizedBox(height: 4),
-                            //       Text(
-                            //         'Email: demo@example.com\nPassword: demo123',
-                            //         style: TextStyle(
-                            //           fontSize: 11,
-                            //           color: AppColors.slate,
-                            //         ),
-                            //       ),
-                            //       SizedBox(height: 8),
-                            //       Text(
-                            //         'Akun instruktur akan dibedakan dari role di Laravel.',
-                            //         style: TextStyle(
-                            //           fontSize: 11,
-                            //           color: AppColors.slate,
-                            //         ),
-                            //       ),
-                            //     ],
-                            //   ),
-                            // ),
+                            
                           ],
                         ),
                       ),

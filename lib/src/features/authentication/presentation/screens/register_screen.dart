@@ -8,7 +8,6 @@ import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/aut
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_event.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_state.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
-import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
