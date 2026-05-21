@@ -8,7 +8,6 @@ import 'package:lms_mobile_app/src/core/config/flavor_config.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_theme.dart';
 import 'package:lms_mobile_app/src/core/di/injector.dart';
 import 'package:lms_mobile_app/src/core/routes/app_router.dart';
-import 'package:lms_mobile_app/src/core/services/firebase_initializer.dart';
 
 // Domain Entities
 // BLoCs
@@ -37,8 +36,6 @@ void main() async {
       enableMockData: DevelopmentFlavorConfig.config.enableMockData,
     );
   }
-
-  await FirebaseInitializer.ensureInitialized();
 
   // Initialize Service Locator (which includes CoreModule init)
   final serviceLocator = ServiceLocator();

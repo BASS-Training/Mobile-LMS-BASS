@@ -40,7 +40,10 @@ class _CourseListScreenState extends State<CourseListScreen> {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, authState) {
         final isInstructor =
-            authState is AuthSuccess && authState.user.role == 'instructor';
+            authState is AuthSuccess &&
+            (authState.user.hasRole('instructor') ||
+                authState.user.hasRole('admin') ||
+                authState.user.hasRole('super-admin'));
 
         return Scaffold(
           backgroundColor: Colors.transparent,
@@ -87,7 +90,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: const Text(
-                        'Mode instruktur aktif. Tambah kursus baru akan langsung tersinkron ke peserta lewat Firestore.',
+                        'Mode pengelola aktif. Tambah kursus baru akan langsung tersinkron ke peserta lewat Laravel.',
                         style: TextStyle(color: Colors.white, fontSize: 12),
                       ),
                     ),
@@ -180,7 +183,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
                                     child: const Icon(
                                       Icons.search_off_rounded,
                                       size: 48,
-                                      color: AppColors.cherry,
+                                      color: AppColors.violet,
                                     ),
                                   ),
                                   const SizedBox(height: 16),
@@ -385,7 +388,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
       scaffoldMessenger.showSnackBar(
         const SnackBar(
           content: Text(
-            'Kursus dikirim ke Firestore dan akan tersinkron ke peserta.',
+            'Kursus dikirim ke Laravel dan akan tersinkron ke peserta.',
           ),
           backgroundColor: AppColors.emerald,
         ),

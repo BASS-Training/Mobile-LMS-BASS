@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:lms_mobile_app/src/core/config/constants/api_endpoints.dart';
 import 'package:lms_mobile_app/src/core/config/flavor_config.dart';
+import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/essay_remote_datasource.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/essay_question_entity.dart';
 
@@ -56,13 +57,14 @@ class EssayRemoteDataSourceImpl implements EssayRemoteDataSource {
     final url = Uri.parse('$baseUrl$endpoint');
 
     final payload = <String, dynamic>{'answers': answers};
-    if (userEmail != null && userEmail.trim().isNotEmpty) {
-      payload['user_email'] = userEmail.trim();
-    }
 
     final response = await client.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: {
+        'Content-Type': 'application/json',
+        if (LocalStorage.getAuthToken() != null)
+          'Authorization': 'Bearer ${LocalStorage.getAuthToken()}',
+      },
       body: json.encode(payload),
     );
 

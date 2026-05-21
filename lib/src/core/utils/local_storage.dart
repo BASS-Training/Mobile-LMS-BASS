@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:hive_flutter/hive_flutter.dart';
 
 class LocalStorage {
@@ -5,6 +7,8 @@ class LocalStorage {
   static const String _completedLessonsKey = 'completed_lessons';
   static const String _essayDraftPrefix = 'essay_draft_';
   static const String _lessonAttemptPrefix = 'lesson_attempts_';
+  static const String _authTokenKey = 'auth_token';
+  static const String _authUserKey = 'auth_user';
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -43,6 +47,40 @@ class LocalStorage {
   // Clear all completed lessons
   static Future<void> clearAllProgress() async {
     await _box.delete(_completedLessonsKey);
+  }
+
+  static Future<void> saveAuthSession({
+    required String token,
+    required Map<String, dynamic> user,
+  }) async {
+    await _box.put(_authTokenKey, token);
+    await _box.put(_authUserKey, jsonEncode(user));
+  }
+
+  static String? getAuthToken() {
+    final token = _box.get(_authTokenKey);
+    return token is String && token.isNotEmpty ? token : null;
+  }
+
+  static Map<String, dynamic>? getAuthUser() {
+    final raw = _box.get(_authUserKey);
+    if (raw is! String || raw.isEmpty) {
+      return null;
+    }
+
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is Map) {
+        return decoded.map((key, value) => MapEntry(key.toString(), value));
+      }
+    } catch (_) {}
+
+    return null;
+  }
+
+  static Future<void> clearAuthSession() async {
+    await _box.delete(_authTokenKey);
+    await _box.delete(_authUserKey);
   }
 
   // Get progress statistics

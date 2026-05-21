@@ -54,11 +54,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
           if (state is AuthRegisterSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Akun berhasil dibuat. Silakan login.'),
+                content: Text('Akun berhasil dibuat. Masuk ke aplikasi...'),
                 backgroundColor: AppColors.emerald,
               ),
             );
-            context.go(AppRoutes.login);
+            context.go(AppRoutes.main);
           } else if (state is AuthFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -208,7 +208,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 border: Border.all(color: AppColors.pearl),
                               ),
                               child: const Text(
-                                'Role default saat register adalah peserta. Akun instruktur akan diaktifkan manual dari Firestore.',
+                                'Role default saat register adalah peserta. Akun instruktur akan diaktifkan manual dari dashboard Laravel.',
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: AppColors.slate,

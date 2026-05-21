@@ -284,7 +284,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             //       ),
                             //       SizedBox(height: 8),
                             //       Text(
-                            //         'Akun instruktur akan dibedakan dari role di Firestore.',
+                            //         'Akun instruktur akan dibedakan dari role di Laravel.',
                             //         style: TextStyle(
                             //           fontSize: 11,
                             //           color: AppColors.slate,

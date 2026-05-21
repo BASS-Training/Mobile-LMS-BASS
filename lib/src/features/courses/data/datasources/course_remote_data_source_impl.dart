@@ -15,10 +15,10 @@ class CourseRemoteDataSourceImpl implements CourseRemoteDataSource {
     try {
       // 1. Ambil Base URL dari Flavor yang sedang aktif (Dev/Prod)
       final baseUrl = FlavorConfig.instance.apiBaseUrl;
-      
+
       // 2. Gabungkan dengan endpoint /courses (Hasilnya: http://127.0.0.1:8000/api/mobile/courses)
       final url = Uri.parse('$baseUrl${ApiEndpoints.getCourses}');
-      
+
       final response = await client.get(url);
 
       if (response.statusCode == 200) {
@@ -27,11 +27,13 @@ class CourseRemoteDataSourceImpl implements CourseRemoteDataSource {
 
         return courseList.map((json) {
           // PASTIKAN ID DIUBAH KE STRING (Karena MySQL kirim angka/int, sedangkan Dart butuh String)
-          json['id'] = json['id'].toString(); 
+          json['id'] = json['id'].toString();
           return Course.fromJson(json);
         }).toList();
       } else {
-        throw Exception('Gagal mengambil data dari Server: ${response.statusCode}');
+        throw Exception(
+          'Gagal mengambil data dari Server: ${response.statusCode}',
+        );
       }
     } catch (e) {
       throw Exception('Terjadi kesalahan jaringan: $e');
@@ -40,7 +42,7 @@ class CourseRemoteDataSourceImpl implements CourseRemoteDataSource {
 
   @override
   Stream<List<Course>> watchCourses() async* {
-    // REST API tidak punya Realtime Stream seperti Firebase.
+    // REST API tidak punya Realtime Stream seperti Firestore.
     // Jadi kita panggil getCourses() sekali untuk mengisi stream awal.
     yield await getCourses();
   }
@@ -57,10 +59,14 @@ class CourseRemoteDataSourceImpl implements CourseRemoteDataSource {
     // Sementara kita filter manual dari semua data
     final courses = await getCourses();
     final normalized = query.toLowerCase();
-    
-    return courses.where((course) =>
-        course.title.toLowerCase().contains(normalized) ||
-        course.description.toLowerCase().contains(normalized)).toList();
+
+    return courses
+        .where(
+          (course) =>
+              course.title.toLowerCase().contains(normalized) ||
+              course.description.toLowerCase().contains(normalized),
+        )
+        .toList();
   }
 
   @override

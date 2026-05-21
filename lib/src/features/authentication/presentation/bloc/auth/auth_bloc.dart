@@ -40,7 +40,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       } else {
         emit(
           const AuthFailure(
-            message: 'Login failed. Please check your credentials.',
+            message: 'Login gagal. Periksa email dan password Laravel Anda.',
           ),
         );
       }
@@ -48,7 +48,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(
         const AuthFailure(
           message:
-              'Login is taking too long. Check your connection and Firebase setup.',
+              'Login terlalu lama. Periksa koneksi dan pastikan API Laravel aktif.',
         ),
       );
     } catch (error) {
@@ -76,15 +76,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       } else {
         emit(
           const AuthFailure(
-            message: 'Register failed. Please check your input and try again.',
+            message: 'Register gagal. Periksa input Anda dan coba lagi.',
           ),
         );
       }
     } on TimeoutException {
       emit(
         const AuthFailure(
-          message:
-              'Register is taking too long. Check Firebase/Auth/Firestore setup.',
+          message: 'Register terlalu lama. Periksa koneksi dan API Laravel.',
         ),
       );
     } catch (error) {

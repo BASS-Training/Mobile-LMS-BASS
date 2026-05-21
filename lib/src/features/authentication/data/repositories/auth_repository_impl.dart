@@ -1,54 +1,38 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'dart:convert';
 
-import 'package:lms_mobile_app/src/core/services/firebase_initializer.dart';
+import 'package:http/http.dart' as http;
+import 'package:lms_mobile_app/src/core/config/constants/api_endpoints.dart';
+import 'package:lms_mobile_app/src/core/config/flavor_config.dart';
+import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../mappers/user_mapper.dart';
 import '../models/user.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  static User? _fallbackCurrentUser;
+  final http.Client _client;
 
-  firebase_auth.FirebaseAuth get _firebaseAuth =>
-      firebase_auth.FirebaseAuth.instance;
-  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
+  AuthRepositoryImpl({http.Client? client}) : _client = client ?? http.Client();
 
   @override
   Future<UserEntity?> login(String email, String password) async {
-    final cleanedEmail = email.trim();
-    if (cleanedEmail.isEmpty ||
-        password.isEmpty ||
-        !_isValidEmail(cleanedEmail)) {
+    final cleanedEmail = email.trim().toLowerCase();
+    if (cleanedEmail.isEmpty || password.isEmpty) {
       return null;
     }
 
-    final isFirebaseReady = await _ensureFirebaseReady();
-    if (isFirebaseReady) {
-      final credential = await _firebaseAuth.signInWithEmailAndPassword(
-        email: cleanedEmail,
-        password: password,
-      );
-      final firebaseUser = credential.user;
-      if (firebaseUser == null) {
-        return null;
-      }
+    final response = await _client.post(
+      Uri.parse('${FlavorConfig.instance.apiBaseUrl}${ApiEndpoints.login}'),
+      headers: _jsonHeaders(),
+      body: jsonEncode({'email': cleanedEmail, 'password': password}),
+    );
 
-      final user = await _loadUserProfile(
-        uid: firebaseUser.uid,
-        email: firebaseUser.email ?? cleanedEmail,
-        defaultName:
-            firebaseUser.displayName ?? _fallbackDisplayName(cleanedEmail),
-      );
-      return UserMapper.toDomain(user);
+    final payload = _decodeResponse(response.body);
+    if (!_isSuccessStatus(response.statusCode)) {
+      throw Exception(_extractMessage(payload, 'Login gagal.'));
     }
 
-    final fallbackUser = _buildFallbackUser(
-      email: cleanedEmail,
-      name: _fallbackDisplayName(cleanedEmail),
-    );
-    _fallbackCurrentUser = fallbackUser;
-    return UserMapper.toDomain(fallbackUser);
+    return _persistSessionFromPayload(payload);
   }
 
   @override
@@ -59,220 +43,168 @@ class AuthRepositoryImpl implements AuthRepository {
     String role,
   ) async {
     final cleanedName = name.trim();
-    final cleanedEmail = email.trim();
+    final cleanedEmail = email.trim().toLowerCase();
     if (cleanedName.isEmpty || cleanedEmail.isEmpty || password.isEmpty) {
       return null;
     }
 
-    final normalizedRole = _normalizeRole(role);
-    final isFirebaseReady = await _ensureFirebaseReady();
-    if (isFirebaseReady) {
-      final credential = await _firebaseAuth.createUserWithEmailAndPassword(
-        email: cleanedEmail,
-        password: password,
-      );
-      final firebaseUser = credential.user;
-      if (firebaseUser == null) {
-        return null;
-      }
+    final response = await _client.post(
+      Uri.parse('${FlavorConfig.instance.apiBaseUrl}${ApiEndpoints.register}'),
+      headers: _jsonHeaders(),
+      body: jsonEncode({
+        'name': cleanedName,
+        'email': cleanedEmail,
+        'password': password,
+        'role': role,
+      }),
+    );
 
-      await firebaseUser.updateDisplayName(cleanedName);
-      final user = User(
-        id: firebaseUser.uid,
-        name: cleanedName,
-        email: cleanedEmail,
-        role: normalizedRole,
-      );
-
-      _saveUserProfileBestEffort(user);
-      return UserMapper.toDomain(user);
+    final payload = _decodeResponse(response.body);
+    if (!_isSuccessStatus(response.statusCode)) {
+      throw Exception(_extractMessage(payload, 'Register gagal.'));
     }
 
-    final fallbackUser = User(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      name: cleanedName,
-      email: cleanedEmail,
-      role: normalizedRole,
-    );
-    _fallbackCurrentUser = fallbackUser;
-    return UserMapper.toDomain(fallbackUser);
+    return _persistSessionFromPayload(payload);
   }
 
   @override
   Future<void> logout() async {
-    if (await _ensureFirebaseReady()) {
-      await _firebaseAuth.signOut();
+    final token = LocalStorage.getAuthToken();
+    if (token != null) {
+      try {
+        await _client.post(
+          Uri.parse(
+            '${FlavorConfig.instance.apiBaseUrl}${ApiEndpoints.logout}',
+          ),
+          headers: _jsonHeaders(token: token),
+        );
+      } catch (_) {
+        // Best effort logout; local session still cleared below.
+      }
     }
-    _fallbackCurrentUser = null;
+
+    await LocalStorage.clearAuthSession();
   }
 
   @override
   Future<UserEntity?> getCurrentUser() async {
-    if (await _ensureFirebaseReady()) {
-      final firebaseUser = _firebaseAuth.currentUser;
-      if (firebaseUser == null) {
-        return null;
-      }
+    final storedUser = LocalStorage.getAuthUser();
+    final token = LocalStorage.getAuthToken();
 
-      final user = await _loadUserProfile(
-        uid: firebaseUser.uid,
-        email: firebaseUser.email ?? '',
-        defaultName:
-            firebaseUser.displayName ??
-            _fallbackDisplayName(firebaseUser.email ?? ''),
-      );
-      return UserMapper.toDomain(user);
-    }
-
-    if (_fallbackCurrentUser == null) {
+    if (storedUser == null) {
       return null;
     }
 
-    return UserMapper.toDomain(_fallbackCurrentUser!);
+    if (token == null) {
+      return UserMapper.toDomain(User.fromJson(storedUser));
+    }
+
+    try {
+      final response = await _client.get(
+        Uri.parse(
+          '${FlavorConfig.instance.apiBaseUrl}${ApiEndpoints.getCurrentUser}',
+        ),
+        headers: _jsonHeaders(token: token),
+      );
+
+      final payload = _decodeResponse(response.body);
+      if (!_isSuccessStatus(response.statusCode)) {
+        await LocalStorage.clearAuthSession();
+        return null;
+      }
+
+      final data = payload['data'];
+      if (data is Map<String, dynamic>) {
+        final user = _normalizeUser(
+          data['user'] is Map<String, dynamic>
+              ? data['user'] as Map<String, dynamic>
+              : data,
+        );
+        await LocalStorage.saveAuthSession(token: token, user: user.toJson());
+        return UserMapper.toDomain(user);
+      }
+    } catch (_) {
+      return UserMapper.toDomain(User.fromJson(storedUser));
+    }
+
+    return UserMapper.toDomain(User.fromJson(storedUser));
   }
 
   @override
   Stream<UserEntity?> watchCurrentUser() async* {
-    final isReady = await _ensureFirebaseReady();
-    if (!isReady) {
-      // Fallback: emit current fallback user if available, then close.
-      if (_fallbackCurrentUser != null) {
-        yield UserMapper.toDomain(_fallbackCurrentUser!);
-      } else {
-        yield null;
-      }
-      return;
+    yield await getCurrentUser();
+  }
+
+  Future<UserEntity?> _persistSessionFromPayload(
+    Map<String, dynamic> payload,
+  ) async {
+    final data = payload['data'];
+    if (data is! Map<String, dynamic>) {
+      throw Exception('Respons auth tidak valid.');
     }
 
-    await for (final firebaseUser in _firebaseAuth.authStateChanges()) {
-      if (firebaseUser == null) {
-        yield null;
-        continue;
-      }
-
-      final docStream = _firestore
-          .collection('users')
-          .doc(firebaseUser.uid)
-          .snapshots();
-      await for (final doc in docStream) {
-        if (doc.exists && doc.data() != null) {
-          final data = doc.data()!;
-          final storedName = data['name']?.toString().trim();
-          final storedEmail = data['email']?.toString().trim();
-          final user = User(
-            id: firebaseUser.uid,
-            name: storedName != null && storedName.isNotEmpty
-                ? storedName
-                : (firebaseUser.displayName ??
-                      _fallbackDisplayName(firebaseUser.email ?? '')),
-            email: storedEmail != null && storedEmail.isNotEmpty
-                ? storedEmail
-                : (firebaseUser.email ?? ''),
-            role: _normalizeRole(data['role']?.toString()),
-          );
-          yield UserMapper.toDomain(user);
-        } else {
-          final fallback = User(
-            id: firebaseUser.uid,
-            name:
-                firebaseUser.displayName ??
-                _fallbackDisplayName(firebaseUser.email ?? ''),
-            email: firebaseUser.email ?? '',
-            role: 'participant',
-          );
-          // Best-effort create the profile document if missing.
-          _firestore
-              .collection('users')
-              .doc(firebaseUser.uid)
-              .set(fallback.toJson())
-              .catchError((_) {});
-          yield UserMapper.toDomain(fallback);
-        }
-      }
-    }
-  }
-
-  bool _isValidEmail(String email) {
-    final pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
-    final regex = RegExp(pattern);
-    return regex.hasMatch(email);
-  }
-
-  Future<bool> _ensureFirebaseReady() async {
-    await FirebaseInitializer.ensureInitialized();
-    return FirebaseInitializer.isInitialized;
-  }
-
-  Future<User> _loadUserProfile({
-    required String uid,
-    required String email,
-    required String defaultName,
-  }) async {
-    final doc = await _firestore.collection('users').doc(uid).get();
-    if (doc.exists && doc.data() != null) {
-      final data = doc.data()!;
-      final storedName = data['name']?.toString().trim();
-      final storedEmail = data['email']?.toString().trim();
-      return User(
-        id: uid,
-        name: storedName != null && storedName.isNotEmpty
-            ? storedName
-            : defaultName,
-        email: storedEmail != null && storedEmail.isNotEmpty
-            ? storedEmail
-            : email,
-        role: _normalizeRole(data['role']?.toString()),
-      );
+    final token = data['token']?.toString() ?? '';
+    final userData = data['user'];
+    if (token.isEmpty || userData is! Map<String, dynamic>) {
+      throw Exception('Token atau data user tidak ditemukan.');
     }
 
-    final fallback = User(
-      id: uid,
-      name: defaultName,
-      email: email,
-      role: 'participant',
-    );
-    await _firestore
-        .collection('users')
-        .doc(uid)
-        .set(fallback.toJson())
-        .timeout(const Duration(seconds: 8));
-    return fallback;
+    final user = _normalizeUser(userData);
+    await LocalStorage.saveAuthSession(token: token, user: user.toJson());
+    return UserMapper.toDomain(user);
   }
 
-  User _buildFallbackUser({required String email, required String name}) {
+  User _normalizeUser(Map<String, dynamic> json) {
+    final rawRoles = json['roles'];
+    final roles = rawRoles is List
+        ? rawRoles
+              .map((value) => value.toString())
+              .where((value) => value.isNotEmpty)
+              .toList()
+        : <String>[];
+
     return User(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      name: name,
-      email: email,
-      role: 'participant',
+      id: json['id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
+      role:
+          json['primary_role']?.toString() ??
+          json['role']?.toString() ??
+          'participant',
+      roles: roles,
     );
   }
 
-  String _fallbackDisplayName(String email) {
-    final localPart = email.split('@').first;
-    if (localPart.isEmpty) {
-      return 'User';
-    }
-    return localPart.replaceAll('.', ' ').replaceAll('_', ' ').trim();
+  Map<String, dynamic> _decodeResponse(String body) {
+    try {
+      final decoded = jsonDecode(body);
+      if (decoded is Map<String, dynamic>) {
+        return decoded;
+      }
+      if (decoded is Map) {
+        return decoded.map((key, value) => MapEntry(key.toString(), value));
+      }
+    } catch (_) {}
+    return <String, dynamic>{};
   }
 
-  String _normalizeRole(String? role) {
-    final value = (role ?? 'participant').trim().toLowerCase();
-    if (value == 'instructor') {
-      return 'instructor';
+  Map<String, String> _jsonHeaders({String? token}) {
+    final headers = <String, String>{
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+    if (token != null && token.isNotEmpty) {
+      headers['Authorization'] = 'Bearer $token';
     }
-    return 'participant';
+    return headers;
   }
 
-  void _saveUserProfileBestEffort(User user) {
-    _firestore
-        .collection('users')
-        .doc(user.id)
-        .set(user.toJson())
-        .timeout(const Duration(seconds: 8))
-        .catchError((error) {
-          // Keep auth success even if Firestore profile write fails.
-          // The profile doc can be recreated on next login.
-        });
+  bool _isSuccessStatus(int statusCode) {
+    return statusCode == 200 || statusCode == 201;
+  }
+
+  String _extractMessage(Map<String, dynamic> payload, String fallback) {
+    final message = payload['message']?.toString().trim();
+    return message != null && message.isNotEmpty ? message : fallback;
   }
 }

@@ -62,7 +62,7 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
       onData: (courses) => CourseLoaded(courses: courses),
       onError: (error, stackTrace) {
         return const CourseFailure(
-          message: 'Failed to sync courses from Firestore',
+          message: 'Failed to sync courses from Laravel API',
         );
       },
     );
