@@ -9,6 +9,8 @@ import '../datasources/course_remote_data_source.dart';
 
 class CourseRepositoryImpl implements CourseRepository {
   static const String _offlineTestToken = 'DUMMY_OFFLINE_TOKEN_892374982374';
+  static const String _offlineTestEmail = 'tester@bass.com';
+  static const String _offlineTestEmailAlias = 'testing@bass.com';
 
   final CourseLocalDataSource localDataSource;
   final CourseRemoteDataSource remoteDataSource;
@@ -200,6 +202,20 @@ class CourseRepositoryImpl implements CourseRepository {
   }
 
   bool _isOfflineTestSession() {
-    return LocalStorage.getAuthToken() == _offlineTestToken;
+    final token = LocalStorage.getAuthToken();
+    final userEmail = LocalStorage.getAuthUser()?['email']
+        ?.toString()
+        .trim()
+        .toLowerCase();
+
+    return token == _offlineTestToken || _isOfflineTestEmail(userEmail);
+  }
+
+  bool _isOfflineTestEmail(String? email) {
+    if (email == null) {
+      return false;
+    }
+
+    return email == _offlineTestEmail || email == _offlineTestEmailAlias;
   }
 }

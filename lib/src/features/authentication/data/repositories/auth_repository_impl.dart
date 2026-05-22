@@ -8,6 +8,7 @@ import '../models/user.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   static const String _offlineTestEmail = 'tester@bass.com';
+  static const String _offlineTestEmailAlias = 'testing@bass.com';
   static const String _offlineTestPassword = 'bass123';
   static const String _offlineTestToken = 'DUMMY_OFFLINE_TOKEN_892374982374';
 
@@ -204,12 +205,20 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   bool _canUseOfflineTestAccount(String email, String password) {
-    return email == _offlineTestEmail && password == _offlineTestPassword;
+    return _isOfflineTestEmail(email) && password == _offlineTestPassword;
   }
 
   bool _isOfflineTestUser(Map<String, dynamic> user) {
     final email = user['email']?.toString().trim().toLowerCase();
-    return email == _offlineTestEmail;
+    return _isOfflineTestEmail(email);
+  }
+
+  bool _isOfflineTestEmail(String? email) {
+    if (email == null) {
+      return false;
+    }
+
+    return email == _offlineTestEmail || email == _offlineTestEmailAlias;
   }
 
   User _buildOfflineTestUser() {
