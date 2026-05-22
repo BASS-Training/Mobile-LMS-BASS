@@ -4,7 +4,7 @@ class Lesson {
   final String title;
   final String content;
   final String duration;
-  final String type; // 'video', 'document', 'quiz', 'essay'
+  final String type; // 'video', 'text', 'quiz', 'essay'
   final String? youtubeVideoId;
   bool isCompleted;
 
@@ -14,7 +14,7 @@ class Lesson {
     required this.title,
     required this.content,
     required this.duration,
-    this.type = 'document',
+    this.type = 'text',
     this.youtubeVideoId,
     this.isCompleted = false,
   });
@@ -32,7 +32,7 @@ class Lesson {
       title: json['title'] ?? '',
       content: content,
       duration: json['duration'] ?? '0 min',
-      type: json['type'] ?? 'document',
+      type: json['type'] ?? 'text',
       youtubeVideoId: videoSource,
       isCompleted: json['isCompleted'] ?? false,
     );

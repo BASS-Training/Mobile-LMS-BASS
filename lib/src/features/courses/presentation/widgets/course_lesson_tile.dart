@@ -27,7 +27,7 @@ class CourseLessonTile extends StatelessWidget {
         return Colors.orange;
       case 'essay':
         return Colors.purple;
-      case 'document':
+      case 'text':
         return Colors.green;
       default:
         return AppColors.violet;

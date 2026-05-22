@@ -18,7 +18,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/essay/essa
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/quiz/quiz_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/video/video_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/video_lesson_detail_screen.dart';
-import 'package:lms_mobile_app/src/features/lessons/presentation/screens/document_lesson_detail_screen.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/screens/text_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/quiz_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/essay_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/results_list_screen.dart';
@@ -139,7 +139,7 @@ class AppRouter {
         },
       ),
       GoRoute(
-        path: AppRoutes.documentLessonDetail,
+        path: AppRoutes.textLessonDetail,
         pageBuilder: (context, state) {
           final args = state.extra as Map<String, dynamic>;
           final lesson = args['lesson'] as LessonEntity;
@@ -147,7 +147,7 @@ class AppRouter {
           final lessonIndex = args['lessonIndex'] as int;
           return CustomTransitionPage(
             key: state.pageKey,
-            child: DocumentLessonDetailScreen(
+            child: TextLessonDetailScreen(
               lesson: lesson,
               course: course,
               lessonIndex: lessonIndex,

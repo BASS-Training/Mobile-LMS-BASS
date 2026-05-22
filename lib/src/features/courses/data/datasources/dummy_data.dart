@@ -40,7 +40,7 @@ class DummyData {
                 content:
                     'Learn the basic concepts and principles of accounting.',
                 duration: '30 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '1-1-3',
@@ -75,7 +75,7 @@ class DummyData {
                 title: 'Journal Entries',
                 content: 'Learn how to record journal entries correctly.',
                 duration: '40 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '1-2-3',
@@ -83,7 +83,7 @@ class DummyData {
                 title: 'Trial Balance',
                 content: 'Prepare and verify a trial balance.',
                 duration: '30 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '1-2-4',
@@ -118,7 +118,7 @@ class DummyData {
                 title: 'Income Statement',
                 content: 'Learn to prepare and analyze income statements.',
                 duration: '35 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '1-3-3',
@@ -126,7 +126,7 @@ class DummyData {
                 title: 'Cash Flow Statement',
                 content: 'Master cash flow analysis and preparation.',
                 duration: '35 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '1-3-4',
@@ -134,7 +134,7 @@ class DummyData {
                 title: 'Financial Analysis',
                 content: 'Analyze financial statements using ratios.',
                 duration: '45 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '1-3-5',
@@ -169,7 +169,7 @@ class DummyData {
                 title: 'Compliance & Regulations',
                 content: 'Learn about accounting standards and regulations.',
                 duration: '40 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '1-4-3',
@@ -227,7 +227,7 @@ class DummyData {
                 title: 'Agricultural History',
                 content: 'Evolution of farming from ancient to modern times.',
                 duration: '35 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '2-1-3',
@@ -235,7 +235,7 @@ class DummyData {
                 title: 'Course Overview',
                 content: 'Understanding this agriculture course structure.',
                 duration: '20 min',
-                type: 'document',
+                type: 'text',
               ),
             ],
           ),
@@ -262,7 +262,7 @@ class DummyData {
                 title: 'Soil Testing',
                 content: 'Learn soil testing methods and interpretation.',
                 duration: '35 min',
-                type: 'document',
+                type: 'text',
                 youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
@@ -271,7 +271,7 @@ class DummyData {
                 title: 'Land Preparation',
                 content: 'Prepare land for planting and crop management.',
                 duration: '40 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '2-2-4',
@@ -305,7 +305,7 @@ class DummyData {
                 title: 'Planting Techniques',
                 content: 'Master modern planting methods and spacing.',
                 duration: '40 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '2-3-3',
@@ -314,7 +314,7 @@ class DummyData {
                 content:
                     'Learn about integrated pest management and disease control.',
                 duration: '45 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '2-3-4',
@@ -322,7 +322,7 @@ class DummyData {
                 title: 'Crop Rotation',
                 content: 'Understand crop rotation strategies.',
                 duration: '30 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '2-3-5',
@@ -357,7 +357,7 @@ class DummyData {
                 title: 'Water Management',
                 content: 'Optimize water usage in agriculture.',
                 duration: '35 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '2-4-3',
@@ -366,7 +366,7 @@ class DummyData {
                 content:
                     'Discover eco-friendly practices and sustainable agriculture.',
                 duration: '50 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '2-4-4',
@@ -374,7 +374,7 @@ class DummyData {
                 title: 'Organic Farming',
                 content: 'Learn organic farming principles and practices.',
                 duration: '40 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '2-4-5',
@@ -432,7 +432,7 @@ class DummyData {
                 title: 'Economic Systems',
                 content: 'Overview of different economic systems.',
                 duration: '30 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '3-1-3',
@@ -441,7 +441,7 @@ class DummyData {
                 content:
                     'Learn scarcity, opportunity cost, and production possibility.',
                 duration: '35 min',
-                type: 'document',
+                type: 'text',
               ),
             ],
           ),
@@ -467,7 +467,7 @@ class DummyData {
                 title: 'Consumer Behavior',
                 content: 'Understand how consumers make purchasing decisions.',
                 duration: '35 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '3-2-3',
@@ -476,7 +476,7 @@ class DummyData {
                 content:
                     'Learn about competition, monopoly, and market structures.',
                 duration: '40 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '3-2-4',
@@ -511,7 +511,7 @@ class DummyData {
                 content:
                     'Learn about inflation, deflation, and unemployment rates.',
                 duration: '35 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '3-3-3',
@@ -519,7 +519,7 @@ class DummyData {
                 title: 'Monetary Policy',
                 content: 'Understand central banks and monetary policy.',
                 duration: '45 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '3-3-4',
@@ -553,7 +553,7 @@ class DummyData {
                 title: 'Exchange Rates',
                 content: 'Understand exchange rates and currency markets.',
                 duration: '35 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '3-4-3',
@@ -561,7 +561,7 @@ class DummyData {
                 title: 'Economic Development',
                 content: 'Study economic development and poverty reduction.',
                 duration: '40 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '3-4-4',
@@ -619,7 +619,7 @@ class DummyData {
                 title: 'Design History',
                 content: 'Brief history of art and design movements.',
                 duration: '40 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '4-1-3',
@@ -627,7 +627,7 @@ class DummyData {
                 title: 'Design Process',
                 content: 'Learn the design thinking and creative process.',
                 duration: '35 min',
-                type: 'document',
+                type: 'text',
               ),
             ],
           ),
@@ -653,7 +653,7 @@ class DummyData {
                 title: 'Composition',
                 content: 'Learn composition techniques and visual balance.',
                 duration: '40 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '4-2-3',
@@ -661,7 +661,7 @@ class DummyData {
                 title: 'Visual Hierarchy',
                 content: 'Understand visual hierarchy and emphasis in design.',
                 duration: '35 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '4-2-4',
@@ -696,7 +696,7 @@ class DummyData {
                 content:
                     'Explore user interface and user experience design principles.',
                 duration: '45 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '4-3-3',
@@ -704,7 +704,7 @@ class DummyData {
                 title: 'Design Patterns',
                 content: 'Learn modern design patterns and best practices.',
                 duration: '40 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '4-3-4',
@@ -712,7 +712,7 @@ class DummyData {
                 title: 'Digital Tools',
                 content: 'Overview of popular digital design tools.',
                 duration: '35 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '4-3-5',
@@ -746,7 +746,7 @@ class DummyData {
                 title: 'Brand Identity',
                 content: 'Create cohesive and memorable brand identities.',
                 duration: '45 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '4-4-3',
@@ -754,7 +754,7 @@ class DummyData {
                 title: 'Logo Design',
                 content: 'Design effective and versatile logos.',
                 duration: '40 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '4-4-4',
@@ -762,7 +762,7 @@ class DummyData {
                 title: 'Brand Guidelines',
                 content: 'Create comprehensive brand style guides.',
                 duration: '35 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '4-4-5',
@@ -770,7 +770,7 @@ class DummyData {
                 title: 'Final Design Project',
                 content: 'Apply your design skills to a real project.',
                 duration: '60 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '4-4-6',
@@ -821,7 +821,7 @@ class DummyData {
                 content:
                     'Understanding the characteristics of living organisms.',
                 duration: '30 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '5-1-3',
@@ -829,7 +829,7 @@ class DummyData {
                 title: 'Organization of Life',
                 content: 'Learn about organization from cells to ecosystems.',
                 duration: '35 min',
-                type: 'document',
+                type: 'text',
               ),
             ],
           ),
@@ -855,7 +855,7 @@ class DummyData {
                 title: 'Cell Function',
                 content: 'Learn about cell processes and metabolism.',
                 duration: '40 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '5-2-3',
@@ -863,7 +863,7 @@ class DummyData {
                 title: 'DNA and Genetics',
                 content: 'Understand DNA structure and genetic information.',
                 duration: '45 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '5-2-4',
@@ -871,7 +871,7 @@ class DummyData {
                 title: 'Cell Division',
                 content: 'Learn about mitosis, meiosis, and reproduction.',
                 duration: '40 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '5-2-5',
@@ -905,7 +905,7 @@ class DummyData {
                 title: 'Genetic Variation',
                 content: 'Learn about genetic variation and mutations.',
                 duration: '35 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '5-3-3',
@@ -913,7 +913,7 @@ class DummyData {
                 title: 'Evolution Theory',
                 content: 'Explore evolutionary theory and evidence.',
                 duration: '45 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '5-3-4',
@@ -921,7 +921,7 @@ class DummyData {
                 title: 'Natural Selection',
                 content: 'Master natural selection and adaptation.',
                 duration: '40 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '5-3-5',
@@ -955,7 +955,7 @@ class DummyData {
                 title: 'Food Chains & Webs',
                 content: 'Learn about food chains and energy flow.',
                 duration: '35 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '5-4-3',
@@ -963,7 +963,7 @@ class DummyData {
                 title: 'Biodiversity',
                 content: 'Explore biodiversity and species diversity.',
                 duration: '40 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '5-4-4',
@@ -972,7 +972,7 @@ class DummyData {
                 content:
                     'Learn conservation strategies and environmental issues.',
                 duration: '45 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '5-4-5',
@@ -1030,7 +1030,7 @@ class DummyData {
                 title: 'Major Branches',
                 content: 'Overview of metaphysics, epistemology, and ethics.',
                 duration: '40 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '6-1-3',
@@ -1038,7 +1038,7 @@ class DummyData {
                 title: 'Philosophical Methods',
                 content: 'Learn about critical thinking and argumentation.',
                 duration: '35 min',
-                type: 'document',
+                type: 'text',
               ),
             ],
           ),
@@ -1064,7 +1064,7 @@ class DummyData {
                 title: 'Being and Substance',
                 content: 'Understand ontology and substance philosophy.',
                 duration: '35 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '6-2-3',
@@ -1072,7 +1072,7 @@ class DummyData {
                 title: 'Epistemology',
                 content: 'Study knowledge, belief, and justification.',
                 duration: '40 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '6-2-4',
@@ -1107,7 +1107,7 @@ class DummyData {
                 content:
                     'Learn about virtue, character, and human flourishing.',
                 duration: '40 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '6-3-3',
@@ -1115,7 +1115,7 @@ class DummyData {
                 title: 'Normative Ethics',
                 content: 'Study normative ethical theories and principles.',
                 duration: '40 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '6-3-4',
@@ -1123,7 +1123,7 @@ class DummyData {
                 title: 'Applied Ethics',
                 content: 'Apply ethics to real-world moral issues.',
                 duration: '35 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '6-3-5',
@@ -1157,7 +1157,7 @@ class DummyData {
                 title: 'Philosophy of Mind',
                 content: 'Explore consciousness, intentionality, and the mind.',
                 duration: '40 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '6-4-3',
@@ -1166,7 +1166,7 @@ class DummyData {
                 content:
                     'Apply philosophy to daily living and decision-making.',
                 duration: '35 min',
-                type: 'document',
+                type: 'text',
               ),
               Lesson(
                 id: '6-4-4',

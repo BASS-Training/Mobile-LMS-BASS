@@ -1,9 +1,9 @@
-class DocumentSectionEntity {
+class TextSectionEntity {
   final String title;
   final List<String> paragraphs;
   final List<String> bullets;
 
-  DocumentSectionEntity({
+  TextSectionEntity({
     required this.title,
     required this.paragraphs,
     required this.bullets,

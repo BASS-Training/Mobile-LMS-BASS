@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:lms_mobile_app/src/features/lessons/domain/entities/document_section_entity.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/entities/text_section_entity.dart';
 
 class LessonEntity extends Equatable {
   final String id;
@@ -10,7 +10,7 @@ class LessonEntity extends Equatable {
   final String type;
   final bool isCompleted;
   final String? youtubeVideoId;
-  final List<DocumentSectionEntity>? documentSections;
+  final List<TextSectionEntity>? textSections;
 
   const LessonEntity({
     required this.id,
@@ -18,10 +18,10 @@ class LessonEntity extends Equatable {
     required this.title,
     required this.content,
     required this.duration,
-    this.type = 'document',
+    this.type = 'text',
     this.isCompleted = false,
     this.youtubeVideoId,
-    this.documentSections,
+    this.textSections,
   });
 
   bool get hasVideo => type == 'video' && (youtubeVideoId?.isNotEmpty ?? false);
@@ -30,7 +30,7 @@ class LessonEntity extends Equatable {
     bool? isCompleted,
     String? type,
     String? youtubeVideoId,
-    List<DocumentSectionEntity>? documentSections,
+    List<TextSectionEntity>? textSections,
   }) {
     return LessonEntity(
       id: id,
@@ -41,7 +41,7 @@ class LessonEntity extends Equatable {
       type: type ?? this.type,
       isCompleted: isCompleted ?? this.isCompleted,
       youtubeVideoId: youtubeVideoId ?? this.youtubeVideoId,
-      documentSections: documentSections ?? this.documentSections,
+      textSections: textSections ?? this.textSections,
     );
   }
 
@@ -55,6 +55,6 @@ class LessonEntity extends Equatable {
     type,
     isCompleted,
     youtubeVideoId,
-    documentSections,
+    textSections,
   ];
 }

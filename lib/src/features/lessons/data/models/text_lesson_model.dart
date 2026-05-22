@@ -1,15 +1,15 @@
-import '../../domain/entities/document_section_entity.dart';
+import '../../domain/entities/text_section_entity.dart';
 
-class DocumentSectionModel extends DocumentSectionEntity {
-  DocumentSectionModel({
+class TextSectionModel extends TextSectionEntity {
+  TextSectionModel({
     required super.title,
     required super.paragraphs,
     required super.bullets,
   });
 
   // Nanti fungsi ini akan berguna saat integrasi API sungguhan
-  factory DocumentSectionModel.fromJson(Map<String, dynamic> json) {
-    return DocumentSectionModel(
+  factory TextSectionModel.fromJson(Map<String, dynamic> json) {
+    return TextSectionModel(
       title: json['title'] ?? '',
       paragraphs: List<String>.from(json['paragraphs'] ?? []),
       bullets: List<String>.from(json['bullets'] ?? []),

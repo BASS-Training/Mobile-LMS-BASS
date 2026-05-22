@@ -8,7 +8,7 @@ import 'package:lms_mobile_app/src/core/utils/lesson_route_resolver.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
-import 'package:lms_mobile_app/src/features/lessons/domain/entities/document_section_entity.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/entities/text_section_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_event.dart';
@@ -16,12 +16,12 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
-class DocumentLessonDetailScreen extends StatefulWidget {
+class TextLessonDetailScreen extends StatefulWidget {
   final LessonEntity lesson;
   final CourseEntity course;
   final int lessonIndex;
 
-  const DocumentLessonDetailScreen({
+  const TextLessonDetailScreen({
     super.key,
     required this.lesson,
     required this.course,
@@ -29,12 +29,10 @@ class DocumentLessonDetailScreen extends StatefulWidget {
   });
 
   @override
-  State<DocumentLessonDetailScreen> createState() =>
-      _DocumentLessonDetailScreenState();
+  State<TextLessonDetailScreen> createState() => _TextLessonDetailScreenState();
 }
 
-class _DocumentLessonDetailScreenState
-    extends State<DocumentLessonDetailScreen> {
+class _TextLessonDetailScreenState extends State<TextLessonDetailScreen> {
   late GlobalKey<ScaffoldState> _scaffoldKey;
 
   @override
@@ -87,8 +85,8 @@ class _DocumentLessonDetailScreenState
   Widget build(BuildContext context) {
     final lesson = widget.lesson;
 
-    final List<DocumentSectionEntity> sections = [
-      DocumentSectionEntity(
+    final List<TextSectionEntity> sections = [
+      TextSectionEntity(
         title: '',
         paragraphs: [lesson.content],
         bullets: const [],
@@ -128,7 +126,7 @@ class _DocumentLessonDetailScreenState
             ),
             const SizedBox(height: 2),
             Text(
-              'Document lesson detail',
+              'Text lesson detail',
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w500,
@@ -425,7 +423,7 @@ class _DocumentLessonDetailScreenState
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: const Text(
-                  'DOCUMENT',
+                  'TEXT',
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w800,
@@ -452,7 +450,7 @@ class _DocumentLessonDetailScreenState
     );
   }
 
-  Widget _buildSectionCard(DocumentSectionEntity section, int index) {
+  Widget _buildSectionCard(TextSectionEntity section, int index) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(18),
@@ -558,14 +556,14 @@ class _DocumentLessonDetailScreenState
             Expanded(
               child: PressScale(
                 child: OutlinedButton.icon(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Future.delayed(const Duration(milliseconds: 200), () {
-                    _openLesson(previousLesson!, widget.lessonIndex - 1);
-                  });
-                },
-                icon: const Icon(Icons.arrow_back_rounded),
-                label: const Text('Previous'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Future.delayed(const Duration(milliseconds: 200), () {
+                      _openLesson(previousLesson!, widget.lessonIndex - 1);
+                    });
+                  },
+                  icon: const Icon(Icons.arrow_back_rounded),
+                  label: const Text('Previous'),
                 ),
               ),
             ),
@@ -574,17 +572,17 @@ class _DocumentLessonDetailScreenState
             Expanded(
               child: PressScale(
                 child: ElevatedButton.icon(
-                onPressed: () async {
-                  _markComplete();
-                  await Future.delayed(const Duration(milliseconds: 100));
-                  if (!mounted) return;
-                  Navigator.pop(context);
-                  Future.delayed(const Duration(milliseconds: 200), () {
-                    _openLesson(nextLesson!, widget.lessonIndex + 1);
-                  });
-                },
-                icon: const Icon(Icons.arrow_forward_rounded),
-                label: const Text('Next'),
+                  onPressed: () async {
+                    _markComplete();
+                    await Future.delayed(const Duration(milliseconds: 100));
+                    if (!mounted) return;
+                    Navigator.pop(context);
+                    Future.delayed(const Duration(milliseconds: 200), () {
+                      _openLesson(nextLesson!, widget.lessonIndex + 1);
+                    });
+                  },
+                  icon: const Icon(Icons.arrow_forward_rounded),
+                  label: const Text('Next'),
                 ),
               ),
             ),

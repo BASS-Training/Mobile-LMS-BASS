@@ -11,9 +11,9 @@ class LessonRouteResolver {
         return AppRoutes.quizLessonDetail;
       case 'essay':
         return AppRoutes.essayLessonDetail;
-      case 'document':
+      case 'text':
       default:
-        return AppRoutes.documentLessonDetail;
+        return AppRoutes.textLessonDetail;
     }
   }
 }
