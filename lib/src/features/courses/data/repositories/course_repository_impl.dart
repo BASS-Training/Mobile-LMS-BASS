@@ -8,6 +8,8 @@ import '../datasources/course_local_data_source.dart';
 import '../datasources/course_remote_data_source.dart';
 
 class CourseRepositoryImpl implements CourseRepository {
+  static const String _offlineTestToken = 'DUMMY_OFFLINE_TOKEN_892374982374';
+
   final CourseLocalDataSource localDataSource;
   final CourseRemoteDataSource remoteDataSource;
 
@@ -18,6 +20,12 @@ class CourseRepositoryImpl implements CourseRepository {
 
   @override
   Future<List<CourseEntity>> getCourses() async {
+    if (_isOfflineTestSession()) {
+      final localCourses = await localDataSource.getCourses();
+      _updateCompletionStatus(localCourses);
+      return _mapCoursesToEntities(localCourses);
+    }
+
     try {
       // Strategi: Coba remote dulu untuk data terbaru
       final remoteCourses = await remoteDataSource.getCourses();
@@ -36,6 +44,13 @@ class CourseRepositoryImpl implements CourseRepository {
 
   @override
   Stream<List<CourseEntity>> watchCourses() async* {
+    if (_isOfflineTestSession()) {
+      final localCourses = await localDataSource.getCourses();
+      _updateCompletionStatus(localCourses);
+      yield _mapCoursesToEntities(localCourses);
+      return;
+    }
+
     await for (final courses in remoteDataSource.watchCourses()) {
       _updateCompletionStatus(courses);
       yield _mapCoursesToEntities(courses);
@@ -44,6 +59,15 @@ class CourseRepositoryImpl implements CourseRepository {
 
   @override
   Future<CourseEntity?> getCourseById(String id) async {
+    if (_isOfflineTestSession()) {
+      final localCourse = await localDataSource.getCourseById(id);
+      if (localCourse != null) {
+        _updateCompletionStatus([localCourse]);
+        return CourseMapper.toDomain(localCourse);
+      }
+      return null;
+    }
+
     try {
       // Coba remote dulu
       final remoteCourse = await remoteDataSource.getCourseById(id);
@@ -69,6 +93,12 @@ class CourseRepositoryImpl implements CourseRepository {
 
   @override
   Future<List<CourseEntity>> searchCourses(String query) async {
+    if (_isOfflineTestSession()) {
+      final localCourses = await localDataSource.searchCourses(query);
+      _updateCompletionStatus(localCourses);
+      return _mapCoursesToEntities(localCourses);
+    }
+
     try {
       // Coba remote dulu
       final remoteCourses = await remoteDataSource.searchCourses(query);
@@ -100,12 +130,24 @@ class CourseRepositoryImpl implements CourseRepository {
   @override
   Future<void> addCourse(CourseEntity course) async {
     final model = CourseMapper.fromDomain(course);
+    if (_isOfflineTestSession()) {
+      await localDataSource.saveCourse(model);
+      return;
+    }
+
     await remoteDataSource.addCourse(model);
     await localDataSource.saveCourse(model);
   }
 
   @override
   Future<List<CourseEntity>> getSavedCourses() async {
+    if (_isOfflineTestSession()) {
+      final localCourses = await localDataSource.getCourses();
+      final savedCourses = localCourses.where((c) => c.isSaved).toList();
+      _updateCompletionStatus(savedCourses);
+      return _mapCoursesToEntities(savedCourses);
+    }
+
     try {
       // Coba remote dulu untuk list terbaru
       final remoteSavedCourses = await remoteDataSource.getSavedCourses();
@@ -124,6 +166,12 @@ class CourseRepositoryImpl implements CourseRepository {
 
   @override
   Future<void> refreshCourses() async {
+    if (_isOfflineTestSession()) {
+      final localCourses = await localDataSource.getCourses();
+      _updateCompletionStatus(localCourses);
+      return;
+    }
+
     // Refresh akan coba remote dulu, fallback ke local
     try {
       final remoteCourses = await remoteDataSource.getCourses();
@@ -149,5 +197,9 @@ class CourseRepositoryImpl implements CourseRepository {
         lesson.isCompleted = completedLessons.contains(lesson.id);
       }
     }
+  }
+
+  bool _isOfflineTestSession() {
+    return LocalStorage.getAuthToken() == _offlineTestToken;
   }
 }

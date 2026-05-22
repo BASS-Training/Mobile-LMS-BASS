@@ -7,6 +7,10 @@ import '../mappers/user_mapper.dart';
 import '../models/user.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
+  static const String _offlineTestEmail = 'tester@bass.com';
+  static const String _offlineTestPassword = 'bass123';
+  static const String _offlineTestToken = 'DUMMY_OFFLINE_TOKEN_892374982374';
+
   final Dio _dio;
 
   AuthRepositoryImpl({required Dio dio}) : _dio = dio;
@@ -16,6 +20,15 @@ class AuthRepositoryImpl implements AuthRepository {
     final cleanedEmail = email.trim().toLowerCase();
     if (cleanedEmail.isEmpty || password.isEmpty) {
       return null;
+    }
+
+    if (_canUseOfflineTestAccount(cleanedEmail, password)) {
+      final user = _buildOfflineTestUser();
+      await LocalStorage.saveAuthSession(
+        token: _offlineTestToken,
+        user: user.toJson(),
+      );
+      return UserMapper.toDomain(user);
     }
 
     try {
@@ -89,6 +102,10 @@ class AuthRepositoryImpl implements AuthRepository {
 
     if (storedUser == null) {
       return null;
+    }
+
+    if (token == _offlineTestToken || _isOfflineTestUser(storedUser)) {
+      return UserMapper.toDomain(User.fromJson(storedUser));
     }
 
     if (token == null) {
@@ -184,5 +201,24 @@ class AuthRepositoryImpl implements AuthRepository {
 
     final message = error.message?.trim();
     return message != null && message.isNotEmpty ? message : fallback;
+  }
+
+  bool _canUseOfflineTestAccount(String email, String password) {
+    return email == _offlineTestEmail && password == _offlineTestPassword;
+  }
+
+  bool _isOfflineTestUser(Map<String, dynamic> user) {
+    final email = user['email']?.toString().trim().toLowerCase();
+    return email == _offlineTestEmail;
+  }
+
+  User _buildOfflineTestUser() {
+    return User(
+      id: '999',
+      name: 'Bass Tester',
+      email: _offlineTestEmail,
+      role: 'participant',
+      roles: const ['participant'],
+    );
   }
 }

@@ -31,7 +31,7 @@ class DummyData {
                 content: 'Overview of accounting as a discipline.',
                 duration: '20 min',
                 type: 'video',
-                youtubeVideoId: 'dQw4w9WgXcQ',
+                youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
                 id: '1-1-2',
@@ -67,7 +67,7 @@ class DummyData {
                     'Understand how to debit and credit accounts properly.',
                 duration: '35 min',
                 type: 'video',
-                youtubeVideoId: 'dQw4w9WgXcQ',
+                youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
                 id: '1-2-2',
@@ -110,7 +110,7 @@ class DummyData {
                     'Understand balance sheet structure and interpretation.',
                 duration: '40 min',
                 type: 'video',
-                youtubeVideoId: 'dQw4w9WgXcQ',
+                youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
                 id: '1-3-2',
@@ -161,7 +161,7 @@ class DummyData {
                     'Explore ethical standards and practices in professional accounting.',
                 duration: '30 min',
                 type: 'video',
-                youtubeVideoId: 'dQw4w9WgXcQ',
+                youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
                 id: '1-4-2',
@@ -219,7 +219,7 @@ class DummyData {
                 content: 'Overview of modern agricultural practices.',
                 duration: '25 min',
                 type: 'video',
-                youtubeVideoId: 'dQw4w9WgXcQ',
+                youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
                 id: '2-1-2',
@@ -254,7 +254,7 @@ class DummyData {
                     'Understand soil composition, pH levels, and nutrient content.',
                 duration: '40 min',
                 type: 'video',
-                youtubeVideoId: 'dQw4w9WgXcQ',
+                youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
                 id: '2-2-2',
@@ -263,7 +263,7 @@ class DummyData {
                 content: 'Learn soil testing methods and interpretation.',
                 duration: '35 min',
                 type: 'document',
-                youtubeVideoId: 'dQw4w9WgXcQ',
+                youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
                 id: '2-2-3',
@@ -297,7 +297,7 @@ class DummyData {
                 content: 'Choose appropriate crops for your climate and soil.',
                 duration: '35 min',
                 type: 'video',
-                youtubeVideoId: 'dQw4w9WgXcQ',
+                youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
                 id: '2-3-2',
@@ -349,7 +349,7 @@ class DummyData {
                     'Explore different irrigation methods and water management.',
                 duration: '45 min',
                 type: 'video',
-                youtubeVideoId: 'dQw4w9WgXcQ',
+                youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
                 id: '2-4-2',
@@ -424,7 +424,7 @@ class DummyData {
                 content: 'Introduction to economic science.',
                 duration: '25 min',
                 type: 'video',
-                youtubeVideoId: 'dQw4w9WgXcQ',
+                youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
                 id: '3-1-2',
@@ -459,7 +459,7 @@ class DummyData {
                 content: 'Master supply and demand principles.',
                 duration: '40 min',
                 type: 'video',
-                youtubeVideoId: 'dQw4w9WgXcQ',
+                youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
                 id: '3-2-2',
@@ -502,7 +502,7 @@ class DummyData {
                 content: 'Understand GDP, economic growth, and development.',
                 duration: '40 min',
                 type: 'video',
-                youtubeVideoId: 'dQw4w9WgXcQ',
+                youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
                 id: '3-3-2',
@@ -545,7 +545,7 @@ class DummyData {
                 content: 'Explore global trade and comparative advantage.',
                 duration: '40 min',
                 type: 'video',
-                youtubeVideoId: 'dQw4w9WgXcQ',
+                youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
                 id: '3-4-2',
@@ -611,7 +611,7 @@ class DummyData {
                 content: 'Introduction to design thinking and principles.',
                 duration: '25 min',
                 type: 'video',
-                youtubeVideoId: 'dQw4w9WgXcQ',
+                youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
                 id: '4-1-2',
@@ -645,7 +645,7 @@ class DummyData {
                 content: 'Master color theory, psychology, and harmony.',
                 duration: '45 min',
                 type: 'video',
-                youtubeVideoId: 'dQw4w9WgXcQ',
+                youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
                 id: '4-2-2',
@@ -687,7 +687,7 @@ class DummyData {
                 content: 'Get started with digital painting and illustration.',
                 duration: '50 min',
                 type: 'video',
-                youtubeVideoId: 'dQw4w9WgXcQ',
+                youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
                 id: '4-3-2',
@@ -738,7 +738,7 @@ class DummyData {
                 content: 'Master typography and typeface selection.',
                 duration: '40 min',
                 type: 'video',
-                youtubeVideoId: 'dQw4w9WgXcQ',
+                youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
                 id: '4-4-2',
@@ -812,7 +812,7 @@ class DummyData {
                 content: 'Introduction to biology and life sciences.',
                 duration: '25 min',
                 type: 'video',
-                youtubeVideoId: 'dQw4w9WgXcQ',
+                youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
                 id: '5-1-2',
@@ -847,7 +847,7 @@ class DummyData {
                 content: 'Understand cell structure and organelles.',
                 duration: '45 min',
                 type: 'video',
-                youtubeVideoId: 'dQw4w9WgXcQ',
+                youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
                 id: '5-2-2',
@@ -897,7 +897,7 @@ class DummyData {
                 content: 'Understand Mendelian genetics and inheritance.',
                 duration: '40 min',
                 type: 'video',
-                youtubeVideoId: 'dQw4w9WgXcQ',
+                youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
                 id: '5-3-2',
@@ -947,7 +947,7 @@ class DummyData {
                 content: 'Understand ecosystems and ecological relationships.',
                 duration: '40 min',
                 type: 'video',
-                youtubeVideoId: 'dQw4w9WgXcQ',
+                youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
                 id: '5-4-2',
@@ -1022,7 +1022,7 @@ class DummyData {
                 content: 'Introduction to philosophical thinking.',
                 duration: '30 min',
                 type: 'video',
-                youtubeVideoId: 'dQw4w9WgXcQ',
+                youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
                 id: '6-1-2',
@@ -1056,7 +1056,7 @@ class DummyData {
                 content: 'Explore questions about reality and existence.',
                 duration: '40 min',
                 type: 'video',
-                youtubeVideoId: 'dQw4w9WgXcQ',
+                youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
                 id: '6-2-2',
@@ -1098,7 +1098,7 @@ class DummyData {
                 content: 'Explore major ethical theories and approaches.',
                 duration: '45 min',
                 type: 'video',
-                youtubeVideoId: 'dQw4w9WgXcQ',
+                youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
                 id: '6-3-2',
@@ -1149,7 +1149,7 @@ class DummyData {
                 content: 'Master logic and formal reasoning.',
                 duration: '40 min',
                 type: 'video',
-                youtubeVideoId: 'dQw4w9WgXcQ',
+                youtubeVideoId: 'tBbdSzwxqyY',
               ),
               Lesson(
                 id: '6-4-2',
