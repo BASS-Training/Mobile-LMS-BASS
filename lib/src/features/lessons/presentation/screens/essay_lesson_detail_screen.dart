@@ -128,13 +128,14 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
               context.read<LessonBloc>().add(
                 MarkLessonCompleteEvent(lessonId: widget.lesson.id),
               );
+              context.read<CourseBloc>().add(const RefreshCoursesEvent());
+
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('Jawaban essay berhasil dikirim.'),
                 ),
               );
 
-              // Jika ada lastAttempt, buka halaman detail hasil essay terlebih dahulu
               if (state.lastAttempt != null) {
                 Navigator.pop(context);
                 Future.delayed(const Duration(milliseconds: 200), () {
