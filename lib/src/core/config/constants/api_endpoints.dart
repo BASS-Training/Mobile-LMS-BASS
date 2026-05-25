@@ -30,6 +30,7 @@ class ApiEndpoints {
   // Essays
   static const String getEssayByLesson = '/essays/by-lesson/{id}';
   static const String submitEssay = '/essays/{id}/submit';
+  static const String autosaveEssay = '/essays/{id}/draft';
 
   // Certificates
   static const String getCertificates = '/certificates';

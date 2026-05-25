@@ -122,6 +122,10 @@ class QuizRepositoryImpl implements QuizRepository {
         timeLimit: quizData['timeLimit'] as int,
         passingScore: quizData['passingScore'] as int,
         questions: questions,
+        userAttempt: quizData['userAttempt'] is Map<String, dynamic>
+            ? Map<String, dynamic>.from(quizData['userAttempt'] as Map)
+            : null,
+        completed: quizData['completed'] == true,
       );
     } catch (e) {
       throw Exception('Failed to get quiz: $e');

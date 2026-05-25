@@ -130,20 +130,23 @@ class QuizIntroWidget extends StatelessWidget {
           ),
           const SizedBox(height: 32),
 
-          // Tombol Mulai Kuis
+          // Tombol Mulai Kuis / Disabled jika sudah selesai
           PressScale(
             child: SizedBox(
               width: double.infinity,
               height: 56,
               child: ElevatedButton.icon(
-                onPressed: onStartQuiz,
+                onPressed: quiz.completed ? null : onStartQuiz,
                 icon: const Icon(Icons.play_arrow, size: 24),
-                label: const Text(
-                  'Mulai Kuis',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                label: Text(
+                  quiz.completed ? 'Kuis Selesai' : 'Mulai Kuis',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.red,
+                  backgroundColor: quiz.completed ? Colors.grey : AppColors.red,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -152,6 +155,12 @@ class QuizIntroWidget extends StatelessWidget {
               ),
             ),
           ),
+          if (quiz.completed) const SizedBox(height: 12),
+          if (quiz.completed)
+            const Text(
+              'Anda telah menyelesaikan kuis ini. Tidak dapat diulang lagi.',
+              style: TextStyle(color: AppColors.slate),
+            ),
           const SizedBox(height: 16),
         ],
       ),

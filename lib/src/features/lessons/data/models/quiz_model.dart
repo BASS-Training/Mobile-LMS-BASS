@@ -46,6 +46,9 @@ class Quiz {
   final int timeLimit;
   final int passingScore;
   final List<Question> questions;
+  // Optional user-specific info returned by API
+  final Map<String, dynamic>? userAttempt;
+  final bool completed;
 
   Quiz({
     this.id,
@@ -54,5 +57,7 @@ class Quiz {
     required this.timeLimit,
     required this.passingScore,
     required this.questions,
+    this.userAttempt,
+    this.completed = false,
   });
 }

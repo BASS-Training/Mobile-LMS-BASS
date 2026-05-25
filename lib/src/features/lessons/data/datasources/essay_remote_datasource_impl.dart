@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:lms_mobile_app/src/core/config/constants/api_endpoints.dart';
 import 'package:lms_mobile_app/src/core/utils/offline_test_mode.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/essay_remote_datasource.dart';
+import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/essay_question_entity.dart';
 
 class EssayRemoteDataSourceImpl implements EssayRemoteDataSource {
@@ -30,6 +31,14 @@ class EssayRemoteDataSourceImpl implements EssayRemoteDataSource {
       final jsonResp = response.data as Map<String, dynamic>;
       final data = jsonResp['data'] as Map<String, dynamic>;
       final questions = (data['questions'] as List<dynamic>? ?? const []);
+
+      // if user already has a submitted submission, mark lesson complete locally
+      final submission = data['submission'];
+      if (submission is Map<String, dynamic> && submission['status'] == 'submitted') {
+        try {
+          await LocalStorage.markLessonComplete(lessonId);
+        } catch (_) {}
+      }
 
       return questions
           .whereType<Map<String, dynamic>>()
@@ -74,6 +83,30 @@ class EssayRemoteDataSourceImpl implements EssayRemoteDataSource {
       throw Exception(
         _extractErrorMessage(error, 'Gagal mengirim jawaban essay'),
       );
+    }
+  }
+
+  @override
+  Future<void> autosaveEssayDraft({
+    required String lessonId,
+    required List<Map<String, dynamic>> answers,
+  }) async {
+    print(
+      '[ESSAY][REMOTE][AUTOSAVE] lessonId=$lessonId tester=${OfflineTestMode.describeContext()}',
+    );
+
+    if (OfflineTestMode.isActive()) {
+      print('[ESSAY][REMOTE][AUTOSAVE] blocked by tester mode');
+      return;
+    }
+
+    final endpoint = ApiEndpoints.autosaveEssay.replaceFirst('{id}', lessonId);
+    try {
+      await dio.post(endpoint, data: {'answers': answers});
+      return;
+    } on DioException catch (error) {
+      // don't fail hard on autosave; just log or rethrow if needed
+      throw Exception(_extractErrorMessage(error, 'Gagal menyimpan draft essay'));
     }
   }
 

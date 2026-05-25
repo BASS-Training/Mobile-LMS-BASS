@@ -61,8 +61,11 @@ class QuizRemoteDataSourceImpl implements QuizRemoteDataSource {
       final data = jsonResp['data'] as Map<String, dynamic>;
       final rawQuestions = data['questions'];
       final questions = rawQuestions is List ? rawQuestions : const [];
+      final userAttempt = data['userAttempt'];
+      final completed = data['completed'] ?? false;
 
       return {
+        'id': data['id'] ?? data['quizId'] ?? data['id'],
         'title': data['title'] ?? '',
         'totalQuestions': data['totalQuestions'] ?? 0,
         'timeLimit': data['timeLimit'] ?? 0,
@@ -87,6 +90,8 @@ class QuizRemoteDataSourceImpl implements QuizRemoteDataSource {
                 : null,
           };
         }).toList(),
+        'userAttempt': userAttempt is Map<String, dynamic> ? userAttempt : null,
+        'completed': completed == true,
       };
     } on DioException catch (error) {
       throw Exception(_extractErrorMessage(error, 'Gagal memanggil API quiz'));

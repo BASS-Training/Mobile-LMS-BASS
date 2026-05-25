@@ -6,9 +6,10 @@ import 'package:lms_mobile_app/src/features/lessons/data/datasources/essay_local
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/essay_remote_datasource_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/quiz_local_datasource_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/quiz_remote_datasource_impl.dart';
+import 'package:lms_mobile_app/src/features/lessons/data/datasources/lesson_remote_datasource_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/video_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/essay_repository_impl.dart';
-import 'package:lms_mobile_app/src/features/lessons/data/repositories/lesson_result_repository_impl.dart';
+import 'package:lms_mobile_app/src/features/lessons/data/repositories/lesson_result_remote_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/lesson_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/quiz_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_repository.dart';
@@ -35,9 +36,14 @@ class LessonModule {
     }
 
     // Repository
-    final LessonRepository lessonRepository = LessonRepositoryImpl();
+    final lessonRemoteDataSource = LessonRemoteDataSourceImpl(
+      dio: getIt<Dio>(),
+    );
+    final LessonRepository lessonRepository = LessonRepositoryImpl(
+      remoteDataSource: lessonRemoteDataSource,
+    );
     getIt.registerLazySingleton<LessonResultRepository>(
-      () => const LessonResultRepositoryImpl(),
+      () => LessonResultRemoteImpl(dio: getIt<Dio>()),
     );
     final lessonResultRepository = getIt<LessonResultRepository>();
 

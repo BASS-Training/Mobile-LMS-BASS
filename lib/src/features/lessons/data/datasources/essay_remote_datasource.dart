@@ -8,4 +8,9 @@ abstract class EssayRemoteDataSource {
     required List<Map<String, dynamic>> answers,
     String? userEmail,
   });
+
+  Future<void> autosaveEssayDraft({
+    required String lessonId,
+    required List<Map<String, dynamic>> answers,
+  });
 }

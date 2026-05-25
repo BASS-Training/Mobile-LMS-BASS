@@ -49,6 +49,26 @@ class EssayRepositoryImpl implements EssayRepository {
     String answer,
   ) async {
     await localDataSource.saveDraftAnswer(lessonId, questionIndex, answer);
+
+    // Try to sync draft to server when remote available
+    try {
+      if (!_isOfflineTestSession() && remoteDataSource != null) {
+        final allDrafts = localDataSource.getDraftAnswers(lessonId);
+        final payload = <Map<String, dynamic>>[];
+        allDrafts.forEach((index, text) {
+          payload.add({'question_id': index.toString(), 'answer': text});
+        });
+
+        if (payload.isNotEmpty) {
+          await remoteDataSource!.autosaveEssayDraft(
+            lessonId: lessonId,
+            answers: payload,
+          );
+        }
+      }
+    } catch (_) {
+      // ignore autosave errors for now
+    }
   }
 
   @override
