@@ -319,6 +319,20 @@ class _QuizResultDetailScreenState extends State<QuizResultDetailScreen> {
             final optionText = entry.value;
             final isSelected = selectedIndex == optionIndex;
             final isCorrect = correctIndex == optionIndex;
+            final label = isSelected && isCorrect
+                ? 'Jawaban Anda Benar'
+                : isSelected && !isAnsweredCorrectly
+                ? 'Jawaban Anda Salah'
+                : isCorrect
+                ? 'Kunci Jawaban'
+                : '';
+            final iconClass = isSelected && isCorrect
+                ? Icons.check_circle
+                : isSelected && !isAnsweredCorrectly
+                ? Icons.close
+                : isCorrect
+                ? Icons.lightbulb
+                : null;
 
             final backgroundColor = isCorrect
                 ? Colors.green.withValues(alpha: 0.14)
@@ -376,14 +390,39 @@ class _QuizResultDetailScreenState extends State<QuizResultDetailScreen> {
                       ),
                     ),
                   ),
-                  if (isCorrect)
-                    const Icon(
-                      Icons.check_circle,
-                      color: Colors.green,
-                      size: 18,
+                  if (label.isNotEmpty)
+                    Container(
+                      margin: const EdgeInsets.only(left: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isCorrect
+                            ? Colors.green.withValues(alpha: 0.12)
+                            : Colors.red.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            iconClass ?? Icons.circle,
+                            size: 12,
+                            color: isCorrect ? Colors.green : Colors.red,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            label,
+                            style: TextStyle(
+                              color: isCorrect ? Colors.green : Colors.red,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  if (isSelected && !isAnsweredCorrectly)
-                    const Icon(Icons.close, color: Colors.red, size: 18),
                 ],
               ),
             );
