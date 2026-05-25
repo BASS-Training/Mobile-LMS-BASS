@@ -55,7 +55,7 @@ class HomeExtraSections extends StatelessWidget {
             ),
             const SizedBox(height: 14),
             _buildModernCard(
-              title: 'Gabung Kelas',
+              title: 'Gabung Course',
               icon: Icons.groups_2_rounded,
               color: const Color(0xFFFFF8E7),
               child: Column(
@@ -81,7 +81,7 @@ class HomeExtraSections extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   const Text(
-                    'Token Pendaftaran',
+                    'Token Course',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
@@ -93,7 +93,7 @@ class HomeExtraSections extends StatelessWidget {
                     controller: tokenController,
                     textInputAction: TextInputAction.done,
                     decoration: InputDecoration(
-                      hintText: 'Contoh: KLS-2026-AB12',
+                      hintText: 'Masukkan token course',
                       isDense: true,
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 12,

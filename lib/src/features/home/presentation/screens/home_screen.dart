@@ -64,6 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
         context,
       ).showSnackBar(const SnackBar(content: Text('Berhasil gabung kelas')));
       _joinClassTokenController.clear();
+      context.read<CourseBloc>().add(const RefreshCoursesEvent());
     } else if (state is HomeJoinClassFailure) {
       ScaffoldMessenger.of(
         context,
