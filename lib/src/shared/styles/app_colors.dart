@@ -7,6 +7,8 @@ class AppColors {
   static const Color black = Color(0xFF000000);
   static const Color white = Color(0xFFFFFFFF);
   static const Color mist = Color(0xFFF8F9FA);
+  static const Color quizBackgroundStart = Color(0xFFF8FAFF);
+  static const Color quizBackgroundEnd = Color(0xFFF1F4FF);
   static const Color pearl = Color(0xFFE0E0E0);
   static const Color charcoal = Color(0xFF2D3436);
   static const Color slate = Color(0xFF636E72);

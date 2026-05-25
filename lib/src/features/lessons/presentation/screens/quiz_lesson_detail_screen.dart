@@ -61,6 +61,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
 
     Navigator.pop(context);
     Future.delayed(const Duration(milliseconds: 200), () {
+      if (!mounted) return;
       context.push(
         route,
         extra: {
@@ -99,33 +100,16 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
       },
       child: BlocBuilder<QuizBloc, QuizState>(
         builder: (context, state) {
+          final appBar = _buildQuizAppBar(widget.course.title);
+          final quizBackground = _buildQuizBackground();
+
           // Show loading
           if (state is QuizLoading) {
             return Scaffold(
-              backgroundColor: const Color(0xFFF6F8FF),
-              appBar: AppBar(
-                title: Text(widget.course.title),
-                elevation: 0,
-                backgroundColor: Colors.transparent,
-                surfaceTintColor: Colors.transparent,
-                flexibleSpace: Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [AppColors.red, AppColors.tomato],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                ),
-              ),
+              backgroundColor: AppColors.quizBackgroundStart,
+              appBar: appBar,
               body: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                ),
+                decoration: quizBackground,
                 child: const Center(child: CircularProgressIndicator()),
               ),
             );
@@ -134,34 +118,13 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
           // Show error
           if (state is QuizError) {
             return Scaffold(
-              backgroundColor: const Color(0xFFF6F8FF),
-              appBar: AppBar(
-                title: Text(widget.course.title),
-                elevation: 0,
-                backgroundColor: Colors.transparent,
-                surfaceTintColor: Colors.transparent,
-                flexibleSpace: Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [AppColors.red, AppColors.tomato],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                ),
-                leading: GestureDetector(
-                  onTap: _backToCourse,
-                  child: const Icon(Icons.arrow_back),
-                ),
+              backgroundColor: AppColors.quizBackgroundStart,
+              appBar: _buildQuizAppBar(
+                widget.course.title,
+                onBackTap: _backToCourse,
               ),
               body: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                ),
+                decoration: quizBackground,
                 child: Center(
                   child: Container(
                     margin: const EdgeInsets.all(24),
@@ -241,30 +204,10 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
 
           // Initial state
           return Scaffold(
-            backgroundColor: const Color(0xFFF6F8FF),
-            appBar: AppBar(
-              title: Text(widget.course.title),
-              elevation: 0,
-              backgroundColor: Colors.transparent,
-              surfaceTintColor: Colors.transparent,
-              flexibleSpace: Container(
-                decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [AppColors.red, AppColors.tomato],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-              ),
-            ),
+            backgroundColor: AppColors.quizBackgroundStart,
+            appBar: appBar,
             body: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
+              decoration: quizBackground,
               child: const Center(child: CircularProgressIndicator()),
             ),
           );
@@ -275,43 +218,20 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
 
   /// Build Quiz Introduction Screen
   Widget _buildIntroScreen(QuizLoaded quizState) {
-    return WillPopScope(
-      onWillPop: () async {
-        _backToCourse();
-        return false;
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          _backToCourse();
+        }
       },
       child: Scaffold(
         key: _scaffoldKey,
-        backgroundColor: const Color(0xFFF6F8FF),
-        appBar: AppBar(
-          title: Text(widget.course.title),
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [AppColors.red, AppColors.tomato],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-          ),
-          leading: GestureDetector(
-            onTap: _backToCourse,
-            child: const Icon(Icons.arrow_back),
-          ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: Center(
-                child: GestureDetector(
-                  onTap: () => _scaffoldKey.currentState?.openDrawer(),
-                  child: const Icon(Icons.list_alt, size: 24),
-                ),
-              ),
-            ),
-          ],
+        backgroundColor: AppColors.quizBackgroundStart,
+        appBar: _buildQuizAppBar(
+          widget.course.title,
+          onBackTap: _backToCourse,
+          onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
         ),
         drawer: LessonDrawer(
           course: widget.course,
@@ -332,15 +252,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
         body: Stack(
           children: [
             _buildBackgroundDecorations(),
-            Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-            ),
+            Container(decoration: _buildQuizBackground()),
             AnimatedSwitcher(
               duration: const Duration(milliseconds: 280),
               switchInCurve: Curves.easeOutCubic,
@@ -372,47 +284,24 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
         ? (answeredCount / totalCount)
         : 0.0;
 
-    return WillPopScope(
-      onWillPop: () async {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Silakan selesaikan atau kirim jawaban kuis'),
-          ),
-        );
-        return false;
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Silakan selesaikan atau kirim jawaban kuis'),
+            ),
+          );
+        }
       },
       child: Scaffold(
         key: _scaffoldKey,
-        backgroundColor: const Color(0xFFF6F8FF),
-        appBar: AppBar(
-          title: Text('${widget.course.title} - Kuis'),
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          leading: GestureDetector(
-            onTap: _backToCourse,
-            child: const Icon(Icons.arrow_back),
-          ),
-          flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [AppColors.red, AppColors.tomato],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-          ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: Center(
-                child: GestureDetector(
-                  onTap: () => _scaffoldKey.currentState?.openDrawer(),
-                  child: const Icon(Icons.list_alt, size: 24),
-                ),
-              ),
-            ),
-          ],
+        backgroundColor: AppColors.quizBackgroundStart,
+        appBar: _buildQuizAppBar(
+          '${widget.course.title} - Kuis',
+          onBackTap: _backToCourse,
+          onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
         ),
         drawer: LessonDrawer(
           course: widget.course,
@@ -434,15 +323,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
         body: Stack(
           children: [
             _buildBackgroundDecorations(),
-            Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-            ),
+            Container(decoration: _buildQuizBackground()),
             Column(
               children: [
                 Container(
@@ -716,15 +597,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
       body: Stack(
         children: [
           _buildBackgroundDecorations(),
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-            ),
-          ),
+          Container(decoration: _buildQuizBackground()),
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 300),
             switchInCurve: Curves.easeOutCubic,
@@ -830,6 +703,54 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  PreferredSizeWidget _buildQuizAppBar(
+    String title, {
+    VoidCallback? onBackTap,
+    VoidCallback? onMenuTap,
+  }) {
+    return AppBar(
+      title: Text(title),
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      surfaceTintColor: Colors.transparent,
+      leading: GestureDetector(
+        onTap: onBackTap ?? _backToCourse,
+        child: const Icon(Icons.arrow_back),
+      ),
+      flexibleSpace: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [AppColors.red, AppColors.tomato],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+      ),
+      actions: [
+        if (onMenuTap != null)
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: Center(
+              child: GestureDetector(
+                onTap: onMenuTap,
+                child: const Icon(Icons.list_alt, size: 24),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  BoxDecoration _buildQuizBackground() {
+    return const BoxDecoration(
+      gradient: LinearGradient(
+        colors: [AppColors.quizBackgroundStart, AppColors.quizBackgroundEnd],
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+      ),
     );
   }
 }
