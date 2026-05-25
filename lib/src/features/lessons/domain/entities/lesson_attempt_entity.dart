@@ -6,6 +6,8 @@ class LessonAttemptQuestionSnapshot extends Equatable {
   final List<String> options;
   final int? correctOptionIndex;
   final int? selectedOptionIndex;
+  final String? selectedOptionText;
+  final String? correctOptionText;
   final String? writtenAnswer;
 
   const LessonAttemptQuestionSnapshot({
@@ -14,6 +16,8 @@ class LessonAttemptQuestionSnapshot extends Equatable {
     required this.options,
     this.correctOptionIndex,
     this.selectedOptionIndex,
+    this.selectedOptionText,
+    this.correctOptionText,
     this.writtenAnswer,
   });
 
@@ -26,6 +30,8 @@ class LessonAttemptQuestionSnapshot extends Equatable {
       'options': options,
       'correctOptionIndex': correctOptionIndex,
       'selectedOptionIndex': selectedOptionIndex,
+      'selectedOptionText': selectedOptionText,
+      'correctOptionText': correctOptionText,
       'writtenAnswer': writtenAnswer,
     };
   }
@@ -37,6 +43,8 @@ class LessonAttemptQuestionSnapshot extends Equatable {
       options: List<String>.from(json['options'] as List? ?? const []),
       correctOptionIndex: (json['correctOptionIndex'] as num?)?.toInt(),
       selectedOptionIndex: (json['selectedOptionIndex'] as num?)?.toInt(),
+      selectedOptionText: json['selectedOptionText']?.toString(),
+      correctOptionText: json['correctOptionText']?.toString(),
       writtenAnswer: json['writtenAnswer']?.toString(),
     );
   }
@@ -48,6 +56,8 @@ class LessonAttemptQuestionSnapshot extends Equatable {
     options,
     correctOptionIndex,
     selectedOptionIndex,
+    selectedOptionText,
+    correctOptionText,
     writtenAnswer,
   ];
 }
@@ -65,6 +75,14 @@ class LessonAttempt extends Equatable {
   final double? score;
   final double? maxScore;
   final bool? passed;
+  final int? passingGrade;
+  final int? correctAnswers;
+  final int? totalQuestions;
+  final int? wrongAnswers;
+  final String? completedAtLabel;
+  final String? durationLabel;
+  final String? statusLabel;
+  final String? statusMessage;
   final List<LessonAttemptQuestionSnapshot> questions;
 
   const LessonAttempt({
@@ -81,6 +99,14 @@ class LessonAttempt extends Equatable {
     this.score,
     this.maxScore,
     this.passed,
+    this.passingGrade,
+    this.correctAnswers,
+    this.totalQuestions,
+    this.wrongAnswers,
+    this.completedAtLabel,
+    this.durationLabel,
+    this.statusLabel,
+    this.statusMessage,
   });
 
   double get percentage {
@@ -107,6 +133,14 @@ class LessonAttempt extends Equatable {
       'score': score,
       'maxScore': maxScore,
       'passed': passed,
+      'passingGrade': passingGrade,
+      'correctAnswers': correctAnswers,
+      'totalQuestions': totalQuestions,
+      'wrongAnswers': wrongAnswers,
+      'completedAtLabel': completedAtLabel,
+      'durationLabel': durationLabel,
+      'statusLabel': statusLabel,
+      'statusMessage': statusMessage,
       'questions': questions.map((question) => question.toJson()).toList(),
     };
   }
@@ -127,6 +161,14 @@ class LessonAttempt extends Equatable {
       score: (json['score'] as num?)?.toDouble(),
       maxScore: (json['maxScore'] as num?)?.toDouble(),
       passed: json['passed'] as bool?,
+      passingGrade: (json['passingGrade'] as num?)?.toInt(),
+      correctAnswers: (json['correctAnswers'] as num?)?.toInt(),
+      totalQuestions: (json['totalQuestions'] as num?)?.toInt(),
+      wrongAnswers: (json['wrongAnswers'] as num?)?.toInt(),
+      completedAtLabel: json['completedAtLabel']?.toString(),
+      durationLabel: json['durationLabel']?.toString(),
+      statusLabel: json['statusLabel']?.toString(),
+      statusMessage: json['statusMessage']?.toString(),
       questions: (json['questions'] as List? ?? const [])
           .whereType<Map>()
           .map(
@@ -152,6 +194,14 @@ class LessonAttempt extends Equatable {
     score,
     maxScore,
     passed,
+    passingGrade,
+    correctAnswers,
+    totalQuestions,
+    wrongAnswers,
+    completedAtLabel,
+    durationLabel,
+    statusLabel,
+    statusMessage,
     questions,
   ];
 }

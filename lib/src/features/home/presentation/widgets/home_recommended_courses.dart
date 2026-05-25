@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
+import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
+import 'dart:math';
+import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_state.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_card.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// Recommended Courses Section with Edge Swipe Navigation
 class HomeRecommendedCourses extends StatefulWidget {
@@ -54,69 +57,163 @@ class _HomeRecommendedCoursesState extends State<HomeRecommendedCourses> {
     }
 
     final courseState = widget.courseState as CourseLoaded;
-    final recommendedCourses = courseState.courses.skip(3).take(3).toList();
+    final recentCourseIds = LocalStorage.getRecentCourses();
+    final recentCourses = recentCourseIds
+        .map((courseId) {
+          try {
+            return courseState.courses.firstWhere(
+              (course) => course.id == courseId,
+            );
+          } catch (_) {
+            return null;
+          }
+        })
+        .whereType<CourseEntity>()
+        .toList();
+    final visibleRecentCourses = _buildVisibleCourses(
+      courseState.courses,
+      recentCourses,
+    );
 
     return SizedBox(
       height: 280,
-      child: NotificationListener<ScrollNotification>(
-        onNotification: (notification) {
-          if (_didNavigateFromEdgeSwipe) return false;
-          if (notification.metrics.axis != Axis.horizontal) return false;
+      child: visibleRecentCourses.isEmpty
+          ? _buildTokenPrompt()
+          : NotificationListener<ScrollNotification>(
+              onNotification: (notification) {
+                if (_didNavigateFromEdgeSwipe) return false;
+                if (notification.metrics.axis != Axis.horizontal) return false;
 
-          if (notification is OverscrollNotification) {
-            final atRightEdge =
-                notification.metrics.pixels >=
-                notification.metrics.maxScrollExtent;
-            final pushingBeyondRight = notification.overscroll > 0;
+                if (notification is OverscrollNotification) {
+                  final atRightEdge =
+                      notification.metrics.pixels >=
+                      notification.metrics.maxScrollExtent;
+                  final pushingBeyondRight = notification.overscroll > 0;
 
-            if (atRightEdge && pushingBeyondRight) {
-              _edgeOverscrollAccumulator += notification.overscroll;
+                  if (atRightEdge && pushingBeyondRight) {
+                    _edgeOverscrollAccumulator += notification.overscroll;
 
-              if (_edgeOverscrollAccumulator >= _edgeSwipeThreshold) {
-                _handleEdgeSwipeNavigation();
-                return true;
-              }
-            } else {
-              _edgeOverscrollAccumulator = 0;
-            }
-          }
+                    if (_edgeOverscrollAccumulator >= _edgeSwipeThreshold) {
+                      _handleEdgeSwipeNavigation();
+                      return true;
+                    }
+                  } else {
+                    _edgeOverscrollAccumulator = 0;
+                  }
+                }
 
-          if (notification is ScrollEndNotification) {
-            _edgeOverscrollAccumulator = 0;
-          }
+                if (notification is ScrollEndNotification) {
+                  _edgeOverscrollAccumulator = 0;
+                }
 
-          return false;
-        },
-        child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          physics: const BouncingScrollPhysics(
-            parent: AlwaysScrollableScrollPhysics(),
-          ),
-          padding: EdgeInsets.symmetric(horizontal: AppMeasures.paddingLarge),
-          itemCount: recommendedCourses.length + 1,
-          itemBuilder: (context, index) {
-            if (index == recommendedCourses.length) {
-              return _buildViewAllCard(context);
-            }
+                return false;
+              },
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppMeasures.paddingLarge,
+                ),
+                itemCount: visibleRecentCourses.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == visibleRecentCourses.length) {
+                    return _buildViewAllCard(context);
+                  }
 
-            final courseEntity = recommendedCourses[index];
-            return Container(
-              width: 200,
-              margin: const EdgeInsets.only(right: 12),
-              child: CourseCard(
-                course: courseEntity,
-                isSaved: courseEntity.isSaved,
-                onTap: () {
-                  context.push(AppRoutes.courseDetail, extra: courseEntity);
-                },
-                onSavePressed: () {
-                  context.read<CourseBloc>().add(
-                    ToggleSaveCourseEvent(courseId: courseEntity.id),
+                  final courseEntity = visibleRecentCourses[index];
+                  return Container(
+                    width: 200,
+                    margin: const EdgeInsets.only(right: 12),
+                    child: CourseCard(
+                      course: courseEntity,
+                      isSaved: courseEntity.isSaved,
+                      onTap: () {
+                        context.push(
+                          AppRoutes.courseDetail,
+                          extra: courseEntity,
+                        );
+                      },
+                      onSavePressed: () {
+                        context.read<CourseBloc>().add(
+                          ToggleSaveCourseEvent(courseId: courseEntity.id),
+                        );
+                      },
+                    ),
                   );
                 },
               ),
-            );
-          },
+            ),
+    );
+  }
+
+  List<CourseEntity> _buildVisibleCourses(
+    List<CourseEntity> allCourses,
+    List<CourseEntity> recentCourses,
+  ) {
+    if (allCourses.isEmpty) {
+      return <CourseEntity>[];
+    }
+
+    final visibleCourses = <CourseEntity>[];
+    final addedIds = <String>{};
+
+    for (final course in recentCourses) {
+      if (visibleCourses.length == 3) break;
+      if (addedIds.add(course.id)) {
+        visibleCourses.add(course);
+      }
+    }
+
+    if (visibleCourses.length < 3) {
+      final remainingCourses = allCourses
+          .where((course) => !addedIds.contains(course.id))
+          .toList();
+      remainingCourses.shuffle(Random());
+
+      for (final course in remainingCourses) {
+        if (visibleCourses.length == 3) break;
+        visibleCourses.add(course);
+      }
+    }
+
+    return visibleCourses.take(3).toList();
+  }
+
+  Widget _buildTokenPrompt() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: AppMeasures.paddingLarge),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.white.withValues(alpha: 0.96),
+            const Color(0xFFF6F8FF).withValues(alpha: 0.98),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.75)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: const Center(
+        child: Text(
+          'Masukkan token untuk mendapatkan course',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w800,
+            color: AppColors.charcoal,
+            height: 1.4,
+          ),
         ),
       ),
     );

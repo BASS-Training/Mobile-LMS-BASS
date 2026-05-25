@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
+import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_detail_header.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_info_cards.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_section_accordion.dart';
@@ -12,20 +13,31 @@ import '../../domain/entities/course_entity.dart';
 import '../bloc/course/course_bloc.dart';
 import '../bloc/course/course_state.dart';
 
-class CourseDetailScreen extends StatelessWidget {
+class CourseDetailScreen extends StatefulWidget {
   final CourseEntity course;
 
   const CourseDetailScreen({super.key, required this.course});
 
   @override
+  State<CourseDetailScreen> createState() => _CourseDetailScreenState();
+}
+
+class _CourseDetailScreenState extends State<CourseDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+    LocalStorage.recordRecentCourse(widget.course.id);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<CourseBloc, CourseState>(
       builder: (context, state) {
-        CourseEntity currentCourseEntity = course;
+        CourseEntity currentCourseEntity = widget.course;
         if (state is CourseLoaded) {
           currentCourseEntity = state.courses.firstWhere(
-            (c) => c.id == course.id,
-            orElse: () => course,
+            (c) => c.id == widget.course.id,
+            orElse: () => widget.course,
           );
         }
 

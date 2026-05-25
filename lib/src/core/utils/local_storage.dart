@@ -7,6 +7,7 @@ class LocalStorage {
   static const String _completedLessonsKey = 'completed_lessons';
   static const String _essayDraftPrefix = 'essay_draft_';
   static const String _lessonAttemptPrefix = 'lesson_attempts_';
+  static const String _recentCoursesKey = 'recent_courses';
   static const String _authTokenKey = 'auth_token';
   static const String _authUserKey = 'auth_user';
   static const String _introSeenKey = 'intro_seen';
@@ -48,6 +49,27 @@ class LocalStorage {
   // Clear all completed lessons
   static Future<void> clearAllProgress() async {
     await _box.delete(_completedLessonsKey);
+  }
+
+  static List<String> getRecentCourses() {
+    final list = _box.get(_recentCoursesKey, defaultValue: <String>[]);
+    return List<String>.from(list);
+  }
+
+  static Future<void> recordRecentCourse(String courseId) async {
+    final recentCourses = getRecentCourses();
+    recentCourses.remove(courseId);
+    recentCourses.insert(0, courseId);
+
+    if (recentCourses.length > 10) {
+      recentCourses.removeRange(10, recentCourses.length);
+    }
+
+    await _box.put(_recentCoursesKey, recentCourses);
+  }
+
+  static Future<void> clearRecentCourses() async {
+    await _box.delete(_recentCoursesKey);
   }
 
   static Future<void> saveAuthSession({
