@@ -1,7 +1,7 @@
 /// Implementation QuizRepository - Data Layer
 /// Menghubungkan domain dan data layer
 
-import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
+import 'package:lms_mobile_app/src/core/utils/offline_test_mode.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/quiz_local_datasource.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/quiz_remote_datasource.dart';
 import 'package:lms_mobile_app/src/core/config/flavor_config.dart';
@@ -12,10 +12,6 @@ class QuizRepositoryImpl implements QuizRepository {
   final QuizLocalDataSource localDataSource;
   final QuizRemoteDataSource? remoteDataSource;
 
-  static const String _offlineTestToken = 'DUMMY_OFFLINE_TOKEN_892374982374';
-  static const String _offlineTestEmail = 'tester@bass.com';
-  static const String _offlineTestEmailAlias = 'testing@bass.com';
-
   const QuizRepositoryImpl({
     required this.localDataSource,
     this.remoteDataSource,
@@ -24,13 +20,19 @@ class QuizRepositoryImpl implements QuizRepository {
   @override
   Future<Quiz> getQuizByLessonId(String lessonId) async {
     try {
+      print(
+        '[QUIZ][FETCH] lessonId=$lessonId tester=${OfflineTestMode.describeContext()} remoteAvailable=${remoteDataSource != null} mock=${FlavorConfig.instance.enableMockData}',
+      );
+
       // Decide source: local dummy or remote API
       Map<String, dynamic> quizData;
       if (_isOfflineTestSession() ||
           FlavorConfig.instance.enableMockData ||
           remoteDataSource == null) {
+        print('[QUIZ][FETCH] using local dummy for lessonId=$lessonId');
         quizData = await localDataSource.getQuizByLessonId(lessonId);
       } else {
+        print('[QUIZ][FETCH] using remote API for lessonId=$lessonId');
         quizData = await remoteDataSource!.getQuizByLessonId(lessonId);
       }
 
@@ -41,6 +43,9 @@ class QuizRepositoryImpl implements QuizRepository {
           List<dynamic>.from(quizData['questions'] as List<dynamic>),
         );
       } else {
+        print(
+          '[QUIZ][FETCH] questions missing/null from selected source, trying local fallback for lessonId=$lessonId',
+        );
         try {
           final localQuiz = await localDataSource.getQuizByLessonId(lessonId);
           if (localQuiz['questions'] is List) {
@@ -58,6 +63,26 @@ class QuizRepositoryImpl implements QuizRepository {
             };
           }
         } catch (_) {}
+      }
+
+      if (questionItems.isEmpty) {
+        print(
+          '[QUIZ][FETCH] local fallback still empty for lessonId=$lessonId',
+        );
+        final localQuiz = await localDataSource.getQuizByLessonId(lessonId);
+        if (localQuiz['questions'] is List) {
+          questionItems.addAll(
+            List<dynamic>.from(localQuiz['questions'] as List<dynamic>),
+          );
+          quizData = {
+            'id': quizData['id'] ?? localQuiz['id'],
+            'title': quizData['title'] ?? localQuiz['title'] ?? '',
+            'timeLimit': quizData['timeLimit'] ?? localQuiz['timeLimit'] ?? 0,
+            'passingScore':
+                quizData['passingScore'] ?? localQuiz['passingScore'] ?? 0,
+            'questions': questionItems,
+          };
+        }
       }
 
       final baseQuestions = questionItems.map((q) {
@@ -79,7 +104,7 @@ class QuizRepositoryImpl implements QuizRepository {
           id: q.containsKey('id') ? q['id'].toString() : null,
           text: q['text'] as String,
           options: options,
-          optionIds: q.containsKey('optionIds')
+          optionIds: q['optionIds'] is List
               ? List<String>.from(q['optionIds'] as List<dynamic>)
               : null,
           correctIndex: correct,
@@ -129,6 +154,9 @@ class QuizRepositoryImpl implements QuizRepository {
     if (!_isOfflineTestSession() &&
         quiz.id != null &&
         remoteDataSource != null) {
+      print(
+        '[QUIZ][SUBMIT] using remote submit quizId=${quiz.id} tester=${OfflineTestMode.describeContext()}',
+      );
       try {
         final attemptId = await remoteDataSource!.startQuizAttempt(quiz.id!);
         final data = await remoteDataSource!.submitQuizAttempt(
@@ -148,6 +176,9 @@ class QuizRepositoryImpl implements QuizRepository {
       }
     }
 
+    print(
+      '[QUIZ][SUBMIT] using local/client grading quizId=${quiz.id} tester=${OfflineTestMode.describeContext()}',
+    );
     // Client-side grading fallback
     int correctCount = 0;
     for (int i = 0; i < quiz.totalQuestions; i++) {
@@ -165,20 +196,6 @@ class QuizRepositoryImpl implements QuizRepository {
   }
 
   bool _isOfflineTestSession() {
-    final token = LocalStorage.getAuthToken();
-    final userEmail = LocalStorage.getAuthUser()?['email']
-        ?.toString()
-        .trim()
-        .toLowerCase();
-
-    return token == _offlineTestToken || _isOfflineTestEmail(userEmail);
-  }
-
-  bool _isOfflineTestEmail(String? email) {
-    if (email == null) {
-      return false;
-    }
-
-    return email == _offlineTestEmail || email == _offlineTestEmailAlias;
+    return OfflineTestMode.isActive();
   }
 }

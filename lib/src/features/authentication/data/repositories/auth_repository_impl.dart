@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:lms_mobile_app/src/core/config/constants/api_endpoints.dart';
+import 'package:lms_mobile_app/src/core/utils/offline_test_mode.dart';
 import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -7,10 +8,7 @@ import '../mappers/user_mapper.dart';
 import '../models/user.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  static const String _offlineTestEmail = 'tester@bass.com';
-  static const String _offlineTestEmailAlias = 'testing@bass.com';
   static const String _offlineTestPassword = 'bass123';
-  static const String _offlineTestToken = 'DUMMY_OFFLINE_TOKEN_892374982374';
 
   final Dio _dio;
 
@@ -24,9 +22,12 @@ class AuthRepositoryImpl implements AuthRepository {
     }
 
     if (_canUseOfflineTestAccount(cleanedEmail, password)) {
+      print(
+        '[AUTH][TESTER] login -> offline test account used (${OfflineTestMode.describeContext()})',
+      );
       final user = _buildOfflineTestUser();
       await LocalStorage.saveAuthSession(
-        token: _offlineTestToken,
+        token: OfflineTestMode.offlineToken,
         user: user.toJson(),
       );
       return UserMapper.toDomain(user);
@@ -101,11 +102,15 @@ class AuthRepositoryImpl implements AuthRepository {
     final storedUser = LocalStorage.getAuthUser();
     final token = LocalStorage.getAuthToken();
 
+    print(
+      '[AUTH][TESTER] getCurrentUser -> ${OfflineTestMode.describeContext()}',
+    );
+
     if (storedUser == null) {
       return null;
     }
 
-    if (token == _offlineTestToken || _isOfflineTestUser(storedUser)) {
+    if (OfflineTestMode.isActive() || _isOfflineTestUser(storedUser)) {
       return UserMapper.toDomain(User.fromJson(storedUser));
     }
 
@@ -218,14 +223,15 @@ class AuthRepositoryImpl implements AuthRepository {
       return false;
     }
 
-    return email == _offlineTestEmail || email == _offlineTestEmailAlias;
+    return email == OfflineTestMode.offlineEmail ||
+        email == OfflineTestMode.offlineEmailAlias;
   }
 
   User _buildOfflineTestUser() {
     return User(
       id: '999',
       name: 'Bass Tester',
-      email: _offlineTestEmail,
+      email: OfflineTestMode.offlineEmail,
       role: 'participant',
       roles: const ['participant'],
     );

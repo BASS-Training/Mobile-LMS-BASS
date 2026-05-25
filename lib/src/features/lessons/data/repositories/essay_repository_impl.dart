@@ -1,4 +1,4 @@
-import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
+import 'package:lms_mobile_app/src/core/utils/offline_test_mode.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/essay_remote_datasource.dart';
 import '../../domain/repositories/essay_repository.dart';
 import '../datasources/essay_local_data_source.dart';
@@ -8,10 +8,6 @@ class EssayRepositoryImpl implements EssayRepository {
   final EssayLocalDataSource localDataSource;
   final EssayRemoteDataSource? remoteDataSource;
 
-  static const String _offlineTestToken = 'DUMMY_OFFLINE_TOKEN_892374982374';
-  static const String _offlineTestEmail = 'tester@bass.com';
-  static const String _offlineTestEmailAlias = 'testing@bass.com';
-
   EssayRepositoryImpl(this.localDataSource, {this.remoteDataSource});
 
   @override
@@ -20,7 +16,12 @@ class EssayRepositoryImpl implements EssayRepository {
     String content,
   ) async {
     try {
+      print(
+        '[ESSAY][FETCH] lessonId=$lessonId tester=${OfflineTestMode.describeContext()} remoteAvailable=${remoteDataSource != null}',
+      );
+
       if (!_isOfflineTestSession() && remoteDataSource != null) {
+        print('[ESSAY][FETCH] using remote API for lessonId=$lessonId');
         final questions = await remoteDataSource!.getQuestionsByLessonId(
           lessonId,
         );
@@ -32,6 +33,7 @@ class EssayRepositoryImpl implements EssayRepository {
       // fallback ke local dummy saat API belum tersedia
     }
 
+    print('[ESSAY][FETCH] using local dummy for lessonId=$lessonId');
     return localDataSource.getQuestions(lessonId, content);
   }
 
@@ -71,10 +73,17 @@ class EssayRepositoryImpl implements EssayRepository {
     }
 
     if (!_isOfflineTestSession() && remoteDataSource != null) {
+      print(
+        '[ESSAY][SUBMIT] using remote API lessonId=$lessonId tester=${OfflineTestMode.describeContext()}',
+      );
       await remoteDataSource!.submitEssayAnswers(
         lessonId: lessonId,
         answers: payload,
         userEmail: userEmail,
+      );
+    } else {
+      print(
+        '[ESSAY][SUBMIT] using local storage only lessonId=$lessonId tester=${OfflineTestMode.describeContext()}',
       );
     }
 
@@ -82,20 +91,6 @@ class EssayRepositoryImpl implements EssayRepository {
   }
 
   bool _isOfflineTestSession() {
-    final token = LocalStorage.getAuthToken();
-    final userEmail = LocalStorage.getAuthUser()?['email']
-        ?.toString()
-        .trim()
-        .toLowerCase();
-
-    return token == _offlineTestToken || _isOfflineTestEmail(userEmail);
-  }
-
-  bool _isOfflineTestEmail(String? email) {
-    if (email == null) {
-      return false;
-    }
-
-    return email == _offlineTestEmail || email == _offlineTestEmailAlias;
+    return OfflineTestMode.isActive();
   }
 }

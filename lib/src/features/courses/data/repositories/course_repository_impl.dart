@@ -1,4 +1,5 @@
 import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
+import 'package:lms_mobile_app/src/core/utils/offline_test_mode.dart';
 
 import '../../domain/entities/course_entity.dart';
 import '../../domain/repositories/course_repository.dart';
@@ -8,10 +9,6 @@ import '../datasources/course_local_data_source.dart';
 import '../datasources/course_remote_data_source.dart';
 
 class CourseRepositoryImpl implements CourseRepository {
-  static const String _offlineTestToken = 'DUMMY_OFFLINE_TOKEN_892374982374';
-  static const String _offlineTestEmail = 'tester@bass.com';
-  static const String _offlineTestEmailAlias = 'testing@bass.com';
-
   final CourseLocalDataSource localDataSource;
   final CourseRemoteDataSource remoteDataSource;
 
@@ -23,12 +20,18 @@ class CourseRepositoryImpl implements CourseRepository {
   @override
   Future<List<CourseEntity>> getCourses() async {
     if (_isOfflineTestSession()) {
+      print(
+        '[COURSE][FETCH] using local dummy getCourses tester=${OfflineTestMode.describeContext()}',
+      );
       final localCourses = await localDataSource.getCourses();
       _updateCompletionStatus(localCourses);
       return _mapCoursesToEntities(localCourses);
     }
 
     try {
+      print(
+        '[COURSE][FETCH] using remote API getCourses tester=${OfflineTestMode.describeContext()}',
+      );
       // Strategi: Coba remote dulu untuk data terbaru
       final remoteCourses = await remoteDataSource.getCourses();
       // Simpan ke cache local
@@ -47,12 +50,18 @@ class CourseRepositoryImpl implements CourseRepository {
   @override
   Stream<List<CourseEntity>> watchCourses() async* {
     if (_isOfflineTestSession()) {
+      print(
+        '[COURSE][WATCH] using local dummy watchCourses tester=${OfflineTestMode.describeContext()}',
+      );
       final localCourses = await localDataSource.getCourses();
       _updateCompletionStatus(localCourses);
       yield _mapCoursesToEntities(localCourses);
       return;
     }
 
+    print(
+      '[COURSE][WATCH] using remote API watchCourses tester=${OfflineTestMode.describeContext()}',
+    );
     await for (final courses in remoteDataSource.watchCourses()) {
       _updateCompletionStatus(courses);
       yield _mapCoursesToEntities(courses);
@@ -62,6 +71,9 @@ class CourseRepositoryImpl implements CourseRepository {
   @override
   Future<CourseEntity?> getCourseById(String id) async {
     if (_isOfflineTestSession()) {
+      print(
+        '[COURSE][DETAIL] using local dummy getCourseById id=$id tester=${OfflineTestMode.describeContext()}',
+      );
       final localCourse = await localDataSource.getCourseById(id);
       if (localCourse != null) {
         _updateCompletionStatus([localCourse]);
@@ -71,6 +83,9 @@ class CourseRepositoryImpl implements CourseRepository {
     }
 
     try {
+      print(
+        '[COURSE][DETAIL] using remote API getCourseById id=$id tester=${OfflineTestMode.describeContext()}',
+      );
       // Coba remote dulu
       final remoteCourse = await remoteDataSource.getCourseById(id);
       if (remoteCourse != null) {
@@ -96,12 +111,18 @@ class CourseRepositoryImpl implements CourseRepository {
   @override
   Future<List<CourseEntity>> searchCourses(String query) async {
     if (_isOfflineTestSession()) {
+      print(
+        '[COURSE][SEARCH] using local dummy searchCourses query=$query tester=${OfflineTestMode.describeContext()}',
+      );
       final localCourses = await localDataSource.searchCourses(query);
       _updateCompletionStatus(localCourses);
       return _mapCoursesToEntities(localCourses);
     }
 
     try {
+      print(
+        '[COURSE][SEARCH] using remote API searchCourses query=$query tester=${OfflineTestMode.describeContext()}',
+      );
       // Coba remote dulu
       final remoteCourses = await remoteDataSource.searchCourses(query);
       // Simpan ke cache
@@ -133,10 +154,16 @@ class CourseRepositoryImpl implements CourseRepository {
   Future<void> addCourse(CourseEntity course) async {
     final model = CourseMapper.fromDomain(course);
     if (_isOfflineTestSession()) {
+      print(
+        '[COURSE][ADD] using local dummy addCourse id=${course.id} tester=${OfflineTestMode.describeContext()}',
+      );
       await localDataSource.saveCourse(model);
       return;
     }
 
+    print(
+      '[COURSE][ADD] using remote API addCourse id=${course.id} tester=${OfflineTestMode.describeContext()}',
+    );
     await remoteDataSource.addCourse(model);
     await localDataSource.saveCourse(model);
   }
@@ -144,6 +171,9 @@ class CourseRepositoryImpl implements CourseRepository {
   @override
   Future<List<CourseEntity>> getSavedCourses() async {
     if (_isOfflineTestSession()) {
+      print(
+        '[COURSE][SAVED] using local dummy getSavedCourses tester=${OfflineTestMode.describeContext()}',
+      );
       final localCourses = await localDataSource.getCourses();
       final savedCourses = localCourses.where((c) => c.isSaved).toList();
       _updateCompletionStatus(savedCourses);
@@ -151,6 +181,9 @@ class CourseRepositoryImpl implements CourseRepository {
     }
 
     try {
+      print(
+        '[COURSE][SAVED] using remote API getSavedCourses tester=${OfflineTestMode.describeContext()}',
+      );
       // Coba remote dulu untuk list terbaru
       final remoteSavedCourses = await remoteDataSource.getSavedCourses();
       // Simpan ke cache
@@ -169,11 +202,17 @@ class CourseRepositoryImpl implements CourseRepository {
   @override
   Future<void> refreshCourses() async {
     if (_isOfflineTestSession()) {
+      print(
+        '[COURSE][REFRESH] using local dummy refreshCourses tester=${OfflineTestMode.describeContext()}',
+      );
       final localCourses = await localDataSource.getCourses();
       _updateCompletionStatus(localCourses);
       return;
     }
 
+    print(
+      '[COURSE][REFRESH] using remote API refreshCourses tester=${OfflineTestMode.describeContext()}',
+    );
     // Refresh akan coba remote dulu, fallback ke local
     try {
       final remoteCourses = await remoteDataSource.getCourses();
@@ -202,20 +241,6 @@ class CourseRepositoryImpl implements CourseRepository {
   }
 
   bool _isOfflineTestSession() {
-    final token = LocalStorage.getAuthToken();
-    final userEmail = LocalStorage.getAuthUser()?['email']
-        ?.toString()
-        .trim()
-        .toLowerCase();
-
-    return token == _offlineTestToken || _isOfflineTestEmail(userEmail);
-  }
-
-  bool _isOfflineTestEmail(String? email) {
-    if (email == null) {
-      return false;
-    }
-
-    return email == _offlineTestEmail || email == _offlineTestEmailAlias;
+    return OfflineTestMode.isActive();
   }
 }

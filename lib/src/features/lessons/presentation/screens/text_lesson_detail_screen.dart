@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/utils/lesson_route_resolver.dart';
+import 'package:lms_mobile_app/src/core/utils/offline_test_mode.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
@@ -39,6 +40,10 @@ class _TextLessonDetailScreenState extends State<TextLessonDetailScreen> {
   void initState() {
     super.initState();
     _scaffoldKey = GlobalKey<ScaffoldState>();
+
+    print(
+      '[TEXT][VIEW] lessonId=${widget.lesson.id} courseId=${widget.course.id} contentLength=${widget.lesson.content.length} tester=${OfflineTestMode.describeContext()}',
+    );
 
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:lms_mobile_app/src/core/config/constants/api_endpoints.dart';
+import 'package:lms_mobile_app/src/core/utils/offline_test_mode.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/essay_remote_datasource.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/essay_question_entity.dart';
 
@@ -13,6 +14,14 @@ class EssayRemoteDataSourceImpl implements EssayRemoteDataSource {
     String lessonId,
   ) async {
     try {
+      print(
+        '[ESSAY][REMOTE][GET] lessonId=$lessonId tester=${OfflineTestMode.describeContext()}',
+      );
+      if (OfflineTestMode.isActive()) {
+        print('[ESSAY][REMOTE][GET] blocked by tester mode');
+        return const [];
+      }
+
       final endpoint = ApiEndpoints.getEssayByLesson.replaceFirst(
         '{id}',
         lessonId,
@@ -47,6 +56,14 @@ class EssayRemoteDataSourceImpl implements EssayRemoteDataSource {
     required List<Map<String, dynamic>> answers,
     String? userEmail,
   }) async {
+    print(
+      '[ESSAY][REMOTE][SUBMIT] lessonId=$lessonId tester=${OfflineTestMode.describeContext()}',
+    );
+    if (OfflineTestMode.isActive()) {
+      print('[ESSAY][REMOTE][SUBMIT] blocked by tester mode');
+      return <String, dynamic>{};
+    }
+
     final endpoint = ApiEndpoints.submitEssay.replaceFirst('{id}', lessonId);
     try {
       final response = await dio.post(endpoint, data: {'answers': answers});
