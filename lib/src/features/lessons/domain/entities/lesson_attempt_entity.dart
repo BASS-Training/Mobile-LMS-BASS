@@ -114,6 +114,26 @@ class LessonAttempt extends Equatable {
     return (score! / maxScore!) * 100;
   }
 
+  bool get isPassedQuiz => passed == true;
+
+  String get resolvedStatusLabel =>
+      statusLabel ?? (isPassedQuiz ? 'Lulus' : 'Belum Lulus');
+
+  String get resolvedStatusMessage =>
+      statusMessage ??
+      (isPassedQuiz
+          ? 'Selamat! Anda berhasil menyelesaikan kuis ini dengan baik.'
+          : 'Jangan menyerah! Terus belajar dan coba lagi.');
+
+  int get resolvedCorrectAnswers => correctAnswers ?? 0;
+
+  int get resolvedTotalQuestions => totalQuestions ?? questions.length;
+
+  int get resolvedWrongAnswers =>
+      wrongAnswers ?? (resolvedTotalQuestions - resolvedCorrectAnswers);
+
+  int get resolvedPassingGrade => passingGrade ?? 0;
+
   String get attemptLabel {
     final prefix = lessonType == 'quiz' ? 'Tes' : 'Pengumpulan';
     return '$prefix ke-$attemptNumber';

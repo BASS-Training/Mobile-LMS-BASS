@@ -26,6 +26,7 @@ import 'package:lms_mobile_app/src/features/lessons/domain/usecases/toggle_lesso
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/essay/essay_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/quiz/quiz_bloc.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/quiz_result/quiz_result_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/video/video_bloc.dart';
 
 class LessonModule {
@@ -90,6 +91,10 @@ class LessonModule {
         getQuizUseCase: GetQuizUseCase(repository: quizRepository),
         submitQuizUseCase: submitUseCase,
       );
+    });
+
+    getIt.registerFactory<QuizResultBloc>(() {
+      return QuizResultBloc(resultRepository: lessonResultRepository);
     });
 
     getIt.registerFactory<EssayBloc>(() {

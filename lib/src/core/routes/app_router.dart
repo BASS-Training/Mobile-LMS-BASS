@@ -16,6 +16,7 @@ import 'package:lms_mobile_app/src/features/main/presentation/screens/main_scree
 import 'package:lms_mobile_app/src/features/courses/presentation/screens/course_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/essay/essay_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/quiz/quiz_bloc.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/quiz_result/quiz_result_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/video/video_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/video_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/text_lesson_detail_screen.dart';
@@ -240,7 +241,10 @@ class AppRouter {
           final attempt = state.extra as LessonAttempt;
           return CustomTransitionPage(
             key: state.pageKey,
-            child: QuizResultDetailScreen(attempt: attempt),
+            child: BlocProvider<QuizResultBloc>(
+              create: (context) => _sl<QuizResultBloc>(),
+              child: QuizResultDetailScreen(attempt: attempt),
+            ),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
                   final fade = CurvedAnimation(
