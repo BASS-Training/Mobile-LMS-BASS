@@ -13,4 +13,8 @@ class GetQuizUseCase {
   Future<Quiz> call(String lessonId) async {
     return await repository.getQuizByLessonId(lessonId);
   }
+
+  Quiz? peekCached(String lessonId) {
+    return repository.getCachedQuizByLessonId(lessonId);
+  }
 }

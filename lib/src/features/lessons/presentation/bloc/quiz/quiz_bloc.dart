@@ -49,8 +49,14 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
     _courseTitle = event.courseTitle;
     _lessonTitle = event.lessonTitle;
 
-    emit(const QuizLoading());
     try {
+      final cachedQuiz = getQuizUseCase.peekCached(event.lessonId);
+      if (cachedQuiz != null) {
+        emit(QuizLoaded(quiz: cachedQuiz));
+        return;
+      }
+
+      emit(const QuizLoading());
       final quiz = await getQuizUseCase.call(event.lessonId);
       emit(QuizLoaded(quiz: quiz));
     } catch (e) {

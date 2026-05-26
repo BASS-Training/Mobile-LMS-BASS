@@ -5,11 +5,19 @@ abstract class EssayRepository {
     String lessonId,
     String content,
   );
-  Map<int, String> getDraftAnswers(String lessonId);
+  Future<Map<int, String>> getDraftAnswers(
+    String lessonId,
+    List<EssayQuestionEntity> questions,
+  );
   Future<void> saveDraftAnswer(
     String lessonId,
     int questionIndex,
     String answer,
+  );
+  Future<void> syncDraftAnswers(
+    String lessonId,
+    List<EssayQuestionEntity> questions,
+    Map<int, String> answers,
   );
   Future<void> submitEssayAnswers(
     String lessonId,

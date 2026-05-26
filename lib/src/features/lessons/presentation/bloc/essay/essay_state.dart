@@ -8,6 +8,7 @@ class EssayState extends Equatable {
   final Map<int, String> savedDraftAnswers;
   final int currentQuestionIndex;
   final bool isSubmitting;
+  final bool isSubmitted;
   final String? errorMessage;
   final bool isSuccess;
   final dynamic lastAttempt;
@@ -20,6 +21,7 @@ class EssayState extends Equatable {
     this.savedDraftAnswers = const {},
     this.currentQuestionIndex = 0,
     this.isSubmitting = false,
+    this.isSubmitted = false,
     this.errorMessage,
     this.isSuccess = false,
     this.snackbarMessage,
@@ -62,6 +64,7 @@ class EssayState extends Equatable {
     Map<int, String>? savedDraftAnswers,
     int? currentQuestionIndex,
     bool? isSubmitting,
+    bool? isSubmitted,
     String? errorMessage,
     bool? isSuccess,
     String? snackbarMessage,
@@ -74,6 +77,7 @@ class EssayState extends Equatable {
       savedDraftAnswers: savedDraftAnswers ?? this.savedDraftAnswers,
       currentQuestionIndex: currentQuestionIndex ?? this.currentQuestionIndex,
       isSubmitting: isSubmitting ?? this.isSubmitting,
+      isSubmitted: isSubmitted ?? this.isSubmitted,
       errorMessage:
           errorMessage, // Dibiarkan null jika tidak di-pass agar ke-reset
       isSuccess: isSuccess ?? this.isSuccess,
@@ -90,6 +94,7 @@ class EssayState extends Equatable {
     savedDraftAnswers,
     currentQuestionIndex,
     isSubmitting,
+    isSubmitted,
     errorMessage,
     isSuccess,
     lastAttempt,

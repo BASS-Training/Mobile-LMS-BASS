@@ -642,6 +642,30 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
             ),
           ),
           const SizedBox(height: 16),
+          if (state.isSubmitted) ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.green.shade50,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.green.shade200),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.verified_rounded, color: Colors.green),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Jawaban sudah dikumpulkan. Kamu tidak bisa mengirim ulang.',
+                      style: TextStyle(fontSize: 12.5, height: 1.4),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
           const Text(
             'Jawaban Anda',
             style: TextStyle(
@@ -680,6 +704,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
           ),
           const SizedBox(height: 8),
           TextField(
+            enabled: !state.isSubmitted,
             controller: _answerController,
             minLines: 10,
             maxLines: 14,
@@ -761,6 +786,64 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
           ChangeQuestion(state.currentQuestionIndex + 1),
         );
       }
+    }
+
+    void handleContinueAfterSubmit() {
+      if (canGoNext && nextLesson != null) {
+        Navigator.pop(context);
+        Future.delayed(
+          const Duration(milliseconds: 200),
+          () => _openLesson(nextLesson!, widget.lessonIndex + 1),
+        );
+      } else {
+        _backToCourse();
+      }
+    }
+
+    if (state.isSubmitted) {
+      return SafeArea(
+        top: false,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border(
+              top: BorderSide(color: AppColors.pearl.withValues(alpha: 0.9)),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.12),
+                blurRadius: 22,
+                offset: const Offset(0, -8),
+                spreadRadius: 1,
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _backToCourse,
+                  icon: const Icon(Icons.arrow_back),
+                  label: const Text('Kembali'),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: handleContinueAfterSubmit,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.red,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  icon: const Icon(Icons.arrow_forward_rounded),
+                  label: Text(canGoNext ? 'Lanjut' : 'Selesai'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
     return SafeArea(

@@ -9,13 +9,44 @@ class LessonRemoteDataSourceImpl implements LessonRemoteDataSource {
 
   @override
   Future<void> markLessonComplete(String lessonId) async {
-    final endpoint = ApiEndpoints.markLessonComplete.replaceFirst('{id}', lessonId);
-    await dio.post(endpoint);
+    final endpoint = ApiEndpoints.markLessonComplete.replaceFirst(
+      '{id}',
+      lessonId,
+    );
+    try {
+      // ignore: avoid_print
+      print('[LESSON][REMOTE][COMPLETE] POST $endpoint');
+      final response = await dio.post(endpoint);
+      // ignore: avoid_print
+      print(
+        '[LESSON][REMOTE][COMPLETE] RESPONSE ${response.statusCode} ${response.data}',
+      );
+    } catch (e) {
+      // Log and rethrow so caller can handle/log
+      // ignore: avoid_print
+      print('[LESSON][REMOTE][COMPLETE] ERROR $e');
+      rethrow;
+    }
   }
 
   @override
   Future<void> markLessonIncomplete(String lessonId) async {
-    final endpoint = ApiEndpoints.markLessonIncomplete.replaceFirst('{id}', lessonId);
-    await dio.post(endpoint);
+    final endpoint = ApiEndpoints.markLessonIncomplete.replaceFirst(
+      '{id}',
+      lessonId,
+    );
+    try {
+      // ignore: avoid_print
+      print('[LESSON][REMOTE][INCOMPLETE] POST $endpoint');
+      final response = await dio.post(endpoint);
+      // ignore: avoid_print
+      print(
+        '[LESSON][REMOTE][INCOMPLETE] RESPONSE ${response.statusCode} ${response.data}',
+      );
+    } catch (e) {
+      // ignore: avoid_print
+      print('[LESSON][REMOTE][INCOMPLETE] ERROR $e');
+      rethrow;
+    }
   }
 }

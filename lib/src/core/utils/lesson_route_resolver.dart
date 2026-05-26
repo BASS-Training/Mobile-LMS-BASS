@@ -7,6 +7,8 @@ class LessonRouteResolver {
     switch (type.toLowerCase()) {
       case 'video':
         return AppRoutes.videoLessonDetail;
+      case 'document':
+        return AppRoutes.documentLessonDetail;
       case 'quiz':
         return AppRoutes.quizLessonDetail;
       case 'essay':

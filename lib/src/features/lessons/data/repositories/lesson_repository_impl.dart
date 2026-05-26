@@ -24,11 +24,26 @@ class LessonRepositoryImpl implements LessonRepository {
       } catch (_) {}
     } else {
       await LocalStorage.markLessonComplete(lessonId);
-      try {
-        if (remoteDataSource != null) {
-          await remoteDataSource!.markLessonComplete(lessonId);
+      // Try to sync remote with retries
+      if (remoteDataSource != null) {
+        var attempts = 0;
+        while (attempts < 3) {
+          attempts += 1;
+          try {
+            await remoteDataSource!.markLessonComplete(lessonId);
+            break;
+          } catch (e) {
+            // ignore: avoid_print
+            print('markLessonComplete attempt=$attempts failed: $e');
+            if (attempts >= 3) {
+              // Give up after 3 attempts; will leave local mark so user can continue offline
+              // Could schedule background retry here
+            } else {
+              await Future.delayed(const Duration(seconds: 1));
+            }
+          }
         }
-      } catch (_) {}
+      }
     }
   }
 
@@ -39,9 +54,30 @@ class LessonRepositoryImpl implements LessonRepository {
     }
     try {
       if (remoteDataSource != null) {
-        await remoteDataSource!.markLessonComplete(lessonId);
+        var attempts = 0;
+        while (attempts < 3) {
+          attempts += 1;
+          try {
+            await remoteDataSource!.markLessonComplete(lessonId);
+            break;
+          } catch (e) {
+            // ignore: avoid_print
+            print('markLessonComplete attempt=$attempts failed: $e');
+            if (attempts >= 3) {
+              // final failure
+            } else {
+              await Future.delayed(const Duration(seconds: 1));
+            }
+          }
+        }
       }
-    } catch (_) {}
+    } catch (e, st) {
+      // Log remote failure for debugging
+      // ignore: avoid_print
+      print('markLessonComplete remote error: $e');
+      // ignore: avoid_print
+      print(st);
+    }
   }
 
   @override

@@ -34,8 +34,10 @@ class EssayRemoteDataSourceImpl implements EssayRemoteDataSource {
 
       // if user already has a submitted submission, mark lesson complete locally
       final submission = data['submission'];
-      if (submission is Map<String, dynamic> && submission['status'] == 'submitted') {
+      if (submission is Map<String, dynamic> &&
+          submission['status'] == 'submitted') {
         try {
+          await LocalStorage.markEssaySubmitted(lessonId);
           await LocalStorage.markLessonComplete(lessonId);
         } catch (_) {}
       }
@@ -56,6 +58,45 @@ class EssayRemoteDataSourceImpl implements EssayRemoteDataSource {
           .toList();
     } on DioException catch (error) {
       throw Exception(_extractErrorMessage(error, 'Gagal memuat soal essay'));
+    }
+  }
+
+  @override
+  Future<Map<String, String>> getDraftAnswersByLessonId(String lessonId) async {
+    if (OfflineTestMode.isActive()) {
+      return <String, String>{};
+    }
+
+    final endpoint = ApiEndpoints.getEssayByLesson.replaceFirst(
+      '{id}',
+      lessonId,
+    );
+    try {
+      final response = await dio.get(endpoint);
+      final jsonResp = response.data as Map<String, dynamic>;
+      final data = jsonResp['data'] as Map<String, dynamic>;
+      final submission = data['submission'];
+
+      if (submission is! Map<String, dynamic>) {
+        return <String, String>{};
+      }
+
+      final answers = submission['answers'];
+      if (answers is! List) {
+        return <String, String>{};
+      }
+
+      final result = <String, String>{};
+      for (final item in answers.whereType<Map<String, dynamic>>()) {
+        final questionId = item['question_id']?.toString().trim() ?? '';
+        final answer = item['answer']?.toString() ?? '';
+        if (questionId.isEmpty || answer.trim().isEmpty) continue;
+        result[questionId] = answer;
+      }
+
+      return result;
+    } on DioException catch (error) {
+      throw Exception(_extractErrorMessage(error, 'Gagal memuat draft essay'));
     }
   }
 
@@ -106,7 +147,9 @@ class EssayRemoteDataSourceImpl implements EssayRemoteDataSource {
       return;
     } on DioException catch (error) {
       // don't fail hard on autosave; just log or rethrow if needed
-      throw Exception(_extractErrorMessage(error, 'Gagal menyimpan draft essay'));
+      throw Exception(
+        _extractErrorMessage(error, 'Gagal menyimpan draft essay'),
+      );
     }
   }
 

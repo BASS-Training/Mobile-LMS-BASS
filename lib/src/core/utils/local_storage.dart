@@ -6,6 +6,7 @@ class LocalStorage {
   static const String _boxName = 'mini_lms_box';
   static const String _completedLessonsKey = 'completed_lessons';
   static const String _essayDraftPrefix = 'essay_draft_';
+  static const String _essaySubmittedPrefix = 'essay_submitted_';
   static const String _lessonAttemptPrefix = 'lesson_attempts_';
   static const String _recentCoursesKey = 'recent_courses';
   static const String _authTokenKey = 'auth_token';
@@ -125,6 +126,22 @@ class LocalStorage {
 
   static String _essayDraftKey(String lessonId) {
     return '$_essayDraftPrefix$lessonId';
+  }
+
+  static String _essaySubmittedKey(String lessonId) {
+    return '$_essaySubmittedPrefix$lessonId';
+  }
+
+  static Future<void> markEssaySubmitted(String lessonId) async {
+    await _box.put(_essaySubmittedKey(lessonId), true);
+  }
+
+  static Future<void> unmarkEssaySubmitted(String lessonId) async {
+    await _box.delete(_essaySubmittedKey(lessonId));
+  }
+
+  static bool isEssaySubmitted(String lessonId) {
+    return _box.get(_essaySubmittedKey(lessonId), defaultValue: false) == true;
   }
 
   static Map<int, String> getEssayDraftAnswers(String lessonId) {

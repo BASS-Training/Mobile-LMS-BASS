@@ -9,6 +9,8 @@ import 'package:lms_mobile_app/src/features/lessons/data/models/quiz_model.dart'
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/quiz_repository.dart';
 
 class QuizRepositoryImpl implements QuizRepository {
+  static final Map<String, Quiz> _quizCache = <String, Quiz>{};
+
   final QuizLocalDataSource localDataSource;
   final QuizRemoteDataSource? remoteDataSource;
 
@@ -18,8 +20,19 @@ class QuizRepositoryImpl implements QuizRepository {
   });
 
   @override
+  Quiz? getCachedQuizByLessonId(String lessonId) {
+    return _quizCache[lessonId];
+  }
+
+  @override
   Future<Quiz> getQuizByLessonId(String lessonId) async {
     try {
+      final cachedQuiz = _quizCache[lessonId];
+      if (cachedQuiz != null) {
+        print('[QUIZ][FETCH] cache hit for lessonId=$lessonId');
+        return cachedQuiz;
+      }
+
       print(
         '[QUIZ][FETCH] lessonId=$lessonId tester=${OfflineTestMode.describeContext()} remoteAvailable=${remoteDataSource != null} mock=${FlavorConfig.instance.enableMockData}',
       );
@@ -115,7 +128,7 @@ class QuizRepositoryImpl implements QuizRepository {
       final questions = baseQuestions;
 
       // Convert to Quiz model
-      return Quiz(
+      final quiz = Quiz(
         id: quizData.containsKey('id') ? quizData['id'].toString() : null,
         title: quizData['title'] as String,
         totalQuestions: questions.length,
@@ -127,6 +140,9 @@ class QuizRepositoryImpl implements QuizRepository {
             : null,
         completed: quizData['completed'] == true,
       );
+
+      _quizCache[lessonId] = quiz;
+      return quiz;
     } catch (e) {
       throw Exception('Failed to get quiz: $e');
     }

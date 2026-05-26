@@ -38,8 +38,40 @@ class EssayRepositoryImpl implements EssayRepository {
   }
 
   @override
-  Map<int, String> getDraftAnswers(String lessonId) {
-    return localDataSource.getDraftAnswers(lessonId);
+  Future<Map<int, String>> getDraftAnswers(
+    String lessonId,
+    List<EssayQuestionEntity> questions,
+  ) async {
+    final localDrafts = localDataSource.getDraftAnswers(lessonId);
+
+    if (_isOfflineTestSession() || remoteDataSource == null) {
+      return localDrafts;
+    }
+
+    try {
+      final serverDrafts = await remoteDataSource!.getDraftAnswersByLessonId(
+        lessonId,
+      );
+
+      if (serverDrafts.isEmpty) {
+        return localDrafts;
+      }
+
+      final merged = Map<int, String>.from(localDrafts);
+      for (int index = 0; index < questions.length; index++) {
+        final questionId = questions[index].id.trim();
+        if (questionId.isEmpty) continue;
+
+        final serverAnswer = serverDrafts[questionId];
+        if (serverAnswer != null && serverAnswer.trim().isNotEmpty) {
+          merged[index] = serverAnswer;
+        }
+      }
+
+      return merged;
+    } catch (_) {
+      return localDrafts;
+    }
   }
 
   @override
@@ -49,26 +81,37 @@ class EssayRepositoryImpl implements EssayRepository {
     String answer,
   ) async {
     await localDataSource.saveDraftAnswer(lessonId, questionIndex, answer);
+  }
 
-    // Try to sync draft to server when remote available
-    try {
-      if (!_isOfflineTestSession() && remoteDataSource != null) {
-        final allDrafts = localDataSource.getDraftAnswers(lessonId);
-        final payload = <Map<String, dynamic>>[];
-        allDrafts.forEach((index, text) {
-          payload.add({'question_id': index.toString(), 'answer': text});
-        });
-
-        if (payload.isNotEmpty) {
-          await remoteDataSource!.autosaveEssayDraft(
-            lessonId: lessonId,
-            answers: payload,
-          );
-        }
-      }
-    } catch (_) {
-      // ignore autosave errors for now
+  @override
+  Future<void> syncDraftAnswers(
+    String lessonId,
+    List<EssayQuestionEntity> questions,
+    Map<int, String> answers,
+  ) async {
+    if (_isOfflineTestSession() || remoteDataSource == null) {
+      return;
     }
+
+    final payload = <Map<String, dynamic>>[];
+    for (int index = 0; index < questions.length; index++) {
+      final answer = answers[index]?.trim();
+      if (answer == null || answer.isEmpty) continue;
+
+      final questionId = questions[index].id.trim();
+      if (questionId.isEmpty) continue;
+
+      payload.add({'question_id': questionId, 'answer': answer});
+    }
+
+    if (payload.isEmpty) {
+      return;
+    }
+
+    await remoteDataSource!.autosaveEssayDraft(
+      lessonId: lessonId,
+      answers: payload,
+    );
   }
 
   @override

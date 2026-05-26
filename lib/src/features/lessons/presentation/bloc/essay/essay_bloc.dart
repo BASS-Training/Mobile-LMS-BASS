@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_attempt_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_result_repository.dart';
 import 'package:lms_mobile_app/src/features/authentication/domain/usecases/auth_usecase.dart';
@@ -31,7 +32,10 @@ class EssayBloc extends Bloc<EssayEvent, EssayState> {
         event.lessonId,
         event.content,
       );
-      final drafts = repository.getDraftAnswers(event.lessonId);
+      final drafts = await repository.getDraftAnswers(
+        event.lessonId,
+        questions,
+      );
 
       emit(
         state.copyWith(
@@ -40,17 +44,24 @@ class EssayBloc extends Bloc<EssayEvent, EssayState> {
           workingAnswers: Map.from(drafts),
           savedDraftAnswers: Map.from(drafts),
           currentQuestionIndex: 0,
+          isSubmitted: LocalStorage.isEssaySubmitted(event.lessonId),
         ),
       );
     });
 
-    on<AnswerChanged>((event, emit) {
+    on<AnswerChanged>((event, emit) async {
       final newWorkingAnswers = Map<int, String>.from(state.workingAnswers);
       newWorkingAnswers[state.currentQuestionIndex] = event.answer;
       emit(state.copyWith(workingAnswers: newWorkingAnswers));
+
+      await repository.syncDraftAnswers(
+        state.lessonId,
+        state.questions,
+        newWorkingAnswers,
+      );
     });
 
-    on<ChangeQuestion>((event, emit) {
+    on<ChangeQuestion>((event, emit) async {
       // Auto-save draft local memory saat pindah soal
       final currentAnswer =
           state.workingAnswers[state.currentQuestionIndex] ?? '';
@@ -69,9 +80,15 @@ class EssayBloc extends Bloc<EssayEvent, EssayState> {
           savedDraftAnswers: newSavedDrafts,
         ),
       );
+
+      await repository.syncDraftAnswers(
+        state.lessonId,
+        state.questions,
+        state.workingAnswers,
+      );
     });
 
-    on<SaveDraftClicked>((event, emit) {
+    on<SaveDraftClicked>((event, emit) async {
       final currentAnswer =
           state.workingAnswers[state.currentQuestionIndex] ?? '';
       repository.saveDraftAnswer(
@@ -82,6 +99,12 @@ class EssayBloc extends Bloc<EssayEvent, EssayState> {
 
       final newSavedDrafts = Map<int, String>.from(state.savedDraftAnswers);
       newSavedDrafts[state.currentQuestionIndex] = currentAnswer;
+
+      await repository.syncDraftAnswers(
+        state.lessonId,
+        state.questions,
+        state.workingAnswers,
+      );
 
       emit(
         state.copyWith(
@@ -151,9 +174,11 @@ class EssayBloc extends Bloc<EssayEvent, EssayState> {
             isSubmitting: false,
             isSuccess: true,
             savedDraftAnswers: Map.from(state.workingAnswers),
+            isSubmitted: true,
             lastAttempt: savedAttempt,
           ),
         );
+        await LocalStorage.markEssaySubmitted(state.lessonId);
       } else {
         emit(
           state.copyWith(

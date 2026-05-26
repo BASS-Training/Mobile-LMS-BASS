@@ -10,6 +10,7 @@ class LessonEntity extends Equatable {
   final String type;
   final bool isCompleted;
   final String? youtubeVideoId;
+  final String? documentUrl;
   final List<TextSectionEntity>? textSections;
 
   const LessonEntity({
@@ -21,6 +22,7 @@ class LessonEntity extends Equatable {
     this.type = 'text',
     this.isCompleted = false,
     this.youtubeVideoId,
+    this.documentUrl,
     this.textSections,
   });
 
@@ -30,6 +32,7 @@ class LessonEntity extends Equatable {
     bool? isCompleted,
     String? type,
     String? youtubeVideoId,
+    String? documentUrl,
     List<TextSectionEntity>? textSections,
   }) {
     return LessonEntity(
@@ -41,6 +44,7 @@ class LessonEntity extends Equatable {
       type: type ?? this.type,
       isCompleted: isCompleted ?? this.isCompleted,
       youtubeVideoId: youtubeVideoId ?? this.youtubeVideoId,
+      documentUrl: documentUrl ?? this.documentUrl,
       textSections: textSections ?? this.textSections,
     );
   }
@@ -55,6 +59,7 @@ class LessonEntity extends Equatable {
     type,
     isCompleted,
     youtubeVideoId,
+    documentUrl,
     textSections,
   ];
 }

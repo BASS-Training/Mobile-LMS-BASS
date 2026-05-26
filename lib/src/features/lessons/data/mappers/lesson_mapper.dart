@@ -12,6 +12,7 @@ class LessonMapper {
       type: model.type,
       isCompleted: model.isCompleted,
       youtubeVideoId: model.youtubeVideoId,
+      documentUrl: model.documentUrl,
     );
   }
 
@@ -25,6 +26,7 @@ class LessonMapper {
       type: entity.type,
       isCompleted: entity.isCompleted,
       youtubeVideoId: entity.youtubeVideoId,
+      documentUrl: entity.documentUrl,
     );
   }
 }

@@ -20,6 +20,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/quiz_resul
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/video/video_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/video_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/text_lesson_detail_screen.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/screens/document_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/quiz_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/essay_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/results_list_screen.dart';
@@ -149,6 +150,38 @@ class AppRouter {
           return CustomTransitionPage(
             key: state.pageKey,
             child: TextLessonDetailScreen(
+              lesson: lesson,
+              course: course,
+              lessonIndex: lessonIndex,
+            ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  final fade = CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                  );
+                  final slide = Tween<Offset>(
+                    begin: const Offset(0.04, 0),
+                    end: Offset.zero,
+                  ).animate(fade);
+                  return FadeTransition(
+                    opacity: fade,
+                    child: SlideTransition(position: slide, child: child),
+                  );
+                },
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.documentLessonDetail,
+        pageBuilder: (context, state) {
+          final args = state.extra as Map<String, dynamic>;
+          final lesson = args['lesson'] as LessonEntity;
+          final course = args['course'] as CourseEntity;
+          final lessonIndex = args['lessonIndex'] as int;
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: DocumentLessonDetailScreen(
               lesson: lesson,
               course: course,
               lessonIndex: lessonIndex,
