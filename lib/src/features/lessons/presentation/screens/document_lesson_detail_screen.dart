@@ -10,6 +10,7 @@ import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/cou
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_event.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
@@ -32,8 +33,8 @@ class DocumentLessonDetailScreen extends StatefulWidget {
       _DocumentLessonDetailScreenState();
 }
 
-class _DocumentLessonDetailScreenState
-    extends State<DocumentLessonDetailScreen> {
+class _DocumentLessonDetailScreenState extends State<DocumentLessonDetailScreen>
+    with LessonNavigationMixin {
   late final GlobalKey<ScaffoldState> _scaffoldKey;
   PdfViewerController? _pdfViewerController;
   double _zoomLevel = 1.0;
@@ -56,15 +57,6 @@ class _DocumentLessonDetailScreenState
     super.dispose();
   }
 
-  bool get canGoNext =>
-      widget.lessonIndex < widget.course.allLessons.length - 1;
-  bool get canGoPrevious => widget.lessonIndex > 0;
-
-  LessonEntity? get nextLesson =>
-      canGoNext ? widget.course.allLessons[widget.lessonIndex + 1] : null;
-  LessonEntity? get previousLesson =>
-      canGoPrevious ? widget.course.allLessons[widget.lessonIndex - 1] : null;
-
   String? get _documentUrl {
     final candidate = widget.lesson.documentUrl?.trim();
     if (candidate != null && candidate.isNotEmpty) {
@@ -84,17 +76,11 @@ class _DocumentLessonDetailScreenState
     return null;
   }
 
-  void _openLesson(LessonEntity lesson, int lessonIndex) {
-    final route = LessonRouteResolver.routeForType(lesson.type);
-    context.push(
-      route,
-      extra: {
-        'lesson': lesson,
-        'course': widget.course,
-        'lessonIndex': lessonIndex,
-      },
-    );
-  }
+  @override
+  CourseEntity get currentCourse => widget.course;
+
+  @override
+  int get currentLessonIndex => widget.lessonIndex;
 
   Future<void> _markComplete({bool goToNext = false}) async {
     if (!widget.lesson.isCompleted) {
@@ -111,7 +97,7 @@ class _DocumentLessonDetailScreenState
       context.pop();
       Future.delayed(const Duration(milliseconds: 180), () {
         if (!mounted) return;
-        _openLesson(nextLesson!, widget.lessonIndex + 1);
+        navigateToLesson(nextLesson!, widget.lessonIndex + 1);
       });
       return;
     }
@@ -362,7 +348,7 @@ class _DocumentLessonDetailScreenState
                   onPressed: () {
                     Navigator.pop(context);
                     Future.delayed(const Duration(milliseconds: 200), () {
-                      _openLesson(previousLesson!, widget.lessonIndex - 1);
+                      navigateToLesson(previousLesson!, widget.lessonIndex - 1);
                     });
                   },
                   icon: const Icon(Icons.arrow_back_rounded),

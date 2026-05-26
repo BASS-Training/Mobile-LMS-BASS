@@ -8,6 +8,7 @@ import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/cou
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_event.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion_card.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
@@ -39,7 +40,8 @@ class VideoLessonDetailScreen extends StatefulWidget {
       _VideoLessonDetailScreenState();
 }
 
-class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
+class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
+    with LessonNavigationMixin {
   late final YoutubePlayerController _controller;
   final TextEditingController _commentController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
@@ -53,16 +55,22 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
     return YoutubePlayer.convertUrlToId(value) ?? value;
   }
 
-  bool get canGoNext =>
-      widget.lessonIndex < widget.course.allLessons.length - 1;
-  bool get canGoPrevious => widget.lessonIndex > 0;
+  // bool get canGoNext =>
+  //     widget.lessonIndex < widget.course.allLessons.length - 1;
+  // bool get canGoPrevious => widget.lessonIndex > 0;
 
-  LessonEntity? get nextLesson =>
-      canGoNext ? widget.course.allLessons[widget.lessonIndex + 1] : null;
-  LessonEntity? get previousLesson =>
-      canGoPrevious ? widget.course.allLessons[widget.lessonIndex - 1] : null;
+  // LessonEntity? get nextLesson =>
+  //     canGoNext ? widget.course.allLessons[widget.lessonIndex + 1] : null;
+  // LessonEntity? get previousLesson =>
+  //     canGoPrevious ? widget.course.allLessons[widget.lessonIndex - 1] : null;
 
   late GlobalKey<ScaffoldState> _scaffoldKey;
+
+  @override
+  CourseEntity get currentCourse => widget.course;
+
+  @override
+  int get currentLessonIndex => widget.lessonIndex;
 
   @override
   void initState() {
@@ -126,18 +134,6 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
     _commentController.dispose();
     _scrollController.dispose();
     super.dispose();
-  }
-
-  void _openLesson(LessonEntity lesson, int lessonIndex) {
-    final route = LessonRouteResolver.routeForType(lesson.type);
-    context.push(
-      route,
-      extra: {
-        'lesson': lesson,
-        'course': widget.course,
-        'lessonIndex': lessonIndex,
-      },
-    );
   }
 
   @override
@@ -231,15 +227,8 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
             course: widget.course,
             currentLessonIndex: widget.lessonIndex,
             onSelectLesson: (lesson, index) {
-              final route = LessonRouteResolver.routeForType(lesson.type);
-              context.push(
-                route,
-                extra: {
-                  'lesson': lesson,
-                  'course': widget.course,
-                  'lessonIndex': index,
-                },
-              );
+              navigateToLesson(lesson, index);
+              
             },
           ),
           backgroundColor: const Color(0xFFF6F8FF),
@@ -453,7 +442,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
                 onPressed: () {
                   Navigator.pop(context);
                   Future.delayed(const Duration(milliseconds: 200), () {
-                    _openLesson(previousLesson!, widget.lessonIndex - 1);
+                    navigateToLesson(previousLesson!, widget.lessonIndex - 1);
                   });
                 },
                 icon: const Icon(Icons.arrow_back),
@@ -479,7 +468,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen> {
                         }
                         Navigator.pop(context);
                         Future.delayed(const Duration(milliseconds: 200), () {
-                          _openLesson(nextLesson!, widget.lessonIndex + 1);
+                          navigateToLesson(nextLesson!, widget.lessonIndex + 1);
                         });
                       },
                 icon: const Icon(Icons.arrow_forward),

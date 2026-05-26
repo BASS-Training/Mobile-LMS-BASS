@@ -9,6 +9,7 @@ import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_entit
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_event.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/quiz/quiz_bloc.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/quiz_intro_widget.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/quiz_questions_widget.dart';
@@ -36,7 +37,7 @@ class QuizLessonDetailScreen extends StatefulWidget {
   State<QuizLessonDetailScreen> createState() => _QuizLessonDetailScreenState();
 }
 
-class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
+class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> with LessonNavigationMixin {
   late GlobalKey<ScaffoldState> _scaffoldKey;
 
   @override
@@ -55,36 +56,17 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
   }
 
   // === Helper Methods ===
+  @override
+  CourseEntity get currentCourse => widget.course;
 
-  void _openLesson(LessonEntity lesson, int lessonIndex) {
-    final route = LessonRouteResolver.routeForType(lesson.type);
+  @override
+  int get currentLessonIndex => widget.lessonIndex;
 
-    Navigator.pop(context);
-    Future.delayed(const Duration(milliseconds: 200), () {
-      if (!mounted) return;
-      context.push(
-        route,
-        extra: {
-          'lesson': lesson,
-          'course': widget.course,
-          'lessonIndex': lessonIndex,
-        },
-      );
-    });
-  }
 
   void _backToCourse() {
     Navigator.pop(context);
     context.read<CourseBloc>().add(const RefreshCoursesEvent());
   }
-
-  // === Getters ===
-
-  bool get canGoNext =>
-      widget.lessonIndex < widget.course.allLessons.length - 1;
-
-  LessonEntity? get nextLesson =>
-      canGoNext ? widget.course.allLessons[widget.lessonIndex + 1] : null;
 
   @override
   Widget build(BuildContext context) {
@@ -237,16 +219,8 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
           course: widget.course,
           currentLessonIndex: widget.lessonIndex,
           onSelectLesson: (lesson, index) {
-            final route = LessonRouteResolver.routeForType(lesson.type);
             Navigator.pop(context);
-            context.push(
-              route,
-              extra: {
-                'lesson': lesson,
-                'course': widget.course,
-                'lessonIndex': index,
-              },
-            );
+            navigateToLesson(lesson, index);
           },
         ),
         body: Stack(
@@ -307,16 +281,8 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
           course: widget.course,
           currentLessonIndex: widget.lessonIndex,
           onSelectLesson: (lesson, index) {
-            final route = LessonRouteResolver.routeForType(lesson.type);
             Navigator.pop(context);
-            context.push(
-              route,
-              extra: {
-                'lesson': lesson,
-                'course': widget.course,
-                'lessonIndex': index,
-              },
-            );
+            navigateToLesson(lesson, index);
           },
         ),
         bottomNavigationBar: _buildBottomActionBar(quizState),
@@ -608,7 +574,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> {
               result: quizState.result,
               canGoNext: canProceed,
               onNextLesson: () {
-                _openLesson(nextLesson!, widget.lessonIndex + 1);
+                navigateToLesson(nextLesson!, widget.lessonIndex + 1);
               },
               onBackToCourse: _backToCourse,
             ),

@@ -11,6 +11,7 @@ import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/cou
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_event.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/question_navigator_widget.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
@@ -38,17 +39,10 @@ class EssayLessonDetailScreen extends StatefulWidget {
       _EssayLessonDetailScreenState();
 }
 
-class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
+class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
+    with LessonNavigationMixin {
   late final TextEditingController _answerController;
   late final GlobalKey<ScaffoldState> _scaffoldKey;
-
-  bool get canGoNext =>
-      widget.lessonIndex < widget.course.allLessons.length - 1;
-  bool get canGoPrevious => widget.lessonIndex > 0;
-  LessonEntity? get nextLesson =>
-      canGoNext ? widget.course.allLessons[widget.lessonIndex + 1] : null;
-  LessonEntity? get previousLesson =>
-      canGoPrevious ? widget.course.allLessons[widget.lessonIndex - 1] : null;
 
   @override
   void initState() {
@@ -79,17 +73,11 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
     context.read<CourseBloc>().add(const RefreshCoursesEvent());
   }
 
-  void _openLesson(LessonEntity lesson, int lessonIndex) {
-    final route = LessonRouteResolver.routeForType(lesson.type);
-    context.push(
-      route,
-      extra: {
-        'lesson': lesson,
-        'course': widget.course,
-        'lessonIndex': lessonIndex,
-      },
-    );
-  }
+  @override
+  CourseEntity get currentCourse => widget.course;
+
+  @override
+  int get currentLessonIndex => widget.lessonIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -151,7 +139,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
                 Navigator.pop(context);
                 Future.delayed(
                   const Duration(milliseconds: 200),
-                  () => _openLesson(nextLesson!, widget.lessonIndex + 1),
+                  () => navigateToLesson(nextLesson!, widget.lessonIndex + 1),
                 );
               }
             }
@@ -774,7 +762,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
         Navigator.pop(context);
         Future.delayed(
           const Duration(milliseconds: 200),
-          () => _openLesson(previousLesson!, widget.lessonIndex - 1),
+          () => navigateToLesson(previousLesson!, widget.lessonIndex - 1),
         );
       }
     }
@@ -793,7 +781,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen> {
         Navigator.pop(context);
         Future.delayed(
           const Duration(milliseconds: 200),
-          () => _openLesson(nextLesson!, widget.lessonIndex + 1),
+          () => navigateToLesson(nextLesson!, widget.lessonIndex + 1),
         );
       } else {
         _backToCourse();

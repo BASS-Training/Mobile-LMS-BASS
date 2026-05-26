@@ -13,6 +13,7 @@ import 'package:lms_mobile_app/src/features/lessons/domain/entities/text_section
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_event.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
@@ -33,7 +34,8 @@ class TextLessonDetailScreen extends StatefulWidget {
   State<TextLessonDetailScreen> createState() => _TextLessonDetailScreenState();
 }
 
-class _TextLessonDetailScreenState extends State<TextLessonDetailScreen> {
+class _TextLessonDetailScreenState extends State<TextLessonDetailScreen>
+    with LessonNavigationMixin {
   late GlobalKey<ScaffoldState> _scaffoldKey;
 
   @override
@@ -57,27 +59,11 @@ class _TextLessonDetailScreenState extends State<TextLessonDetailScreen> {
     super.dispose();
   }
 
-  bool get canGoNext =>
-      widget.lessonIndex < widget.course.allLessons.length - 1;
-  bool get canGoPrevious => widget.lessonIndex > 0;
+  @override
+  CourseEntity get currentCourse => widget.course;
 
-  LessonEntity? get nextLesson =>
-      canGoNext ? widget.course.allLessons[widget.lessonIndex + 1] : null;
-  LessonEntity? get previousLesson =>
-      canGoPrevious ? widget.course.allLessons[widget.lessonIndex - 1] : null;
-
-  void _openLesson(LessonEntity lesson, int lessonIndex) {
-    final route = LessonRouteResolver.routeForType(lesson.type);
-
-    context.push(
-      route,
-      extra: {
-        'lesson': lesson,
-        'course': widget.course,
-        'lessonIndex': lessonIndex,
-      },
-    );
-  }
+  @override
+  int get currentLessonIndex => widget.lessonIndex;
 
   void _markComplete() {
     context.read<LessonBloc>().add(
@@ -564,7 +550,7 @@ class _TextLessonDetailScreenState extends State<TextLessonDetailScreen> {
                   onPressed: () {
                     Navigator.pop(context);
                     Future.delayed(const Duration(milliseconds: 200), () {
-                      _openLesson(previousLesson!, widget.lessonIndex - 1);
+                      navigateToLesson(previousLesson!, widget.lessonIndex - 1);
                     });
                   },
                   icon: const Icon(Icons.arrow_back_rounded),
@@ -583,7 +569,7 @@ class _TextLessonDetailScreenState extends State<TextLessonDetailScreen> {
                     if (!mounted) return;
                     Navigator.pop(context);
                     Future.delayed(const Duration(milliseconds: 200), () {
-                      _openLesson(nextLesson!, widget.lessonIndex + 1);
+                      navigateToLesson(nextLesson!, widget.lessonIndex + 1);
                     });
                   },
                   icon: const Icon(Icons.arrow_forward_rounded),
