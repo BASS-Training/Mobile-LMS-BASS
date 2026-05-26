@@ -81,10 +81,12 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        _backToCourse();
-        return false;
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) {
+          _backToCourse();
+        }
       },
       child: Scaffold(
         key: _scaffoldKey,

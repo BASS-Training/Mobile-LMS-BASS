@@ -233,7 +233,7 @@ class _DocumentLessonDetailScreenState extends State<DocumentLessonDetailScreen>
               Text(
                 documentUrl == null
                     ? 'PDF belum tersedia untuk lesson ini.'
-                    : 'Layar baca dibuat lebar supaya PDF lebih nyaman di-scroll.',
+                    : '',
                 style: TextStyle(fontSize: 11.5, color: AppColors.slate),
               ),
             ],

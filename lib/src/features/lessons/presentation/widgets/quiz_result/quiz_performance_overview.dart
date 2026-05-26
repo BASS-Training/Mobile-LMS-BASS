@@ -75,13 +75,13 @@ class QuizPerformanceOverview extends StatelessWidget {
                 spacing: 12,
                 runSpacing: 12,
                 children: [
-                  _buildMetricTile(
-                    width: tileWidth,
-                    label: 'Nilai',
-                    value: '${attempt.percentage.toStringAsFixed(0)}%',
-                    accentColor: AppColors.red,
-                    icon: Icons.auto_graph_rounded,
-                  ),
+                  // _buildMetricTile(
+                  //   width: tileWidth,
+                  //   label: 'Nilai',
+                  //   value: '${attempt.percentage.toStringAsFixed(0)}%',
+                  //   accentColor: AppColors.red,
+                  //   icon: Icons.auto_graph_rounded,
+                  // ),
                   _buildMetricTile(
                     width: tileWidth,
                     label: 'Benar',
