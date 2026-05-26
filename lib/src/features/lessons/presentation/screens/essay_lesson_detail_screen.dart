@@ -12,6 +12,8 @@ import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_entit
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_event.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/essay/essay_panel_widget.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/essay/essay_side_panel_widget.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/question_navigator_widget.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
@@ -168,7 +170,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
                     LayoutBuilder(
                       builder: (context, constraints) {
                         final useDesktopLayout = constraints.maxWidth >= 900;
-                        final sidePanel = _buildSidePanel(state);
+                        final sidePanel = EssaySidePanelWidget(state: state);
                         final mainPanel = _buildEssayPanel(state);
                         final header = _buildPageHeader();
 
@@ -456,89 +458,89 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
     );
   }
 
-  Widget _buildSidePanel(EssayState state) {
-    final progress = state.totalQuestions > 0
-        ? (state.savedCount / state.totalQuestions) * 100
-        : 0.0;
+  // Widget _buildSidePanel(EssayState state) {
+  //   final progress = state.totalQuestions > 0
+  //       ? (state.savedCount / state.totalQuestions) * 100
+  //       : 0.0;
 
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Colors.white, Color(0xFFF8FAFF)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 18,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Progress Essay',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: AppColors.charcoal,
-            ),
-          ),
-          const SizedBox(height: 8),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: LinearProgressIndicator(
-              value: progress / 100,
-              minHeight: 8,
-              backgroundColor: AppColors.pearl.withValues(alpha: 0.7),
-              valueColor: const AlwaysStoppedAnimation<Color>(AppColors.tomato),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '${progress.toStringAsFixed(0)}% • Soal ${state.currentQuestionIndex + 1} dari ${state.totalQuestions}',
-            style: const TextStyle(fontSize: 12, color: AppColors.slate),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Tersimpan: ${state.savedCount}/${state.totalQuestions}',
-            style: const TextStyle(fontSize: 12, color: AppColors.slate),
-          ),
-          const SizedBox(height: 12),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF3F6FF),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text(
-              state.isDraftSaved
-                  ? 'Draft jawaban sudah disimpan'
-                  : 'Draft belum disimpan',
-              style: const TextStyle(fontSize: 12, color: AppColors.slate),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'Karakter: ${state.currentAnswer.length}',
-            style: const TextStyle(fontSize: 12, color: AppColors.slate),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Kata: ${state.currentWordCount}',
-            style: const TextStyle(fontSize: 12, color: AppColors.slate),
-          ),
-        ],
-      ),
-    );
-  }
+  //   return Container(
+  //     padding: const EdgeInsets.all(14),
+  //     decoration: BoxDecoration(
+  //       gradient: const LinearGradient(
+  //         colors: [Colors.white, Color(0xFFF8FAFF)],
+  //         begin: Alignment.topLeft,
+  //         end: Alignment.bottomRight,
+  //       ),
+  //       borderRadius: BorderRadius.circular(14),
+  //       border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
+  //       boxShadow: [
+  //         BoxShadow(
+  //           color: Colors.black.withValues(alpha: 0.05),
+  //           blurRadius: 18,
+  //           offset: const Offset(0, 6),
+  //         ),
+  //       ],
+  //     ),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         const Text(
+  //           'Progress Essay',
+  //           style: TextStyle(
+  //             fontSize: 13,
+  //             fontWeight: FontWeight.w700,
+  //             color: AppColors.charcoal,
+  //           ),
+  //         ),
+  //         const SizedBox(height: 8),
+  //         ClipRRect(
+  //           borderRadius: BorderRadius.circular(8),
+  //           child: LinearProgressIndicator(
+  //             value: progress / 100,
+  //             minHeight: 8,
+  //             backgroundColor: AppColors.pearl.withValues(alpha: 0.7),
+  //             valueColor: const AlwaysStoppedAnimation<Color>(AppColors.tomato),
+  //           ),
+  //         ),
+  //         const SizedBox(height: 8),
+  //         Text(
+  //           '${progress.toStringAsFixed(0)}% • Soal ${state.currentQuestionIndex + 1} dari ${state.totalQuestions}',
+  //           style: const TextStyle(fontSize: 12, color: AppColors.slate),
+  //         ),
+  //         const SizedBox(height: 4),
+  //         Text(
+  //           'Tersimpan: ${state.savedCount}/${state.totalQuestions}',
+  //           style: const TextStyle(fontSize: 12, color: AppColors.slate),
+  //         ),
+  //         const SizedBox(height: 12),
+  //         Container(
+  //           width: double.infinity,
+  //           padding: const EdgeInsets.all(10),
+  //           decoration: BoxDecoration(
+  //             color: const Color(0xFFF3F6FF),
+  //             borderRadius: BorderRadius.circular(10),
+  //           ),
+  //           child: Text(
+  //             state.isDraftSaved
+  //                 ? 'Draft jawaban sudah disimpan'
+  //                 : 'Draft belum disimpan',
+  //             style: const TextStyle(fontSize: 12, color: AppColors.slate),
+  //           ),
+  //         ),
+  //         const SizedBox(height: 10),
+  //         Text(
+  //           'Karakter: ${state.currentAnswer.length}',
+  //           style: const TextStyle(fontSize: 12, color: AppColors.slate),
+  //         ),
+  //         const SizedBox(height: 4),
+  //         Text(
+  //           'Kata: ${state.currentWordCount}',
+  //           style: const TextStyle(fontSize: 12, color: AppColors.slate),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildEssayPanel(EssayState state) {
     if (state.questions.isEmpty)
