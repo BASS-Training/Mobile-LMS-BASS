@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,11 +35,14 @@ class DocumentLessonDetailScreen extends StatefulWidget {
 class _DocumentLessonDetailScreenState
     extends State<DocumentLessonDetailScreen> {
   late final GlobalKey<ScaffoldState> _scaffoldKey;
+  PdfViewerController? _pdfViewerController;
+  double _zoomLevel = 1.0;
 
   @override
   void initState() {
     super.initState();
     _scaffoldKey = GlobalKey<ScaffoldState>();
+    _pdfViewerController = PdfViewerController();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -49,6 +51,7 @@ class _DocumentLessonDetailScreenState
 
   @override
   void dispose() {
+    _pdfViewerController?.dispose();
     SystemChrome.setPreferredOrientations(DeviceOrientation.values);
     super.dispose();
   }
@@ -137,70 +140,304 @@ class _DocumentLessonDetailScreenState
           );
         },
       ),
-      backgroundColor: AppColors.quizBackgroundStart,
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.lesson.title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            Text(
-              'Document lesson',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.white.withValues(alpha: 0.8),
-              ),
-            ),
-          ],
+      backgroundColor: const Color(0xFFF6F8FF),
+      appBar: _buildCompactAppBar(),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+          child: _buildNavigationCard(),
         ),
       ),
       body: SafeArea(
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                AppColors.quizBackgroundStart,
-                AppColors.quizBackgroundEnd,
-              ],
+        bottom: false,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: _buildDocumentToolbar(documentUrl),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: _buildDocumentCard(documentUrl),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  PreferredSizeWidget _buildCompactAppBar() {
+    return AppBar(
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            widget.course.title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
             ),
           ),
+          const SizedBox(height: 2),
+          Text(
+            'DOCUMENT READER',
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.8,
+              color: Colors.white.withValues(alpha: 0.8),
+            ),
+          ),
+        ],
+      ),
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      surfaceTintColor: Colors.transparent,
+      flexibleSpace: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [AppColors.red, AppColors.tomato],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+      ),
+      leading: GestureDetector(
+        onTap: () {
+          Navigator.pop(context);
+          context.read<CourseBloc>().add(const RefreshCoursesEvent());
+        },
+        child: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+      ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 16),
+          child: GestureDetector(
+            onTap: () => _scaffoldKey.currentState?.openDrawer(),
+            child: const Icon(Icons.menu_rounded, color: Colors.white),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBackgroundOrbs() {
+    return Stack(
+      children: [
+        Positioned(
+          top: -60,
+          right: -40,
+          child: Container(
+            width: 180,
+            height: 180,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  AppColors.tomato.withValues(alpha: 0.16),
+                  Colors.transparent,
+                ],
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: 120,
+          left: -70,
+          child: Container(
+            width: 170,
+            height: 170,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  AppColors.red.withValues(alpha: 0.12),
+                  Colors.transparent,
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDocumentToolbar(String? documentUrl) {
+    return Row(
+      children: [
+        Expanded(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.96),
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.08),
-                          blurRadius: 22,
-                          offset: const Offset(0, 12),
-                        ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(24),
-                      child: documentUrl == null
-                          ? _buildMissingDocumentState()
-                          : SfPdfViewer.network(documentUrl),
-                    ),
-                  ),
+              Text(
+                'Dokumen Lesson',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.charcoal.withValues(alpha: 0.92),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                child: _buildActionCard(),
+              const SizedBox(height: 4),
+              Text(
+                documentUrl == null
+                    ? 'PDF belum tersedia untuk lesson ini.'
+                    : 'Layar baca dibuat lebar supaya PDF lebih nyaman di-scroll.',
+                style: TextStyle(fontSize: 11.5, color: AppColors.slate),
               ),
             ],
           ),
         ),
+        const SizedBox(width: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFFF3F6FF),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: PopupMenuButton<String>(
+            icon: const Icon(Icons.zoom_in_rounded, color: AppColors.red),
+            onSelected: (value) {
+              switch (value) {
+                case 'zoom_in':
+                  setState(() {
+                    _zoomLevel = (_zoomLevel + 0.25).clamp(1.0, 3.5);
+                    _pdfViewerController?.zoomLevel = _zoomLevel;
+                  });
+                  break;
+                case 'zoom_out':
+                  setState(() {
+                    _zoomLevel = (_zoomLevel - 0.25).clamp(1.0, 3.5);
+                    _pdfViewerController?.zoomLevel = _zoomLevel;
+                  });
+                  break;
+                case 'reset':
+                  setState(() {
+                    _zoomLevel = 1.0;
+                    _pdfViewerController?.zoomLevel = _zoomLevel;
+                  });
+                  break;
+              }
+            },
+            itemBuilder: (context) => const [
+              PopupMenuItem(value: 'zoom_in', child: Text('Zoom in')),
+              PopupMenuItem(value: 'zoom_out', child: Text('Zoom out')),
+              PopupMenuItem(value: 'reset', child: Text('Reset zoom')),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDocumentCard(String? documentUrl) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.9)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(22),
+        child: Container(
+          color: Colors.white,
+          child: documentUrl == null
+              ? _buildMissingDocumentState()
+              : SfPdfViewer.network(
+                  documentUrl,
+                  controller: _pdfViewerController,
+                  canShowScrollHead: false,
+                  canShowPaginationDialog: false,
+                  enableDoubleTapZooming: true,
+                  scrollDirection: PdfScrollDirection.vertical,
+                  pageLayoutMode: PdfPageLayoutMode.continuous,
+                  interactionMode: PdfInteractionMode.pan,
+                  onDocumentLoaded: (details) {
+                    _pdfViewerController?.zoomLevel = _zoomLevel;
+                  },
+                ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavigationCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Colors.white, Color(0xFFF8FAFF)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          if (canGoPrevious)
+            Expanded(
+              child: PressScale(
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Future.delayed(const Duration(milliseconds: 200), () {
+                      _openLesson(previousLesson!, widget.lessonIndex - 1);
+                    });
+                  },
+                  icon: const Icon(Icons.arrow_back_rounded),
+                  label: const Text('Sebelumnya'),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(
+                      color: AppColors.pearl.withValues(alpha: 0.9),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    backgroundColor: Colors.white,
+                    foregroundColor: AppColors.charcoal,
+                  ),
+                ),
+              ),
+            ),
+          if (canGoPrevious) const SizedBox(width: 10),
+          Expanded(
+            child: PressScale(
+              child: ElevatedButton.icon(
+                onPressed: () => _markComplete(goToNext: canGoNext),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.red,
+                  shadowColor: AppColors.red.withValues(alpha: 0.45),
+                  elevation: 8,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                icon: Icon(
+                  canGoNext ? Icons.arrow_forward_rounded : Icons.check_rounded,
+                ),
+                label: Text(canGoNext ? 'Lanjut' : 'Selesai'),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -232,56 +469,6 @@ class _DocumentLessonDetailScreenState
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildActionCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.82),
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.7)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          if (canGoPrevious)
-            Expanded(
-              child: PressScale(
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Future.delayed(const Duration(milliseconds: 200), () {
-                      _openLesson(previousLesson!, widget.lessonIndex - 1);
-                    });
-                  },
-                  icon: const Icon(Icons.arrow_back_rounded),
-                  label: const Text('Previous'),
-                ),
-              ),
-            ),
-          if (canGoPrevious) const SizedBox(width: 12),
-          Expanded(
-            child: PressScale(
-              child: ElevatedButton.icon(
-                onPressed: () => _markComplete(goToNext: canGoNext),
-                icon: Icon(
-                  canGoNext ? Icons.arrow_forward_rounded : Icons.check_rounded,
-                ),
-                label: Text(canGoNext ? 'Next' : 'Tanda Selesai'),
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
