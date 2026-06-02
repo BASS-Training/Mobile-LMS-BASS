@@ -14,6 +14,11 @@ class LessonMapper {
       youtubeVideoId: model.youtubeVideoId,
       documentUrl: model.documentUrl,
       imageUrls: model.imageUrls,
+      zoomLink: model.zoomLink,
+      zoomMeetingId: model.zoomMeetingId,
+      zoomPassword: model.zoomPassword,
+      scheduledStart: model.scheduledStart,
+      scheduledEnd: model.scheduledEnd,
     );
   }
 
@@ -29,6 +34,11 @@ class LessonMapper {
       youtubeVideoId: entity.youtubeVideoId,
       documentUrl: entity.documentUrl,
       imageUrls: entity.imageUrls,
+      zoomLink: entity.zoomLink,
+      zoomMeetingId: entity.zoomMeetingId,
+      zoomPassword: entity.zoomPassword,
+      scheduledStart: entity.scheduledStart,
+      scheduledEnd: entity.scheduledEnd,
     );
   }
 }

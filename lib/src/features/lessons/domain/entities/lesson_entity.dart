@@ -13,6 +13,12 @@ class LessonEntity extends Equatable {
   final String? documentUrl;
   final List<TextSectionEntity>? textSections;
   final List<String> imageUrls;
+  // Zoom-specific fields
+  final String? zoomLink;
+  final String? zoomMeetingId;
+  final String? zoomPassword;
+  final String? scheduledStart; // ISO 8601
+  final String? scheduledEnd;   // ISO 8601
 
   const LessonEntity({
     required this.id,
@@ -26,6 +32,11 @@ class LessonEntity extends Equatable {
     this.documentUrl,
     this.textSections,
     this.imageUrls = const [],
+    this.zoomLink,
+    this.zoomMeetingId,
+    this.zoomPassword,
+    this.scheduledStart,
+    this.scheduledEnd,
   });
 
   bool get hasVideo => type == 'video' && (youtubeVideoId?.isNotEmpty ?? false);
@@ -37,6 +48,11 @@ class LessonEntity extends Equatable {
     String? documentUrl,
     List<TextSectionEntity>? textSections,
     List<String>? imageUrls,
+    String? zoomLink,
+    String? zoomMeetingId,
+    String? zoomPassword,
+    String? scheduledStart,
+    String? scheduledEnd,
   }) {
     return LessonEntity(
       id: id,
@@ -50,6 +66,11 @@ class LessonEntity extends Equatable {
       documentUrl: documentUrl ?? this.documentUrl,
       textSections: textSections ?? this.textSections,
       imageUrls: imageUrls ?? this.imageUrls,
+      zoomLink: zoomLink ?? this.zoomLink,
+      zoomMeetingId: zoomMeetingId ?? this.zoomMeetingId,
+      zoomPassword: zoomPassword ?? this.zoomPassword,
+      scheduledStart: scheduledStart ?? this.scheduledStart,
+      scheduledEnd: scheduledEnd ?? this.scheduledEnd,
     );
   }
 
@@ -66,5 +87,10 @@ class LessonEntity extends Equatable {
     documentUrl,
     textSections,
     imageUrls,
+    zoomLink,
+    zoomMeetingId,
+    zoomPassword,
+    scheduledStart,
+    scheduledEnd,
   ];
 }

@@ -126,9 +126,8 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
     Emitter<CourseState> emit,
   ) async {
     try {
-      await refreshCoursesUseCase();
-
-      // Reload courses
+      // getCourses already fetches from remote, saves to cache,
+      // and reconciles completion status — no need to call refresh separately.
       final courses = await getCoursesUseCase();
       emit(CourseLoaded(courses: courses));
     } catch (e) {

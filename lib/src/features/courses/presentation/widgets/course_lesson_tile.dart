@@ -31,6 +31,8 @@ class CourseLessonTile extends StatelessWidget {
         return Colors.green;
       case 'image':
         return Colors.teal;
+      case 'zoom':
+        return Colors.indigo;
       default:
         return AppColors.violet;
     }

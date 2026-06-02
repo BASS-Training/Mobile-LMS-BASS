@@ -24,6 +24,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/screens/documen
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/quiz_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/essay_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/image_lesson_detail_screen.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/screens/zoom_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/results_list_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/quiz_result_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/essay_result_detail_screen.dart';
@@ -279,6 +280,38 @@ class AppRouter {
           return CustomTransitionPage(
             key: state.pageKey,
             child: ImageLessonDetailScreen(
+              lesson: lesson,
+              course: course,
+              lessonIndex: lessonIndex,
+            ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  final fade = CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                  );
+                  final slide = Tween<Offset>(
+                    begin: const Offset(0.04, 0),
+                    end: Offset.zero,
+                  ).animate(fade);
+                  return FadeTransition(
+                    opacity: fade,
+                    child: SlideTransition(position: slide, child: child),
+                  );
+                },
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.zoomLessonDetail,
+        pageBuilder: (context, state) {
+          final args = state.extra as Map<String, dynamic>;
+          final lesson = args['lesson'] as LessonEntity;
+          final course = args['course'] as CourseEntity;
+          final lessonIndex = args['lessonIndex'] as int;
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: ZoomLessonDetailScreen(
               lesson: lesson,
               course: course,
               lessonIndex: lessonIndex,

@@ -4,10 +4,16 @@ class Lesson {
   final String title;
   final String content;
   final String duration;
-  final String type; // 'video', 'text', 'document', 'quiz', 'essay'
+  final String type; // 'video', 'text', 'document', 'quiz', 'essay', 'image', 'zoom'
   final String? youtubeVideoId;
   final String? documentUrl;
   final List<String> imageUrls;
+  // Zoom-specific fields
+  final String? zoomLink;
+  final String? zoomMeetingId;
+  final String? zoomPassword;
+  final String? scheduledStart; // ISO 8601
+  final String? scheduledEnd;   // ISO 8601
   bool isCompleted;
 
   Lesson({
@@ -20,6 +26,11 @@ class Lesson {
     this.youtubeVideoId,
     this.documentUrl,
     this.imageUrls = const [],
+    this.zoomLink,
+    this.zoomMeetingId,
+    this.zoomPassword,
+    this.scheduledStart,
+    this.scheduledEnd,
     this.isCompleted = false,
   });
 
@@ -47,6 +58,11 @@ class Lesson {
               .where((s) => s.isNotEmpty)
               .toList() ??
           [],
+      zoomLink: json['zoomLink'] as String?,
+      zoomMeetingId: json['zoomMeetingId'] as String?,
+      zoomPassword: json['zoomPassword'] as String?,
+      scheduledStart: json['scheduledStart'] as String?,
+      scheduledEnd: json['scheduledEnd'] as String?,
     );
   }
 
@@ -61,6 +77,11 @@ class Lesson {
       'youtubeVideoId': youtubeVideoId,
       'documentUrl': documentUrl,
       'imageUrls': imageUrls,
+      'zoomLink': zoomLink,
+      'zoomMeetingId': zoomMeetingId,
+      'zoomPassword': zoomPassword,
+      'scheduledStart': scheduledStart,
+      'scheduledEnd': scheduledEnd,
       'isCompleted': isCompleted,
     };
   }
@@ -71,6 +92,11 @@ class Lesson {
     String? youtubeVideoId,
     String? documentUrl,
     List<String>? imageUrls,
+    String? zoomLink,
+    String? zoomMeetingId,
+    String? zoomPassword,
+    String? scheduledStart,
+    String? scheduledEnd,
   }) {
     return Lesson(
       id: id,
@@ -82,6 +108,11 @@ class Lesson {
       youtubeVideoId: youtubeVideoId ?? this.youtubeVideoId,
       documentUrl: documentUrl ?? this.documentUrl,
       imageUrls: imageUrls ?? this.imageUrls,
+      zoomLink: zoomLink ?? this.zoomLink,
+      zoomMeetingId: zoomMeetingId ?? this.zoomMeetingId,
+      zoomPassword: zoomPassword ?? this.zoomPassword,
+      scheduledStart: scheduledStart ?? this.scheduledStart,
+      scheduledEnd: scheduledEnd ?? this.scheduledEnd,
       isCompleted: isCompleted ?? this.isCompleted,
     );
   }

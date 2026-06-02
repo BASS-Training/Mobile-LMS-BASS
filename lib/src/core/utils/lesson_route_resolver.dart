@@ -15,6 +15,8 @@ class LessonRouteResolver {
         return AppRoutes.essayLessonDetail;
       case 'image':
         return AppRoutes.imageLessonDetail;
+      case 'zoom':
+        return AppRoutes.zoomLessonDetail;
       case 'text':
       default:
         return AppRoutes.textLessonDetail;
