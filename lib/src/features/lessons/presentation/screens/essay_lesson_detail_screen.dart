@@ -458,6 +458,207 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
     );
   }
 
+
+  Widget _buildBottomActionBar(EssayState state) {
+    final canGoBackAction =
+        state.currentQuestionIndex > 0 || previousLesson != null;
+
+    void handlePreviousAction() {
+      if (state.currentQuestionIndex > 0) {
+        context.read<EssayBloc>().add(
+          ChangeQuestion(state.currentQuestionIndex - 1),
+        );
+      } else if (previousLesson != null) {
+        Navigator.pop(context);
+        Future.delayed(
+          const Duration(milliseconds: 200),
+          () => navigateToLesson(previousLesson!, widget.lessonIndex - 1),
+        );
+      }
+    }
+
+    void handleSaveAndNext() {
+      context.read<EssayBloc>().add(SaveDraftClicked());
+      if (state.currentQuestionIndex < state.totalQuestions - 1) {
+        context.read<EssayBloc>().add(
+          ChangeQuestion(state.currentQuestionIndex + 1),
+        );
+      }
+    }
+
+    void handleContinueAfterSubmit() {
+      if (canGoNext && nextLesson != null) {
+        Navigator.pop(context);
+        Future.delayed(
+          const Duration(milliseconds: 200),
+          () => navigateToLesson(nextLesson!, widget.lessonIndex + 1),
+        );
+      } else {
+        _backToCourse();
+      }
+    }
+
+    if (state.isSubmitted) {
+      return SafeArea(
+        top: false,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border(
+              top: BorderSide(color: AppColors.pearl.withValues(alpha: 0.9)),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.12),
+                blurRadius: 22,
+                offset: const Offset(0, -8),
+                spreadRadius: 1,
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _backToCourse,
+                  icon: const Icon(Icons.arrow_back),
+                  label: const Text('Kembali'),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: handleContinueAfterSubmit,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.red,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  icon: const Icon(Icons.arrow_forward_rounded),
+                  label: Text(canGoNext ? 'Lanjut' : 'Selesai'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return SafeArea(
+      top: false,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border(
+            top: BorderSide(color: AppColors.pearl.withValues(alpha: 0.9)),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.12),
+              blurRadius: 22,
+              offset: const Offset(0, -8),
+              spreadRadius: 1,
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 42,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 10),
+              decoration: BoxDecoration(
+                color: AppColors.pearl,
+                borderRadius: BorderRadius.circular(999),
+              ),
+            ),
+            Row(
+              children: [
+                Expanded(
+                  child: PressScale(
+                    enabled: canGoBackAction,
+                    child: OutlinedButton.icon(
+                      onPressed: canGoBackAction ? handlePreviousAction : null,
+                      icon: const Icon(Icons.arrow_back),
+                      label: const Text('Sebelumnya'),
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(
+                          color: AppColors.pearl.withValues(alpha: 0.9),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        backgroundColor: Colors.white,
+                        foregroundColor: AppColors.charcoal,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: PressScale(
+                    child: ElevatedButton.icon(
+                      onPressed: handleSaveAndNext,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.red,
+                        shadowColor: AppColors.red.withValues(alpha: 0.45),
+                        elevation: 8,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      icon: const Icon(Icons.save_outlined),
+                      label: Text(
+                        state.currentQuestionIndex < state.totalQuestions - 1
+                            ? 'Simpan & Lanjut'
+                            : 'Simpan',
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: PressScale(
+                enabled: !state.isSubmitting,
+                child: ElevatedButton.icon(
+                  onPressed: state.isSubmitting
+                      ? null
+                      : () =>
+                            context.read<EssayBloc>().add(SubmitEssayClicked()),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF16A34A),
+                    shadowColor: const Color(
+                      0xFF16A34A,
+                    ).withValues(alpha: 0.45),
+                    elevation: 10,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  icon: state.isSubmitting
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(Icons.check_circle_outline),
+                  label: Text(
+                    state.isSubmitting ? 'Mengirim...' : 'Kirim Semua Jawaban',
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
   // Widget _buildSidePanel(EssayState state) {
   //   final progress = state.totalQuestions > 0
   //       ? (state.savedCount / state.totalQuestions) * 100
@@ -752,204 +953,3 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
   //     ),
   //   );
   // }
-
-  Widget _buildBottomActionBar(EssayState state) {
-    final canGoBackAction =
-        state.currentQuestionIndex > 0 || previousLesson != null;
-
-    void handlePreviousAction() {
-      if (state.currentQuestionIndex > 0) {
-        context.read<EssayBloc>().add(
-          ChangeQuestion(state.currentQuestionIndex - 1),
-        );
-      } else if (previousLesson != null) {
-        Navigator.pop(context);
-        Future.delayed(
-          const Duration(milliseconds: 200),
-          () => navigateToLesson(previousLesson!, widget.lessonIndex - 1),
-        );
-      }
-    }
-
-    void handleSaveAndNext() {
-      context.read<EssayBloc>().add(SaveDraftClicked());
-      if (state.currentQuestionIndex < state.totalQuestions - 1) {
-        context.read<EssayBloc>().add(
-          ChangeQuestion(state.currentQuestionIndex + 1),
-        );
-      }
-    }
-
-    void handleContinueAfterSubmit() {
-      if (canGoNext && nextLesson != null) {
-        Navigator.pop(context);
-        Future.delayed(
-          const Duration(milliseconds: 200),
-          () => navigateToLesson(nextLesson!, widget.lessonIndex + 1),
-        );
-      } else {
-        _backToCourse();
-      }
-    }
-
-    if (state.isSubmitted) {
-      return SafeArea(
-        top: false,
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border(
-              top: BorderSide(color: AppColors.pearl.withValues(alpha: 0.9)),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.12),
-                blurRadius: 22,
-                offset: const Offset(0, -8),
-                spreadRadius: 1,
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: _backToCourse,
-                  icon: const Icon(Icons.arrow_back),
-                  label: const Text('Kembali'),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: handleContinueAfterSubmit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.red,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                  icon: const Icon(Icons.arrow_forward_rounded),
-                  label: Text(canGoNext ? 'Lanjut' : 'Selesai'),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return SafeArea(
-      top: false,
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(
-            top: BorderSide(color: AppColors.pearl.withValues(alpha: 0.9)),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.12),
-              blurRadius: 22,
-              offset: const Offset(0, -8),
-              spreadRadius: 1,
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 42,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 10),
-              decoration: BoxDecoration(
-                color: AppColors.pearl,
-                borderRadius: BorderRadius.circular(999),
-              ),
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: PressScale(
-                    enabled: canGoBackAction,
-                    child: OutlinedButton.icon(
-                      onPressed: canGoBackAction ? handlePreviousAction : null,
-                      icon: const Icon(Icons.arrow_back),
-                      label: const Text('Sebelumnya'),
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(
-                          color: AppColors.pearl.withValues(alpha: 0.9),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        backgroundColor: Colors.white,
-                        foregroundColor: AppColors.charcoal,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: PressScale(
-                    child: ElevatedButton.icon(
-                      onPressed: handleSaveAndNext,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.red,
-                        shadowColor: AppColors.red.withValues(alpha: 0.45),
-                        elevation: 8,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                      ),
-                      icon: const Icon(Icons.save_outlined),
-                      label: Text(
-                        state.currentQuestionIndex < state.totalQuestions - 1
-                            ? 'Simpan & Lanjut'
-                            : 'Simpan',
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            SizedBox(
-              width: double.infinity,
-              child: PressScale(
-                enabled: !state.isSubmitting,
-                child: ElevatedButton.icon(
-                  onPressed: state.isSubmitting
-                      ? null
-                      : () =>
-                            context.read<EssayBloc>().add(SubmitEssayClicked()),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF16A34A),
-                    shadowColor: const Color(
-                      0xFF16A34A,
-                    ).withValues(alpha: 0.45),
-                    elevation: 10,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  icon: state.isSubmitting
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : const Icon(Icons.check_circle_outline),
-                  label: Text(
-                    state.isSubmitting ? 'Mengirim...' : 'Kirim Semua Jawaban',
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

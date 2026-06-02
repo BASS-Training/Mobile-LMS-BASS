@@ -539,6 +539,7 @@ import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/aut
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_event.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_state.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -643,22 +644,24 @@ class _LoginScreenState extends State<LoginScreen> {
                           constraints: const BoxConstraints(maxWidth: 430),
                           child: Column(
                             children: [
-                              SizedBox(
-                                width: panelWidth,
-                                child: _IllustrationPanel(
-                                  onRegisterTap: () =>
-                                      context.go(AppRoutes.register),
+                              FadeSlideIn(
+                                child: SizedBox(
+                                  width: panelWidth,
+                                  child: const _IllustrationPanel(),
                                 ),
                               ),
                               const SizedBox(height: 16),
-                              _LoginCard(
-                                formKey: _formKey,
-                                emailController: _emailController,
-                                passwordController: _passwordController,
-                                obscurePassword: _obscurePassword,
-                                onTogglePasswordVisibility:
-                                    _togglePasswordVisibility,
-                                onLogin: () => _handleLogin(context),
+                              FadeSlideIn(
+                                delayMs: 120,
+                                child: _LoginCard(
+                                  formKey: _formKey,
+                                  emailController: _emailController,
+                                  passwordController: _passwordController,
+                                  obscurePassword: _obscurePassword,
+                                  onTogglePasswordVisibility:
+                                      _togglePasswordVisibility,
+                                  onLogin: () => _handleLogin(context),
+                                ),
                               ),
                             ],
                           ),
@@ -677,9 +680,7 @@ class _LoginScreenState extends State<LoginScreen> {
 }
 
 class _IllustrationPanel extends StatelessWidget {
-  final VoidCallback onRegisterTap;
-
-  const _IllustrationPanel({required this.onRegisterTap});
+  const _IllustrationPanel();
 
   @override
   Widget build(BuildContext context) {
@@ -737,7 +738,7 @@ class _IllustrationPanel extends StatelessWidget {
                 SizedBox(
                   height: 168,
                   child: CustomPaint(
-                    painter: _LmsIllustrationPainter(),
+                    painter: _BassGuitarPainter(),
                     child: const SizedBox.expand(),
                   ),
                 ),
@@ -808,15 +809,6 @@ class _LoginCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Align(
-            //   alignment: Alignment.center, // Ubah ke Alignment.center jika ingin di tengah
-            //   child: Image.asset(
-            //     'assets/images/bass_logo.png', // Sesuaikan dengan path file logomu
-            //     height: 100, // Sesuaikan tingginya
-            //     fit: BoxFit.contain,
-            //   ),
-            // ),
-            // const SizedBox(height: 16),
             const Text(
               'Login',
               style: TextStyle(
@@ -872,21 +864,37 @@ class _LoginCard extends StatelessWidget {
                 },
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 6),
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: () => context.go(AppRoutes.register),
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Reset password tersedia di web app.'),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                },
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 4,
+                  ),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
                 child: const Text(
-                  'Belum punya akun? Daftar',
+                  'Lupa password?',
                   style: TextStyle(
                     color: AppColors.red,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 10),
             BlocBuilder<AuthBloc, AuthState>(
               builder: (context, authState) {
                 final isLoading = authState is AuthLoading;
@@ -922,6 +930,27 @@ class _LoginCard extends StatelessWidget {
                 );
               },
             ),
+            const SizedBox(height: 14),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'Belum punya akun? ',
+                  style: TextStyle(color: AppColors.stone, fontSize: 13.5),
+                ),
+                GestureDetector(
+                  onTap: () => context.go(AppRoutes.register),
+                  child: const Text(
+                    'Daftar',
+                    style: TextStyle(
+                      color: AppColors.red,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 13.5,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -938,9 +967,9 @@ class _InputShell extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF8F5FF),
+        color: const Color(0xFFFAF7F7),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE4DCF9)),
+        border: Border.all(color: const Color(0xFFEDD5D5)),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
       child: child,
@@ -964,132 +993,144 @@ class _Ornament extends StatelessWidget {
   }
 }
 
-class _LmsIllustrationPainter extends CustomPainter {
+class _BassGuitarPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
+    final w = size.width;
+    final h = size.height;
+    final cx = w * 0.5;
+
     final paint = Paint()..style = PaintingStyle.fill;
 
-    paint.color = Colors.white.withValues(alpha: 0.95);
+    // Body (figure-8 shape with larger lower bout)
+    paint.color = Colors.white.withValues(alpha: 0.92);
+    final bodyPath = Path();
+    bodyPath.moveTo(cx - w * 0.10, h * 0.47);
+    bodyPath.lineTo(cx + w * 0.10, h * 0.47);
+    bodyPath.cubicTo(
+      cx + w * 0.30, h * 0.47,
+      cx + w * 0.28, h * 0.58,
+      cx + w * 0.14, h * 0.63,
+    );
+    bodyPath.cubicTo(
+      cx + w * 0.32, h * 0.65,
+      cx + w * 0.36, h * 0.78,
+      cx + w * 0.35, h * 0.88,
+    );
+    bodyPath.cubicTo(
+      cx + w * 0.34, h * 0.97,
+      cx + w * 0.20, h * 0.99,
+      cx, h * 0.99,
+    );
+    bodyPath.cubicTo(
+      cx - w * 0.20, h * 0.99,
+      cx - w * 0.34, h * 0.97,
+      cx - w * 0.35, h * 0.88,
+    );
+    bodyPath.cubicTo(
+      cx - w * 0.36, h * 0.78,
+      cx - w * 0.32, h * 0.65,
+      cx - w * 0.14, h * 0.63,
+    );
+    bodyPath.cubicTo(
+      cx - w * 0.28, h * 0.58,
+      cx - w * 0.30, h * 0.47,
+      cx - w * 0.10, h * 0.47,
+    );
+    bodyPath.close();
+    canvas.drawPath(bodyPath, paint);
+
+    // Neck (tapers from body to headstock)
+    paint.color = Colors.white.withValues(alpha: 0.82);
+    final neckPath = Path();
+    neckPath.moveTo(cx - w * 0.058, h * 0.48);
+    neckPath.lineTo(cx + w * 0.058, h * 0.48);
+    neckPath.lineTo(cx + w * 0.046, h * 0.12);
+    neckPath.lineTo(cx - w * 0.046, h * 0.12);
+    neckPath.close();
+    canvas.drawPath(neckPath, paint);
+
+    // Headstock
+    paint.color = Colors.white.withValues(alpha: 0.92);
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         Rect.fromCenter(
-          center: Offset(size.width * 0.52, size.height * 0.62),
-          width: size.width * 0.46,
-          height: size.height * 0.34,
+          center: Offset(cx, h * 0.07),
+          width: w * 0.28,
+          height: h * 0.10,
         ),
-        const Radius.circular(18),
+        const Radius.circular(5),
       ),
       paint,
     );
 
-    paint.color = const Color(0xFFE9E2E2);
+    // Frets
+    final fretPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..color = Colors.white.withValues(alpha: 0.28)
+      ..strokeWidth = 1.0;
+    for (int i = 1; i <= 5; i++) {
+      final y = h * 0.12 + (h * 0.36 / 6) * i;
+      canvas.drawLine(
+        Offset(cx - w * 0.052, y),
+        Offset(cx + w * 0.052, y),
+        fretPaint,
+      );
+    }
+
+    // Strings (4 — thicker strings have more opacity and weight)
+    for (int i = 0; i < 4; i++) {
+      final xPos = cx + (i - 1.5) * w * 0.020;
+      canvas.drawLine(
+        Offset(xPos, h * 0.09),
+        Offset(xPos, h * 0.87),
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..color = Colors.white.withValues(alpha: 0.35 + i * 0.06)
+          ..strokeWidth = 0.9 + i * 0.15,
+      );
+    }
+
+    // Pickup
+    paint.color = Colors.white.withValues(alpha: 0.20);
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         Rect.fromCenter(
-          center: Offset(size.width * 0.52, size.height * 0.80),
-          width: size.width * 0.58,
-          height: size.height * 0.07,
+          center: Offset(cx, h * 0.70),
+          width: w * 0.22,
+          height: h * 0.055,
         ),
-        const Radius.circular(12),
+        const Radius.circular(3),
       ),
       paint,
     );
 
-    paint.color = const Color(0xFF1F1B33);
+    // Bridge
+    paint.color = Colors.white.withValues(alpha: 0.32);
     canvas.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromLTWH(
-          size.width * 0.38,
-          size.height * 0.29,
-          size.width * 0.28,
-          size.height * 0.19,
+        Rect.fromCenter(
+          center: Offset(cx, h * 0.87),
+          width: w * 0.18,
+          height: h * 0.032,
         ),
-        const Radius.circular(12),
+        const Radius.circular(3),
       ),
       paint,
     );
 
-    final screenRect = RRect.fromRectAndRadius(
-      Rect.fromLTWH(
-        size.width * 0.39,
-        size.height * 0.31,
-        size.width * 0.26,
-        size.height * 0.15,
-      ),
-      const Radius.circular(10),
-    );
-    paint.shader = const LinearGradient(
-      begin: Alignment.topLeft,
-      end: Alignment.bottomRight,
-      colors: [Color(0xFF1D2B53), Color(0xFFB3121E)],
-    ).createShader(screenRect.outerRect);
-    canvas.drawRRect(screenRect, paint);
-    paint.shader = null;
-
-    paint.color = Colors.white.withValues(alpha: 0.8);
-    canvas.drawCircle(Offset(size.width * 0.52, size.height * 0.38), 11, paint);
-    canvas.drawCircle(
-      Offset(size.width * 0.47, size.height * 0.38),
-      3.4,
-      paint,
-    );
-    canvas.drawCircle(
-      Offset(size.width * 0.57, size.height * 0.38),
-      3.4,
-      paint,
-    );
-
-    paint.color = const Color(0xFFF8D66D);
-    canvas.drawCircle(
-      Offset(size.width * 0.58, size.height * 0.40),
-      3.5,
-      paint,
-    );
-
-    paint.color = const Color(0xFFFFC7D0);
-    canvas.drawCircle(Offset(size.width * 0.73, size.height * 0.24), 17, paint);
-
-    paint.color = const Color(0xFFF4F1FF);
-    canvas.drawCircle(Offset(size.width * 0.18, size.height * 0.18), 14, paint);
-
-    paint.color = const Color(0xFFA7F3D0).withValues(alpha: 0.82);
-    final leafLeft = Path()
-      ..moveTo(size.width * 0.29, size.height * 0.63)
-      ..quadraticBezierTo(
-        size.width * 0.15,
-        size.height * 0.45,
-        size.width * 0.23,
-        size.height * 0.23,
-      )
-      ..quadraticBezierTo(
-        size.width * 0.30,
-        size.height * 0.38,
-        size.width * 0.29,
-        size.height * 0.63,
-      )
-      ..close();
-    canvas.drawPath(leafLeft, paint);
-
-    paint.color = const Color(0xFFB8F2E6).withValues(alpha: 0.70);
-    final leafRight = Path()
-      ..moveTo(size.width * 0.76, size.height * 0.61)
-      ..quadraticBezierTo(
-        size.width * 0.83,
-        size.height * 0.37,
-        size.width * 0.73,
-        size.height * 0.20,
-      )
-      ..quadraticBezierTo(
-        size.width * 0.69,
-        size.height * 0.38,
-        size.width * 0.76,
-        size.height * 0.61,
-      )
-      ..close();
-    canvas.drawPath(leafRight, paint);
-
-    paint.color = const Color(0xFFF9D0D3);
-    canvas.drawCircle(Offset(size.width * 0.24, size.height * 0.50), 8, paint);
+    // Tuning pegs (2 on each side of headstock)
+    paint
+      ..color = Colors.white.withValues(alpha: 0.60)
+      ..style = PaintingStyle.fill;
+    for (final pos in [
+      Offset(cx - w * 0.11, h * 0.035),
+      Offset(cx - w * 0.11, h * 0.075),
+      Offset(cx + w * 0.11, h * 0.035),
+      Offset(cx + w * 0.11, h * 0.075),
+    ]) {
+      canvas.drawCircle(pos, 3.5, paint);
+    }
   }
 
   @override
