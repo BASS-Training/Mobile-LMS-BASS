@@ -12,6 +12,7 @@ class LessonEntity extends Equatable {
   final String? youtubeVideoId;
   final String? documentUrl;
   final List<TextSectionEntity>? textSections;
+  final List<String> imageUrls;
 
   const LessonEntity({
     required this.id,
@@ -24,6 +25,7 @@ class LessonEntity extends Equatable {
     this.youtubeVideoId,
     this.documentUrl,
     this.textSections,
+    this.imageUrls = const [],
   });
 
   bool get hasVideo => type == 'video' && (youtubeVideoId?.isNotEmpty ?? false);
@@ -34,6 +36,7 @@ class LessonEntity extends Equatable {
     String? youtubeVideoId,
     String? documentUrl,
     List<TextSectionEntity>? textSections,
+    List<String>? imageUrls,
   }) {
     return LessonEntity(
       id: id,
@@ -46,6 +49,7 @@ class LessonEntity extends Equatable {
       youtubeVideoId: youtubeVideoId ?? this.youtubeVideoId,
       documentUrl: documentUrl ?? this.documentUrl,
       textSections: textSections ?? this.textSections,
+      imageUrls: imageUrls ?? this.imageUrls,
     );
   }
 
@@ -61,5 +65,6 @@ class LessonEntity extends Equatable {
     youtubeVideoId,
     documentUrl,
     textSections,
+    imageUrls,
   ];
 }

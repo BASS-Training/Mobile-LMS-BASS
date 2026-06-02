@@ -7,6 +7,7 @@ class Lesson {
   final String type; // 'video', 'text', 'document', 'quiz', 'essay'
   final String? youtubeVideoId;
   final String? documentUrl;
+  final List<String> imageUrls;
   bool isCompleted;
 
   Lesson({
@@ -18,6 +19,7 @@ class Lesson {
     this.type = 'text',
     this.youtubeVideoId,
     this.documentUrl,
+    this.imageUrls = const [],
     this.isCompleted = false,
   });
 
@@ -40,6 +42,11 @@ class Lesson {
       youtubeVideoId: videoSource,
       documentUrl: documentUrl,
       isCompleted: json['isCompleted'] ?? false,
+      imageUrls: (json['imageUrls'] as List<dynamic>?)
+              ?.whereType<String>()
+              .where((s) => s.isNotEmpty)
+              .toList() ??
+          [],
     );
   }
 
@@ -53,6 +60,7 @@ class Lesson {
       'type': type,
       'youtubeVideoId': youtubeVideoId,
       'documentUrl': documentUrl,
+      'imageUrls': imageUrls,
       'isCompleted': isCompleted,
     };
   }
@@ -62,6 +70,7 @@ class Lesson {
     String? type,
     String? youtubeVideoId,
     String? documentUrl,
+    List<String>? imageUrls,
   }) {
     return Lesson(
       id: id,
@@ -72,6 +81,7 @@ class Lesson {
       type: type ?? this.type,
       youtubeVideoId: youtubeVideoId ?? this.youtubeVideoId,
       documentUrl: documentUrl ?? this.documentUrl,
+      imageUrls: imageUrls ?? this.imageUrls,
       isCompleted: isCompleted ?? this.isCompleted,
     );
   }

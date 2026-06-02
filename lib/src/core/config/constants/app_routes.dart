@@ -28,6 +28,7 @@ class AppRoutes {
   static const String documentLessonDetail = '/lesson-document-detail';
   static const String quizLessonDetail = '/lesson-quiz-detail';
   static const String essayLessonDetail = '/lesson-essay-detail';
+  static const String imageLessonDetail = '/lesson-image-detail';
 
   // Result Details
   static const String quizResultDetail = '/quiz-result-detail';

@@ -13,6 +13,8 @@ class LessonRouteResolver {
         return AppRoutes.quizLessonDetail;
       case 'essay':
         return AppRoutes.essayLessonDetail;
+      case 'image':
+        return AppRoutes.imageLessonDetail;
       case 'text':
       default:
         return AppRoutes.textLessonDetail;

@@ -13,6 +13,7 @@ class LessonMapper {
       isCompleted: model.isCompleted,
       youtubeVideoId: model.youtubeVideoId,
       documentUrl: model.documentUrl,
+      imageUrls: model.imageUrls,
     );
   }
 
@@ -27,6 +28,7 @@ class LessonMapper {
       isCompleted: entity.isCompleted,
       youtubeVideoId: entity.youtubeVideoId,
       documentUrl: entity.documentUrl,
+      imageUrls: entity.imageUrls,
     );
   }
 }
