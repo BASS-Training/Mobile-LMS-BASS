@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:lms_mobile_app/src/core/config/constants/api_endpoints.dart';
 import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_attempt_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_result_repository.dart';

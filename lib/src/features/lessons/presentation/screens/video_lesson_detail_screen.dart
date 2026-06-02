@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:go_router/go_router.dart';
-import 'package:lms_mobile_app/src/core/utils/lesson_route_resolver.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
@@ -16,13 +15,12 @@ import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
 import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-// Sesuaikan path import widget ini dengan lokasi foldermu
-import '../widgets/comment_item_widget.dart';
 import '../bloc/video/video_bloc.dart';
 import '../bloc/video/video_event.dart';
 import '../bloc/video/video_state.dart';
+// Sesuaikan path import widget ini dengan lokasi foldermu
+import '../widgets/comment_item_widget.dart';
 
 class VideoLessonDetailScreen extends StatefulWidget {
   final LessonEntity lesson;
