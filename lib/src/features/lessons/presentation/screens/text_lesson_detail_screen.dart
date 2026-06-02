@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/utils/lesson_route_resolver.dart';
-import 'package:lms_mobile_app/src/core/utils/offline_test_mode.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
@@ -16,7 +15,9 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/les
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
-import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
+import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
+import 'package:lms_mobile_app/src/shared/widgets/lesson_background.dart';
+import 'package:lms_mobile_app/src/shared/widgets/lesson_navigation_bar.dart';
 
 class TextLessonDetailScreen extends StatefulWidget {
   final LessonEntity lesson;
@@ -42,10 +43,6 @@ class _TextLessonDetailScreenState extends State<TextLessonDetailScreen>
   void initState() {
     super.initState();
     _scaffoldKey = GlobalKey<ScaffoldState>();
-
-    print(
-      '[TEXT][VIEW] lessonId=${widget.lesson.id} courseId=${widget.course.id} contentLength=${widget.lesson.content.length} tester=${OfflineTestMode.describeContext()}',
-    );
 
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -102,78 +99,18 @@ class _TextLessonDetailScreenState extends State<TextLessonDetailScreen>
         },
       ),
       backgroundColor: Colors.transparent,
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              widget.course.title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              'Text lesson detail',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
-                color: Colors.white.withValues(alpha: 0.82),
-              ),
-            ),
-          ],
-        ),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-        toolbarHeight: 72,
-        leadingWidth: 72,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [AppColors.red, AppColors.red],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 16),
-          child: _buildIconButton(
-            icon: Icons.arrow_back_rounded,
-            onTap: () {
-              Navigator.pop(context);
-              context.read<CourseBloc>().add(const RefreshCoursesEvent());
-            },
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: _buildIconButton(
-              icon: Icons.menu_rounded,
-              onTap: () => _scaffoldKey.currentState?.openDrawer(),
-            ),
-          ),
-        ],
+      appBar: LessonAppBar(
+        courseTitle: widget.course.title,
+        subtitle: 'TEXT LESSON',
+        onBack: () {
+          Navigator.pop(context);
+          context.read<CourseBloc>().add(const RefreshCoursesEvent());
+        },
+        onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
       ),
       body: SafeArea(
-        child: Stack(
-          children: [
-            _buildBackgroundOrbs(),
-            Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFFF9FBFF), Color(0xFFF2F6FF)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-              ),
-            ),
-            SingleChildScrollView(
+        child: LessonBackground(
+          child: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -194,14 +131,45 @@ class _TextLessonDetailScreenState extends State<TextLessonDetailScreen>
                   const SizedBox(height: 4),
                   _buildAnimatedEntry(
                     index: sections.length + 3,
-                    child: _buildNavigationCard(),
+                    child: LessonNavigationBar(
+                      canGoPrevious: canGoPrevious,
+                      canGoNext: canGoNext,
+                      onPrevious: canGoPrevious
+                          ? () {
+                              Navigator.pop(context);
+                              Future.delayed(
+                                const Duration(milliseconds: 200),
+                                () => navigateToLesson(
+                                  previousLesson!,
+                                  widget.lessonIndex - 1,
+                                ),
+                              );
+                            }
+                          : null,
+                      onForward: () async {
+                        _markComplete();
+                        await Future.delayed(
+                          const Duration(milliseconds: 100),
+                        );
+                        if (!mounted) return;
+                        Navigator.pop(context);
+                        if (canGoNext && nextLesson != null) {
+                          Future.delayed(
+                            const Duration(milliseconds: 200),
+                            () => navigateToLesson(
+                              nextLesson!,
+                              widget.lessonIndex + 1,
+                            ),
+                          );
+                        }
+                      },
+                    ),
                   ),
                 ],
               ),
             ),
-          ],
+          ),
         ),
-      ),
     );
   }
 
@@ -525,87 +493,6 @@ class _TextLessonDetailScreenState extends State<TextLessonDetailScreen>
     );
   }
 
-  Widget _buildNavigationCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.82),
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.7)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          if (canGoPrevious)
-            Expanded(
-              child: PressScale(
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Future.delayed(const Duration(milliseconds: 200), () {
-                      navigateToLesson(previousLesson!, widget.lessonIndex - 1);
-                    });
-                  },
-                  icon: const Icon(Icons.arrow_back_rounded),
-                  label: const Text('Previous'),
-                ),
-              ),
-            ),
-          if (canGoPrevious && canGoNext) const SizedBox(width: 12),
-          if (canGoNext)
-            Expanded(
-              child: PressScale(
-                child: ElevatedButton.icon(
-                  onPressed: () async {
-                    _markComplete();
-                    await Future.delayed(const Duration(milliseconds: 100));
-                    if (!mounted) return;
-                    Navigator.pop(context);
-                    Future.delayed(const Duration(milliseconds: 200), () {
-                      navigateToLesson(nextLesson!, widget.lessonIndex + 1);
-                    });
-                  },
-                  icon: const Icon(Icons.arrow_forward_rounded),
-                  label: const Text('Next'),
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildIconButton({
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return PressScale(
-      child: Material(
-        color: Colors.white.withValues(alpha: 0.16),
-        borderRadius: BorderRadius.circular(14),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(14),
-          onTap: onTap,
-          child: Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
-            ),
-            child: Icon(icon, color: Colors.white),
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget _buildHeaderStat({required IconData icon, required String label}) {
     return Expanded(
@@ -657,46 +544,4 @@ class _TextLessonDetailScreenState extends State<TextLessonDetailScreen>
     );
   }
 
-  Widget _buildBackgroundOrbs() {
-    return IgnorePointer(
-      child: Stack(
-        children: [
-          Positioned(
-            top: -70,
-            right: -40,
-            child: Container(
-              width: 180,
-              height: 180,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    AppColors.tomato.withValues(alpha: 0.18),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: 150,
-            left: -60,
-            child: Container(
-              width: 150,
-              height: 150,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    AppColors.red.withValues(alpha: 0.14),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }

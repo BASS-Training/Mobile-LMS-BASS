@@ -12,8 +12,9 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_na
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion_card.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
-import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
+import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
+import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -54,15 +55,6 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
     }
     return YoutubePlayer.convertUrlToId(value) ?? value;
   }
-
-  // bool get canGoNext =>
-  //     widget.lessonIndex < widget.course.allLessons.length - 1;
-  // bool get canGoPrevious => widget.lessonIndex > 0;
-
-  // LessonEntity? get nextLesson =>
-  //     canGoNext ? widget.course.allLessons[widget.lessonIndex + 1] : null;
-  // LessonEntity? get previousLesson =>
-  //     canGoPrevious ? widget.course.allLessons[widget.lessonIndex - 1] : null;
 
   late GlobalKey<ScaffoldState> _scaffoldKey;
 
@@ -143,20 +135,10 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
     if (videoId == null || videoId.isEmpty) {
       return Scaffold(
         backgroundColor: const Color(0xFFF6F8FF),
-        appBar: AppBar(
-          title: const Text('Video Lesson'),
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          surfaceTintColor: Colors.transparent,
-          flexibleSpace: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [AppColors.red, AppColors.tomato],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-          ),
+        appBar: LessonAppBar(
+          courseTitle: widget.course.title,
+          subtitle: 'VIDEO PLAYER',
+          onBack: () => Navigator.pop(context),
         ),
         body: Container(
           decoration: const BoxDecoration(
@@ -232,38 +214,11 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
             },
           ),
           backgroundColor: const Color(0xFFF6F8FF),
-          appBar: AppBar(
-            title: Text(
-              widget.course.title,
-              style: TextStyle(color: Colors.white),
-            ),
-
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            surfaceTintColor: Colors.transparent,
-            automaticallyImplyLeading: false,
-            flexibleSpace: Container(
-              decoration: const BoxDecoration(color: AppColors.red),
-            ),
-            leading: GestureDetector(
-              onTap: () => Navigator.pop(context),
-              child: const Icon(Icons.arrow_back, color: Colors.white),
-            ),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 16),
-                child: Center(
-                  child: GestureDetector(
-                    onTap: () => _scaffoldKey.currentState?.openDrawer(),
-                    child: const Icon(
-                      Icons.list_alt,
-                      size: 24,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+          appBar: LessonAppBar(
+            courseTitle: widget.course.title,
+            subtitle: 'VIDEO PLAYER',
+            onBack: () => Navigator.pop(context),
+            onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
           ),
           body: BlocBuilder<VideoBloc, VideoState>(
             builder: (context, state) {
@@ -433,9 +388,26 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
   }
 
   Widget _buildBottomButtons(VideoState state) {
+    final canProceed = state.canProceed || widget.lesson.isCompleted;
+
+    void markAndNavigate({required bool goNext}) {
+      if (!widget.lesson.isCompleted) {
+        context.read<LessonBloc>().add(
+          MarkLessonCompleteEvent(lessonId: widget.lesson.id),
+        );
+        context.read<CourseBloc>().add(const RefreshCoursesEvent());
+      }
+      Navigator.pop(context);
+      if (goNext && nextLesson != null) {
+        Future.delayed(const Duration(milliseconds: 200), () {
+          navigateToLesson(nextLesson!, widget.lessonIndex + 1);
+        });
+      }
+    }
+
     return Row(
       children: [
-        if (canGoPrevious)
+        if (canGoPrevious) ...[
           Expanded(
             child: PressScale(
               child: OutlinedButton.icon(
@@ -445,37 +417,24 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
                     navigateToLesson(previousLesson!, widget.lessonIndex - 1);
                   });
                 },
-                icon: const Icon(Icons.arrow_back),
-                label: const Text('Previous'),
+                icon: const Icon(Icons.arrow_back_rounded),
+                label: const Text('Sebelumnya'),
               ),
             ),
           ),
-        if (canGoPrevious && canGoNext) const SizedBox(width: 12),
-        if (canGoNext)
-          Expanded(
-            child: PressScale(
-              child: ElevatedButton.icon(
-                onPressed: (!state.canProceed && !widget.lesson.isCompleted)
-                    ? null
-                    : () {
-                        if (!widget.lesson.isCompleted) {
-                          context.read<LessonBloc>().add(
-                            MarkLessonCompleteEvent(lessonId: widget.lesson.id),
-                          );
-                          context.read<CourseBloc>().add(
-                            const RefreshCoursesEvent(),
-                          );
-                        }
-                        Navigator.pop(context);
-                        Future.delayed(const Duration(milliseconds: 200), () {
-                          navigateToLesson(nextLesson!, widget.lessonIndex + 1);
-                        });
-                      },
-                icon: const Icon(Icons.arrow_forward),
-                label: const Text('Next'),
+          const SizedBox(width: 12),
+        ],
+        Expanded(
+          child: PressScale(
+            child: ElevatedButton.icon(
+              onPressed: canProceed ? () => markAndNavigate(goNext: canGoNext) : null,
+              icon: Icon(
+                canGoNext ? Icons.arrow_forward_rounded : Icons.check_rounded,
               ),
+              label: Text(canGoNext ? 'Lanjut' : 'Selesai'),
             ),
           ),
+        ),
       ],
     );
   }

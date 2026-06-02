@@ -15,6 +15,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/qu
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/quiz_questions_widget.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/quiz_result_widget.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
@@ -82,7 +83,11 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> with Le
       },
       child: BlocBuilder<QuizBloc, QuizState>(
         builder: (context, state) {
-          final appBar = _buildQuizAppBar(widget.course.title);
+          final appBar = LessonAppBar(
+            courseTitle: widget.course.title,
+            subtitle: 'QUIZ',
+            onBack: _backToCourse,
+          );
           final quizBackground = _buildQuizBackground();
 
           // Show loading
@@ -101,9 +106,10 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> with Le
           if (state is QuizError) {
             return Scaffold(
               backgroundColor: AppColors.quizBackgroundStart,
-              appBar: _buildQuizAppBar(
-                widget.course.title,
-                onBackTap: _backToCourse,
+              appBar: LessonAppBar(
+                courseTitle: widget.course.title,
+                subtitle: 'QUIZ',
+                onBack: _backToCourse,
               ),
               body: Container(
                 decoration: quizBackground,
@@ -210,9 +216,10 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> with Le
       child: Scaffold(
         key: _scaffoldKey,
         backgroundColor: AppColors.quizBackgroundStart,
-        appBar: _buildQuizAppBar(
-          widget.course.title,
-          onBackTap: _backToCourse,
+        appBar: LessonAppBar(
+          courseTitle: widget.course.title,
+          subtitle: 'QUIZ',
+          onBack: _backToCourse,
           onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
         ),
         drawer: LessonDrawer(
@@ -272,9 +279,10 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> with Le
       child: Scaffold(
         key: _scaffoldKey,
         backgroundColor: AppColors.quizBackgroundStart,
-        appBar: _buildQuizAppBar(
-          '${widget.course.title} - Kuis',
-          onBackTap: _backToCourse,
+        appBar: LessonAppBar(
+          courseTitle: widget.course.title,
+          subtitle: 'QUIZ',
+          onBack: _backToCourse,
           onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
         ),
         drawer: LessonDrawer(
@@ -541,24 +549,10 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> with Le
 
     return Scaffold(
       backgroundColor: const Color(0xFFF6F8FF),
-      appBar: AppBar(
-        title: Text(widget.course.title),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [AppColors.red, AppColors.tomato],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
-        leading: GestureDetector(
-          onTap: _backToCourse,
-          child: const Icon(Icons.arrow_back),
-        ),
+      appBar: LessonAppBar(
+        courseTitle: widget.course.title,
+        subtitle: 'HASIL QUIZ',
+        onBack: _backToCourse,
       ),
       body: Stack(
         children: [
@@ -668,44 +662,6 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> with Le
             ),
           ),
         ),
-      ],
-    );
-  }
-
-  PreferredSizeWidget _buildQuizAppBar(
-    String title, {
-    VoidCallback? onBackTap,
-    VoidCallback? onMenuTap,
-  }) {
-    return AppBar(
-      title: Text(title),
-      elevation: 0,
-      backgroundColor: Colors.transparent,
-      surfaceTintColor: Colors.transparent,
-      leading: GestureDetector(
-        onTap: onBackTap ?? _backToCourse,
-        child: const Icon(Icons.arrow_back),
-      ),
-      flexibleSpace: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [AppColors.red, AppColors.tomato],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-      ),
-      actions: [
-        if (onMenuTap != null)
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: Center(
-              child: GestureDetector(
-                onTap: onMenuTap,
-                child: const Icon(Icons.list_alt, size: 24),
-              ),
-            ),
-          ),
       ],
     );
   }

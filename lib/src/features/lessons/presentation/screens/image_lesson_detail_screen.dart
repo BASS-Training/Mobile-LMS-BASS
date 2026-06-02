@@ -12,7 +12,8 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/les
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
-import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
+import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
+import 'package:lms_mobile_app/src/shared/widgets/lesson_navigation_bar.dart';
 
 class ImageLessonDetailScreen extends StatefulWidget {
   final LessonEntity lesson;
@@ -132,11 +133,37 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
           });
         },
       ),
-      appBar: _buildAppBar(),
+      appBar: LessonAppBar(
+        courseTitle: widget.course.title,
+        subtitle: 'IMAGE VIEWER',
+        gradientColors: const [_tealStart, _tealEnd],
+        onBack: () {
+          Navigator.pop(context);
+          context.read<CourseBloc>().add(const RefreshCoursesEvent());
+        },
+        onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
+      ),
       bottomNavigationBar: SafeArea(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-          child: _buildNavigationBar(),
+          child: LessonNavigationBar(
+            canGoPrevious: canGoPrevious,
+            canGoNext: canGoNext,
+            primaryColor: _tealStart,
+            onPrevious: canGoPrevious
+                ? () {
+                    Navigator.pop(context);
+                    Future.delayed(
+                      const Duration(milliseconds: 200),
+                      () => navigateToLesson(
+                        previousLesson!,
+                        widget.lessonIndex - 1,
+                      ),
+                    );
+                  }
+                : null,
+            onForward: () => _markComplete(goToNext: canGoNext),
+          ),
         ),
       ),
       body: SafeArea(
@@ -167,64 +194,6 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            widget.course.title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            'IMAGE VIEWER',
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.8,
-              color: Colors.white.withValues(alpha: 0.8),
-            ),
-          ),
-        ],
-      ),
-      elevation: 0,
-      backgroundColor: Colors.transparent,
-      surfaceTintColor: Colors.transparent,
-      flexibleSpace: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [_tealStart, _tealEnd],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-      ),
-      leading: GestureDetector(
-        onTap: () {
-          Navigator.pop(context);
-          context.read<CourseBloc>().add(const RefreshCoursesEvent());
-        },
-        child: const Icon(Icons.arrow_back_rounded, color: Colors.white),
-      ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: GestureDetector(
-            onTap: () => _scaffoldKey.currentState?.openDrawer(),
-            child: const Icon(Icons.menu_rounded, color: Colors.white),
-          ),
-        ),
-      ],
-    );
-  }
 
   Widget _buildDescriptionCard() {
     return Container(
@@ -478,74 +447,4 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
     );
   }
 
-  Widget _buildNavigationBar() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Colors.white, Color(0xFFF0FAFA)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          if (canGoPrevious) ...[
-            Expanded(
-              child: PressScale(
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Future.delayed(const Duration(milliseconds: 200), () {
-                      navigateToLesson(previousLesson!, widget.lessonIndex - 1);
-                    });
-                  },
-                  icon: const Icon(Icons.arrow_back_rounded),
-                  label: const Text('Sebelumnya'),
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(
-                      color: AppColors.pearl.withValues(alpha: 0.9),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    backgroundColor: Colors.white,
-                    foregroundColor: AppColors.charcoal,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-          ],
-          Expanded(
-            child: PressScale(
-              child: ElevatedButton.icon(
-                onPressed: () => _markComplete(goToNext: canGoNext),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _tealStart,
-                  shadowColor: _tealStart.withValues(alpha: 0.45),
-                  elevation: 8,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                icon: Icon(
-                  canGoNext
-                      ? Icons.arrow_forward_rounded
-                      : Icons.check_rounded,
-                ),
-                label: Text(canGoNext ? 'Lanjut' : 'Selesai'),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }

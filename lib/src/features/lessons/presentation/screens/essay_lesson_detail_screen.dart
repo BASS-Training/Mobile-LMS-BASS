@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
-
 import 'package:lms_mobile_app/src/core/utils/lesson_route_resolver.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
@@ -12,11 +10,12 @@ import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_entit
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_event.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/essay/essay_page_header.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/essay/essay_panel_widget.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/essay/essay_side_panel_widget.dart';
-import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/question_navigator_widget.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
 import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
 import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
@@ -93,7 +92,12 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
       child: Scaffold(
         key: _scaffoldKey,
         backgroundColor: const Color(0xFFF6F8FF),
-        appBar: _buildAppBar(),
+        appBar: LessonAppBar(
+          courseTitle: widget.course.title,
+          subtitle: 'ESSAY',
+          onBack: _backToCourse,
+          onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
+        ),
         drawer: _buildDrawer(),
         body: BlocConsumer<EssayBloc, EssayState>(
           listenWhen: (previous, current) {
@@ -172,7 +176,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
                         final useDesktopLayout = constraints.maxWidth >= 900;
                         final sidePanel = EssaySidePanelWidget(state: state);
                         final mainPanel = EssayPanelWidget(state: state, answerController: _answerController);
-                        final header = _buildPageHeader();
+                        final header = EssayPageHeader();
 
                         if (!useDesktopLayout) {
                           return SingleChildScrollView(
@@ -227,38 +231,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      title: Text(widget.course.title),
-      elevation: 0,
-      backgroundColor: Colors.transparent,
-      surfaceTintColor: Colors.transparent,
-      leading: GestureDetector(
-        onTap: _backToCourse,
-        child: const Icon(Icons.arrow_back),
-      ),
-      flexibleSpace: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [AppColors.red, AppColors.tomato],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-      ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 16),
-          child: Center(
-            child: GestureDetector(
-              onTap: () => _scaffoldKey.currentState?.openDrawer(),
-              child: const Icon(Icons.list_alt, size: 24),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+
 
   Widget _buildDrawer() {
     return LessonDrawer(
@@ -317,71 +290,6 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildPageHeader() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        gradient: const LinearGradient(
-          colors: [AppColors.red, AppColors.tomato],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.red.withValues(alpha: 0.22),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.18),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
-            ),
-            child: const Icon(
-              Icons.edit_note_rounded,
-              color: Colors.white,
-              size: 28,
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Latihan Essay Interaktif',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Simpan jawaban per nomor, lanjutkan kapan saja, dan kirim kalau semua sudah siap.',
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.92),
-                    fontSize: 12,
-                    height: 1.4,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -659,297 +567,4 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
     );
   }
 }
-  // Widget _buildSidePanel(EssayState state) {
-  //   final progress = state.totalQuestions > 0
-  //       ? (state.savedCount / state.totalQuestions) * 100
-  //       : 0.0;
-
-  //   return Container(
-  //     padding: const EdgeInsets.all(14),
-  //     decoration: BoxDecoration(
-  //       gradient: const LinearGradient(
-  //         colors: [Colors.white, Color(0xFFF8FAFF)],
-  //         begin: Alignment.topLeft,
-  //         end: Alignment.bottomRight,
-  //       ),
-  //       borderRadius: BorderRadius.circular(14),
-  //       border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
-  //       boxShadow: [
-  //         BoxShadow(
-  //           color: Colors.black.withValues(alpha: 0.05),
-  //           blurRadius: 18,
-  //           offset: const Offset(0, 6),
-  //         ),
-  //       ],
-  //     ),
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         const Text(
-  //           'Progress Essay',
-  //           style: TextStyle(
-  //             fontSize: 13,
-  //             fontWeight: FontWeight.w700,
-  //             color: AppColors.charcoal,
-  //           ),
-  //         ),
-  //         const SizedBox(height: 8),
-  //         ClipRRect(
-  //           borderRadius: BorderRadius.circular(8),
-  //           child: LinearProgressIndicator(
-  //             value: progress / 100,
-  //             minHeight: 8,
-  //             backgroundColor: AppColors.pearl.withValues(alpha: 0.7),
-  //             valueColor: const AlwaysStoppedAnimation<Color>(AppColors.tomato),
-  //           ),
-  //         ),
-  //         const SizedBox(height: 8),
-  //         Text(
-  //           '${progress.toStringAsFixed(0)}% • Soal ${state.currentQuestionIndex + 1} dari ${state.totalQuestions}',
-  //           style: const TextStyle(fontSize: 12, color: AppColors.slate),
-  //         ),
-  //         const SizedBox(height: 4),
-  //         Text(
-  //           'Tersimpan: ${state.savedCount}/${state.totalQuestions}',
-  //           style: const TextStyle(fontSize: 12, color: AppColors.slate),
-  //         ),
-  //         const SizedBox(height: 12),
-  //         Container(
-  //           width: double.infinity,
-  //           padding: const EdgeInsets.all(10),
-  //           decoration: BoxDecoration(
-  //             color: const Color(0xFFF3F6FF),
-  //             borderRadius: BorderRadius.circular(10),
-  //           ),
-  //           child: Text(
-  //             state.isDraftSaved
-  //                 ? 'Draft jawaban sudah disimpan'
-  //                 : 'Draft belum disimpan',
-  //             style: const TextStyle(fontSize: 12, color: AppColors.slate),
-  //           ),
-  //         ),
-  //         const SizedBox(height: 10),
-  //         Text(
-  //           'Karakter: ${state.currentAnswer.length}',
-  //           style: const TextStyle(fontSize: 12, color: AppColors.slate),
-  //         ),
-  //         const SizedBox(height: 4),
-  //         Text(
-  //           'Kata: ${state.currentWordCount}',
-  //           style: const TextStyle(fontSize: 12, color: AppColors.slate),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  // Widget _buildEssayPanel(EssayState state) {
-  //   if (state.questions.isEmpty)
-  //     return const Center(child: CircularProgressIndicator());
-
-  //   return Container(
-  //     padding: const EdgeInsets.all(14),
-  //     decoration: BoxDecoration(
-  //       gradient: const LinearGradient(
-  //         colors: [Colors.white, Color(0xFFFDFDFF)],
-  //         begin: Alignment.topLeft,
-  //         end: Alignment.bottomRight,
-  //       ),
-  //       borderRadius: BorderRadius.circular(14),
-  //       border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
-  //       boxShadow: [
-  //         BoxShadow(
-  //           color: Colors.black.withValues(alpha: 0.05),
-  //           blurRadius: 18,
-  //           offset: const Offset(0, 6),
-  //         ),
-  //       ],
-  //     ),
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         Container(
-  //           width: double.infinity,
-  //           padding: const EdgeInsets.all(12),
-  //           decoration: BoxDecoration(
-  //             gradient: const LinearGradient(
-  //               colors: [Color(0xFFF2F0FF), Color(0xFFEAF1FF)],
-  //               begin: Alignment.topLeft,
-  //               end: Alignment.bottomRight,
-  //             ),
-  //             borderRadius: BorderRadius.circular(12),
-  //           ),
-  //           child: Row(
-  //             children: [
-  //               Container(
-  //                 width: 34,
-  //                 height: 34,
-  //                 decoration: const BoxDecoration(
-  //                   color: AppColors.red,
-  //                   shape: BoxShape.circle,
-  //                 ),
-  //                 child: Center(
-  //                   child: Text(
-  //                     '${state.currentQuestionIndex + 1}',
-  //                     style: const TextStyle(
-  //                       color: Colors.white,
-  //                       fontWeight: FontWeight.bold,
-  //                     ),
-  //                   ),
-  //                 ),
-  //               ),
-  //               const SizedBox(width: 12),
-  //               Expanded(
-  //                 child: Text(
-  //                   state.currentQuestion,
-  //                   style: const TextStyle(
-  //                     fontSize: 16,
-  //                     fontWeight: FontWeight.w700,
-  //                     color: AppColors.charcoal,
-  //                   ),
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //         const SizedBox(height: 14),
-  //         Container(
-  //           width: double.infinity,
-  //           padding: const EdgeInsets.all(14),
-  //           decoration: BoxDecoration(
-  //             gradient: const LinearGradient(
-  //               colors: [Color(0xFFEEF2FF), Color(0xFFF7F9FF)],
-  //               begin: Alignment.topLeft,
-  //               end: Alignment.bottomRight,
-  //             ),
-  //             borderRadius: BorderRadius.circular(12),
-  //             border: Border.all(color: const Color(0xFFDDE3FF)),
-  //           ),
-  //           child: Text(
-  //             state.currentQuestion,
-  //             style: const TextStyle(
-  //               fontSize: 15,
-  //               height: 1.6,
-  //               color: AppColors.charcoal,
-  //             ),
-  //           ),
-  //         ),
-  //         const SizedBox(height: 16),
-  //         if (state.isSubmitted) ...[
-  //           Container(
-  //             width: double.infinity,
-  //             padding: const EdgeInsets.all(12),
-  //             decoration: BoxDecoration(
-  //               color: Colors.green.shade50,
-  //               borderRadius: BorderRadius.circular(12),
-  //               border: Border.all(color: Colors.green.shade200),
-  //             ),
-  //             child: const Row(
-  //               children: [
-  //                 Icon(Icons.verified_rounded, color: Colors.green),
-  //                 SizedBox(width: 10),
-  //                 Expanded(
-  //                   child: Text(
-  //                     'Jawaban sudah dikumpulkan. Kamu tidak bisa mengirim ulang.',
-  //                     style: TextStyle(fontSize: 12.5, height: 1.4),
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //           ),
-  //           const SizedBox(height: 16),
-  //         ],
-  //         const Text(
-  //           'Jawaban Anda',
-  //           style: TextStyle(
-  //             fontSize: 13,
-  //             fontWeight: FontWeight.w600,
-  //             color: AppColors.charcoal,
-  //           ),
-  //         ),
-  //         const SizedBox(height: 8),
-  //         Container(
-  //           width: double.infinity,
-  //           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-  //           decoration: BoxDecoration(
-  //             color: state.isCurrentQuestionValid
-  //                 ? Colors.green.shade50
-  //                 : Colors.orange.shade50,
-  //             borderRadius: BorderRadius.circular(8),
-  //             border: Border.all(
-  //               color: state.isCurrentQuestionValid
-  //                   ? Colors.green.shade200
-  //                   : Colors.orange.shade200,
-  //             ),
-  //           ),
-  //           child: Text(
-  //             state.isCurrentQuestionValid
-  //                 ? 'Jawaban nomor ini valid (>= 10 kata).'
-  //                 : 'Minimal 10 kata untuk menandai nomor ini selesai.',
-  //             style: TextStyle(
-  //               fontSize: 12,
-  //               color: state.isCurrentQuestionValid
-  //                   ? Colors.green.shade800
-  //                   : Colors.orange.shade800,
-  //               fontWeight: FontWeight.w500,
-  //             ),
-  //           ),
-  //         ),
-  //         const SizedBox(height: 8),
-  //         TextField(
-  //           enabled: !state.isSubmitted,
-  //           controller: _answerController,
-  //           minLines: 10,
-  //           maxLines: 14,
-  //           onChanged: (value) =>
-  //               context.read<EssayBloc>().add(AnswerChanged(value)),
-  //           decoration: InputDecoration(
-  //             hintText: 'Tulis jawaban essay Anda di sini...',
-  //             alignLabelWithHint: true,
-  //             border: OutlineInputBorder(
-  //               borderRadius: BorderRadius.circular(12),
-  //               borderSide: const BorderSide(color: AppColors.pearl),
-  //             ),
-  //             enabledBorder: OutlineInputBorder(
-  //               borderRadius: BorderRadius.circular(12),
-  //               borderSide: const BorderSide(color: AppColors.pearl),
-  //             ),
-  //             focusedBorder: OutlineInputBorder(
-  //               borderRadius: BorderRadius.circular(12),
-  //               borderSide: const BorderSide(color: AppColors.red, width: 2),
-  //             ),
-  //           ),
-  //         ),
-  //         const SizedBox(height: 8),
-  //         Row(
-  //           children: [
-  //             Text(
-  //               '${state.currentWordCount} kata (min 10) | ${state.currentAnswer.length} karakter',
-  //               style: const TextStyle(fontSize: 11, color: AppColors.slate),
-  //             ),
-  //             const Spacer(),
-  //             Text(
-  //               state.isDraftSaved ? 'Draft tersimpan' : 'Belum disimpan',
-  //               style: TextStyle(
-  //                 fontSize: 11,
-  //                 color: state.isDraftSaved
-  //                     ? AppColors.emerald
-  //                     : AppColors.silver,
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //         const SizedBox(height: 12),
-  //         QuestionNavigatorWidget(
-  //           totalQuestions: state.totalQuestions,
-  //           currentQuestionIndex: state.currentQuestionIndex,
-  //           completedQuestionIndexes: state.savedQuestionIndexes,
-  //           onQuestionSelected: (index) =>
-  //               context.read<EssayBloc>().add(ChangeQuestion(index)),
-  //           completedLabel: 'Sudah disimpan',
-  //           pendingLabel: 'Belum disimpan',
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
+  
