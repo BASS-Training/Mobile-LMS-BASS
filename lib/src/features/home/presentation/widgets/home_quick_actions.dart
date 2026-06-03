@@ -6,7 +6,7 @@ import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
 import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
 /// Row of quick shortcuts to the most useful destinations. Surfaces actions
-/// (like certificates) that would otherwise be buried deep in the app.
+/// (certificates, joining a class) that would otherwise be buried.
 class HomeQuickActions extends StatelessWidget {
   final VoidCallback onShowCourses;
   final VoidCallback onShowSaved;
@@ -39,12 +39,10 @@ class HomeQuickActions extends StatelessWidget {
         onTap: onShowSaved,
       ),
       _QuickAction(
-        icon: Icons.menu_book_rounded,
-        label: 'Panduan',
+        icon: Icons.vpn_key_rounded,
+        label: 'Gabung Kelas',
         color: AppColors.success,
-        onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Panduan akan segera hadir!')),
-        ),
+        onTap: () => context.push(AppRoutes.joinClass),
       ),
     ];
 
@@ -105,8 +103,10 @@ class _QuickAction extends StatelessWidget {
             const SizedBox(height: 7),
             Text(
               label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                fontSize: 11.5,
+                fontSize: 11,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textSecondary,
               ),

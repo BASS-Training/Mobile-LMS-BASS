@@ -111,6 +111,34 @@ class CourseCard extends StatelessWidget {
           bottom: 12,
           child: Text(course.icon, style: const TextStyle(fontSize: 38)),
         ),
+        // Locked / catalog badge for courses the user does not own yet.
+        if (!course.isOwned)
+          Positioned(
+            right: 12,
+            bottom: 12,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Icon(Icons.lock_rounded, size: 12, color: AppColors.brandPrimary),
+                  SizedBox(width: 4),
+                  Text(
+                    'Beli',
+                    style: TextStyle(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.brandPrimary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
       ],
     );
   }
@@ -126,7 +154,7 @@ class CourseCard extends StatelessWidget {
 
   Widget _buildBody() {
     final progress = course.progressPercentage / 100.0;
-    final hasProgress = course.totalLessons > 0;
+    final hasProgress = course.isOwned && course.totalLessons > 0;
     final duration = _durationLabel;
 
     return Padding(
@@ -173,7 +201,9 @@ class CourseCard extends StatelessWidget {
               ),
             ],
           ),
-          if (hasProgress)
+          if (!course.isOwned)
+            _CatalogHint(duration: duration)
+          else if (hasProgress)
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -248,6 +278,39 @@ class _Pill extends StatelessWidget {
           color: Colors.white,
         ),
       ),
+    );
+  }
+}
+
+/// Footer shown on catalog (unowned) cards instead of a progress bar.
+class _CatalogHint extends StatelessWidget {
+  final String? duration;
+
+  const _CatalogHint({required this.duration});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const Icon(
+          Icons.shopping_bag_rounded,
+          size: 13,
+          color: AppColors.brandPrimary,
+        ),
+        const SizedBox(width: 4),
+        Expanded(
+          child: Text(
+            duration != null ? 'Beli · $duration' : 'Beli untuk akses',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: AppColors.brandPrimary,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

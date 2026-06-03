@@ -36,6 +36,7 @@ class CourseMapper {
       sections: sections,
       lessons: allLessons,
       isSaved: model.isSaved,
+      isOwned: model.isOwned,
     );
   }
 
@@ -66,6 +67,7 @@ class CourseMapper {
       duration: entity.duration,
       sections: sections,
       isSaved: entity.isSaved,
+      isOwned: entity.isOwned,
     );
   }
 }

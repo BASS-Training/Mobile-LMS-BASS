@@ -7,6 +7,7 @@ import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_detail_header.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_info_cards.dart';
+import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_locked_access.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_section_accordion.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
@@ -181,77 +182,62 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                               ),
                               const SizedBox(height: 24),
 
-                              CourseProgressIndicator(
-                                progress: currentCourse.progressPercentage,
-                                label: 'Your Progress',
-                                showPercentage: true,
-                              ),
-                              const SizedBox(height: 24),
-
-                              SizedBox(
-                                width: double.infinity,
-                                height: 54,
-                                child: ElevatedButton.icon(
-                                  onPressed: () => context.push(
-                                    AppRoutes.courseResults,
-                                    extra: currentCourse,
-                                  ),
-                                  icon: const Icon(Icons.assessment_rounded),
-                                  label: const Text('Nilai & Hasil'),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.brandPrimary,
-                                    foregroundColor: Colors.white,
-                                    elevation: 0,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16),
-                                    ),
-                                  ),
+                              if (currentCourse.isOwned) ...[
+                                CourseProgressIndicator(
+                                  progress: currentCourse.progressPercentage,
+                                  label: 'Progres Kamu',
+                                  showPercentage: true,
                                 ),
-                              ),
-                              const SizedBox(height: 24),
-
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
-                                    'Materi Kursus',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w800,
-                                      color: AppColors.textPrimary,
+                                const SizedBox(height: 24),
+                                SizedBox(
+                                  width: double.infinity,
+                                  height: 54,
+                                  child: ElevatedButton.icon(
+                                    onPressed: () => context.push(
+                                      AppRoutes.courseResults,
+                                      extra: currentCourse,
                                     ),
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 6,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: AppColors.brandPrimary
-                                          .withValues(alpha: 0.1),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Text(
-                                      '${currentCourse.completedLessons}/${currentCourse.totalLessons}',
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700,
-                                        color: AppColors.brandPrimary,
+                                    icon: const Icon(Icons.assessment_rounded),
+                                    label: const Text('Nilai & Hasil'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.brandPrimary,
+                                      foregroundColor: Colors.white,
+                                      elevation: 0,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
                                       ),
                                     ),
                                   ),
+                                ),
+                                const SizedBox(height: 24),
+                                _SectionHeader(
+                                  title: 'Materi Kursus',
+                                  trailing:
+                                      '${currentCourse.completedLessons}/${currentCourse.totalLessons}',
+                                ),
+                                const SizedBox(height: 12),
+                                ...currentCourse.sections.map((section) {
+                                  return CourseSectionAccordion(
+                                    section: section,
+                                    course: currentCourse,
+                                  );
+                                }),
+                                const SizedBox(height: 24),
+                              ] else ...[
+                                CourseLockedAccess(course: currentCourse),
+                                const SizedBox(height: 24),
+                                if (currentCourse.sections.isNotEmpty) ...[
+                                  const _SectionHeader(
+                                    title: 'Yang akan kamu pelajari',
+                                  ),
+                                  const SizedBox(height: 12),
+                                  ...currentCourse.sections.map(
+                                    (section) =>
+                                        CourseSyllabusTile(section: section),
+                                  ),
+                                  const SizedBox(height: 24),
                                 ],
-                              ),
-                              const SizedBox(height: 12),
-
-                              ...currentCourse.sections.map((section) {
-                                return CourseSectionAccordion(
-                                  section: section,
-                                  course: currentCourse,
-                                );
-                              }),
-                              const SizedBox(height: 24),
+                              ],
                             ],
                           ),
                         ),
@@ -264,6 +250,47 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
           ),
         );
       },
+    );
+  }
+}
+
+/// Section heading with an optional count badge, used in the course detail body.
+class _SectionHeader extends StatelessWidget {
+  final String title;
+  final String? trailing;
+
+  const _SectionHeader({required this.title, this.trailing});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w800,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        if (trailing != null)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppColors.brandPrimary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              trailing!,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: AppColors.brandPrimary,
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

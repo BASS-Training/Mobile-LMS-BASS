@@ -16,6 +16,9 @@ class Course {
   final List<CourseSection> sections;
   bool isSaved;
 
+  /// Whether the authenticated user is enrolled in / owns this course.
+  final bool isOwned;
+
   Course({
     required this.id,
     required this.title,
@@ -27,6 +30,7 @@ class Course {
     required this.duration,
     required this.sections,
     this.isSaved = false,
+    this.isOwned = true,
   });
 
   // Convenience getter for all lessons (flatten from sections)
@@ -51,6 +55,9 @@ class Course {
       duration: json['duration'] ?? '0 hours',
       sections: sections,
       isSaved: json['isSaved'] ?? false,
+      // Backend may expose enrollment via `is_enrolled` or `is_owned`.
+      // Absent => assume owned (current API only returns the user's courses).
+      isOwned: json['is_enrolled'] ?? json['is_owned'] ?? json['isOwned'] ?? true,
     );
   }
 
@@ -66,6 +73,7 @@ class Course {
       'duration': duration,
       'sections': sections.map((s) => s.toJson()).toList(),
       'isSaved': isSaved,
+      'isOwned': isOwned,
     };
   }
 
@@ -80,6 +88,7 @@ class Course {
     String? duration,
     List<CourseSection>? sections,
     bool? isSaved,
+    bool? isOwned,
   }) {
     return Course(
       id: id ?? this.id,
@@ -92,6 +101,7 @@ class Course {
       duration: duration ?? this.duration,
       sections: sections ?? this.sections,
       isSaved: isSaved ?? this.isSaved,
+      isOwned: isOwned ?? this.isOwned,
     );
   }
 }

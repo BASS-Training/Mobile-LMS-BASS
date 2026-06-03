@@ -30,6 +30,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/screens/quiz_re
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/essay_result_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/certificates/presentation/screens/certificate_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/certificates/presentation/screens/certificate_list_screen.dart';
+import 'package:lms_mobile_app/src/features/home/presentation/screens/join_class_screen.dart';
 
 // Entity imports
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
@@ -91,6 +92,10 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.courses,
         builder: (context, state) => const MainScreen(initialTab: 1),
+      ),
+      GoRoute(
+        path: AppRoutes.joinClass,
+        builder: (context, state) => const JoinClassScreen(),
       ),
       GoRoute(
         path: AppRoutes.courseDetail,

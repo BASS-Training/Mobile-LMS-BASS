@@ -38,7 +38,9 @@ class HomeHeader extends StatelessWidget {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         final name = state is AuthSuccess ? state.user.name : 'User';
-        final initial = name.trim().isNotEmpty ? name.trim()[0].toUpperCase() : 'U';
+        final initial = name.trim().isNotEmpty
+            ? name.trim()[0].toUpperCase()
+            : 'U';
         return Container(
           width: 46,
           height: 46,

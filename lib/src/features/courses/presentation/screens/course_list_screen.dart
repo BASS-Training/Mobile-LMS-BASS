@@ -188,7 +188,9 @@ class _CourseListScreenState extends State<CourseListScreen> {
                       builder: (context, state) {
                         if (state is CourseLoading) {
                           return const Center(
-                            child: CircularProgressIndicator(),
+                            child: CircularProgressIndicator(
+                              color: AppColors.brandPrimary,
+                            ),
                           );
                         }
 
@@ -217,6 +219,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
                                   const SizedBox(height: 16),
                                   const Text(
                                     'Kursus tidak ditemukan',
+                                    textAlign: TextAlign.center,
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w700,
@@ -224,11 +227,18 @@ class _CourseListScreenState extends State<CourseListScreen> {
                                     ),
                                   ),
                                   const SizedBox(height: 6),
-                                  const Text(
-                                    'Coba kata kunci lain atau kosongkan pencarian.',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: AppColors.textSecondary,
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 32,
+                                    ),
+                                    child: Text(
+                                      'Coba kata kunci lain atau kosongkan pencarian.',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: AppColors.textSecondary,
+                                        height: 1.4,
+                                      ),
                                     ),
                                   ),
                                 ],

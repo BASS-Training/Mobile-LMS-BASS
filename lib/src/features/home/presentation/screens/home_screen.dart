@@ -2,15 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
-import 'package:lms_mobile_app/src/core/config/constants/app_strings.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_state.dart';
 import 'package:lms_mobile_app/src/features/home/domain/entities/home_stats.entity.dart';
-import 'package:lms_mobile_app/src/features/home/presentation/bloc/home_bloc.dart';
-import 'package:lms_mobile_app/src/features/home/presentation/bloc/home_state.dart';
+import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_achievements.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_continue_learning.dart';
-import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_extra_sections.dart';
+import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_daily_tip.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_header.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_quick_actions.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_recommended_courses.dart';
@@ -37,7 +35,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _searchController = TextEditingController();
-  final _joinClassTokenController = TextEditingController();
 
   @override
   void initState() {
@@ -48,7 +45,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _searchController.dispose();
-    _joinClassTokenController.dispose();
     super.dispose();
   }
 
@@ -69,20 +65,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _onRefresh() async {
     context.read<CourseBloc>().add(const RefreshCoursesEvent());
     await Future<void>.delayed(const Duration(milliseconds: 600));
-  }
-
-  void _handleHomeBlocListener(BuildContext context, HomeState state) {
-    if (state is HomeJoinClassSuccess) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Berhasil gabung kelas')));
-      _joinClassTokenController.clear();
-      context.read<CourseBloc>().add(const RefreshCoursesEvent());
-    } else if (state is HomeJoinClassFailure) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(state.message)));
-    }
   }
 
   Widget _buildSectionHeader(String title, {VoidCallback? onSeeAll}) {
@@ -194,37 +176,34 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: BlocListener<HomeBloc, HomeState>(
-        listener: _handleHomeBlocListener,
-        child: SafeArea(
-          bottom: false,
-          child: RefreshIndicator(
-            onRefresh: _onRefresh,
-            color: AppColors.brandPrimary,
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  HomeHeader(
-                    searchController: _searchController,
-                    onNotificationsTap: _showComingSoon,
-                  ),
-                  if (widget.accountRole == 'instructor')
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                        AppMeasures.paddingLarge,
-                        AppMeasures.paddingMedium,
-                        AppMeasures.paddingLarge,
-                        0,
-                      ),
-                      child: _buildInstructorBanner(),
+      body: SafeArea(
+        bottom: false,
+        child: RefreshIndicator(
+          onRefresh: _onRefresh,
+          color: AppColors.brandPrimary,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                HomeHeader(
+                  searchController: _searchController,
+                  onNotificationsTap: _showComingSoon,
+                ),
+                if (widget.accountRole == 'instructor')
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppMeasures.paddingLarge,
+                      AppMeasures.paddingMedium,
+                      AppMeasures.paddingLarge,
+                      0,
                     ),
-                  const SizedBox(height: AppMeasures.paddingLarge),
-                  _buildContent(),
-                  const SizedBox(height: AppMeasures.paddingXLarge),
-                ],
-              ),
+                    child: _buildInstructorBanner(),
+                  ),
+                const SizedBox(height: AppMeasures.paddingLarge),
+                _buildContent(),
+                const SizedBox(height: AppMeasures.paddingXLarge),
+              ],
             ),
           ),
         ),
@@ -261,19 +240,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
         if (state is! CourseLoaded) return const SizedBox.shrink();
 
-        final stats = HomeStatsEntity.fromCourses(state.courses);
+        final ownedCourses = state.courses.where((c) => c.isOwned).toList();
+        final stats = HomeStatsEntity.fromCourses(ownedCourses);
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            FadeSlideIn(
-              child: HomeContinueLearning(courses: state.courses),
-            ),
+            FadeSlideIn(child: HomeContinueLearning(courses: ownedCourses)),
             const SizedBox(height: 16),
-            FadeSlideIn(
-              delayMs: 60,
-              child: HomeSummaryCard(stats: stats),
-            ),
+            FadeSlideIn(delayMs: 60, child: HomeSummaryCard(stats: stats)),
             const SizedBox(height: 18),
             FadeSlideIn(
               delayMs: 100,
@@ -285,28 +260,20 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 22),
             FadeSlideIn(
               delayMs: 140,
-              child: _buildSectionHeader(
-                AppStrings.myCourses,
-                onSeeAll: _goToCourseList,
-              ),
+              child: _buildSectionHeader('Kursus Saya'),
             ),
             const SizedBox(height: 12),
             FadeSlideIn(
               delayMs: 160,
               child: HomeRecommendedCourses(
-                courseState: state,
+                courses: ownedCourses,
                 onNavigateToCourseList: _goToCourseList,
               ),
             ),
-            const SizedBox(height: 18),
-            FadeSlideIn(
-              delayMs: 200,
-              child: HomeExtraSections(
-                tokenController: _joinClassTokenController,
-                stats: stats,
-                completedCourses: stats.completedCourseList,
-              ),
-            ),
+            const SizedBox(height: 20),
+            FadeSlideIn(delayMs: 190, child: HomeAchievements(stats: stats)),
+            const SizedBox(height: 16),
+            const FadeSlideIn(delayMs: 220, child: HomeDailyTip()),
           ],
         );
       },

@@ -7,20 +7,19 @@ import 'dart:math';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
-import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_state.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_card.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 
-/// Recommended Courses Section with Edge Swipe Navigation
+/// Horizontal rail of the learner's courses, with edge-swipe-to-see-all.
 class HomeRecommendedCourses extends StatefulWidget {
-  final CourseState courseState;
+  final List<CourseEntity> courses;
   final VoidCallback onNavigateToCourseList;
 
   const HomeRecommendedCourses({
     super.key,
-    required this.courseState,
+    required this.courses,
     required this.onNavigateToCourseList,
   });
 
@@ -53,16 +52,11 @@ class _HomeRecommendedCoursesState extends State<HomeRecommendedCourses> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.courseState is! CourseLoaded) {
-      return const SizedBox.shrink();
-    }
-
-    final courseState = widget.courseState as CourseLoaded;
     final recentCourseIds = LocalStorage.getRecentCourses();
     final recentCourses = recentCourseIds
         .map((courseId) {
           try {
-            return courseState.courses.firstWhere(
+            return widget.courses.firstWhere(
               (course) => course.id == courseId,
             );
           } catch (_) {
@@ -72,7 +66,7 @@ class _HomeRecommendedCoursesState extends State<HomeRecommendedCourses> {
         .whereType<CourseEntity>()
         .toList();
     final visibleRecentCourses = _buildVisibleCourses(
-      courseState.courses,
+      widget.courses,
       recentCourses,
     );
 
@@ -117,12 +111,8 @@ class _HomeRecommendedCoursesState extends State<HomeRecommendedCourses> {
                 padding: EdgeInsets.symmetric(
                   horizontal: AppMeasures.paddingLarge,
                 ),
-                itemCount: visibleRecentCourses.length + 1,
+                itemCount: visibleRecentCourses.length,
                 itemBuilder: (context, index) {
-                  if (index == visibleRecentCourses.length) {
-                    return _buildViewAllCard(context);
-                  }
-
                   final courseEntity = visibleRecentCourses[index];
                   return Container(
                     width: 200,
@@ -224,78 +214,4 @@ class _HomeRecommendedCoursesState extends State<HomeRecommendedCourses> {
     );
   }
 
-  Widget _buildViewAllCard(BuildContext context) {
-    return GestureDetector(
-      onTap: _handleEdgeSwipeNavigation,
-      child: Container(
-        width: 170,
-        margin: const EdgeInsets.only(right: 4),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppColors.borderSubtle),
-          boxShadow: AppShadows.sm,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(18),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: AppColors.brandPrimary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: const Icon(
-                  Icons.grid_view_rounded,
-                  color: AppColors.brandPrimary,
-                  size: 24,
-                ),
-              ),
-              const Spacer(),
-              const Text(
-                'Tampilkan Semua',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.textPrimary,
-                  height: 1.1,
-                ),
-              ),
-              const SizedBox(height: 6),
-              const Text(
-                'Jelajahi seluruh katalog kursus',
-                style: TextStyle(
-                  fontSize: 12,
-                  height: 1.4,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: const [
-                  Text(
-                    'Lihat katalog',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.brandPrimary,
-                    ),
-                  ),
-                  SizedBox(width: 4),
-                  Icon(
-                    Icons.arrow_forward_rounded,
-                    color: AppColors.brandPrimary,
-                    size: 16,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 }

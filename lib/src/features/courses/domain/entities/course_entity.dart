@@ -16,6 +16,14 @@ class CourseEntity extends Equatable {
   final List<LessonEntity> lessons;
   final bool isSaved;
 
+  /// Whether the current user owns / is enrolled in this course.
+  ///
+  /// Owned courses are fully accessible; unowned ("catalog") courses are shown
+  /// as a locked preview that points the learner to purchase on the web.
+  /// Defaults to `true` so existing behaviour (the API only returns the user's
+  /// own courses) is unchanged until the backend exposes an enrollment flag.
+  final bool isOwned;
+
   const CourseEntity({
     required this.id,
     required this.title,
@@ -28,6 +36,7 @@ class CourseEntity extends Equatable {
     required this.sections,
     required this.lessons,
     this.isSaved = false,
+    this.isOwned = true,
   });
 
   List<LessonEntity> get allLessons => sections.isNotEmpty
@@ -63,7 +72,7 @@ class CourseEntity extends Equatable {
     return previousLesson.isCompleted;
   }
 
-  CourseEntity copyWith({bool? isSaved}) {
+  CourseEntity copyWith({bool? isSaved, bool? isOwned}) {
     return CourseEntity(
       id: id,
       title: title,
@@ -76,6 +85,7 @@ class CourseEntity extends Equatable {
       sections: sections,
       lessons: lessons,
       isSaved: isSaved ?? this.isSaved,
+      isOwned: isOwned ?? this.isOwned,
     );
   }
 
@@ -92,5 +102,6 @@ class CourseEntity extends Equatable {
     sections,
     lessons,
     isSaved,
+    isOwned,
   ];
 }
