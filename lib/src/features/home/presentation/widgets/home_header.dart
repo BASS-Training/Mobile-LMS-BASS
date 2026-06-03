@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_strings.dart';
@@ -8,7 +6,9 @@ import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/aut
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
 
-/// Home Screen Header with Greeting, User Name, and Search Bar
+/// Home screen hero header: brand-gradient panel with a greeting, the user's
+/// first name and a profile avatar. Kept presentational — the only data it
+/// reads is the authenticated user's name.
 class HomeHeader extends StatelessWidget {
   final TextEditingController searchController;
 
@@ -16,113 +16,84 @@ class HomeHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.vertical(
-        bottom: Radius.circular(AppMeasures.radiusXLarge),
+    return Container(
+      padding: EdgeInsets.fromLTRB(
+        AppMeasures.paddingXLarge,
+        AppMeasures.paddingLarge,
+        AppMeasures.paddingXLarge,
+        AppMeasures.paddingXXLarge + 4,
       ),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-        child: Container(
-          padding: EdgeInsets.fromLTRB(
-            AppMeasures.paddingLarge,
-            AppMeasures.paddingLarge,
-            AppMeasures.paddingLarge,
-            AppMeasures.paddingXXLarge,
-          ),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                AppColors.red.withValues(alpha: 1),
-                AppColors.red.withValues(alpha: 1),
-                AppColors.tomato.withValues(alpha: 1),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: Stack(
-            children: [
-              Positioned(
-                top: -34,
-                right: -18,
-                child: Container(
-                  width: 110,
-                  height: 110,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: RadialGradient(
-                      colors: [
-                        AppColors.kids.withValues(alpha: 0.18),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildGreetingSection(),
-                  const SizedBox(height: 20),
-                  // _buildSearchBar(context),
-                ],
-              ),
-            ],
-          ),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: AppColors.brandGradient,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
+        borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(28),
+        ),
+      ),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          // Soft decorative glow in the corner for subtle depth.
+          Positioned(
+            top: -48,
+            right: -32,
+            child: _glowCircle(140, 0.16),
+          ),
+          Positioned(
+            bottom: -56,
+            left: -40,
+            child: _glowCircle(120, 0.10),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [_buildTopRow(), const SizedBox(height: 18)],
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildGreetingSection() {
+  Widget _glowCircle(double size, double opacity) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white.withValues(alpha: opacity),
+      ),
+    );
+  }
+
+  Widget _buildTopRow() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.16),
-                  borderRadius: BorderRadius.circular(999),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.18),
-                  ),
-                ),
-                child: const Text(
-                  'Bass Training LMS',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                    letterSpacing: 0.8,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 14),
+              _buildBadge(),
+              const SizedBox(height: 16),
               Text(
                 AppStrings.helloWelcome,
-                style: const TextStyle(
-                  fontSize: 27,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white,
-                  height: 1.05,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white.withValues(alpha: 0.85),
                 ),
               ),
-              const SizedBox(height: 6),
+              const SizedBox(height: 4),
               _buildUserNameDisplay(),
               const SizedBox(height: 8),
               Text(
                 AppStrings.readyForLesson,
                 style: TextStyle(
                   fontSize: 13,
-                  color: Colors.white.withValues(alpha: 0.84),
-                  height: 1.5,
+                  height: 1.4,
+                  color: Colors.white.withValues(alpha: 0.82),
                 ),
               ),
             ],
@@ -131,6 +102,33 @@ class HomeHeader extends StatelessWidget {
         const SizedBox(width: 12),
         _buildProfileAvatar(),
       ],
+    );
+  }
+
+  Widget _buildBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.18),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: const [
+          Icon(Icons.music_note_rounded, color: Colors.white, size: 13),
+          SizedBox(width: 6),
+          Text(
+            'Bass Training LMS',
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+              letterSpacing: 0.8,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -143,10 +141,13 @@ class HomeHeader extends StatelessWidget {
         }
         return Text(
           userName,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: Colors.white.withValues(alpha: 0.92),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            fontSize: 26,
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
+            height: 1.1,
           ),
         );
       },
@@ -155,22 +156,15 @@ class HomeHeader extends StatelessWidget {
 
   Widget _buildProfileAvatar() {
     return Container(
-      width: 54,
-      height: 54,
+      width: 52,
+      height: 52,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.white.withValues(alpha: 0.16),
+        color: Colors.white.withValues(alpha: 0.18),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.32),
-          width: 1.6,
+          color: Colors.white.withValues(alpha: 0.35),
+          width: 1.5,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 14,
-            offset: const Offset(0, 6),
-          ),
-        ],
       ),
       child: const Center(
         child: Icon(Icons.person_rounded, color: Colors.white, size: 28),

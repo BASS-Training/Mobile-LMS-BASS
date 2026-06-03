@@ -5,6 +5,9 @@ import '../../domain/entities/course_entity.dart';
 import '../bloc/course/course_bloc.dart';
 import '../bloc/course/course_event.dart';
 
+/// Hero header for the course detail screen: a brand-gradient panel with the
+/// course emoji, title and a compact meta row (lessons · duration), plus back
+/// and save actions.
 class CourseDetailHeader extends StatelessWidget {
   final CourseEntity course;
 
@@ -12,98 +15,142 @@ class CourseDetailHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final primaryColor = AppColors.red;
-    final secondaryColor = AppColors.tomato;
-    final accentColor = AppColors.red;
-
     return Container(
-      height: 280,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [secondaryColor, primaryColor,  accentColor, secondaryColor,],
+          colors: AppColors.brandGradient,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
       ),
       child: SafeArea(
-        child: Stack(
-          children: [
-            // Back Button
-            Positioned(
-              top: 16,
-              left: 16,
-              child: GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.arrow_back, color: Colors.white),
-                ),
-              ),
-            ),
-            // Save/Bookmark Button
-            Positioned(
-              top: 16,
-              right: 16,
-              child: GestureDetector(
-                onTap: () {
-                  context.read<CourseBloc>().add(
-                    ToggleSaveCourseEvent(courseId: course.id),
-                  );
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    course.isSaved ? Icons.bookmark : Icons.bookmark_outline,
-                    color: AppColors.cherry,
-                  ),
-                ),
-              ),
-            ),
-            // Icon & Title
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Container(
-                    width: 96,
-                    height: 96,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.14),
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.2),
-                      ),
-                    ),
-                    child: Center(
-                      child: Text(
-                        course.icon,
-                        style: const TextStyle(fontSize: 52),
-                      ),
-                    ),
+                  _CircleAction(
+                    icon: Icons.arrow_back_rounded,
+                    onTap: () => Navigator.pop(context),
                   ),
-                  const SizedBox(height: 24),
-                  Text(
-                    course.title,
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.white,
-                    ),
-                    textAlign: TextAlign.center,
+                  _CircleAction(
+                    icon: course.isSaved
+                        ? Icons.bookmark_rounded
+                        : Icons.bookmark_outline_rounded,
+                    onTap: () {
+                      context.read<CourseBloc>().add(
+                        ToggleSaveCourseEvent(courseId: course.id),
+                      );
+                    },
                   ),
                 ],
               ),
-            ),
-          ],
+              const SizedBox(height: 12),
+              Container(
+                width: 88,
+                height: 88,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.16),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.25),
+                    width: 1.5,
+                  ),
+                ),
+                child: Center(
+                  child: Text(course.icon, style: const TextStyle(fontSize: 46)),
+                ),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                course.title,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                  height: 1.2,
+                ),
+              ),
+              const SizedBox(height: 14),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _MetaChip(
+                    icon: Icons.play_lesson_rounded,
+                    label: '${course.totalLessons} lesson',
+                  ),
+                  const SizedBox(width: 10),
+                  _MetaChip(
+                    icon: Icons.schedule_rounded,
+                    label: course.duration,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
+      ),
+    );
+  }
+}
+
+class _CircleAction extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _CircleAction({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(9),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.18),
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
+        ),
+        child: Icon(icon, color: Colors.white, size: 22),
+      ),
+    );
+  }
+}
+
+class _MetaChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _MetaChip({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: Colors.white, size: 14),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+        ],
       ),
     );
   }

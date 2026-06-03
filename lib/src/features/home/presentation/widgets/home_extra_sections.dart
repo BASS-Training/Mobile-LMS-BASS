@@ -11,6 +11,7 @@ import 'package:lms_mobile_app/src/features/home/presentation/bloc/home_event.da
 import 'package:lms_mobile_app/src/features/home/presentation/bloc/home_state.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
+import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 
 class HomeExtraSections extends StatelessWidget {
   final TextEditingController tokenController;
@@ -36,7 +37,7 @@ class HomeExtraSections extends StatelessWidget {
             _buildModernCard(
               title: 'Statistik belajar',
               icon: Icons.insights_rounded,
-              color: AppColors.bubblegum,
+              accent: AppColors.info,
               child: Column(
                 children: [
                   _buildMetricRowModern(
@@ -57,7 +58,7 @@ class HomeExtraSections extends StatelessWidget {
             _buildModernCard(
               title: 'Gabung Course',
               icon: Icons.groups_2_rounded,
-              color: const Color(0xFFFFF8E7),
+              accent: AppColors.brandPrimary,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -67,16 +68,27 @@ class HomeExtraSections extends StatelessWidget {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.cherry.withValues(alpha: 0.1),
+                      color: AppColors.success.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(999),
                     ),
-                    child: Text(
-                      'Status Verifikasi AVPN: APPROVED',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.cherry,
-                      ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Icon(
+                          Icons.verified_rounded,
+                          size: 13,
+                          color: AppColors.success,
+                        ),
+                        SizedBox(width: 5),
+                        Text(
+                          'Verifikasi AVPN: APPROVED',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.success,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -85,7 +97,7 @@ class HomeExtraSections extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.charcoal,
+                      color: AppColors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -101,7 +113,7 @@ class HomeExtraSections extends StatelessWidget {
                       ),
                       suffixIcon: const Icon(
                         Icons.vpn_key_rounded,
-                        color: AppColors.cherry,
+                        color: AppColors.brandPrimary,
                         size: 18,
                       ),
                     ),
@@ -136,11 +148,12 @@ class HomeExtraSections extends StatelessWidget {
                             isSubmitting ? 'Mengirim...' : 'Kirim Token',
                           ),
                           style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            backgroundColor: AppColors.cherry,
+                            padding: const EdgeInsets.symmetric(vertical: 13),
+                            backgroundColor: AppColors.brandPrimary,
                             foregroundColor: Colors.white,
+                            elevation: 0,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                           ),
                         ),
@@ -158,31 +171,29 @@ class HomeExtraSections extends StatelessWidget {
                 onTap: () {
                   context.push(AppRoutes.certificateList);
                 },
-                child: Text(
-                  'Lihat daftar sertifikat',
+                child: const Text(
+                  'Lihat semua',
                   style: TextStyle(
                     fontSize: 11,
-                    color: AppColors.cherry,
+                    color: AppColors.brandPrimary,
                     fontWeight: FontWeight.w700,
-                    decoration: TextDecoration.underline,
                   ),
                 ),
               ),
-              color: const Color(0xFFFFF7F4),
+              accent: AppColors.warning,
               child: completedCourses.isEmpty
                   ? Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.7),
+                        color: AppColors.surfaceMuted,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.white),
                       ),
-                      child: Text(
+                      child: const Text(
                         'Belum ada sertifikat. Selesaikan course sampai 100% untuk mendapatkan sertifikat.',
                         style: TextStyle(
                           fontSize: 12,
-                          color: AppColors.slate,
+                          color: AppColors.textSecondary,
                           height: 1.4,
                         ),
                       ),
@@ -201,39 +212,58 @@ class HomeExtraSections extends StatelessWidget {
                             margin: const EdgeInsets.only(bottom: 10),
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.72),
+                              color: AppColors.brandSurfaceAlt,
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.white),
+                              border: Border.all(color: AppColors.borderSubtle),
                             ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            child: Row(
                               children: [
-                                Text(
-                                  course.title,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.charcoal,
-                                    height: 1.3,
+                                Container(
+                                  width: 38,
+                                  height: 38,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.warning.withValues(
+                                      alpha: 0.14,
+                                    ),
+                                    borderRadius: BorderRadius.circular(11),
+                                  ),
+                                  child: const Icon(
+                                    Icons.workspace_premium_rounded,
+                                    size: 20,
+                                    color: AppColors.warning,
                                   ),
                                 ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.verified_rounded,
-                                      size: 14,
-                                      color: AppColors.cherry,
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      'Sertifikat tersedia',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: AppColors.slate,
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        course.title,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w700,
+                                          color: AppColors.textPrimary,
+                                          height: 1.3,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(height: 2),
+                                      const Text(
+                                        'Sertifikat tersedia',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: AppColors.textSecondary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.chevron_right_rounded,
+                                  color: AppColors.textTertiary,
                                 ),
                               ],
                             ),
@@ -251,23 +281,17 @@ class HomeExtraSections extends StatelessWidget {
   Widget _buildModernCard({
     required String title,
     required IconData icon,
-    required Color color,
+    required Color accent,
     required Widget child,
     Widget? trailing,
   }) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.8)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.3),
-            blurRadius: 2,
-            offset: const Offset(4, 4),
-          ),
-        ],
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.borderSubtle),
+        boxShadow: AppShadows.sm,
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -276,15 +300,23 @@ class HomeExtraSections extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(icon, color: AppColors.charcoal),
-                const SizedBox(width: 8),
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: accent.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(11),
+                  ),
+                  child: Icon(icon, color: accent, size: 20),
+                ),
+                const SizedBox(width: 10),
                 Expanded(
                   child: Text(
                     title,
                     style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w800,
-                      color: AppColors.charcoal,
+                      color: AppColors.textPrimary,
                     ),
                   ),
                 ),

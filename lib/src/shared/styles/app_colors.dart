@@ -275,4 +275,52 @@ class AppColors {
   static const Color yellowTheme = Color(0xFFFFDB89);
   static const Color maroon = Color(0xFF850000);
   static const Color kids = Color(0xFFFFF6C3);
+
+  // ==========================================
+  // SEMANTIC DESIGN TOKENS (Brand System)
+  // ------------------------------------------
+  // Single source of truth for the redesigned UI. Always prefer these
+  // tokens over raw color names above so the app stays visually cohesive.
+  // ==========================================
+
+  /// Primary brand color — the app identity (red).
+  static const Color brandPrimary = Color(0xFFDC0000);
+
+  /// Darker brand shade for gradients, pressed states and depth.
+  static const Color brandPrimaryDark = Color(0xFF9E0000);
+
+  /// Lighter brand shade for subtle highlights.
+  static const Color brandPrimaryLight = Color(0xFFFF4D3D);
+
+  /// Soft red-tinted surface for chips, badges and highlighted cards.
+  static const Color brandSurface = Color(0xFFFFF1EF);
+
+  /// Even softer brand wash for large section backgrounds.
+  static const Color brandSurfaceAlt = Color(0xFFFFF7F5);
+
+  // Surfaces & backgrounds
+  static const Color background = Color(0xFFF6F7F9);
+  static const Color surface = Color(0xFFFFFFFF);
+  static const Color surfaceMuted = Color(0xFFF1F3F6);
+
+  // Text
+  static const Color textPrimary = Color(0xFF1A1C1E);
+  static const Color textSecondary = Color(0xFF5C636E);
+  static const Color textTertiary = Color(0xFF9AA0A6);
+
+  // Borders & dividers
+  static const Color borderSubtle = Color(0xFFEDEFF2);
+  static const Color borderDefault = Color(0xFFE1E4E9);
+
+  // Status colors (kept neutral and modern)
+  static const Color success = Color(0xFF1FA971);
+  static const Color warning = Color(0xFFF59E0B);
+  static const Color info = Color(0xFF3B82F6);
+
+  /// Canonical brand gradient (top-left → bottom-right) for headers & hero cards.
+  static const List<Color> brandGradient = [
+    Color(0xFFE7140C),
+    Color(0xFFC10000),
+    Color(0xFF9E0000),
+  ];
 }

@@ -25,19 +25,19 @@ class CourseProgressIndicator extends StatelessWidget {
           children: [
             Text(
               label,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.charcoal,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
               ),
             ),
             if (showPercentage)
               Text(
                 '${progress.toStringAsFixed(0)}%',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.violet,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.brandPrimary,
                 ),
               ),
           ],
@@ -48,7 +48,7 @@ class CourseProgressIndicator extends StatelessWidget {
           child: Container(
             height: 8,
             decoration: BoxDecoration(
-              color: AppColors.pearl,
+              color: AppColors.surfaceMuted,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Stack(
@@ -56,22 +56,25 @@ class CourseProgressIndicator extends StatelessWidget {
                 Container(
                   height: 8,
                   width: double.infinity,
-                  color: AppColors.pearl,
+                  color: AppColors.surfaceMuted,
                 ),
-                 FractionallySizedBox(
-                   widthFactor: percentage,
-                   child: Container(
-                     height: 8,
-                     decoration: BoxDecoration(
-                       gradient: LinearGradient(
-                         colors: [AppColors.red, AppColors.tomato],
-                         begin: Alignment.centerLeft,
-                         end: Alignment.centerRight,
-                       ),
-                       borderRadius: BorderRadius.circular(8),
-                     ),
-                   ),
-                 ),
+                FractionallySizedBox(
+                  widthFactor: percentage,
+                  child: Container(
+                    height: 8,
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppColors.brandPrimaryLight,
+                          AppColors.brandPrimary,
+                        ],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      ),
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

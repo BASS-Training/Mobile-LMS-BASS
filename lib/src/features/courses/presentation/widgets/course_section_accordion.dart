@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 import '../../domain/entities/course_entity.dart';
 import '../../domain/entities/course_section_entity.dart';
 import 'course_lesson_tile.dart';
@@ -26,34 +27,35 @@ class CourseSectionAccordion extends StatelessWidget {
         : 0;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.pearl),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 8),
-        ],
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.borderSubtle),
+        boxShadow: AppShadows.xs,
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         child: ExpansionTile(
+          shape: const Border(),
+          collapsedShape: const Border(),
+          tilePadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
           title: Row(
             children: [
               Container(
-                width: 36,
-                height: 36,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.tomato,
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: AppColors.brandPrimary.withValues(alpha: 0.12),
                 ),
                 child: Center(
                   child: Text(
                     '${section.sectionNumber}',
                     style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
+                      color: AppColors.brandPrimary,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
                     ),
                   ),
                 ),
@@ -68,8 +70,8 @@ class CourseSectionAccordion extends StatelessWidget {
                       section.title,
                       style: const TextStyle(
                         fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.charcoal,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -79,7 +81,7 @@ class CourseSectionAccordion extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontSize: 12,
-                        color: AppColors.slate,
+                        color: AppColors.textSecondary,
                       ),
                     ),
                   ],
@@ -93,20 +95,23 @@ class CourseSectionAccordion extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(99),
                   child: LinearProgressIndicator(
                     value: progressPercent / 100,
-                    minHeight: 4,
-                    backgroundColor: AppColors.pearl,
+                    minHeight: 5,
+                    backgroundColor: AppColors.surfaceMuted,
                     valueColor: const AlwaysStoppedAnimation<Color>(
-                      AppColors.violet,
+                      AppColors.brandPrimary,
                     ),
                   ),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 5),
                 Text(
-                  '$completedCount/$totalCount lessons',
-                  style: const TextStyle(fontSize: 11, color: AppColors.slate),
+                  '$completedCount/$totalCount lesson selesai',
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ],
             ),

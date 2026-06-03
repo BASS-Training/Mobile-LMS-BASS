@@ -41,23 +41,46 @@ class AppTypography {
     color: AppColors.charcoal,
   );
 
+  static const TextStyle titleSmall = TextStyle(
+    fontSize: 13,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
+  );
+
   // Body styles
   static const TextStyle bodyLarge = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w400,
-    color: AppColors.charcoal,
+    height: 1.5,
+    color: AppColors.textPrimary,
   );
 
   static const TextStyle bodyMedium = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w400,
-    color: AppColors.slate,
+    height: 1.5,
+    color: AppColors.textSecondary,
   );
 
   static const TextStyle bodySmall = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w400,
-    color: AppColors.silver,
+    height: 1.45,
+    color: AppColors.textTertiary,
+  );
+
+  // Label styles — for buttons, chips and overlines.
+  static const TextStyle labelLarge = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
+  );
+
+  static const TextStyle labelSmall = TextStyle(
+    fontSize: 11,
+    fontWeight: FontWeight.w700,
+    letterSpacing: 0.6,
+    color: AppColors.textSecondary,
   );
 }
 

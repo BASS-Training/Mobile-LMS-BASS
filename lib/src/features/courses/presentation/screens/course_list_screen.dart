@@ -12,6 +12,7 @@ import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/cou
 import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_card.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
+import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 
 class CourseListScreen extends StatefulWidget {
   const CourseListScreen({super.key});
@@ -48,16 +49,28 @@ class _CourseListScreenState extends State<CourseListScreen> {
         return Scaffold(
           backgroundColor: Colors.transparent,
           appBar: AppBar(
-            title: const Text('All Courses'),
+            title: const Text(
+              'Semua Kursus',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+                fontSize: 20,
+              ),
+            ),
+            centerTitle: true,
+            iconTheme: const IconThemeData(color: Colors.white),
             elevation: 0,
             backgroundColor: Colors.transparent,
             surfaceTintColor: Colors.transparent,
             flexibleSpace: Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [AppColors.tomato, AppColors.red],
+                  colors: AppColors.brandGradient,
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(24),
                 ),
               ),
             ),
@@ -65,7 +78,8 @@ class _CourseListScreenState extends State<CourseListScreen> {
           floatingActionButton: isInstructor
               ? FloatingActionButton.extended(
                   onPressed: () => _showAddCourseDialog(context),
-                  backgroundColor: AppColors.charcoal,
+                  backgroundColor: AppColors.brandPrimary,
+                  foregroundColor: Colors.white,
                   icon: const Icon(Icons.add_rounded),
                   label: const Text('Tambah Kursus'),
                 )
@@ -86,30 +100,41 @@ class _CourseListScreenState extends State<CourseListScreen> {
                       ),
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: AppColors.charcoal,
+                        color: AppColors.brandSurface,
                         borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: AppColors.brandPrimary.withValues(alpha: 0.2),
+                        ),
                       ),
-                      child: const Text(
-                        'Mode pengelola aktif. Tambah kursus baru akan langsung tersinkron ke peserta lewat Laravel.',
-                        style: TextStyle(color: Colors.white, fontSize: 12),
+                      child: Row(
+                        children: const [
+                          Icon(
+                            Icons.info_rounded,
+                            color: AppColors.brandPrimary,
+                            size: 20,
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              'Mode pengelola aktif. Kursus baru akan tersinkron ke peserta secara otomatis.',
+                              style: TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 12,
+                                height: 1.4,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   Padding(
                     padding: EdgeInsets.all(AppMeasures.paddingLarge),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.86),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: AppColors.pearl.withValues(alpha: 0.8),
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.08),
-                            blurRadius: 18,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.borderSubtle),
+                        boxShadow: AppShadows.sm,
                       ),
                       child: ValueListenableBuilder<TextEditingValue>(
                         valueListenable: _searchController,
@@ -124,11 +149,11 @@ class _CourseListScreenState extends State<CourseListScreen> {
                             decoration: InputDecoration(
                               hintText: AppStrings.searchCourses,
                               hintStyle: const TextStyle(
-                                color: AppColors.silver,
+                                color: AppColors.textTertiary,
                               ),
                               prefixIcon: const Icon(
                                 Icons.search_rounded,
-                                color: AppColors.violet,
+                                color: AppColors.brandPrimary,
                               ),
                               suffixIcon: value.text.isNotEmpty
                                   ? IconButton(
@@ -140,14 +165,17 @@ class _CourseListScreenState extends State<CourseListScreen> {
                                       },
                                       icon: const Icon(
                                         Icons.close_rounded,
-                                        color: AppColors.silver,
+                                        color: AppColors.textTertiary,
                                       ),
                                     )
                                   : null,
+                              filled: false,
                               border: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              focusedBorder: InputBorder.none,
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 16,
-                                vertical: 14,
+                                vertical: 15,
                               ),
                             ),
                           );
@@ -176,23 +204,23 @@ class _CourseListScreenState extends State<CourseListScreen> {
                                     height: 92,
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: AppColors.violet.withValues(
+                                      color: AppColors.brandPrimary.withValues(
                                         alpha: 0.1,
                                       ),
                                     ),
                                     child: const Icon(
                                       Icons.search_off_rounded,
-                                      size: 48,
-                                      color: AppColors.violet,
+                                      size: 44,
+                                      color: AppColors.brandPrimary,
                                     ),
                                   ),
                                   const SizedBox(height: 16),
                                   const Text(
-                                    'No courses found',
+                                    'Kursus tidak ditemukan',
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w700,
-                                      color: AppColors.charcoal,
+                                      color: AppColors.textPrimary,
                                     ),
                                   ),
                                   const SizedBox(height: 6),
@@ -200,7 +228,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
                                     'Coba kata kunci lain atau kosongkan pencarian.',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: AppColors.slate,
+                                      color: AppColors.textSecondary,
                                     ),
                                   ),
                                 ],
@@ -218,7 +246,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
                             gridDelegate:
                                 const SliverGridDelegateWithFixedCrossAxisCount(
                                   crossAxisCount: 2,
-                                  childAspectRatio: 0.82,
+                                  childAspectRatio: 0.72,
                                   crossAxisSpacing: 14,
                                   mainAxisSpacing: 14,
                                 ),
@@ -256,14 +284,14 @@ class _CourseListScreenState extends State<CourseListScreen> {
                                   height: 92,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: AppColors.crimson.withValues(
+                                    color: AppColors.brandPrimary.withValues(
                                       alpha: 0.1,
                                     ),
                                   ),
                                   child: const Icon(
                                     Icons.error_outline_rounded,
-                                    size: 48,
-                                    color: AppColors.crimson,
+                                    size: 44,
+                                    color: AppColors.brandPrimary,
                                   ),
                                 ),
                                 const SizedBox(height: 16),
@@ -277,7 +305,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w700,
-                                      color: AppColors.charcoal,
+                                      color: AppColors.textPrimary,
                                     ),
                                   ),
                                 ),
@@ -407,37 +435,8 @@ class _CourseListBackdrop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: Stack(
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFFF6F8FF), Color(0xFFF0F4FF)],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-            ),
-          ),
-          Positioned(
-            top: -60,
-            right: -50,
-            child: Container(
-              width: 160,
-              height: 160,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    AppColors.cherry.withValues(alpha: 0.11),
-                    Colors.transparent,
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+    return const IgnorePointer(
+      child: ColoredBox(color: AppColors.background),
     );
   }
 }

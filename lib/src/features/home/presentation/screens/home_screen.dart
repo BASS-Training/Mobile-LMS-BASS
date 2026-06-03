@@ -72,16 +72,97 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionHeader(String title, {VoidCallback? onSeeAll}) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: AppMeasures.paddingLarge),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: AppColors.charcoal,
+      padding: const EdgeInsets.symmetric(horizontal: AppMeasures.paddingLarge),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          if (onSeeAll != null)
+            GestureDetector(
+              onTap: onSeeAll,
+              behavior: HitTestBehavior.opaque,
+              child: Row(
+                children: const [
+                  Text(
+                    'Lihat semua',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.brandPrimary,
+                    ),
+                  ),
+                  SizedBox(width: 2),
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    size: 18,
+                    color: AppColors.brandPrimary,
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInstructorBanner() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: AppColors.brandGradient,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.18),
+              borderRadius: BorderRadius.circular(13),
+            ),
+            child: const Icon(
+              Icons.school_rounded,
+              color: Colors.white,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 14),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Mode Instruktur Aktif',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                SizedBox(height: 3),
+                Text(
+                  'Kelola materi, kursus, dan konten untuk peserta.',
+                  style: TextStyle(color: Colors.white70, fontSize: 12, height: 1.35),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -89,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.mist,
+      backgroundColor: AppColors.background,
       body: BlocListener<HomeBloc, HomeState>(
         listener: _handleHomeBlocListener,
         child: SafeArea(
@@ -101,38 +182,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 HomeHeader(searchController: _searchController),
                 if (widget.accountRole == 'instructor')
                   Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: AppMeasures.paddingLarge,
+                    padding: const EdgeInsets.fromLTRB(
+                      AppMeasures.paddingLarge,
+                      AppMeasures.paddingLarge,
+                      AppMeasures.paddingLarge,
+                      0,
                     ),
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: AppColors.charcoal,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: const Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Mode Instruktur Aktif',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text(
-                            'Kelola materi, kursus, dan update konten untuk peserta.',
-                            style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    child: _buildInstructorBanner(),
                   ),
                 SizedBox(height: AppMeasures.paddingLarge),
 
@@ -142,9 +198,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   builder: (context, state) {
                     // Handle loading state
                     if (state is CourseLoading) {
-                      return SizedBox(
+                      return const SizedBox(
                         height: 400,
-                        child: Center(child: CircularProgressIndicator()),
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.brandPrimary,
+                          ),
+                        ),
                       );
                     }
 
@@ -156,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Text(
                             state.message,
                             style: const TextStyle(
-                              color: AppColors.crimson,
+                              color: AppColors.brandPrimary,
                               fontSize: 14,
                             ),
                           ),
@@ -177,10 +237,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       children: [
                         // Statistics Grid
                         HomeStatisticsGrid(stats: stats),
-                        SizedBox(height: AppMeasures.paddingLarge),
+                        SizedBox(height: AppMeasures.paddingXLarge),
 
                         // Section Title
-                        _buildSectionTitle(AppStrings.myCourses),
+                        _buildSectionHeader(
+                          AppStrings.myCourses,
+                          onSeeAll: _goToCourseList,
+                        ),
                         const SizedBox(height: 12),
 
                         // Recommended Courses

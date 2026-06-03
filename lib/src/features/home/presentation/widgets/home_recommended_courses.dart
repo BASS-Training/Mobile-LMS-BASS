@@ -11,6 +11,7 @@ import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/cou
 import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_card.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
+import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 
 /// Recommended Courses Section with Edge Swipe Navigation
 class HomeRecommendedCourses extends StatefulWidget {
@@ -76,7 +77,7 @@ class _HomeRecommendedCoursesState extends State<HomeRecommendedCourses> {
     );
 
     return SizedBox(
-      height: 280,
+      height: 250,
       child: visibleRecentCourses.isEmpty
           ? _buildTokenPrompt()
           : NotificationListener<ScrollNotification>(
@@ -184,37 +185,41 @@ class _HomeRecommendedCoursesState extends State<HomeRecommendedCourses> {
   Widget _buildTokenPrompt() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: AppMeasures.paddingLarge),
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.white.withValues(alpha: 0.96),
-            const Color(0xFFF6F8FF).withValues(alpha: 0.98),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.75)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
+        color: AppColors.brandSurfaceAlt,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.borderSubtle),
+        boxShadow: AppShadows.xs,
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              color: AppColors.brandPrimary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Icon(
+              Icons.vpn_key_rounded,
+              color: AppColors.brandPrimary,
+              size: 26,
+            ),
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'Masukkan token untuk mendapatkan course',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+              height: 1.4,
+            ),
           ),
         ],
-      ),
-      child: const Center(
-        child: Text(
-          'Masukkan token untuk mendapatkan course',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w800,
-            color: AppColors.charcoal,
-            height: 1.4,
-          ),
-        ),
       ),
     );
   }
@@ -223,65 +228,68 @@ class _HomeRecommendedCoursesState extends State<HomeRecommendedCourses> {
     return GestureDetector(
       onTap: _handleEdgeSwipeNavigation,
       child: Container(
-        width: 210,
-        margin: const EdgeInsets.only(right: 12),
+        width: 170,
+        margin: const EdgeInsets.only(right: 4),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Colors.white.withValues(alpha: 0.95),
-              const Color(0xFFF6F8FF).withValues(alpha: 0.98),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: AppColors.pearl.withValues(alpha: 0.75)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
-              blurRadius: 18,
-              offset: const Offset(0, 8),
-            ),
-          ],
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.borderSubtle),
+          boxShadow: AppShadows.sm,
         ),
-        child: const Padding(
-          padding: EdgeInsets.all(16),
+        child: Padding(
+          padding: const EdgeInsets.all(18),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.menu_book_rounded, color: AppColors.cherry, size: 30),
-              Spacer(),
-              Text(
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: AppColors.brandPrimary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: const Icon(
+                  Icons.grid_view_rounded,
+                  color: AppColors.brandPrimary,
+                  size: 24,
+                ),
+              ),
+              const Spacer(),
+              const Text(
                 'Tampilkan Semua',
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 18,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.charcoal,
-                  height: 1.05,
+                  color: AppColors.textPrimary,
+                  height: 1.1,
                 ),
               ),
-              SizedBox(height: 8),
-              Text(
-                'Buka daftar kursus dan jelajahi semua materi',
+              const SizedBox(height: 6),
+              const Text(
+                'Jelajahi seluruh katalog kursus',
                 style: TextStyle(
                   fontSize: 12,
-                  height: 1.5,
-                  color: AppColors.slate,
+                  height: 1.4,
+                  color: AppColors.textSecondary,
                 ),
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Row(
-                children: [
+                children: const [
                   Text(
                     'Lihat katalog',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.cherry,
+                      color: AppColors.brandPrimary,
                     ),
                   ),
-                  Spacer(),
-                  Icon(Icons.arrow_forward_rounded, color: AppColors.cherry),
+                  SizedBox(width: 4),
+                  Icon(
+                    Icons.arrow_forward_rounded,
+                    color: AppColors.brandPrimary,
+                    size: 16,
+                  ),
                 ],
               ),
             ],

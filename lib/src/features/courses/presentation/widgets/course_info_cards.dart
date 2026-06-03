@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 import '../../domain/entities/course_entity.dart';
 
+/// Quick-facts row shown under the course hero: instructor and lesson count.
+/// (Duration already lives in the header, so it isn't repeated here.)
 class CourseInfoCards extends StatelessWidget {
   final CourseEntity course;
 
@@ -11,81 +14,83 @@ class CourseInfoCards extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _buildCard(
-          icon: Icons.person,
-          iconColor: AppColors.cherry,
-          label: 'Instructor',
+        _InfoCard(
+          icon: Icons.person_rounded,
+          accent: AppColors.brandPrimary,
+          label: 'Instruktur',
           value: course.instructor,
         ),
         const SizedBox(width: 12),
-        _buildCard(
-          icon: Icons.timer,
-          iconColor: AppColors.azure,
-          label: 'Duration',
-          value: course.duration,
+        _InfoCard(
+          icon: Icons.menu_book_rounded,
+          accent: AppColors.info,
+          label: 'Total Lesson',
+          value: '${course.totalLessons} lesson',
         ),
       ],
     );
   }
+}
 
-  Widget _buildCard({
-    required IconData icon,
-    required Color iconColor,
-    required String label,
-    required String value,
-  }) {
+class _InfoCard extends StatelessWidget {
+  final IconData icon;
+  final Color accent;
+  final String label;
+  final String value;
+
+  const _InfoCard({
+    required this.icon,
+    required this.accent,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.white, AppColors.peach.withValues(alpha: 0.28)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
-              blurRadius: 14,
-              offset: const Offset(0, 6),
-            ),
-          ],
+          border: Border.all(color: AppColors.borderSubtle),
+          boxShadow: AppShadows.xs,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
             Container(
-              width: 38,
-              height: 38,
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    iconColor.withValues(alpha: 0.18),
-                    iconColor.withValues(alpha: 0.08),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color: accent.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: iconColor),
+              child: Icon(icon, color: accent, size: 20),
             ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: const TextStyle(fontSize: 12, color: AppColors.slate),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              value,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: AppColors.charcoal,
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.textTertiary,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    value,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

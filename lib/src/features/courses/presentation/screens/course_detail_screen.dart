@@ -121,7 +121,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
         }
 
         return Scaffold(
-          backgroundColor: AppColors.mist,
+          backgroundColor: AppColors.background,
           body: Column(
             children: [
               // ── Indikator loading tipis di bagian paling atas ────────────
@@ -129,9 +129,10 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                 duration: const Duration(milliseconds: 250),
                 height: _isRefreshing ? 3.0 : 0.0,
                 child: LinearProgressIndicator(
-                  backgroundColor: AppColors.violet.withValues(alpha: 0.1),
-                  valueColor:
-                      const AlwaysStoppedAnimation<Color>(AppColors.violet),
+                  backgroundColor: AppColors.brandPrimary.withValues(alpha: 0.1),
+                  valueColor: const AlwaysStoppedAnimation<Color>(
+                    AppColors.brandPrimary,
+                  ),
                   minHeight: 3,
                 ),
               ),
@@ -140,7 +141,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
               Expanded(
                 child: RefreshIndicator(
                   onRefresh: _onPullRefresh,
-                  color: AppColors.violet,
+                  color: AppColors.brandPrimary,
                   backgroundColor: Colors.white,
                   strokeWidth: 2.5,
                   child: SingleChildScrollView(
@@ -162,11 +163,11 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                               const SizedBox(height: 24),
 
                               const Text(
-                                'About Course',
+                                'Tentang Kursus',
                                 style: TextStyle(
                                   fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.charcoal,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.textPrimary,
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -174,7 +175,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                                 currentCourse.description,
                                 style: const TextStyle(
                                   fontSize: 14,
-                                  color: AppColors.slate,
+                                  color: AppColors.textSecondary,
                                   height: 1.6,
                                 ),
                               ),
@@ -189,19 +190,20 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
 
                               SizedBox(
                                 width: double.infinity,
-                                height: 52,
+                                height: 54,
                                 child: ElevatedButton.icon(
                                   onPressed: () => context.push(
                                     AppRoutes.courseResults,
                                     extra: currentCourse,
                                   ),
-                                  icon: const Icon(Icons.assessment_outlined),
+                                  icon: const Icon(Icons.assessment_rounded),
                                   label: const Text('Nilai & Hasil'),
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.violet,
+                                    backgroundColor: AppColors.brandPrimary,
                                     foregroundColor: Colors.white,
+                                    elevation: 0,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(14),
+                                      borderRadius: BorderRadius.circular(16),
                                     ),
                                   ),
                                 ),
@@ -213,11 +215,11 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   const Text(
-                                    'Sections',
+                                    'Materi Kursus',
                                     style: TextStyle(
                                       fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.charcoal,
+                                      fontWeight: FontWeight.w800,
+                                      color: AppColors.textPrimary,
                                     ),
                                   ),
                                   Container(
@@ -226,7 +228,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                                       vertical: 6,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: AppColors.violet
+                                      color: AppColors.brandPrimary
                                           .withValues(alpha: 0.1),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
@@ -234,8 +236,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                                       '${currentCourse.completedLessons}/${currentCourse.totalLessons}',
                                       style: const TextStyle(
                                         fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.violet,
+                                        fontWeight: FontWeight.w700,
+                                        color: AppColors.brandPrimary,
                                       ),
                                     ),
                                   ),

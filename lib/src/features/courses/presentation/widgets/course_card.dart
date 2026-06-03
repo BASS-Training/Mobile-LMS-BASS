@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
-import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
+import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 
+/// Course card used in both the horizontal "recommended" rail and the grid.
+///
+/// Layout: a compact brand-gradient cover with the course emoji, a save
+/// toggle and a lesson badge, followed by the title, instructor and a small
+/// progress bar so learners can see where they left off at a glance.
 class CourseCard extends StatelessWidget {
   final CourseEntity course;
   final VoidCallback onTap;
@@ -19,236 +24,217 @@ class CourseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final baseColor = AppColors.cherry;
-
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(22),
         child: Ink(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
-            color: Colors.white.withValues(alpha: 0.92),
-            border: Border.all(color: AppColors.pearl.withValues(alpha: 0.78)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.08),
-                blurRadius: 18,
-                offset: const Offset(0, 8),
-              ),
-            ],
+            borderRadius: BorderRadius.circular(22),
+            color: AppColors.surface,
+            border: Border.all(color: AppColors.borderSubtle),
+            boxShadow: AppShadows.sm,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                flex: 5,
-                child: Stack(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [baseColor, baseColor.withValues(alpha: 0.7)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: const BorderRadius.vertical(
-                          top: Radius.circular(24),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      right: -18,
-                      top: -8,
-                      child: Container(
-                        width: 116,
-                        height: 116,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white.withValues(alpha: 0.12),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 14,
-                      top: 14,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.18),
-                          borderRadius: BorderRadius.circular(999),
-                          border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.18),
-                          ),
-                        ),
-                        child: Text(
-                          course.totalLessons > 0
-                              ? '${course.totalLessons} lesson'
-                              : 'Course',
-                          style: const TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      right: 12,
-                      top: 10,
-                      child: GestureDetector(
-                        onTap: onSavePressed,
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.95),
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.1),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Icon(
-                            isSaved ? Icons.bookmark : Icons.bookmark_outline,
-                            color: AppColors.cherry,
-                            size: 19,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: 14,
-                      bottom: 14,
-                      right: 14,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              course.icon,
-                              style: const TextStyle(fontSize: 42),
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.16),
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: const Icon(
-                              Icons.arrow_outward_rounded,
-                              color: Colors.white,
-                              size: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                flex: 4,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            course.title,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              height: 1.2,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.charcoal,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            course.instructor,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 11,
-                              color: AppColors.slate,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _MiniInfoChip(
-                              icon: Icons.menu_book_rounded,
-                              label: '${course.totalLessons}',
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: _MiniInfoChip(
-                              icon: Icons.schedule_rounded,
-                              label: course.duration,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+              Expanded(flex: 5, child: _buildCover()),
+              Expanded(flex: 6, child: _buildBody()),
             ],
           ),
         ),
       ),
     );
   }
+
+  Widget _buildCover() {
+    return Stack(
+      children: [
+        Container(
+          width: double.infinity,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: AppColors.brandGradient,
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+          ),
+        ),
+        Positioned(
+          right: -16,
+          top: -14,
+          child: Container(
+            width: 96,
+            height: 96,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white.withValues(alpha: 0.12),
+            ),
+          ),
+        ),
+        // Lesson count badge
+        Positioned(
+          left: 12,
+          top: 12,
+          child: _Pill(
+            label: course.totalLessons > 0
+                ? '${course.totalLessons} lesson'
+                : 'Course',
+          ),
+        ),
+        // Save toggle
+        if (onSavePressed != null)
+          Positioned(
+            right: 10,
+            top: 10,
+            child: GestureDetector(
+              onTap: onSavePressed,
+              child: Container(
+                padding: const EdgeInsets.all(7),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  isSaved ? Icons.bookmark_rounded : Icons.bookmark_outline_rounded,
+                  color: AppColors.brandPrimary,
+                  size: 18,
+                ),
+              ),
+            ),
+          ),
+        // Course emoji
+        Positioned(
+          left: 14,
+          bottom: 12,
+          child: Text(course.icon, style: const TextStyle(fontSize: 38)),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBody() {
+    final progress = course.progressPercentage / 100.0;
+    final hasProgress = course.totalLessons > 0;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                course.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 14.5,
+                  height: 1.2,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  const Icon(
+                    Icons.person_rounded,
+                    size: 13,
+                    color: AppColors.textTertiary,
+                  ),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      course.instructor,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 11.5,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          if (hasProgress)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(99),
+                  child: LinearProgressIndicator(
+                    value: progress.clamp(0.0, 1.0),
+                    minHeight: 5,
+                    backgroundColor: AppColors.surfaceMuted,
+                    valueColor: const AlwaysStoppedAnimation<Color>(
+                      AppColors.brandPrimary,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  '${course.progressPercentage}% · ${course.duration}',
+                  style: const TextStyle(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textTertiary,
+                  ),
+                ),
+              ],
+            )
+          else
+            Row(
+              children: [
+                const Icon(
+                  Icons.schedule_rounded,
+                  size: 13,
+                  color: AppColors.textTertiary,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  course.duration,
+                  style: const TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
 }
 
-class _MiniInfoChip extends StatelessWidget {
-  final IconData icon;
+class _Pill extends StatelessWidget {
   final String label;
 
-  const _MiniInfoChip({required this.icon, required this.label});
+  const _Pill({required this.label});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: AppColors.cloud,
-        borderRadius: BorderRadius.circular(AppMeasures.radiusCircle),
+        color: Colors.white.withValues(alpha: 0.22),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 13, color: AppColors.cherry),
-          const SizedBox(width: 5),
-          Flexible(
-            child: Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: AppColors.charcoal,
-              ),
-            ),
-          ),
-        ],
+      child: Text(
+        label,
+        style: const TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.w700,
+          color: Colors.white,
+        ),
       ),
     );
   }

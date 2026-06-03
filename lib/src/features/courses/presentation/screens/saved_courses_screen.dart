@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
+import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_state.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
+import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
 class SavedCoursesScreen extends StatefulWidget {
   const SavedCoursesScreen({super.key});
@@ -24,145 +27,201 @@ class _SavedCoursesScreenState extends State<SavedCoursesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.mist,
-      appBar: AppBar(title: const Text('Saved Courses'), elevation: 0),
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        title: const Text(
+          'Kursus Tersimpan',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w700,
+            fontSize: 20,
+          ),
+        ),
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: AppColors.brandGradient,
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+          ),
+        ),
+      ),
       body: BlocBuilder<CourseBloc, CourseState>(
         builder: (context, state) {
           if (state is CourseLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is SavedCoursesLoaded) {
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.brandPrimary),
+            );
+          }
+          if (state is SavedCoursesLoaded) {
             final savedCourses = state.courses;
-            if (savedCourses.isEmpty) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Icon(
-                      Icons.bookmark_outline,
-                      size: 64,
-                      color: AppColors.silver,
-                    ),
-                    SizedBox(height: 16),
-                    Text(
-                      'No saved courses yet',
-                      style: TextStyle(fontSize: 16, color: AppColors.slate),
-                    ),
-                  ],
-                ),
-              );
-            }
-            return ListView.builder(
+            if (savedCourses.isEmpty) return const _EmptyState();
+            return ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: savedCourses.length,
+              separatorBuilder: (_, _) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
-                final courseEntity = savedCourses[index];
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.pearl),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
-                        blurRadius: 8,
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              Color(
-                                int.parse(
-                                  courseEntity.color.replaceFirst('#', '0xFF'),
-                                ),
-                              ),
-                              Color(
-                                int.parse(
-                                  courseEntity.color.replaceFirst('#', '0xFF'),
-                                ),
-                              ).withValues(alpha: 0.7),
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Center(
-                          child: Text(
-                            courseEntity.icon,
-                            style: const TextStyle(fontSize: 32),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              courseEntity.title,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.charcoal,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              courseEntity.instructor,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: AppColors.slate,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                const Icon(
-                                  Icons.book_outlined,
-                                  size: 12,
-                                  color: AppColors.silver,
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  '${courseEntity.totalLessons} lessons',
-                                  style: const TextStyle(
-                                    fontSize: 11,
-                                    color: AppColors.silver,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          context.push(
-                            AppRoutes.courseDetail,
-                            extra: courseEntity,
-                          );
-                        },
-                        child: const Icon(
-                          Icons.arrow_forward,
-                          color: AppColors.violet,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
+                return _SavedCourseTile(course: savedCourses[index]);
               },
             );
           }
           return const SizedBox.shrink();
         },
+      ),
+    );
+  }
+}
+
+class _SavedCourseTile extends StatelessWidget {
+  final CourseEntity course;
+
+  const _SavedCourseTile({required this.course});
+
+  @override
+  Widget build(BuildContext context) {
+    return PressScale(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => context.push(AppRoutes.courseDetail, extra: course),
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: AppColors.borderSubtle),
+            boxShadow: AppShadows.sm,
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: AppColors.brandGradient,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Center(
+                  child: Text(
+                    course.icon,
+                    style: const TextStyle(fontSize: 30),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      course.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary,
+                        height: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      course.instructor,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.menu_book_rounded,
+                          size: 13,
+                          color: AppColors.textTertiary,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${course.totalLessons} lesson',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textTertiary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.textTertiary,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 96,
+            height: 96,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.brandPrimary.withValues(alpha: 0.1),
+            ),
+            child: const Icon(
+              Icons.bookmark_outline_rounded,
+              size: 46,
+              color: AppColors.brandPrimary,
+            ),
+          ),
+          const SizedBox(height: 18),
+          const Text(
+            'Belum ada kursus tersimpan',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 6),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 40),
+            child: Text(
+              'Simpan kursus favoritmu dengan menekan ikon bookmark agar mudah ditemukan di sini.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                color: AppColors.textSecondary,
+                height: 1.5,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
