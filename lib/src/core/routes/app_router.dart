@@ -9,6 +9,7 @@ import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/aut
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_state.dart';
 
 // Screen imports
+import 'package:lms_mobile_app/src/features/authentication/presentation/screens/splash_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/intro_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/login_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/register_screen.dart';
@@ -47,9 +48,14 @@ class AppRouter {
 
   static final GoRouter router = GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: AppRoutes.intro,
+    initialLocation: AppRoutes.splash,
     refreshListenable: _GoRouterRefreshStream(_authBloc.stream),
     redirect: (context, state) {
+      // The splash gates the app while the session restores; never redirect it.
+      if (state.matchedLocation == AppRoutes.splash) {
+        return null;
+      }
+
       final authState = _authBloc.state;
       final isOnAuthRoute =
           state.matchedLocation == AppRoutes.intro ||
@@ -69,6 +75,10 @@ class AppRouter {
       return null;
     },
     routes: [
+      GoRoute(
+        path: AppRoutes.splash,
+        builder: (context, state) => const SplashScreen(),
+      ),
       GoRoute(
         path: AppRoutes.intro,
         builder: (context, state) => const IntroScreen(),

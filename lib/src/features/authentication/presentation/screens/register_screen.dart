@@ -150,7 +150,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Lengkapi semua data dulu sebelum mendaftar.'),
-          backgroundColor: AppColors.red,
+          backgroundColor: AppColors.brandPrimary,
         ),
       );
       return;
@@ -183,7 +183,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Akun berhasil dibuat. Masuk ke aplikasi...'),
-                backgroundColor: AppColors.emerald,
+                backgroundColor: AppColors.success,
               ),
             );
             context.go(AppRoutes.main);
@@ -191,7 +191,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: AppColors.red,
+                backgroundColor: AppColors.brandPrimary,
                 duration: const Duration(seconds: 3),
               ),
             );
@@ -250,7 +250,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: const Text(
                           'Sudah punya akun? Masuk di sini',
                           style: TextStyle(
-                            color: AppColors.red,
+                            color: AppColors.brandPrimary,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -274,14 +274,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            AppColors.red.withValues(alpha: 0.95),
+            AppColors.brandPrimary.withValues(alpha: 0.95),
             const Color(0xFF9E1117),
           ],
         ),
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: AppColors.red.withValues(alpha: 0.18),
+            color: AppColors.brandPrimary.withValues(alpha: 0.18),
             blurRadius: 24,
             offset: const Offset(0, 14),
           ),
@@ -331,7 +331,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       fit: BoxFit.contain,
                       errorBuilder: (context, error, stackTrace) => const Icon(
                         Icons.school_outlined,
-                        color: AppColors.red,
+                        color: AppColors.brandPrimary,
                         size: 30,
                       ),
                     ),
@@ -439,12 +439,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
             child: Center(
               child: isCompleted
-                  ? const Icon(Icons.check, size: 22, color: AppColors.red)
+                  ? const Icon(Icons.check, size: 22, color: AppColors.brandPrimary)
                   : Text(
                       '$index',
                       style: TextStyle(
                         fontWeight: FontWeight.w800,
-                        color: isActive ? AppColors.red : Colors.white,
+                        color: isActive ? AppColors.brandPrimary : Colors.white,
                       ),
                     ),
             ),
@@ -632,7 +632,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w800,
-            color: AppColors.slate,
+            color: AppColors.textSecondary,
           ),
         ),
         const SizedBox(height: 8),
@@ -640,7 +640,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           subtitle,
           style: const TextStyle(
             fontSize: 14,
-            color: AppColors.silver,
+            color: AppColors.textTertiary,
             height: 1.4,
           ),
         ),
@@ -659,7 +659,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,
-            color: AppColors.slate,
+            color: AppColors.textSecondary,
           ),
         ),
         const SizedBox(height: 12),
@@ -724,7 +724,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,
-            color: AppColors.slate,
+            color: AppColors.textSecondary,
           ),
         ),
         const SizedBox(height: 12),
@@ -788,7 +788,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,
-            color: AppColors.slate,
+            color: AppColors.textSecondary,
           ),
         ),
         const SizedBox(height: 8),
@@ -824,7 +824,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w700,
-            color: AppColors.slate,
+            color: AppColors.textSecondary,
           ),
         ),
         const SizedBox(height: 12),
@@ -896,16 +896,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
           duration: const Duration(milliseconds: 200),
           padding: basePadding,
           decoration: BoxDecoration(
-            color: selected ? const Color(0xFFFFF1F1) : AppColors.mist,
+            color: selected ? const Color(0xFFFFF1F1) : AppColors.surfaceMuted,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: selected ? AppColors.red : AppColors.pearl,
+              color: selected ? AppColors.brandPrimary : AppColors.borderDefault,
               width: 1.5,
             ),
             boxShadow: selected
                 ? [
                     BoxShadow(
-                      color: AppColors.red.withValues(alpha: 0.10),
+                      color: AppColors.brandPrimary.withValues(alpha: 0.10),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -922,15 +922,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 height: 42,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: selected ? AppColors.red : Colors.white,
+                  color: selected ? AppColors.brandPrimary : Colors.white,
                   border: Border.all(
-                    color: selected ? AppColors.red : AppColors.pearl,
+                    color: selected ? AppColors.brandPrimary : AppColors.borderDefault,
                     width: 1.2,
                   ),
                 ),
                 child: Icon(
                   icon,
-                  color: selected ? Colors.white : AppColors.slate,
+                  color: selected ? Colors.white : AppColors.textSecondary,
                   size: 22,
                 ),
               ),
@@ -947,7 +947,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       style: TextStyle(
                         fontSize: compact ? 13 : 14,
                         fontWeight: FontWeight.w800,
-                        color: selected ? AppColors.red : AppColors.slate,
+                        color: selected ? AppColors.brandPrimary : AppColors.textSecondary,
                       ),
                     ),
                     if (!compact && subtitle.isNotEmpty) ...[
@@ -956,7 +956,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         subtitle,
                         style: const TextStyle(
                           fontSize: 12,
-                          color: AppColors.silver,
+                          color: AppColors.textTertiary,
                           height: 1.3,
                         ),
                       ),
@@ -1039,8 +1039,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
             icon: const Icon(Icons.arrow_back_outlined),
             label: const Text('Kembali'),
             style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.slate,
-              side: const BorderSide(color: AppColors.pearl),
+              foregroundColor: AppColors.textSecondary,
+              side: const BorderSide(color: AppColors.borderDefault),
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
             ),
           )
@@ -1053,7 +1053,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             icon: const Icon(Icons.arrow_forward_outlined),
             label: const Text('Selanjutnya'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.red,
+              backgroundColor: AppColors.brandPrimary,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
               shape: RoundedRectangleBorder(
@@ -1076,7 +1076,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 : const Icon(Icons.check_circle_outline),
             label: Text(isLoading ? 'Mendaftar...' : 'Daftar Sekarang'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.red,
+              backgroundColor: AppColors.brandPrimary,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
               shape: RoundedRectangleBorder(

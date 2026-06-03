@@ -1,6 +1,9 @@
 /// Route name constants
 /// Digunakan untuk navigation di seluruh app
 class AppRoutes {
+  // Splash
+  static const String splash = '/splash';
+
   // Intro
   static const String intro = '/intro';
 
