@@ -17,8 +17,6 @@ import '../bloc/course/course_bloc.dart';
 import '../bloc/course/course_event.dart';
 import '../bloc/course/course_state.dart';
 
-const _kPollingInterval = Duration(seconds: 30);
-
 class CourseDetailScreen extends StatefulWidget {
   final CourseEntity course;
 
@@ -28,10 +26,7 @@ class CourseDetailScreen extends StatefulWidget {
   State<CourseDetailScreen> createState() => _CourseDetailScreenState();
 }
 
-class _CourseDetailScreenState extends State<CourseDetailScreen>
-    with WidgetsBindingObserver {
-  Timer? _pollingTimer;
-
+class _CourseDetailScreenState extends State<CourseDetailScreen> {
   /// Melacak apakah sedang ada proses refresh agar bisa
   /// menampilkan LinearProgressIndicator di bagian atas.
   bool _isRefreshing = false;
@@ -42,29 +37,17 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
     LocalStorage.recordRecentCourse(widget.course.id);
 
     // Fetch data segar langsung saat screen pertama kali dibuat.
     WidgetsBinding.instance.addPostFrameCallback((_) => _triggerRefresh());
-
-    // Polling ringan setiap 30 detik selama screen ini aktif.
-    _pollingTimer = Timer.periodic(_kPollingInterval, (_) => _triggerRefresh());
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    _pollingTimer?.cancel();
-    _refreshCompleter?.complete(); // pastikan tidak ada completer yang tergantung
+    _refreshCompleter
+        ?.complete(); // pastikan tidak ada completer yang tergantung
     super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed && mounted) {
-      _triggerRefresh();
-    }
   }
 
   /// Dispatch refresh event dan tandai sedang loading.
@@ -104,8 +87,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
           curr is CourseLoaded ||
           curr is CourseLoading ||
           curr is CourseFailure,
-      listenWhen: (prev, curr) =>
-          curr is CourseLoaded || curr is CourseFailure,
+      listenWhen: (prev, curr) => curr is CourseLoaded || curr is CourseFailure,
       listener: (context, state) {
         // Refresh selesai — sembunyikan loading indicator.
         _onRefreshComplete();
@@ -130,7 +112,9 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                 duration: const Duration(milliseconds: 250),
                 height: _isRefreshing ? 3.0 : 0.0,
                 child: LinearProgressIndicator(
-                  backgroundColor: AppColors.brandPrimary.withValues(alpha: 0.1),
+                  backgroundColor: AppColors.brandPrimary.withValues(
+                    alpha: 0.1,
+                  ),
                   valueColor: const AlwaysStoppedAnimation<Color>(
                     AppColors.brandPrimary,
                   ),
@@ -155,8 +139,9 @@ class _CourseDetailScreenState extends State<CourseDetailScreen>
                         CourseDetailHeader(course: currentCourse),
 
                         Padding(
-                          padding:
-                              const EdgeInsets.all(AppMeasures.paddingLarge),
+                          padding: const EdgeInsets.all(
+                            AppMeasures.paddingLarge,
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [

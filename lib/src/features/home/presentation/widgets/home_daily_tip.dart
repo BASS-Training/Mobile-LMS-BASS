@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
 
-/// "Tip of the day" micro-content card. Rotates through a curated list of bass
-/// practice tips based on the calendar day, giving learners a small, fresh
-/// reason to open the app daily — a common engagement pattern in LMS apps.
+/// "Tip of the day" micro-content card. Rotates through a curated list of
+/// short learning tips for the Bass academy and app, giving learners a small,
+/// fresh reason to open the app daily — a common engagement pattern in LMS apps.
 class HomeDailyTip extends StatelessWidget {
   const HomeDailyTip({super.key});
 
   static const List<String> _tips = [
-    'Mulai latihan dengan metronome pelan, lalu naikkan tempo bertahap setelah bersih.',
-    'Fokus pada tangan kanan: konsistensi petikan menentukan groove yang solid.',
-    'Latih tangga nada mayor di satu posisi sebelum berpindah fret.',
-    'Redam senar yang tidak dimainkan untuk suara bass yang bersih.',
-    'Rekam permainanmu — telinga sering menangkap yang jari lewatkan.',
-    'Pelajari pola root–fifth dulu sebelum walking bass yang kompleks.',
-    'Istirahatkan jari tiap 20 menit agar tidak cedera dan tetap rileks.',
+    'Mulai sesi belajar dengan tujuan kecil dan spesifik untuk konsistensi.',
+    'Gunakan timer untuk sesi fokus dan evaluasi progres rutin.',
+    'Ulangi materi sebelumnya sebelum menambahkan topik baru.',
+    'Praktikkan teknik secara bertahap hingga terasa nyaman.',
+    'Rekam latihan atau catat progres untuk melihat perkembangan.',
+    'Pecah materi besar menjadi bagian kecil agar tidak kewalahan.',
+    'Istirahat singkat setiap 20 menit untuk menjaga konsentrasi.',
   ];
 
   String get _todaysTip {
@@ -58,7 +58,7 @@ class HomeDailyTip extends StatelessWidget {
                   Row(
                     children: [
                       const Text(
-                        'Tips Bass Hari Ini',
+                        'Tips Hari Ini',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
@@ -66,7 +66,7 @@ class HomeDailyTip extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 6),
-                      Text('🎸', style: const TextStyle(fontSize: 13)),
+                      Text('🎓', style: const TextStyle(fontSize: 13)),
                     ],
                   ),
                   const SizedBox(height: 6),
