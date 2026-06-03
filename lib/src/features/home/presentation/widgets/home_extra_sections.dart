@@ -29,32 +29,11 @@ class HomeExtraSections extends StatelessWidget {
   Widget build(BuildContext context) {
     return switch (stats) {
       null => const SizedBox.shrink(),
-      final currentStats => Padding(
+      _ => Padding(
         padding: EdgeInsets.symmetric(horizontal: AppMeasures.paddingLarge),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildModernCard(
-              title: 'Statistik belajar',
-              icon: Icons.insights_rounded,
-              accent: AppColors.info,
-              child: Column(
-                children: [
-                  _buildMetricRowModern(
-                    'Pelajaran Selesai',
-                    '${currentStats.completedLessons}/${currentStats.totalLessons}',
-                  ),
-                  const SizedBox(height: 8),
-                  _buildMetricRowModern(
-                    'Kuis Selesai',
-                    currentStats.totalQuizzes > 0
-                        ? '${currentStats.completedQuizzes}/${currentStats.totalQuizzes}'
-                        : '0/0',
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 14),
             _buildModernCard(
               title: 'Gabung Course',
               icon: Icons.groups_2_rounded,
@@ -328,31 +307,6 @@ class HomeExtraSections extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildMetricRowModern(String label, String value) {
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            label,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: AppColors.slate,
-            ),
-          ),
-        ),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w800,
-            color: AppColors.charcoal,
-          ),
-        ),
-      ],
     );
   }
 }

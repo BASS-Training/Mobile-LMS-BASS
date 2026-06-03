@@ -9,20 +9,25 @@ import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/cou
 import 'package:lms_mobile_app/src/features/home/domain/entities/home_stats.entity.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/bloc/home_state.dart';
+import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_continue_learning.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_extra_sections.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_header.dart';
+import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_quick_actions.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_recommended_courses.dart';
-import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_statistics_grid.dart';
+import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_summary_card.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
+import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback? onShowCourses;
+  final VoidCallback? onShowSaved;
   final String accountRole;
 
   const HomeScreen({
     super.key,
     this.onShowCourses,
+    this.onShowSaved,
     this.accountRole = 'participant',
   });
 
@@ -49,13 +54,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _goToCourseList() {
     if (!mounted) return;
-
     if (widget.onShowCourses != null) {
       widget.onShowCourses!.call();
       return;
     }
-
     context.push(AppRoutes.courses);
+  }
+
+  void _goToSaved() {
+    if (!mounted) return;
+    widget.onShowSaved?.call();
+  }
+
+  Future<void> _onRefresh() async {
+    context.read<CourseBloc>().add(const RefreshCoursesEvent());
+    await Future<void>.delayed(const Duration(milliseconds: 600));
   }
 
   void _handleHomeBlocListener(BuildContext context, HomeState state) {
@@ -157,13 +170,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 SizedBox(height: 3),
                 Text(
                   'Kelola materi, kursus, dan konten untuk peserta.',
-                  style: TextStyle(color: Colors.white70, fontSize: 12, height: 1.35),
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontSize: 12,
+                    height: 1.35,
+                  ),
                 ),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  void _showComingSoon() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Notifikasi akan segera hadir!')),
     );
   }
 
@@ -174,101 +197,119 @@ class _HomeScreenState extends State<HomeScreen> {
       body: BlocListener<HomeBloc, HomeState>(
         listener: _handleHomeBlocListener,
         child: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header with greeting and search
-                HomeHeader(searchController: _searchController),
-                if (widget.accountRole == 'instructor')
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppMeasures.paddingLarge,
-                      AppMeasures.paddingLarge,
-                      AppMeasures.paddingLarge,
-                      0,
-                    ),
-                    child: _buildInstructorBanner(),
+          bottom: false,
+          child: RefreshIndicator(
+            onRefresh: _onRefresh,
+            color: AppColors.brandPrimary,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  HomeHeader(
+                    searchController: _searchController,
+                    onNotificationsTap: _showComingSoon,
                   ),
-                SizedBox(height: AppMeasures.paddingLarge),
-
-                // Single BlocBuilder for entire content area
-                // Calculate stats once and pass to multiple widgets
-                BlocBuilder<CourseBloc, CourseState>(
-                  builder: (context, state) {
-                    // Handle loading state
-                    if (state is CourseLoading) {
-                      return const SizedBox(
-                        height: 400,
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            color: AppColors.brandPrimary,
-                          ),
-                        ),
-                      );
-                    }
-
-                    // Handle error state
-                    if (state is CourseFailure) {
-                      return SizedBox(
-                        height: 200,
-                        child: Center(
-                          child: Text(
-                            state.message,
-                            style: const TextStyle(
-                              color: AppColors.brandPrimary,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      );
-                    }
-
-                    // Handle loaded state
-                    if (state is! CourseLoaded) {
-                      return const SizedBox.shrink();
-                    }
-
-                    // Calculate stats ONCE for all widgets
-                    final stats = HomeStatsEntity.fromCourses(state.courses);
-
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Statistics Grid
-                        HomeStatisticsGrid(stats: stats),
-                        SizedBox(height: AppMeasures.paddingXLarge),
-
-                        // Section Title
-                        _buildSectionHeader(
-                          AppStrings.myCourses,
-                          onSeeAll: _goToCourseList,
-                        ),
-                        const SizedBox(height: 12),
-
-                        // Recommended Courses
-                        HomeRecommendedCourses(
-                          courseState: state,
-                          onNavigateToCourseList: _goToCourseList,
-                        ),
-                        const SizedBox(height: 16),
-
-                        // Extra Sections (Join Class, Certificates)
-                        HomeExtraSections(
-                          tokenController: _joinClassTokenController,
-                          stats: stats,
-                          completedCourses: stats.completedCourseList,
-                        ),
-                      ],
-                    );
-                  },
-                ),
-                SizedBox(height: AppMeasures.paddingLarge),
-              ],
+                  if (widget.accountRole == 'instructor')
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        AppMeasures.paddingLarge,
+                        AppMeasures.paddingMedium,
+                        AppMeasures.paddingLarge,
+                        0,
+                      ),
+                      child: _buildInstructorBanner(),
+                    ),
+                  const SizedBox(height: AppMeasures.paddingLarge),
+                  _buildContent(),
+                  const SizedBox(height: AppMeasures.paddingXLarge),
+                ],
+              ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildContent() {
+    return BlocBuilder<CourseBloc, CourseState>(
+      builder: (context, state) {
+        if (state is CourseLoading) {
+          return const SizedBox(
+            height: 360,
+            child: Center(
+              child: CircularProgressIndicator(color: AppColors.brandPrimary),
+            ),
+          );
+        }
+
+        if (state is CourseFailure) {
+          return SizedBox(
+            height: 220,
+            child: Center(
+              child: Text(
+                state.message,
+                style: const TextStyle(
+                  color: AppColors.brandPrimary,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          );
+        }
+
+        if (state is! CourseLoaded) return const SizedBox.shrink();
+
+        final stats = HomeStatsEntity.fromCourses(state.courses);
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            FadeSlideIn(
+              child: HomeContinueLearning(courses: state.courses),
+            ),
+            const SizedBox(height: 16),
+            FadeSlideIn(
+              delayMs: 60,
+              child: HomeSummaryCard(stats: stats),
+            ),
+            const SizedBox(height: 18),
+            FadeSlideIn(
+              delayMs: 100,
+              child: HomeQuickActions(
+                onShowCourses: _goToCourseList,
+                onShowSaved: _goToSaved,
+              ),
+            ),
+            const SizedBox(height: 22),
+            FadeSlideIn(
+              delayMs: 140,
+              child: _buildSectionHeader(
+                AppStrings.myCourses,
+                onSeeAll: _goToCourseList,
+              ),
+            ),
+            const SizedBox(height: 12),
+            FadeSlideIn(
+              delayMs: 160,
+              child: HomeRecommendedCourses(
+                courseState: state,
+                onNavigateToCourseList: _goToCourseList,
+              ),
+            ),
+            const SizedBox(height: 18),
+            FadeSlideIn(
+              delayMs: 200,
+              child: HomeExtraSections(
+                tokenController: _joinClassTokenController,
+                stats: stats,
+                completedCourses: stats.completedCourseList,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

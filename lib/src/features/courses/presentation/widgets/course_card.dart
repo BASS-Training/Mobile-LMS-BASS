@@ -115,9 +115,19 @@ class CourseCard extends StatelessWidget {
     );
   }
 
+  /// Returns a human-friendly duration, or null when the data is empty/zero
+  /// (so we never render an ugly "0 min").
+  String? get _durationLabel {
+    final d = course.duration.trim();
+    if (d.isEmpty) return null;
+    if (d.startsWith('0') || d == '0 min' || d == '0min') return null;
+    return d;
+  }
+
   Widget _buildBody() {
     final progress = course.progressPercentage / 100.0;
     final hasProgress = course.totalLessons > 0;
+    final duration = _durationLabel;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
@@ -180,7 +190,7 @@ class CourseCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  '${course.progressPercentage}% · ${course.duration}',
+                  '${course.completedLessons}/${course.totalLessons} lesson selesai',
                   style: const TextStyle(
                     fontSize: 10.5,
                     fontWeight: FontWeight.w600,
@@ -192,14 +202,16 @@ class CourseCard extends StatelessWidget {
           else
             Row(
               children: [
-                const Icon(
-                  Icons.schedule_rounded,
+                Icon(
+                  duration != null
+                      ? Icons.schedule_rounded
+                      : Icons.menu_book_rounded,
                   size: 13,
                   color: AppColors.textTertiary,
                 ),
                 const SizedBox(width: 4),
                 Text(
-                  course.duration,
+                  duration ?? '${course.totalLessons} lesson',
                   style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
