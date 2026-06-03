@@ -14,6 +14,8 @@ class ApiEndpoints {
   static const String searchCourses = '/courses/search';
   static const String getCourseProgress = '/courses/{id}/progress';
   static const String enrollByToken = '/enroll';
+  static const String savedCourses = '/courses/saved';
+  static const String toggleSaveCourse = '/courses/{id}/save';
 
   // Lessons
   static const String getLessons = '/courses/{courseId}/lessons';

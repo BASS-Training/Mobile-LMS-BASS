@@ -60,7 +60,15 @@ class CourseRemoteDataSourceImpl implements CourseRemoteDataSource {
 
   @override
   Future<void> toggleSaveCourse(String courseId) async {
-    // Biarkan kosong, karena save logic di-handle LocalStorage di RepositoryImpl-mu
+    try {
+      await dio.post(
+        ApiEndpoints.toggleSaveCourse.replaceFirst('{id}', courseId),
+      );
+    } on DioException catch (error) {
+      throw Exception(
+        _extractErrorMessage(error, 'Gagal menyimpan course ke koleksi'),
+      );
+    }
   }
 
   @override
@@ -71,7 +79,21 @@ class CourseRemoteDataSourceImpl implements CourseRemoteDataSource {
 
   @override
   Future<List<Course>> getSavedCourses() async {
-    throw UnimplementedError('Saved courses masih local-only');
+    try {
+      final response = await dio.get(ApiEndpoints.savedCourses);
+      final data = response.data as Map<String, dynamic>;
+      final List<dynamic> courseList = data['data'] as List<dynamic>? ?? [];
+
+      return courseList.map((courseJson) {
+        final json = Map<String, dynamic>.from(courseJson as Map);
+        json['id'] = json['id'].toString();
+        return Course.fromJson(json);
+      }).toList();
+    } on DioException catch (error) {
+      throw Exception(
+        _extractErrorMessage(error, 'Gagal memuat course tersimpan'),
+      );
+    }
   }
 
   String _extractErrorMessage(DioException error, String fallback) {

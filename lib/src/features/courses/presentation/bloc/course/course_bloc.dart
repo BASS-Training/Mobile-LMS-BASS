@@ -91,19 +91,33 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
     ToggleSaveCourseEvent event,
     Emitter<CourseState> emit,
   ) async {
+    final previous = state;
+
+    // 1) Update optimistik agar ikon bookmark langsung berubah.
+    if (previous is CourseLoaded) {
+      final updated = previous.courses
+          .map(
+            (c) => c.id == event.courseId
+                ? c.copyWith(isSaved: !c.isSaved)
+                : c,
+          )
+          .toList();
+      emit(CourseLoaded(courses: updated, searchQuery: previous.searchQuery));
+    } else if (previous is SavedCoursesLoaded) {
+      // Di layar "Kursus Tersimpan", toggle = mengeluarkan dari koleksi.
+      final updated = previous.courses
+          .where((c) => c.id != event.courseId)
+          .toList();
+      emit(SavedCoursesLoaded(courses: updated));
+    }
+
+    // 2) Persist ke backend. Jika gagal, kembalikan state semula.
     try {
       await toggleSaveCourseUseCase(event.courseId);
-
-      // Reload courses to reflect changes
-      if (state is CourseLoaded) {
-        final currentState = state as CourseLoaded;
-        final courses = await getCoursesUseCase();
-        emit(
-          CourseLoaded(courses: courses, searchQuery: currentState.searchQuery),
-        );
-      }
     } catch (e) {
-      emit(CourseFailure(message: 'Failed to toggle save'));
+      if (previous is CourseLoaded || previous is SavedCoursesLoaded) {
+        emit(previous);
+      }
     }
   }
 

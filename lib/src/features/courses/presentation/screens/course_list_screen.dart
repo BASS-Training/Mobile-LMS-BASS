@@ -273,11 +273,25 @@ class _CourseListScreenState extends State<CourseListScreen> {
                                   );
                                 },
                                 onSavePressed: () {
+                                  final willSave = !courseEntity.isSaved;
                                   context.read<CourseBloc>().add(
                                     ToggleSaveCourseEvent(
                                       courseId: courseEntity.id,
                                     ),
                                   );
+                                  ScaffoldMessenger.of(context)
+                                    ..hideCurrentSnackBar()
+                                    ..showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          willSave
+                                              ? 'Kursus disimpan ke koleksi'
+                                              : 'Kursus dihapus dari koleksi',
+                                        ),
+                                        duration: const Duration(seconds: 2),
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
                                 },
                               );
                             },

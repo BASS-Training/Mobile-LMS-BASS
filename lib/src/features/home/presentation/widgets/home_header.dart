@@ -97,7 +97,7 @@ class HomeHeader extends StatelessWidget {
             ),
             const SizedBox(height: 2),
             const Text(
-              'Siap belajar bass hari ini?',
+              'Siap belajar hari ini?',
               style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
             ),
           ],

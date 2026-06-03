@@ -8,13 +8,53 @@ import '../bloc/course/course_event.dart';
 /// Hero header for the course detail screen: a brand-gradient panel with the
 /// course emoji, title and a compact meta row (lessons · duration), plus back
 /// and save actions.
-class CourseDetailHeader extends StatelessWidget {
+class CourseDetailHeader extends StatefulWidget {
   final CourseEntity course;
 
   const CourseDetailHeader({super.key, required this.course});
 
   @override
+  State<CourseDetailHeader> createState() => _CourseDetailHeaderState();
+}
+
+class _CourseDetailHeaderState extends State<CourseDetailHeader> {
+  late bool _isSaved = widget.course.isSaved;
+
+  @override
+  void didUpdateWidget(covariant CourseDetailHeader oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Selaraskan dengan data terbaru dari BLoC (mis. setelah refresh server).
+    if (widget.course.isSaved != oldWidget.course.isSaved) {
+      _isSaved = widget.course.isSaved;
+    }
+  }
+
+  void _onToggleSave() {
+    // Optimistik: ubah ikon seketika untuk respons instan.
+    setState(() => _isSaved = !_isSaved);
+
+    context.read<CourseBloc>().add(
+      ToggleSaveCourseEvent(courseId: widget.course.id),
+    );
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(
+            _isSaved
+                ? 'Kursus disimpan ke koleksi'
+                : 'Kursus dihapus dari koleksi',
+          ),
+          duration: const Duration(seconds: 2),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final course = widget.course;
     return Container(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
@@ -38,14 +78,10 @@ class CourseDetailHeader extends StatelessWidget {
                     onTap: () => Navigator.pop(context),
                   ),
                   _CircleAction(
-                    icon: course.isSaved
+                    icon: _isSaved
                         ? Icons.bookmark_rounded
                         : Icons.bookmark_outline_rounded,
-                    onTap: () {
-                      context.read<CourseBloc>().add(
-                        ToggleSaveCourseEvent(courseId: course.id),
-                      );
-                    },
+                    onTap: _onToggleSave,
                   ),
                 ],
               ),

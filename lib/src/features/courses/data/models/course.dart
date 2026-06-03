@@ -54,7 +54,8 @@ class Course {
       chaptersCount: json['chaptersCount'] ?? 1,
       duration: json['duration'] ?? '0 hours',
       sections: sections,
-      isSaved: json['isSaved'] ?? false,
+      // API mengirim `is_saved` (snake_case); `isSaved` dipertahankan untuk cache lokal.
+      isSaved: json['is_saved'] ?? json['isSaved'] ?? false,
       // Backend may expose enrollment via `is_enrolled` or `is_owned`.
       // Absent => assume owned (current API only returns the user's courses).
       isOwned: json['is_enrolled'] ?? json['is_owned'] ?? json['isOwned'] ?? true,

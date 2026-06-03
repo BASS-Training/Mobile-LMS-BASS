@@ -139,15 +139,18 @@ class CourseRepositoryImpl implements CourseRepository {
 
   @override
   Future<void> toggleSaveCourse(String courseId) async {
-    // Update di local
-    await localDataSource.toggleSaveCourse(courseId);
-
-    // Update di remote (non-blocking)
-    try {
-      await remoteDataSource.toggleSaveCourse(courseId);
-    } catch (e) {
-      // Biarkan sync nanti atau ignore jika offline
+    // Sesi tester offline: cukup simpan di cache lokal.
+    if (_isOfflineTestSession()) {
+      await localDataSource.toggleSaveCourse(courseId);
+      return;
     }
+
+    // Persist ke backend dulu (sumber kebenaran, melekat ke akun). Jika gagal,
+    // error dilempar agar BLoC bisa membatalkan update optimistik di UI.
+    await remoteDataSource.toggleSaveCourse(courseId);
+
+    // Sinkronkan cache lokal supaya pembacaan berikutnya konsisten.
+    await localDataSource.toggleSaveCourse(courseId);
   }
 
   @override
