@@ -37,7 +37,8 @@ class QuizLessonDetailScreen extends StatefulWidget {
   State<QuizLessonDetailScreen> createState() => _QuizLessonDetailScreenState();
 }
 
-class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> with LessonNavigationMixin {
+class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
+    with LessonNavigationMixin {
   late GlobalKey<ScaffoldState> _scaffoldKey;
 
   @override
@@ -61,7 +62,6 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen> with Le
 
   @override
   int get currentLessonIndex => widget.lessonIndex;
-
 
   void _backToCourse() {
     Navigator.pop(context);
