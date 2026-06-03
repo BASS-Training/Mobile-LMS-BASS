@@ -65,6 +65,8 @@ class _LoginScreenState extends State<LoginScreen> {
           }
         },
         child: Container(
+          width: double.infinity,
+          height: double.infinity,
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
@@ -78,32 +80,44 @@ class _LoginScreenState extends State<LoginScreen> {
               Positioned(top: -50, right: -40, child: _glow(180, 0.10)),
               Positioned(bottom: -60, left: -50, child: _glow(200, 0.08)),
               SafeArea(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(22, 24, 22, 28),
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 440),
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 12),
-                          const FadeSlideIn(child: _WelcomeHeader()),
-                          const SizedBox(height: 22),
-                          FadeSlideIn(
-                            delayMs: 120,
-                            child: _LoginCard(
-                              formKey: _formKey,
-                              emailController: _emailController,
-                              passwordController: _passwordController,
-                              obscurePassword: _obscurePassword,
-                              onTogglePasswordVisibility:
-                                  _togglePasswordVisibility,
-                              onLogin: () => _handleLogin(context),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(22, 24, 22, 28),
+                          child: Center(
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 440),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const SizedBox(height: 12),
+                                  const FadeSlideIn(child: _WelcomeHeader()),
+                                  const SizedBox(height: 22),
+                                  FadeSlideIn(
+                                    delayMs: 120,
+                                    child: _LoginCard(
+                                      formKey: _formKey,
+                                      emailController: _emailController,
+                                      passwordController: _passwordController,
+                                      obscurePassword: _obscurePassword,
+                                      onTogglePasswordVisibility:
+                                          _togglePasswordVisibility,
+                                      onLogin: () => _handleLogin(context),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 ),
               ),
             ],
@@ -161,7 +175,8 @@ class _WelcomeHeader extends StatelessWidget {
         ),
         const SizedBox(height: 6),
         Text(
-          'Masuk untuk melanjutkan belajar bass',
+          'Masuk untuk melanjutkan pembelajaranmu, atau daftar kalau kamu baru di sini.',
+          textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.white.withValues(alpha: 0.85),
             fontSize: 13.5,
@@ -286,7 +301,10 @@ class _LoginCard extends StatelessWidget {
                   );
                 },
                 style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 4,
+                  ),
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
@@ -321,8 +339,9 @@ class _LoginCard extends StatelessWidget {
                           height: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
                           ),
                         )
                       : const Text(
@@ -341,7 +360,10 @@ class _LoginCard extends StatelessWidget {
               children: [
                 const Text(
                   'Belum punya akun? ',
-                  style: TextStyle(color: AppColors.textSecondary, fontSize: 13.5),
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 13.5,
+                  ),
                 ),
                 GestureDetector(
                   onTap: () => context.go(AppRoutes.register),

@@ -45,7 +45,10 @@ class HomeSummaryCard extends StatelessWidget {
                   ),
                   const Text(
                     'progres',
-                    style: TextStyle(fontSize: 10, color: AppColors.textTertiary),
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: AppColors.textTertiary,
+                    ),
                   ),
                 ],
               ),
@@ -57,7 +60,7 @@ class HomeSummaryCard extends StatelessWidget {
                   _MetricRow(
                     icon: Icons.menu_book_rounded,
                     accent: AppColors.brandPrimary,
-                    label: 'Kursus diikuti',
+                    label: 'Kursus selesai',
                     value: '${stats.completedCourses}/${stats.totalCourses}',
                   ),
                   const _MetricDivider(),

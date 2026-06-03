@@ -9,6 +9,7 @@ import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_
 import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_info_cards.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_locked_access.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_section_accordion.dart';
+import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_section_header.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
 import 'package:lms_mobile_app/src/shared/widgets/progress_indicator.dart';
@@ -195,7 +196,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                   ),
                                 ),
                                 const SizedBox(height: 24),
-                                _SectionHeader(
+                                CourseSectionHeader(
                                   title: 'Materi Kursus',
                                   trailing:
                                       '${currentCourse.completedLessons}/${currentCourse.totalLessons}',
@@ -212,7 +213,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                 CourseLockedAccess(course: currentCourse),
                                 const SizedBox(height: 24),
                                 if (currentCourse.sections.isNotEmpty) ...[
-                                  const _SectionHeader(
+                                  const CourseSectionHeader(
                                     title: 'Yang akan kamu pelajari',
                                   ),
                                   const SizedBox(height: 12),
@@ -235,47 +236,6 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
           ),
         );
       },
-    );
-  }
-}
-
-/// Section heading with an optional count badge, used in the course detail body.
-class _SectionHeader extends StatelessWidget {
-  final String title;
-  final String? trailing;
-
-  const _SectionHeader({required this.title, this.trailing});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        if (trailing != null)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
-              color: AppColors.brandPrimary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              trailing!,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-                color: AppColors.brandPrimary,
-              ),
-            ),
-          ),
-      ],
     );
   }
 }

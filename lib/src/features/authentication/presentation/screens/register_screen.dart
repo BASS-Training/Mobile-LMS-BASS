@@ -8,6 +8,8 @@ import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/aut
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_event.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_state.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
+import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -198,209 +200,124 @@ class _RegisterScreenState extends State<RegisterScreen> {
           }
         },
         child: Container(
+          width: double.infinity,
+          height: double.infinity,
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Color(0xFFFFF7F5), Color(0xFFFFFFFF), Color(0xFFFFEAEA)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: AppColors.brandGradient,
             ),
           ),
-          child: SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 620),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const SizedBox(height: 8),
-                      _buildHeader(),
-                      const SizedBox(height: 20),
-                      _buildProgressIndicator(),
-                      const SizedBox(height: 20),
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(24),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.18),
-                              blurRadius: 24,
-                              offset: const Offset(0, 14),
-                            ),
-                          ],
+          child: Stack(
+            children: [
+              // Decorative depth, matching the login screen.
+              Positioned(top: -50, right: -40, child: _glow(180, 0.10)),
+              Positioned(bottom: -60, left: -50, child: _glow(200, 0.08)),
+              SafeArea(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return SingleChildScrollView(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight,
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            AnimatedSwitcher(
-                              duration: const Duration(milliseconds: 250),
-                              child: _buildStepContent(),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+                          child: Center(
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 480),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  const SizedBox(height: 4),
+                                  const FadeSlideIn(child: _RegisterHeader()),
+                                  const SizedBox(height: 22),
+                                  FadeSlideIn(
+                                    delayMs: 80,
+                                    child: _buildProgressIndicator(),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  FadeSlideIn(
+                                    delayMs: 140,
+                                    child: Container(
+                                      padding: const EdgeInsets.all(20),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.surface,
+                                        borderRadius: BorderRadius.circular(28),
+                                        boxShadow: AppShadows.md,
+                                      ),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        children: [
+                                          AnimatedSwitcher(
+                                            duration: const Duration(
+                                              milliseconds: 250,
+                                            ),
+                                            child: _buildStepContent(),
+                                          ),
+                                          const SizedBox(height: 24),
+                                          _buildNavigation(context),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 14),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'Sudah punya akun? ',
+                                        style: TextStyle(
+                                          color: Colors.white.withValues(
+                                            alpha: 0.9,
+                                          ),
+                                          fontSize: 13.5,
+                                        ),
+                                      ),
+                                      GestureDetector(
+                                        onTap: () =>
+                                            context.go(AppRoutes.login),
+                                        child: const Text(
+                                          'Masuk',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w900,
+                                            fontSize: 13.5,
+                                            decoration:
+                                                TextDecoration.underline,
+                                            decorationColor: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                            const SizedBox(height: 24),
-                            _buildNavigation(context),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      TextButton(
-                        onPressed: () => context.go(AppRoutes.login),
-                        child: const Text(
-                          'Sudah punya akun? Masuk di sini',
-                          style: TextStyle(
-                            color: AppColors.brandPrimary,
-                            fontWeight: FontWeight.w700,
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               ),
-            ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildHeader() {
+  Widget _glow(double size, double opacity) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      width: size,
+      height: size,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            AppColors.brandPrimary.withValues(alpha: 0.95),
-            const Color(0xFF9E1117),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(32),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.brandPrimary.withValues(alpha: 0.18),
-            blurRadius: 24,
-            offset: const Offset(0, 14),
-          ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            top: -28,
-            right: -20,
-            child: Container(
-              width: 92,
-              height: 92,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.12),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: -34,
-            left: -8,
-            child: Container(
-              width: 76,
-              height: 76,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.10),
-              ),
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 58,
-                    height: 58,
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: Image.asset(
-                      'assets/images/bass_logo2.png',
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) => const Icon(
-                        Icons.school_outlined,
-                        color: AppColors.brandPrimary,
-                        size: 30,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Daftar Akun Baru',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          'Satu akun Laravel untuk web dan mobile dengan data yang sama.',
-                          style: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 12.5,
-                            height: 1.35,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(22),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.14),
-                  ),
-                ),
-                child: const Row(
-                  children: [
-                    Expanded(
-                      child: _HeaderBadge(
-                        icon: Icons.person_outline,
-                        label: 'Data akun',
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: _HeaderBadge(
-                        icon: Icons.badge_outlined,
-                        label: 'Data diri',
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: _HeaderBadge(
-                        icon: Icons.work_outline,
-                        label: 'Pekerjaan',
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
+        shape: BoxShape.circle,
+        color: Colors.white.withValues(alpha: opacity),
       ),
     );
   }
@@ -1089,25 +1006,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 }
 
-class _HeaderBadge extends StatelessWidget {
-  final IconData icon;
-  final String label;
-
-  const _HeaderBadge({required this.icon, required this.label});
+/// Login-style welcome header (white content on the red gradient) so the
+/// register screen reads as the same family as the login screen.
+class _RegisterHeader extends StatelessWidget {
+  const _RegisterHeader();
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Icon(icon, color: Colors.white, size: 20),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.18),
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
+          ),
+          child: const Text(
+            'BUAT AKUN BARU',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 1.2,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        const Text(
+          'Daftar Akun 🎸',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 26,
+            fontWeight: FontWeight.w900,
+            letterSpacing: -0.5,
+          ),
+        ),
         const SizedBox(height: 6),
         Text(
-          label,
+          'Satu akun untuk web dan mobile dengan data yang sama.',
           textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.85),
+            fontSize: 13.5,
+            height: 1.4,
           ),
         ),
       ],
