@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lms_mobile_app/src/features/lessons/data/models/quiz_model.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/entities/quiz_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/score_item_widget.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';

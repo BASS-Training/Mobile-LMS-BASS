@@ -1,7 +1,7 @@
-/// Abstract QuizRepository - Domain Layer Contract
-/// Mengabstraksi akses data untuk domain layer
+// Abstract QuizRepository - Domain Layer Contract
+// Mengabstraksi akses data untuk domain layer
 
-import 'package:lms_mobile_app/src/features/lessons/data/models/quiz_model.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/entities/quiz_entity.dart';
 
 abstract class QuizRepository {
   /// Get quiz berdasarkan lesson ID

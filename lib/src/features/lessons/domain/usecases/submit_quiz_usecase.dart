@@ -1,4 +1,4 @@
-import 'package:lms_mobile_app/src/features/lessons/data/models/quiz_model.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/entities/quiz_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/quiz_repository.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_result_repository.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_attempt_entity.dart';

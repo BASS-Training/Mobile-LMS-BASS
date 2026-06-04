@@ -1,7 +1,7 @@
-/// GetQuizUseCase - Domain Layer
-/// Mengenkapsulasi business logic untuk mendapatkan quiz
+// GetQuizUseCase - Domain Layer
+// Mengenkapsulasi business logic untuk mendapatkan quiz
 
-import 'package:lms_mobile_app/src/features/lessons/data/models/quiz_model.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/entities/quiz_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/quiz_repository.dart';
 
 class GetQuizUseCase {
