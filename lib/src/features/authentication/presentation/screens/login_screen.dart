@@ -139,29 +139,82 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-class _WelcomeHeader extends StatelessWidget {
+class _WelcomeHeader extends StatefulWidget {
   const _WelcomeHeader();
+
+  @override
+  State<_WelcomeHeader> createState() => _WelcomeHeaderState();
+}
+
+class _WelcomeHeaderState extends State<_WelcomeHeader>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _glowController;
+
+  @override
+  void initState() {
+    super.initState();
+    _glowController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1700),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _glowController.dispose();
+    super.dispose();
+  }
+
+  /// Layered white shadows that read as a glowing neon halo. [g] (0..1) scales
+  /// the intensity so the glow can "breathe".
+  List<Shadow> _neonShadows(double g) {
+    return [
+      Shadow(color: Colors.white.withValues(alpha: 0.95 * g), blurRadius: 4 + 5 * g),
+      Shadow(color: Colors.white.withValues(alpha: 0.80 * g), blurRadius: 9 + 9 * g),
+      Shadow(
+        color: const Color(0xFFFFD9D9).withValues(alpha: 0.70 * g),
+        blurRadius: 16 + 14 * g,
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.18),
-            borderRadius: BorderRadius.circular(999),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
-          ),
-          child: const Text(
-            'BASS TRAINING LMS',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 10,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 1.2,
-            ),
-          ),
+        AnimatedBuilder(
+          animation: _glowController,
+          builder: (context, _) {
+            // Breathe between a dim and bright glow.
+            final g = 0.55 + 0.45 * _glowController.value;
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.18),
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.30 + 0.40 * g),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.white.withValues(alpha: 0.30 * g),
+                    blurRadius: 14 * g,
+                    spreadRadius: 0.5,
+                  ),
+                ],
+              ),
+              child: Text(
+                'BASS TRAINING LMS',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.2,
+                  shadows: _neonShadows(g),
+                ),
+              ),
+            );
+          },
         ),
         const SizedBox(height: 16),
         const Text(
