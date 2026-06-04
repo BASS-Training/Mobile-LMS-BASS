@@ -112,7 +112,7 @@ class _SplashScreenState extends State<SplashScreen>
                       width: 220,
                       fit: BoxFit.contain,
                       errorBuilder: (_, __, ___) => const Icon(
-                        Icons.music_note_rounded,
+                        Icons.school_rounded,
                         size: 96,
                         color: AppColors.brandPrimary,
                       ),

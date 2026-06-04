@@ -3,7 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
-import 'package:lms_mobile_app/src/shared/widgets/bass_guitar_artwork.dart';
+import 'package:lms_mobile_app/src/shared/widgets/achievement_artwork.dart';
+import 'package:lms_mobile_app/src/shared/widgets/learning_artwork.dart';
+import 'package:lms_mobile_app/src/shared/widgets/quiz_artwork.dart';
 
 class IntroScreen extends StatefulWidget {
   const IntroScreen({super.key});
@@ -21,23 +23,22 @@ class _IntroScreenState extends State<IntroScreen>
 
   static const List<_IntroSlide> _slides = [
     _IntroSlide(
-      title: 'Belajar di Bass\nTerstruktur',
+      title: 'Ribuan Kelas\ndalam Genggaman',
       description:
-          'Materi, video, dan latihan disusun bertahap dari dasar hingga mahir — belajar terasa ringan dan terarah.',
-      icon: Icons.music_note_rounded,
-      useBassArtwork: true,
+          'Jelajahi beragam kursus — dari bisnis, sains, hingga seni — yang tersusun rapi dari dasar sampai mahir. Pilih topikmu, kami siapkan jalurnya.',
+      art: _IntroArt.learning,
     ),
     _IntroSlide(
-      title: 'Uji\nPemahamanmu',
+      title: 'Pahami, Bukan\nSekadar Hafal',
       description:
-          'Kuis dan essay interaktif memastikan setiap teknik benar-benar kamu kuasai sebelum lanjut.',
-      icon: Icons.quiz_rounded,
+          'Setiap kelas dilengkapi kuis interaktif dan esai reflektif, memastikan kamu benar-benar menguasai materi sebelum lanjut.',
+      art: _IntroArt.quiz,
     ),
     _IntroSlide(
-      title: 'Raih Sertifikat\n& Pantau Progres',
+      title: 'Pantau Progres,\nRaih Sertifikat',
       description:
-          'Lacak perkembangan belajarmu dan dapatkan sertifikat resmi saat menuntaskan sebuah kelas.',
-      icon: Icons.workspace_premium_rounded,
+          'Lihat perkembangan belajarmu secara langsung dan dapatkan sertifikat resmi setiap kali menuntaskan sebuah kelas.',
+      art: _IntroArt.achievement,
     ),
   ];
 
@@ -143,7 +144,7 @@ class _IntroScreenState extends State<IntroScreen>
                   borderRadius: BorderRadius.circular(9),
                 ),
                 child: const Icon(
-                  Icons.music_note_rounded,
+                  Icons.school_rounded,
                   color: Colors.white,
                   size: 18,
                 ),
@@ -248,17 +249,17 @@ class _IntroScreenState extends State<IntroScreen>
   }
 }
 
+enum _IntroArt { learning, quiz, achievement }
+
 class _IntroSlide {
   final String title;
   final String description;
-  final IconData icon;
-  final bool useBassArtwork;
+  final _IntroArt art;
 
   const _IntroSlide({
     required this.title,
     required this.description,
-    required this.icon,
-    this.useBassArtwork = false,
+    required this.art,
   });
 }
 
@@ -304,9 +305,7 @@ class _IntroHero extends StatelessWidget {
                 Center(
                   child: Transform.translate(
                     offset: Offset(0, bob * 0.6),
-                    child: slide.useBassArtwork
-                        ? const BassGuitarArtwork(height: 240)
-                        : _iconTile(slide.icon),
+                    child: _artworkFor(slide.art),
                   ),
                 ),
               ],
@@ -317,20 +316,15 @@ class _IntroHero extends StatelessWidget {
     );
   }
 
-  Widget _iconTile(IconData icon) {
-    return Container(
-      width: 150,
-      height: 150,
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.16),
-        borderRadius: BorderRadius.circular(44),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: 0.25),
-          width: 1.5,
-        ),
-      ),
-      child: Icon(icon, size: 76, color: Colors.white),
-    );
+  Widget _artworkFor(_IntroArt art) {
+    switch (art) {
+      case _IntroArt.learning:
+        return const LearningArtwork(height: 240);
+      case _IntroArt.quiz:
+        return const QuizArtwork(height: 240);
+      case _IntroArt.achievement:
+        return const AchievementArtwork(height: 240);
+    }
   }
 
   Widget _glow(double size, double opacity) {

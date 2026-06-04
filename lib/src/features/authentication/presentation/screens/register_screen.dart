@@ -356,7 +356,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
             child: Center(
               child: isCompleted
-                  ? const Icon(Icons.check, size: 22, color: AppColors.brandPrimary)
+                  ? const Icon(
+                      Icons.check,
+                      size: 22,
+                      color: AppColors.brandPrimary,
+                    )
                   : Text(
                       '$index',
                       style: TextStyle(
@@ -816,7 +820,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
             color: selected ? const Color(0xFFFFF1F1) : AppColors.surfaceMuted,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: selected ? AppColors.brandPrimary : AppColors.borderDefault,
+              color: selected
+                  ? AppColors.brandPrimary
+                  : AppColors.borderDefault,
               width: 1.5,
             ),
             boxShadow: selected
@@ -841,7 +847,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   shape: BoxShape.circle,
                   color: selected ? AppColors.brandPrimary : Colors.white,
                   border: Border.all(
-                    color: selected ? AppColors.brandPrimary : AppColors.borderDefault,
+                    color: selected
+                        ? AppColors.brandPrimary
+                        : AppColors.borderDefault,
                     width: 1.2,
                   ),
                 ),
@@ -864,7 +872,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       style: TextStyle(
                         fontSize: compact ? 13 : 14,
                         fontWeight: FontWeight.w800,
-                        color: selected ? AppColors.brandPrimary : AppColors.textSecondary,
+                        color: selected
+                            ? AppColors.brandPrimary
+                            : AppColors.textSecondary,
                       ),
                     ),
                     if (!compact && subtitle.isNotEmpty) ...[
