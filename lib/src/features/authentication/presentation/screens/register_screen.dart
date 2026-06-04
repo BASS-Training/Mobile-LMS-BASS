@@ -7,6 +7,8 @@ import 'package:lms_mobile_app/src/core/utils/validators.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_bloc.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_event.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_state.dart';
+import 'package:lms_mobile_app/src/features/authentication/presentation/widgets/auth_header.dart';
+import 'package:lms_mobile_app/src/features/authentication/presentation/widgets/auth_scaffold.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
@@ -199,125 +201,72 @@ class _RegisterScreenState extends State<RegisterScreen> {
             );
           }
         },
-        child: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: AppColors.brandGradient,
+        child: AuthScaffold(
+          maxWidth: 480,
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SizedBox(height: 4),
+            const FadeSlideIn(
+              child: AuthHeader(
+                badge: 'BUAT AKUN BARU',
+                title: 'Daftar Akun ✨',
+                subtitle: 'Satu akun untuk web dan mobile dengan data yang sama.',
+              ),
             ),
-          ),
-          child: Stack(
-            children: [
-              // Decorative depth, matching the login screen.
-              Positioned(top: -50, right: -40, child: _glow(180, 0.10)),
-              Positioned(bottom: -60, left: -50, child: _glow(200, 0.08)),
-              SafeArea(
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-                    return SingleChildScrollView(
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minHeight: constraints.maxHeight,
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-                          child: Center(
-                            child: ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: 480),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  const SizedBox(height: 4),
-                                  const FadeSlideIn(child: _RegisterHeader()),
-                                  const SizedBox(height: 22),
-                                  FadeSlideIn(
-                                    delayMs: 80,
-                                    child: _buildProgressIndicator(),
-                                  ),
-                                  const SizedBox(height: 20),
-                                  FadeSlideIn(
-                                    delayMs: 140,
-                                    child: Container(
-                                      padding: const EdgeInsets.all(20),
-                                      decoration: BoxDecoration(
-                                        color: AppColors.surface,
-                                        borderRadius: BorderRadius.circular(28),
-                                        boxShadow: AppShadows.md,
-                                      ),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.stretch,
-                                        children: [
-                                          AnimatedSwitcher(
-                                            duration: const Duration(
-                                              milliseconds: 250,
-                                            ),
-                                            child: _buildStepContent(),
-                                          ),
-                                          const SizedBox(height: 24),
-                                          _buildNavigation(context),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 14),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        'Sudah punya akun? ',
-                                        style: TextStyle(
-                                          color: Colors.white.withValues(
-                                            alpha: 0.9,
-                                          ),
-                                          fontSize: 13.5,
-                                        ),
-                                      ),
-                                      GestureDetector(
-                                        onTap: () =>
-                                            context.go(AppRoutes.login),
-                                        child: const Text(
-                                          'Masuk',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w900,
-                                            fontSize: 13.5,
-                                            decoration:
-                                                TextDecoration.underline,
-                                            decorationColor: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
+            const SizedBox(height: 22),
+            FadeSlideIn(delayMs: 80, child: _buildProgressIndicator()),
+            const SizedBox(height: 20),
+            FadeSlideIn(
+              delayMs: 140,
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(28),
+                  boxShadow: AppShadows.md,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 250),
+                      child: _buildStepContent(),
+                    ),
+                    const SizedBox(height: 24),
+                    _buildNavigation(context),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 14),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Sudah punya akun? ',
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.9),
+                    fontSize: 13.5,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => context.go(AppRoutes.login),
+                  child: const Text(
+                    'Masuk',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 13.5,
+                      decoration: TextDecoration.underline,
+                      decorationColor: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
-      ),
-    );
-  }
-
-  Widget _glow(double size, double opacity) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white.withValues(alpha: opacity),
       ),
     );
   }
@@ -1011,57 +960,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ),
           ),
-      ],
-    );
-  }
-}
-
-/// Login-style welcome header (white content on the red gradient) so the
-/// register screen reads as the same family as the login screen.
-class _RegisterHeader extends StatelessWidget {
-  const _RegisterHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.18),
-            borderRadius: BorderRadius.circular(999),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
-          ),
-          child: const Text(
-            'BUAT AKUN BARU',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 10,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 1.2,
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        const Text(
-          'Daftar Akun 🎸',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 26,
-            fontWeight: FontWeight.w900,
-            letterSpacing: -0.5,
-          ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          'Satu akun untuk web dan mobile dengan data yang sama.',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.85),
-            fontSize: 13.5,
-            height: 1.4,
-          ),
-        ),
       ],
     );
   }
