@@ -16,6 +16,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/qu
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/quiz_result_widget.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion/discussion_button.dart';
 import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
 /// Screen utama untuk Quiz Lesson - Dengan BLoC State Management
@@ -218,6 +219,10 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
         appBar: LessonAppBar(
           courseTitle: widget.course.title,
           subtitle: 'QUIZ',
+          action: DiscussionIconButton(
+            lessonId: widget.lesson.id,
+            lessonTitle: widget.lesson.title,
+          ),
           onBack: _backToCourse,
           onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
         ),
@@ -281,6 +286,10 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
         appBar: LessonAppBar(
           courseTitle: widget.course.title,
           subtitle: 'QUIZ',
+          action: DiscussionIconButton(
+            lessonId: widget.lesson.id,
+            lessonTitle: widget.lesson.title,
+          ),
           onBack: _backToCourse,
           onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
         ),

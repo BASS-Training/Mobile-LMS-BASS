@@ -8,7 +8,7 @@ import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_entit
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_event.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
-import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion_card.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion/discussion_button.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
@@ -19,8 +19,6 @@ import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import '../bloc/video/video_bloc.dart';
 import '../bloc/video/video_event.dart';
 import '../bloc/video/video_state.dart';
-// Sesuaikan path import widget ini dengan lokasi foldermu
-import '../widgets/comment_item_widget.dart';
 
 class VideoLessonDetailScreen extends StatefulWidget {
   final LessonEntity lesson;
@@ -217,6 +215,10 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
             subtitle: 'VIDEO PLAYER',
             onBack: () => Navigator.pop(context),
             onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
+            action: DiscussionIconButton(
+              lessonId: widget.lesson.id,
+              lessonTitle: widget.lesson.title,
+            ),
           ),
           body: BlocBuilder<VideoBloc, VideoState>(
             builder: (context, state) {
@@ -260,34 +262,6 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
                                 child: _buildInfoCard(widget.lesson.title),
                               ),
                               const SizedBox(height: 16),
-                              DiscussionCard(
-                                onSend: (komentarTeks) {
-                                  // Eksekusi BLoC spesifik untuk Video Lesson di sini
-                                  context.read<VideoBloc>().add(
-                                    SubmitDiscussionComment(
-                                      widget.lesson.id,
-                                      komentarTeks,
-                                    ),
-                                  );
-                                },
-                              ),
-                              const SizedBox(height: 16),
-                              const Text(
-                                'Komentar',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.charcoal,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-
-                              // IMPLEMENTASI WIDGET KOMENTAR DI SINI
-                              ...state.comments.map(
-                                (comment) =>
-                                    CommentItemWidget(comment: comment),
-                              ),
-
                               const SizedBox(height: 24),
                               _buildBottomButtons(state),
                             ],
