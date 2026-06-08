@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
+import 'package:lms_mobile_app/src/features/authentication/domain/usecases/get_current_user_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_attempt_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_result_repository.dart';
-import 'package:lms_mobile_app/src/features/authentication/domain/usecases/auth_usecase.dart';
 import '../../../domain/repositories/essay_repository.dart';
 import '../../../domain/usecases/submit_essay_usecase.dart';
 import 'essay_event.dart';

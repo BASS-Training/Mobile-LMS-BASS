@@ -4,7 +4,10 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lms_mobile_app/src/features/authentication/data/repositories/auth_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/authentication/domain/repositories/auth_repository.dart';
-import 'package:lms_mobile_app/src/features/authentication/domain/usecases/auth_usecase.dart';
+import 'package:lms_mobile_app/src/features/authentication/domain/usecases/get_current_user_usecase.dart';
+import 'package:lms_mobile_app/src/features/authentication/domain/usecases/login_usecase.dart';
+import 'package:lms_mobile_app/src/features/authentication/domain/usecases/logout_usecase.dart';
+import 'package:lms_mobile_app/src/features/authentication/domain/usecases/register.usecase.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_bloc.dart';
 
 class AuthModule {
