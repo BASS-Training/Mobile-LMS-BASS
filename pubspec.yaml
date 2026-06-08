@@ -21,6 +21,7 @@ dependencies:
   dartz: ^0.10.1
   syncfusion_flutter_pdfviewer: ^28.2.7
   url_launcher: ^6.3.0
+  flutter_html: ^3.0.0
 
 dev_dependencies:
   flutter_test:
