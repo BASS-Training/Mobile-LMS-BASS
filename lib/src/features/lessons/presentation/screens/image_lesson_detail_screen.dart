@@ -58,7 +58,6 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
   @override
   void dispose() {
     _pageController.dispose();
-    SystemChrome.setPreferredOrientations(DeviceOrientation.values);
     super.dispose();
   }
 

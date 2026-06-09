@@ -116,7 +116,6 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
 
   @override
   void dispose() {
-    SystemChrome.setPreferredOrientations(DeviceOrientation.values);
     _controller.removeListener(_videoListener);
     _controller.dispose();
     _commentController.dispose();

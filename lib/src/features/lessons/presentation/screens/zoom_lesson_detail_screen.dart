@@ -55,7 +55,6 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
 
   @override
   void dispose() {
-    SystemChrome.setPreferredOrientations(DeviceOrientation.values);
     super.dispose();
   }
 

@@ -127,8 +127,8 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
-              _buildStatusBadge(),
+              // const SizedBox(height: 24),
+              // _buildStatusBadge(),
               const SizedBox(height: 20),
               const Text(
                 'Token Kelas',
@@ -187,7 +187,9 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
                               ),
                             )
                           : const Icon(Icons.send_rounded, size: 18),
-                      label: Text(isSubmitting ? 'Mengirim...' : 'Gabung Kelas'),
+                      label: Text(
+                        isSubmitting ? 'Mengirim...' : 'Gabung Kelas',
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.brandPrimary,
                         foregroundColor: Colors.white,

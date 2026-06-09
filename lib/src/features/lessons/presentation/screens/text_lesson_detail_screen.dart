@@ -53,7 +53,6 @@ class _TextLessonDetailScreenState extends State<TextLessonDetailScreen>
 
   @override
   void dispose() {
-    SystemChrome.setPreferredOrientations(DeviceOrientation.values);
     super.dispose();
   }
 

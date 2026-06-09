@@ -55,7 +55,6 @@ class _DocumentLessonDetailScreenState extends State<DocumentLessonDetailScreen>
   @override
   void dispose() {
     _pdfViewerController?.dispose();
-    SystemChrome.setPreferredOrientations(DeviceOrientation.values);
     super.dispose();
   }
 
