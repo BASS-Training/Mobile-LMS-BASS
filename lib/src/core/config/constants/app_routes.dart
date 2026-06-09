@@ -39,6 +39,7 @@ class AppRoutes {
   // Result Details
   static const String quizResultDetail = '/quiz-result-detail';
   static const String essayResultDetail = '/essay-result-detail';
+  static const String caseStudyResultDetail = '/case-study-result-detail';
 
   // Certificate Details
   static const String certificateDetail = '/certificate-detail';

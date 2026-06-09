@@ -83,6 +83,7 @@ class LessonAttempt extends Equatable {
   final String? durationLabel;
   final String? statusLabel;
   final String? statusMessage;
+  final String? feedback;
   final List<LessonAttemptQuestionSnapshot> questions;
 
   const LessonAttempt({
@@ -107,6 +108,7 @@ class LessonAttempt extends Equatable {
     this.durationLabel,
     this.statusLabel,
     this.statusMessage,
+    this.feedback,
   });
 
   double get percentage {
@@ -161,6 +163,7 @@ class LessonAttempt extends Equatable {
       'durationLabel': durationLabel,
       'statusLabel': statusLabel,
       'statusMessage': statusMessage,
+      'feedback': feedback,
       'questions': questions.map((question) => question.toJson()).toList(),
     };
   }
@@ -189,6 +192,7 @@ class LessonAttempt extends Equatable {
       durationLabel: json['durationLabel']?.toString(),
       statusLabel: json['statusLabel']?.toString(),
       statusMessage: json['statusMessage']?.toString(),
+      feedback: json['feedback']?.toString(),
       questions: (json['questions'] as List? ?? const [])
           .whereType<Map>()
           .map(
@@ -222,6 +226,7 @@ class LessonAttempt extends Equatable {
     durationLabel,
     statusLabel,
     statusMessage,
+    feedback,
     questions,
   ];
 }

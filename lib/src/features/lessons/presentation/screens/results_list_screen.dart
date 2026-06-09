@@ -134,6 +134,7 @@ class ResultsListScreen extends StatelessWidget {
 
   Widget _buildAttemptCard(BuildContext context, LessonAttempt attempt) {
     final isQuiz = attempt.lessonType == 'quiz';
+    final isCaseStudy = attempt.lessonType == 'case_study';
     final statusColor = isQuiz
         ? (attempt.passed == true ? Colors.green : Colors.orange)
         : (attempt.graded ? Colors.green : AppColors.red);
@@ -146,6 +147,8 @@ class ResultsListScreen extends StatelessWidget {
         onTap: () {
           if (isQuiz) {
             context.push(AppRoutes.quizResultDetail, extra: attempt);
+          } else if (isCaseStudy) {
+            context.push(AppRoutes.caseStudyResultDetail, extra: attempt);
           } else {
             context.push(AppRoutes.essayResultDetail, extra: attempt);
           }
@@ -176,7 +179,11 @@ class ResultsListScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(
-                  isQuiz ? Icons.quiz_outlined : Icons.edit_note_rounded,
+                  isQuiz
+                      ? Icons.quiz_outlined
+                      : isCaseStudy
+                      ? Icons.assignment_rounded
+                      : Icons.edit_note_rounded,
                   color: statusColor,
                 ),
               ),
@@ -219,12 +226,26 @@ class ResultsListScreen extends StatelessWidget {
                             attempt.graded ? 'Dinilai' : 'Menunggu Nilai',
                             attempt.graded ? Colors.green : AppColors.red,
                           ),
+                        if (isCaseStudy &&
+                            attempt.graded &&
+                            attempt.score != null &&
+                            attempt.maxScore != null)
+                          _buildStatusChip(
+                            '${attempt.percentage.toStringAsFixed(0)}%',
+                            AppColors.red,
+                          ),
                       ],
                     ),
                     const SizedBox(height: 8),
                     Text(
                       isQuiz
                           ? '${attempt.score?.toStringAsFixed(0) ?? '0'}/${attempt.maxScore?.toStringAsFixed(0) ?? '0'} benar'
+                          : isCaseStudy
+                          ? (attempt.graded
+                                ? (attempt.score != null
+                                      ? 'Nilai: ${attempt.score!.toStringAsFixed(0)}${attempt.maxScore != null ? '/${attempt.maxScore!.toStringAsFixed(0)}' : ''}'
+                                      : 'Sudah dinilai instruktur')
+                                : 'Menunggu penilaian instruktur')
                           : '${attempt.questions.length} jawaban terkumpul',
                       style: const TextStyle(
                         fontSize: 12,
