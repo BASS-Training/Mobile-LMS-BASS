@@ -34,6 +34,12 @@ class ApiEndpoints {
   static const String submitEssay = '/essays/{id}/submit';
   static const String autosaveEssay = '/essays/{id}/draft';
 
+  // Case Studies (studi kasus)
+  static const String getCaseStudyByLesson = '/case-studies/by-lesson/{id}';
+  static const String submitCaseStudy = '/case-studies/{id}/submit';
+  static const String autosaveCaseStudy = '/case-studies/{id}/draft';
+  static const String downloadCaseStudy = '/case-studies/{id}/download';
+
   // Discussions (lesson = backend content.id)
   static const String getDiscussions = '/lessons/{contentId}/discussions';
   static const String createDiscussion = '/lessons/{contentId}/discussions';

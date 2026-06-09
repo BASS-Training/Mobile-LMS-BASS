@@ -19,6 +19,8 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/essay/essa
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/quiz/quiz_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/quiz_result/quiz_result_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/video/video_bloc.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/case_study/case_study_bloc.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/screens/case_study_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/video_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/text_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/document_lesson_detail_screen.dart';
@@ -262,6 +264,38 @@ class AppRouter {
             child: BlocProvider<EssayBloc>(
               create: (context) => _sl<EssayBloc>(),
               child: EssayLessonDetailScreen(
+                lesson: args['lesson'],
+                course: args['course'],
+                lessonIndex: args['lessonIndex'],
+              ),
+            ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  final fade = CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                  );
+                  final slide = Tween<Offset>(
+                    begin: const Offset(0.04, 0),
+                    end: Offset.zero,
+                  ).animate(fade);
+                  return FadeTransition(
+                    opacity: fade,
+                    child: SlideTransition(position: slide, child: child),
+                  );
+                },
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.caseStudyLessonDetail,
+        pageBuilder: (context, state) {
+          final args = state.extra as Map<String, dynamic>;
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: BlocProvider<CaseStudyBloc>(
+              create: (context) => _sl<CaseStudyBloc>(),
+              child: CaseStudyLessonDetailScreen(
                 lesson: args['lesson'],
                 course: args['course'],
                 lessonIndex: args['lessonIndex'],
