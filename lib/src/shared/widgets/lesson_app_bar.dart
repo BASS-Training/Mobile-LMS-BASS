@@ -13,6 +13,10 @@ class LessonAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback onBack;
   final VoidCallback? onMenuTap;
 
+  /// Optional leading-of-menu action (e.g. the discussion icon). Kept generic so
+  /// this shared widget stays feature-agnostic.
+  final Widget? action;
+
   const LessonAppBar({
     super.key,
     required this.courseTitle,
@@ -20,6 +24,7 @@ class LessonAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.gradientColors = const [AppColors.red, AppColors.tomato],
     required this.onBack,
     this.onMenuTap,
+    this.action,
   });
 
   @override
@@ -70,17 +75,17 @@ class LessonAppBar extends StatelessWidget implements PreferredSizeWidget {
         onTap: onBack,
         child: const Icon(Icons.arrow_back_rounded, color: Colors.white),
       ),
-      actions: onMenuTap != null
-          ? [
-              Padding(
-                padding: const EdgeInsets.only(right: 16),
-                child: GestureDetector(
-                  onTap: onMenuTap,
-                  child: const Icon(Icons.menu_rounded, color: Colors.white),
-                ),
-              ),
-            ]
-          : null,
+      actions: [
+        if (action != null) action!,
+        if (onMenuTap != null)
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: GestureDetector(
+              onTap: onMenuTap,
+              child: const Icon(Icons.menu_rounded, color: Colors.white),
+            ),
+          ),
+      ],
     );
   }
 }

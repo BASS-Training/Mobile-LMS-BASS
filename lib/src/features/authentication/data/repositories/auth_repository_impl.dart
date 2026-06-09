@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:lms_mobile_app/src/core/config/constants/api_endpoints.dart';
 import 'package:lms_mobile_app/src/core/utils/offline_test_mode.dart';
 import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
@@ -14,6 +15,14 @@ class AuthRepositoryImpl implements AuthRepository {
 
   AuthRepositoryImpl({required Dio dio}) : _dio = dio;
 
+  /// Debug-only diagnostic logging for the offline tester flow. Compiled out of
+  /// release builds so it never leaks to production.
+  void _log(String message) {
+    if (kDebugMode) {
+      debugPrint('[AUTH][TESTER] $message');
+    }
+  }
+
   @override
   Future<UserEntity?> login(String email, String password) async {
     final cleanedEmail = email.trim().toLowerCase();
@@ -22,9 +31,7 @@ class AuthRepositoryImpl implements AuthRepository {
     }
 
     if (_canUseOfflineTestAccount(cleanedEmail, password)) {
-      print(
-        '[AUTH][TESTER] login -> offline test account used (${OfflineTestMode.describeContext()})',
-      );
+      _log('login -> offline test account used (${OfflineTestMode.describeContext()})');
       final user = _buildOfflineTestUser();
       await LocalStorage.saveAuthSession(
         token: OfflineTestMode.offlineToken,
@@ -102,9 +109,7 @@ class AuthRepositoryImpl implements AuthRepository {
     final storedUser = LocalStorage.getAuthUser();
     final token = LocalStorage.getAuthToken();
 
-    print(
-      '[AUTH][TESTER] getCurrentUser -> ${OfflineTestMode.describeContext()}',
-    );
+    _log('getCurrentUser -> ${OfflineTestMode.describeContext()}');
 
     if (storedUser == null) {
       return null;

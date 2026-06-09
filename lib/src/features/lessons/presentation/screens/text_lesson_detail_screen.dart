@@ -8,7 +8,6 @@ import 'package:lms_mobile_app/src/core/utils/lesson_route_resolver.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
-import 'package:lms_mobile_app/src/features/lessons/domain/entities/text_section_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_event.dart';
@@ -16,6 +15,8 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_na
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion/discussion_button.dart';
+import 'package:lms_mobile_app/src/shared/widgets/html_content.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_background.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_navigation_bar.dart';
 
@@ -52,7 +53,6 @@ class _TextLessonDetailScreenState extends State<TextLessonDetailScreen>
 
   @override
   void dispose() {
-    SystemChrome.setPreferredOrientations(DeviceOrientation.values);
     super.dispose();
   }
 
@@ -72,14 +72,6 @@ class _TextLessonDetailScreenState extends State<TextLessonDetailScreen>
   @override
   Widget build(BuildContext context) {
     final lesson = widget.lesson;
-
-    final List<TextSectionEntity> sections = [
-      TextSectionEntity(
-        title: '',
-        paragraphs: [lesson.content],
-        bullets: const [],
-      ),
-    ];
 
     return Scaffold(
       key: _scaffoldKey,
@@ -102,6 +94,10 @@ class _TextLessonDetailScreenState extends State<TextLessonDetailScreen>
       appBar: LessonAppBar(
         courseTitle: widget.course.title,
         subtitle: 'TEXT LESSON',
+        action: DiscussionIconButton(
+          lessonId: widget.lesson.id,
+          lessonTitle: widget.lesson.title,
+        ),
         onBack: () {
           Navigator.pop(context);
           context.read<CourseBloc>().add(const RefreshCoursesEvent());
@@ -118,19 +114,9 @@ class _TextLessonDetailScreenState extends State<TextLessonDetailScreen>
                   _buildAnimatedEntry(index: 0, child: _buildHeader(lesson)),
                   const SizedBox(height: 16),
                   _buildAnimatedEntry(index: 1, child: _buildMetaCard(lesson)),
-                  const SizedBox(height: 16),
-                  ...sections.asMap().entries.map(
-                    (entry) => Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: _buildAnimatedEntry(
-                        index: entry.key + 2,
-                        child: _buildSectionCard(entry.value, entry.key),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 20),
                   _buildAnimatedEntry(
-                    index: sections.length + 3,
+                    index: 2,
                     child: LessonNavigationBar(
                       canGoPrevious: canGoPrevious,
                       canGoNext: canGoNext,
@@ -394,105 +380,22 @@ class _TextLessonDetailScreenState extends State<TextLessonDetailScreen>
             ],
           ),
           const SizedBox(height: 14),
-          Text(
-            lesson.content.isNotEmpty
-                ? lesson.content
-                : 'Materi ini akan diisi dari backend. Untuk sementara, ini adalah teks dummy yang menjelaskan isi pembelajaran secara rapi dan terstruktur.',
-            style: const TextStyle(
-              fontSize: 14,
-              height: 1.9,
-              color: AppColors.slate,
-            ),
-          ),
+          const Divider(height: 1, color: AppColors.pearl),
+          const SizedBox(height: 8),
+          lesson.content.trim().isNotEmpty
+              ? HtmlContent(html: lesson.content)
+              : const Text(
+                  'Materi untuk lesson ini belum tersedia.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    height: 1.9,
+                    color: AppColors.slate,
+                  ),
+                ),
         ],
       ),
     );
   }
-
-  Widget _buildSectionCard(TextSectionEntity section, int index) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.white.withValues(alpha: 0.94),
-            const Color(0xFFFDFDFF).withValues(alpha: 0.96),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 14,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ...section.paragraphs.map(
-            (paragraph) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Text(
-                paragraph,
-                style: const TextStyle(
-                  fontSize: 14,
-                  height: 1.85,
-                  color: AppColors.slate,
-                ),
-              ),
-            ),
-          ),
-          if (section.bullets.isNotEmpty) ...[
-            const SizedBox(height: 6),
-            ...section.bullets.map(
-              (item) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(top: 5),
-                      width: 18,
-                      height: 18,
-                      decoration: BoxDecoration(
-                        color: AppColors.peach.withValues(alpha: 0.9),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: const Center(
-                        child: Icon(
-                          Icons.check_rounded,
-                          size: 12,
-                          color: AppColors.red,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        item,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          height: 1.75,
-                          color: AppColors.slate,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
 
   Widget _buildHeaderStat({required IconData icon, required String label}) {
     return Expanded(

@@ -1,4 +1,4 @@
-import 'package:lms_mobile_app/src/features/lessons/data/models/quiz_model.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/entities/quiz_entity.dart';
 
 class QuizLocalDataSourceDummy {
   Quiz getQuizByLessonId(String lessonId) {

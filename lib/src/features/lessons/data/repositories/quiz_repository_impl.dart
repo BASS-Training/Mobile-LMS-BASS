@@ -1,11 +1,12 @@
-/// Implementation QuizRepository - Data Layer
-/// Menghubungkan domain dan data layer
+// Implementation QuizRepository - Data Layer
+// Menghubungkan domain dan data layer
 
+import 'package:flutter/foundation.dart';
 import 'package:lms_mobile_app/src/core/utils/offline_test_mode.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/quiz_local_datasource.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/quiz_remote_datasource.dart';
 import 'package:lms_mobile_app/src/core/config/flavor_config.dart';
-import 'package:lms_mobile_app/src/features/lessons/data/models/quiz_model.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/entities/quiz_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/quiz_repository.dart';
 
 class QuizRepositoryImpl implements QuizRepository {
@@ -19,6 +20,11 @@ class QuizRepositoryImpl implements QuizRepository {
     this.remoteDataSource,
   });
 
+  /// Debug-only diagnostic logging. Compiled out of release builds.
+  void _log(String message) {
+    if (kDebugMode) debugPrint(message);
+  }
+
   @override
   Quiz? getCachedQuizByLessonId(String lessonId) {
     return _quizCache[lessonId];
@@ -29,11 +35,11 @@ class QuizRepositoryImpl implements QuizRepository {
     try {
       final cachedQuiz = _quizCache[lessonId];
       if (cachedQuiz != null) {
-        print('[QUIZ][FETCH] cache hit for lessonId=$lessonId');
+        _log('[QUIZ][FETCH] cache hit for lessonId=$lessonId');
         return cachedQuiz;
       }
 
-      print(
+      _log(
         '[QUIZ][FETCH] lessonId=$lessonId tester=${OfflineTestMode.describeContext()} remoteAvailable=${remoteDataSource != null} mock=${FlavorConfig.instance.enableMockData}',
       );
 
@@ -42,10 +48,10 @@ class QuizRepositoryImpl implements QuizRepository {
       if (_isOfflineTestSession() ||
           FlavorConfig.instance.enableMockData ||
           remoteDataSource == null) {
-        print('[QUIZ][FETCH] using local dummy for lessonId=$lessonId');
+        _log('[QUIZ][FETCH] using local dummy for lessonId=$lessonId');
         quizData = await localDataSource.getQuizByLessonId(lessonId);
       } else {
-        print('[QUIZ][FETCH] using remote API for lessonId=$lessonId');
+        _log('[QUIZ][FETCH] using remote API for lessonId=$lessonId');
         quizData = await remoteDataSource!.getQuizByLessonId(lessonId);
       }
 
@@ -56,7 +62,7 @@ class QuizRepositoryImpl implements QuizRepository {
           List<dynamic>.from(quizData['questions'] as List<dynamic>),
         );
       } else {
-        print(
+        _log(
           '[QUIZ][FETCH] questions missing/null from selected source, trying local fallback for lessonId=$lessonId',
         );
         try {
@@ -79,7 +85,7 @@ class QuizRepositoryImpl implements QuizRepository {
       }
 
       if (questionItems.isEmpty) {
-        print(
+        _log(
           '[QUIZ][FETCH] local fallback still empty for lessonId=$lessonId',
         );
         final localQuiz = await localDataSource.getQuizByLessonId(lessonId);
@@ -151,7 +157,7 @@ class QuizRepositoryImpl implements QuizRepository {
   @override
   Future<QuizResult> submitQuiz(Quiz quiz, Map<int, int> answers) async {
     // Helper to format answers payload
-    List<Map<String, dynamic>> _formatAnswers() {
+    List<Map<String, dynamic>> formatAnswers() {
       final payload = <Map<String, dynamic>>[];
       for (int i = 0; i < quiz.questions.length; i++) {
         if (!answers.containsKey(i)) continue;
@@ -170,11 +176,11 @@ class QuizRepositoryImpl implements QuizRepository {
     }
 
     // If remote datasource available and quiz has id, prefer server grading/persistence
-    final payload = _formatAnswers();
+    final payload = formatAnswers();
     if (!_isOfflineTestSession() &&
         quiz.id != null &&
         remoteDataSource != null) {
-      print(
+      _log(
         '[QUIZ][SUBMIT] using remote submit quizId=${quiz.id} tester=${OfflineTestMode.describeContext()}',
       );
       try {
@@ -196,7 +202,7 @@ class QuizRepositoryImpl implements QuizRepository {
       }
     }
 
-    print(
+    _log(
       '[QUIZ][SUBMIT] using local/client grading quizId=${quiz.id} tester=${OfflineTestMode.describeContext()}',
     );
     // Client-side grading fallback

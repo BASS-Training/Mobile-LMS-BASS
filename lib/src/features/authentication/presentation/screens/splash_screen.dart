@@ -111,7 +111,7 @@ class _SplashScreenState extends State<SplashScreen>
                       'assets/images/bass_logo.png',
                       width: 220,
                       fit: BoxFit.contain,
-                      errorBuilder: (_, __, ___) => const Icon(
+                      errorBuilder: (_, _, _) => const Icon(
                         Icons.school_rounded,
                         size: 96,
                         color: AppColors.brandPrimary,

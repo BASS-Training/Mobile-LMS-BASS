@@ -13,6 +13,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_na
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion/discussion_button.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_navigation_bar.dart';
 
 class ImageLessonDetailScreen extends StatefulWidget {
@@ -57,7 +58,6 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
   @override
   void dispose() {
     _pageController.dispose();
-    SystemChrome.setPreferredOrientations(DeviceOrientation.values);
     super.dispose();
   }
 
@@ -136,6 +136,10 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
       appBar: LessonAppBar(
         courseTitle: widget.course.title,
         subtitle: 'IMAGE VIEWER',
+        action: DiscussionIconButton(
+          lessonId: widget.lesson.id,
+          lessonTitle: widget.lesson.title,
+        ),
         gradientColors: const [_tealStart, _tealEnd],
         onBack: () {
           Navigator.pop(context);

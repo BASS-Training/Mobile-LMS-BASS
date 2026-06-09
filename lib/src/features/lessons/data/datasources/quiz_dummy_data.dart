@@ -1,7 +1,7 @@
-/// Quiz Dummy Data - Simplified version untuk development
-/// Berisi data quiz untuk semua lesson
+// Quiz Dummy Data - Simplified version untuk development
+// Berisi data quiz untuk semua lesson
 
-import 'package:lms_mobile_app/src/features/lessons/data/models/quiz_model.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/entities/quiz_entity.dart';
 
 class QuizDummyData {
   /// Get quiz berdasarkan lesson ID

@@ -1,10 +1,10 @@
-/// QuizBloc - State Management
-/// Menghandle semua event dan state untuk quiz feature
+// QuizBloc - State Management
+// Menghandle semua event dan state untuk quiz feature
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
-import 'package:lms_mobile_app/src/features/lessons/data/models/quiz_model.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/entities/quiz_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/submit_quiz_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/get_quiz_usecase.dart';
 

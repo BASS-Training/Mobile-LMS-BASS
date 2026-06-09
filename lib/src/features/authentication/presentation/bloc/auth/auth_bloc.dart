@@ -1,7 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../domain/usecases/auth_usecase.dart';
+import 'package:lms_mobile_app/src/features/authentication/domain/usecases/get_current_user_usecase.dart';
+import 'package:lms_mobile_app/src/features/authentication/domain/usecases/login_usecase.dart';
+import 'package:lms_mobile_app/src/features/authentication/domain/usecases/logout_usecase.dart';
+import 'package:lms_mobile_app/src/features/authentication/domain/usecases/register.usecase.dart';
+
 import 'auth_event.dart';
 import 'auth_state.dart';
 

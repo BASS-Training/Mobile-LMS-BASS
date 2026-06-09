@@ -2,12 +2,16 @@
 // Berisi: LessonRepository, UseCases, BLoC
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:lms_mobile_app/src/features/authentication/domain/usecases/get_current_user_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/essay_local_data_source.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/essay_remote_datasource_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/quiz_local_datasource_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/quiz_remote_datasource_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/lesson_remote_datasource_impl.dart';
-import 'package:lms_mobile_app/src/features/lessons/data/datasources/video_repository_impl.dart';
+import 'package:lms_mobile_app/src/features/lessons/data/datasources/discussion_remote_datasource_impl.dart';
+import 'package:lms_mobile_app/src/features/lessons/data/repositories/discussion_repository_impl.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/usecases/discussion_usecases.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/discussion/discussion_cubit.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/essay_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/lesson_result_remote_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/lesson_repository_impl.dart';
@@ -16,7 +20,6 @@ import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_r
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_result_repository.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/get_quiz_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/submit_quiz_usecase.dart';
-import 'package:lms_mobile_app/src/features/authentication/domain/usecases/auth_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/is_lesson_completed_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/mark_lesson_complete_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/mark_lesson_incomplete_usecase.dart';
@@ -114,6 +117,18 @@ class LessonModule {
       );
     });
 
-    getIt.registerFactory<VideoBloc>(() => VideoBloc(VideoRepositoryImpl()));
+    getIt.registerFactory<VideoBloc>(() => VideoBloc());
+
+    // Discussion cubit — one per lesson screen, created with the lesson id.
+    getIt.registerFactoryParam<DiscussionCubit, String, void>((lessonId, _) {
+      final remote = DiscussionRemoteDataSourceImpl(dio: getIt<Dio>());
+      final repository = DiscussionRepositoryImpl(remoteDataSource: remote);
+      return DiscussionCubit(
+        getDiscussions: GetDiscussionsUseCase(repository),
+        createDiscussion: CreateDiscussionUseCase(repository),
+        createReply: CreateReplyUseCase(repository),
+        lessonId: lessonId,
+      );
+    });
   }
 }

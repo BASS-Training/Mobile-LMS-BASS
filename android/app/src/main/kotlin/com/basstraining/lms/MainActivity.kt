@@ -1,4 +1,4 @@
-package com.example.lms_mobile_app
+package com.basstraining.lms
 
 import io.flutter.embedding.android.FlutterActivity
 

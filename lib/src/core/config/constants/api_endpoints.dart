@@ -34,6 +34,11 @@ class ApiEndpoints {
   static const String submitEssay = '/essays/{id}/submit';
   static const String autosaveEssay = '/essays/{id}/draft';
 
+  // Discussions (lesson = backend content.id)
+  static const String getDiscussions = '/lessons/{contentId}/discussions';
+  static const String createDiscussion = '/lessons/{contentId}/discussions';
+  static const String createReply = '/discussions/{discussionId}/replies';
+
   // Certificates
   static const String getCertificates = '/certificates';
   static const String getCertificateById = '/certificates/{id}';
