@@ -39,8 +39,8 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
   late final PageController _pageController;
   int _currentPage = 0;
 
-  static const _tealStart = Color(0xFF00ACC1);
-  static const _tealEnd = Color(0xFF00796B);
+  static const _accent = AppColors.brandPrimary;
+  static const _accentDark = AppColors.brandPrimaryDark;
 
   @override
   void initState() {
@@ -120,7 +120,7 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
 
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: const Color(0xFFF0FAFA),
+      backgroundColor: AppColors.background,
       drawer: LessonDrawer(
         course: widget.course,
         currentLessonIndex: widget.lessonIndex,
@@ -140,7 +140,7 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
           lessonId: widget.lesson.id,
           lessonTitle: widget.lesson.title,
         ),
-        gradientColors: const [_tealStart, _tealEnd],
+        gradientColors: const [_accent, _accentDark],
         onBack: () {
           Navigator.pop(context);
           context.read<CourseBloc>().add(const RefreshCoursesEvent());
@@ -153,7 +153,7 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
           child: LessonNavigationBar(
             canGoPrevious: canGoPrevious,
             canGoNext: canGoNext,
-            primaryColor: _tealStart,
+            primaryColor: _accent,
             onPrevious: canGoPrevious
                 ? () {
                     Navigator.pop(context);
@@ -206,7 +206,7 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
+        border: Border.all(color: AppColors.borderDefault.withValues(alpha: 0.8)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -222,10 +222,10 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: _tealStart.withValues(alpha: 0.12),
+              color: _accent.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.image_rounded, color: _tealStart, size: 18),
+            child: const Icon(Icons.image_rounded, color: _accent, size: 18),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -234,7 +234,7 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
               style: const TextStyle(
                 fontSize: 13,
                 height: 1.5,
-                color: AppColors.slate,
+                color: AppColors.textSecondary,
               ),
             ),
           ),
@@ -248,7 +248,7 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.9)),
+        border: Border.all(color: AppColors.borderDefault.withValues(alpha: 0.9)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
@@ -348,7 +348,7 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
                   ? loadingProgress.cumulativeBytesLoaded /
                       loadingProgress.expectedTotalBytes!
                   : null,
-              color: _tealStart,
+              color: _accent,
               strokeWidth: 2.5,
             ),
           );
@@ -358,13 +358,13 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(Icons.broken_image_rounded,
-                  size: 48, color: AppColors.slate.withValues(alpha: 0.5)),
+                  size: 48, color: AppColors.textSecondary.withValues(alpha: 0.5)),
               const SizedBox(height: 8),
               Text(
                 'Gambar tidak dapat dimuat',
                 style: TextStyle(
                   fontSize: 13,
-                  color: AppColors.slate.withValues(alpha: 0.7),
+                  color: AppColors.textSecondary.withValues(alpha: 0.7),
                 ),
               ),
             ],
@@ -400,7 +400,7 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
           width: isActive ? 20 : 7,
           height: 7,
           decoration: BoxDecoration(
-            color: isActive ? _tealStart : AppColors.pearl,
+            color: isActive ? _accent : AppColors.borderDefault,
             borderRadius: BorderRadius.circular(4),
           ),
         );
@@ -413,7 +413,7 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.9)),
+        border: Border.all(color: AppColors.borderDefault.withValues(alpha: 0.9)),
       ),
       child: Center(
         child: Padding(
@@ -424,7 +424,7 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
               Icon(
                 Icons.image_not_supported_rounded,
                 size: 56,
-                color: AppColors.slate.withValues(alpha: 0.4),
+                color: AppColors.textSecondary.withValues(alpha: 0.4),
               ),
               const SizedBox(height: 12),
               const Text(
@@ -432,7 +432,7 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.charcoal,
+                  color: AppColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 6),
@@ -441,7 +441,7 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 12.5,
-                  color: AppColors.slate.withValues(alpha: 0.7),
+                  color: AppColors.textSecondary.withValues(alpha: 0.7),
                 ),
               ),
             ],

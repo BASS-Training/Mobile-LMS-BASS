@@ -10,7 +10,9 @@ import 'package:lms_mobile_app/src/features/lessons/data/datasources/quiz_remote
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/lesson_remote_datasource_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/discussion_remote_datasource_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/discussion_repository_impl.dart';
-import 'package:lms_mobile_app/src/features/lessons/domain/usecases/discussion_usecases.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/usecases/create_discussion_usecase.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/usecases/create_reply_usecase.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/usecases/get_discussion_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/discussion/discussion_cubit.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/essay_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/lesson_result_remote_impl.dart';
@@ -26,6 +28,9 @@ import 'package:lms_mobile_app/src/features/lessons/domain/usecases/mark_lesson_
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/refresh_lesson_completion_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/submit_essay_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/toggle_lesson_completion_usecase.dart';
+import 'package:lms_mobile_app/src/features/lessons/data/datasources/case_study_remote_datasource_impl.dart';
+import 'package:lms_mobile_app/src/features/lessons/data/repositories/case_study_repository_impl.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/case_study/case_study_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/essay/essay_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/quiz/quiz_bloc.dart';
@@ -117,6 +122,14 @@ class LessonModule {
       );
     });
 
+    getIt.registerFactory<CaseStudyBloc>(() {
+      final remoteDataSource = CaseStudyRemoteDataSourceImpl(dio: getIt<Dio>());
+      final repository = CaseStudyRepositoryImpl(
+        remoteDataSource: remoteDataSource,
+      );
+      return CaseStudyBloc(repository: repository);
+    });
+
     getIt.registerFactory<VideoBloc>(() => VideoBloc());
 
     // Discussion cubit — one per lesson screen, created with the lesson id.
@@ -124,7 +137,7 @@ class LessonModule {
       final remote = DiscussionRemoteDataSourceImpl(dio: getIt<Dio>());
       final repository = DiscussionRepositoryImpl(remoteDataSource: remote);
       return DiscussionCubit(
-        getDiscussions: GetDiscussionsUseCase(repository),
+        getDiscussions: GetDiscussionUseCase(repository),
         createDiscussion: CreateDiscussionUseCase(repository),
         createReply: CreateReplyUseCase(repository),
         lessonId: lessonId,

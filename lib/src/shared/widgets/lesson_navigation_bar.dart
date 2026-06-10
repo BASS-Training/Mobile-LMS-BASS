@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
 /// Standard bottom navigation bar used by all lesson screens that have
@@ -20,7 +21,7 @@ class LessonNavigationBar extends StatelessWidget {
     required this.canGoNext,
     this.onPrevious,
     required this.onForward,
-    this.primaryColor = AppColors.red,
+    this.primaryColor = AppColors.brandPrimary,
   });
 
   @override
@@ -29,20 +30,10 @@ class LessonNavigationBar extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Colors.white, Color(0xFFF8FAFF)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        border: Border.all(color: AppColors.borderSubtle),
+        boxShadow: AppShadows.sm,
       ),
       child: Row(
         children: [
@@ -54,12 +45,10 @@ class LessonNavigationBar extends StatelessWidget {
                   icon: const Icon(Icons.arrow_back_rounded),
                   label: const Text('Sebelumnya'),
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(
-                      color: AppColors.pearl.withValues(alpha: 0.9),
-                    ),
+                    side: const BorderSide(color: AppColors.borderDefault),
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    backgroundColor: Colors.white,
-                    foregroundColor: AppColors.charcoal,
+                    backgroundColor: AppColors.surface,
+                    foregroundColor: AppColors.textPrimary,
                   ),
                 ),
               ),

@@ -127,7 +127,7 @@ class _DocumentLessonDetailScreenState extends State<DocumentLessonDetailScreen>
           );
         },
       ),
-      backgroundColor: const Color(0xFFF6F8FF),
+      backgroundColor: AppColors.background,
       appBar: LessonAppBar(
         courseTitle: widget.course.title,
         subtitle: 'DOCUMENT READER',

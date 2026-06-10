@@ -13,6 +13,7 @@ import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
+import 'package:lms_mobile_app/src/shared/widgets/brand_app_bar.dart';
 
 class CourseListScreen extends StatefulWidget {
   const CourseListScreen({super.key});
@@ -48,33 +49,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
 
         return Scaffold(
           backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            title: const Text(
-              'Semua Kursus',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-                fontSize: 20,
-              ),
-            ),
-            centerTitle: true,
-            iconTheme: const IconThemeData(color: Colors.white),
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            surfaceTintColor: Colors.transparent,
-            flexibleSpace: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: AppColors.brandGradient,
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(24),
-                ),
-              ),
-            ),
-          ),
+          appBar: const BrandAppBar(title: 'Semua Kursus'),
           floatingActionButton: isInstructor
               ? FloatingActionButton.extended(
                   onPressed: () => _showAddCourseDialog(context),

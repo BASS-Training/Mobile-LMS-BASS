@@ -20,7 +20,7 @@ class AppTextField extends StatefulWidget {
   final int maxLines;
 
   const AppTextField({
-    Key? key,
+    super.key,
     required this.label,
     this.hintText,
     this.controller,
@@ -34,7 +34,7 @@ class AppTextField extends StatefulWidget {
     this.onSuffixIconPressed,
     this.minLines = 1,
     this.maxLines = 1,
-  }) : super(key: key);
+  });
 
   @override
   State<AppTextField> createState() => _AppTextFieldState();
@@ -101,14 +101,14 @@ class AppDropdownField<T> extends StatelessWidget {
   final IconData? prefixIcon;
 
   const AppDropdownField({
-    Key? key,
+    super.key,
     required this.label,
     required this.value,
     required this.items,
     required this.onChanged,
     this.validator,
     this.prefixIcon,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +118,7 @@ class AppDropdownField<T> extends StatelessWidget {
         Text(label, style: AppTypography.titleMedium),
         SizedBox(height: AppMeasures.paddingSmall),
         DropdownButtonFormField<T>(
-          value: value,
+          initialValue: value,
           items: items,
           onChanged: onChanged,
           validator: validator,

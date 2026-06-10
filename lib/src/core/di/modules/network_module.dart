@@ -50,38 +50,50 @@ class AuthInterceptor extends Interceptor {
   }
 }
 
-/// Simple logging interceptor
+/// Simple logging interceptor.
+///
+/// PENTING: jangan pernah mencetak seluruh body/response. Untuk respons besar
+/// (mis. daftar course dengan semua lesson/konten), `print` JSON penuh sangat
+/// lambat di debug dan bisa membekukan UI beberapa detik. Cukup metadata +
+/// stopwatch durasi request.
 class LoggingInterceptor extends Interceptor {
+  static const int _maxPreview = 300;
+
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    options.extra['__start'] = DateTime.now().millisecondsSinceEpoch;
     // ignore: avoid_print
-    print('>>> REQUEST: ${options.method} ${options.path}');
-    // ignore: avoid_print
-    print('>>> HEADERS: ${options.headers}');
-    if (options.data != null) {
-      // ignore: avoid_print
-      print('>>> BODY: ${options.data}');
-    }
+    print('>>> ${options.method} ${options.path}');
     super.onRequest(options, handler);
   }
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
+    final start = response.requestOptions.extra['__start'] as int?;
+    final ms = start == null
+        ? '?'
+        : '${DateTime.now().millisecondsSinceEpoch - start}ms';
+    // Hanya cuplik ukuran/awalan data, bukan seluruhnya.
+    final raw = response.data?.toString() ?? '';
+    final size = raw.length;
+    final preview = size > _maxPreview
+        ? '${raw.substring(0, _maxPreview)}… (+${size - _maxPreview} chars)'
+        : raw;
     // ignore: avoid_print
     print(
-      '<<< RESPONSE: ${response.statusCode} ${response.requestOptions.path}',
+      '<<< ${response.statusCode} ${response.requestOptions.path} '
+      '($ms, ${size}B) $preview',
     );
-    // ignore: avoid_print
-    print('<<< DATA: ${response.data}');
     super.onResponse(response, handler);
   }
 
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     // ignore: avoid_print
-    print('!!! ERROR: ${err.message}');
-    // ignore: avoid_print
-    print('!!! STATUS: ${err.response?.statusCode}');
+    print(
+      '!!! ${err.requestOptions.path} '
+      '${err.response?.statusCode ?? ''} ${err.message}',
+    );
     super.onError(err, handler);
   }
 }

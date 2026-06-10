@@ -33,6 +33,8 @@ class CourseLessonTile extends StatelessWidget {
         return const Color(0xFF0D9488);
       case 'zoom':
         return const Color(0xFF4F46E5);
+      case 'case_study':
+        return const Color(0xFFD97706);
       default:
         return AppColors.violet;
     }
@@ -52,6 +54,8 @@ class CourseLessonTile extends StatelessWidget {
         return Icons.image_rounded;
       case 'zoom':
         return Icons.videocam_rounded;
+      case 'case_study':
+        return Icons.assignment_rounded;
       default:
         return Icons.menu_book_rounded;
     }

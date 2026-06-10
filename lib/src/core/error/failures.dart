@@ -26,37 +26,37 @@ class ServerFailure extends Failure {
 /// Network connectivity error
 class NetworkFailure extends Failure {
   const NetworkFailure({
-    String message = 'Network error. Please check your connection.',
+    super.message = 'Network error. Please check your connection.',
     String? code,
-  }) : super(message: message, code: code ?? 'NETWORK_ERROR');
+  }) : super(code: code ?? 'NETWORK_ERROR');
 }
 
 /// Authentication/Authorization error
 class UnauthorizedFailure extends Failure {
   const UnauthorizedFailure({
-    String message = 'Unauthorized. Please login again.',
+    super.message = 'Unauthorized. Please login again.',
     String? code,
-  }) : super(message: message, code: code ?? 'UNAUTHORIZED');
+  }) : super(code: code ?? 'UNAUTHORIZED');
 }
 
 /// Validation/Input error
 class ValidationFailure extends Failure {
-  const ValidationFailure({required String message, String? code})
-    : super(message: message, code: code ?? 'VALIDATION_ERROR');
+  const ValidationFailure({required super.message, String? code})
+    : super(code: code ?? 'VALIDATION_ERROR');
 }
 
 /// Local storage error
 class StorageFailure extends Failure {
   const StorageFailure({
-    String message = 'Local storage error occurred.',
+    super.message = 'Local storage error occurred.',
     String? code,
-  }) : super(message: message, code: code ?? 'STORAGE_ERROR');
+  }) : super(code: code ?? 'STORAGE_ERROR');
 }
 
 /// Unknown/Uncategorized error
 class UnknownFailure extends Failure {
   const UnknownFailure({
-    String message = 'An unexpected error occurred. Please try again.',
+    super.message = 'An unexpected error occurred. Please try again.',
     String? code,
-  }) : super(message: message, code: code ?? 'UNKNOWN_ERROR');
+  }) : super(code: code ?? 'UNKNOWN_ERROR');
 }

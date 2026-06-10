@@ -96,7 +96,7 @@ class _QuestionNavigatorState extends State<QuestionNavigatorWidget> {
             controller: _scrollController,
             padding: EdgeInsets.zero,
             itemCount: widget.totalQuestions,
-            separatorBuilder: (_, __) => const SizedBox(width: _itemSpacing),
+            separatorBuilder: (_, _) => const SizedBox(width: _itemSpacing),
             itemBuilder: (context, index) {
               final isCurrentQuestion = index == widget.currentQuestionIndex;
               final isAnswered = widget.completedQuestionIndexes.contains(

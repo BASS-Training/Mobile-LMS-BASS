@@ -12,13 +12,13 @@ class AppDialog extends StatelessWidget {
   final EdgeInsets contentPadding;
 
   const AppDialog({
-    Key? key,
+    super.key,
     required this.title,
     this.message = '',
     this.actions = const [],
     this.content,
     this.contentPadding = const EdgeInsets.all(AppMeasures.paddingLarge),
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -83,10 +83,10 @@ class LoadingDialog extends StatelessWidget {
   final bool dismissible;
 
   const LoadingDialog({
-    Key? key,
+    super.key,
     this.message = 'Loading...',
     this.dismissible = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -139,14 +139,14 @@ class ConfirmationDialog extends StatelessWidget {
   final VoidCallback? onCancel;
 
   const ConfirmationDialog({
-    Key? key,
+    super.key,
     required this.title,
     required this.message,
     this.confirmLabel = 'Confirm',
     this.cancelLabel = 'Cancel',
     required this.onConfirm,
     this.onCancel,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

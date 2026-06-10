@@ -8,6 +8,8 @@ import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/cou
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_state.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
+import 'package:lms_mobile_app/src/shared/widgets/app_empty_state.dart';
+import 'package:lms_mobile_app/src/shared/widgets/brand_app_bar.dart';
 import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
 class SavedCoursesScreen extends StatefulWidget {
@@ -28,30 +30,7 @@ class _SavedCoursesScreenState extends State<SavedCoursesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text(
-          'Kursus Tersimpan',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-            fontSize: 20,
-          ),
-        ),
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: Colors.white),
-        backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: AppColors.brandGradient,
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
-          ),
-        ),
-      ),
+      appBar: const BrandAppBar(title: 'Kursus Tersimpan'),
       body: BlocBuilder<CourseBloc, CourseState>(
         builder: (context, state) {
           if (state is CourseLoading) {
@@ -61,7 +40,14 @@ class _SavedCoursesScreenState extends State<SavedCoursesScreen> {
           }
           if (state is SavedCoursesLoaded) {
             final savedCourses = state.courses;
-            if (savedCourses.isEmpty) return const _EmptyState();
+            if (savedCourses.isEmpty) {
+              return const AppEmptyState(
+                icon: Icons.bookmark_outline_rounded,
+                title: 'Belum ada kursus tersimpan',
+                message:
+                    'Simpan kursus favoritmu dengan menekan ikon bookmark agar mudah ditemukan di sini.',
+              );
+            }
             return ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: savedCourses.length,
@@ -177,52 +163,3 @@ class _SavedCourseTile extends StatelessWidget {
   }
 }
 
-class _EmptyState extends StatelessWidget {
-  const _EmptyState();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 96,
-            height: 96,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.brandPrimary.withValues(alpha: 0.1),
-            ),
-            child: const Icon(
-              Icons.bookmark_outline_rounded,
-              size: 46,
-              color: AppColors.brandPrimary,
-            ),
-          ),
-          const SizedBox(height: 18),
-          const Text(
-            'Belum ada kursus tersimpan',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 6),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 40),
-            child: Text(
-              'Simpan kursus favoritmu dengan menekan ikon bookmark agar mudah ditemukan di sini.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 13,
-                color: AppColors.textSecondary,
-                height: 1.5,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

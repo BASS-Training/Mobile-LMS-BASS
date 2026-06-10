@@ -1,6 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/usecases/create_discussion_usecase.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/usecases/create_reply_usecase.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/usecases/get_discussion_usecase.dart';
 
-import '../../../domain/usecases/discussion_usecases.dart';
 import 'discussion_state.dart';
 
 /// Manages the discussion thread for a single lesson (backend content).
@@ -8,7 +10,7 @@ import 'discussion_state.dart';
 /// One instance per lesson screen — created with the lesson id so the widgets
 /// only trigger intents (load / post topic / post reply).
 class DiscussionCubit extends Cubit<DiscussionState> {
-  final GetDiscussionsUseCase getDiscussions;
+  final GetDiscussionUseCase getDiscussions;
   final CreateDiscussionUseCase createDiscussion;
   final CreateReplyUseCase createReply;
   final String lessonId;

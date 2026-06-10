@@ -92,7 +92,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
       },
       child: Scaffold(
         key: _scaffoldKey,
-        backgroundColor: const Color(0xFFF6F8FF),
+        backgroundColor: AppColors.background,
         appBar: LessonAppBar(
           courseTitle: widget.course.title,
           subtitle: 'ESSAY',
@@ -168,7 +168,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
               child: Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
+                    colors: [AppColors.surface, AppColors.background],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),

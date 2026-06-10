@@ -35,11 +35,6 @@ class _MainScreenState extends State<MainScreen> {
             _selectedIndex = 1;
           });
         },
-        onShowSaved: () {
-          setState(() {
-            _selectedIndex = 2;
-          });
-        },
       ),
       const CourseListScreen(),
       const SavedCoursesScreen(),

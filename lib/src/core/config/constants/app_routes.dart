@@ -34,12 +34,18 @@ class AppRoutes {
   static const String essayLessonDetail = '/lesson-essay-detail';
   static const String imageLessonDetail = '/lesson-image-detail';
   static const String zoomLessonDetail = '/lesson-zoom-detail';
+  static const String caseStudyLessonDetail = '/lesson-case-study-detail';
 
   // Result Details
   static const String quizResultDetail = '/quiz-result-detail';
   static const String essayResultDetail = '/essay-result-detail';
+  static const String caseStudyResultDetail = '/case-study-result-detail';
 
   // Certificate Details
   static const String certificateDetail = '/certificate-detail';
   static const String certificateList = '/certificate-list';
+
+  // Games
+  static const String gamesHub = '/games';
+  static const String game2048 = '/games/2048';
 }

@@ -4,6 +4,8 @@ import 'package:lms_mobile_app/src/features/certificates/presentation/widgets/ce
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_state.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/shared/widgets/app_empty_state.dart';
+import 'package:lms_mobile_app/src/shared/widgets/brand_app_bar.dart';
 import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
 
 class CertificateListScreen extends StatelessWidget {
@@ -13,30 +15,7 @@ class CertificateListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text(
-          'Sertifikat Saya',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-            fontSize: 20,
-          ),
-        ),
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: Colors.white),
-        backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: AppColors.brandGradient,
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
-          ),
-        ),
-      ),
+      appBar: const BrandAppBar(title: 'Sertifikat Saya'),
       body: BlocBuilder<CourseBloc, CourseState>(
         builder: (context, state) {
           if (state is CourseLoading) {
@@ -50,7 +29,15 @@ class CertificateListScreen extends StatelessWidget {
                 .where((c) => c.progressPercentage == 100)
                 .toList();
 
-            if (completedCourses.isEmpty) return const _EmptyState();
+            if (completedCourses.isEmpty) {
+              return const AppEmptyState(
+                icon: Icons.workspace_premium_rounded,
+                iconColor: AppColors.warning,
+                title: 'Belum ada sertifikat',
+                message:
+                    'Selesaikan sebuah kursus hingga 100% untuk membuka sertifikat resmimu di sini.',
+              );
+            }
 
             return ListView.separated(
               padding: const EdgeInsets.fromLTRB(16, 18, 16, 24),
@@ -110,52 +97,3 @@ class _CountHeader extends StatelessWidget {
   }
 }
 
-class _EmptyState extends StatelessWidget {
-  const _EmptyState();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.warning.withValues(alpha: 0.12),
-            ),
-            child: const Icon(
-              Icons.workspace_premium_rounded,
-              size: 50,
-              color: AppColors.warning,
-            ),
-          ),
-          const SizedBox(height: 20),
-          const Text(
-            'Belum ada sertifikat',
-            style: TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w800,
-              color: AppColors.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 44),
-            child: Text(
-              'Selesaikan sebuah kursus hingga 100% untuk membuka sertifikat resmimu di sini.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 13,
-                color: AppColors.textSecondary,
-                height: 1.5,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

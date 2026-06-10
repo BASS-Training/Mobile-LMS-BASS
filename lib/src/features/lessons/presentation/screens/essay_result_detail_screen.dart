@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_attempt_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_result_repository.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/shared/widgets/brand_app_bar.dart';
 import 'package:lms_mobile_app/src/shared/utils/app_date_formatter.dart';
 import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
 
@@ -34,26 +35,12 @@ class _EssayResultDetailScreenState extends State<EssayResultDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F8FF),
-      appBar: AppBar(
-        title: const Text('Detail Hasil Essay'),
-        backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [AppColors.red, AppColors.tomato],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
-      ),
+      backgroundColor: AppColors.background,
+      appBar: const BrandAppBar(title: 'Detail Hasil Essay'),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
+            colors: [AppColors.surface, AppColors.background],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),

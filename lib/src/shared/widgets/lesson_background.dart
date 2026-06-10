@@ -13,7 +13,7 @@ class LessonBackground extends StatelessWidget {
   const LessonBackground({
     super.key,
     required this.child,
-    this.orbColor = AppColors.red,
+    this.orbColor = AppColors.brandPrimary,
   });
 
   @override
@@ -23,7 +23,7 @@ class LessonBackground extends StatelessWidget {
         Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFF9FBFF), Color(0xFFF2F6FF)],
+              colors: [AppColors.surface, AppColors.background],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),

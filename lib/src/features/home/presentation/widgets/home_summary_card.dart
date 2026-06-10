@@ -3,6 +3,7 @@ import 'package:lms_mobile_app/src/features/home/domain/entities/home_stats.enti
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
+import 'package:lms_mobile_app/src/shared/widgets/animated_count.dart';
 import 'package:lms_mobile_app/src/shared/widgets/progress_ring.dart';
 
 /// Compact learning-summary card: an overall-progress ring paired with the key
@@ -34,8 +35,9 @@ class HomeSummaryCard extends StatelessWidget {
               center: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    '${stats.overallProgressPercentage}%',
+                  AnimatedCount(
+                    value: stats.overallProgressPercentage,
+                    formatter: (v) => '$v%',
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w800,
@@ -61,23 +63,24 @@ class HomeSummaryCard extends StatelessWidget {
                     icon: Icons.menu_book_rounded,
                     accent: AppColors.brandPrimary,
                     label: 'Kursus selesai',
-                    value: '${stats.completedCourses}/${stats.totalCourses}',
+                    current: stats.completedCourses,
+                    total: stats.totalCourses,
                   ),
                   const _MetricDivider(),
                   _MetricRow(
                     icon: Icons.task_alt_rounded,
                     accent: AppColors.success,
                     label: 'Lesson selesai',
-                    value: '${stats.completedLessons}/${stats.totalLessons}',
+                    current: stats.completedLessons,
+                    total: stats.totalLessons,
                   ),
                   const _MetricDivider(),
                   _MetricRow(
                     icon: Icons.quiz_rounded,
                     accent: AppColors.info,
                     label: 'Kuis selesai',
-                    value: stats.totalQuizzes > 0
-                        ? '${stats.completedQuizzes}/${stats.totalQuizzes}'
-                        : '0/0',
+                    current: stats.completedQuizzes,
+                    total: stats.totalQuizzes,
                   ),
                 ],
               ),
@@ -93,17 +96,24 @@ class _MetricRow extends StatelessWidget {
   final IconData icon;
   final Color accent;
   final String label;
-  final String value;
+  final int current;
+  final int total;
 
   const _MetricRow({
     required this.icon,
     required this.accent,
     required this.label,
-    required this.value,
+    required this.current,
+    required this.total,
   });
 
   @override
   Widget build(BuildContext context) {
+    const valueStyle = TextStyle(
+      fontSize: 13.5,
+      fontWeight: FontWeight.w800,
+      color: AppColors.textPrimary,
+    );
     return Row(
       children: [
         Container(
@@ -125,14 +135,9 @@ class _MetricRow extends StatelessWidget {
             ),
           ),
         ),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 13.5,
-            fontWeight: FontWeight.w800,
-            color: AppColors.textPrimary,
-          ),
-        ),
+        // Animated numerator counting up; denominator stays fixed.
+        AnimatedCount(value: current, style: valueStyle),
+        Text('/$total', style: valueStyle),
       ],
     );
   }

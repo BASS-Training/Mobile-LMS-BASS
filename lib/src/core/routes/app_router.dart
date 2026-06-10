@@ -19,6 +19,9 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/essay/essa
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/quiz/quiz_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/quiz_result/quiz_result_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/video/video_bloc.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/case_study/case_study_bloc.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/screens/case_study_lesson_detail_screen.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/screens/case_study_result_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/video_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/text_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/document_lesson_detail_screen.dart';
@@ -32,6 +35,9 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/screens/essay_r
 import 'package:lms_mobile_app/src/features/certificates/presentation/screens/certificate_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/certificates/presentation/screens/certificate_list_screen.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/screens/join_class_screen.dart';
+import 'package:lms_mobile_app/src/features/games/presentation/hub/bloc/games_hub_bloc.dart';
+import 'package:lms_mobile_app/src/features/games/presentation/hub/screens/games_hub_screen.dart';
+import 'package:lms_mobile_app/src/features/games/presentation/games/game_2048/screens/game_2048_screen.dart';
 
 // Entity imports
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
@@ -286,6 +292,38 @@ class AppRouter {
         },
       ),
       GoRoute(
+        path: AppRoutes.caseStudyLessonDetail,
+        pageBuilder: (context, state) {
+          final args = state.extra as Map<String, dynamic>;
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: BlocProvider<CaseStudyBloc>(
+              create: (context) => _sl<CaseStudyBloc>(),
+              child: CaseStudyLessonDetailScreen(
+                lesson: args['lesson'],
+                course: args['course'],
+                lessonIndex: args['lessonIndex'],
+              ),
+            ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  final fade = CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                  );
+                  final slide = Tween<Offset>(
+                    begin: const Offset(0.04, 0),
+                    end: Offset.zero,
+                  ).animate(fade);
+                  return FadeTransition(
+                    opacity: fade,
+                    child: SlideTransition(position: slide, child: child),
+                  );
+                },
+          );
+        },
+      ),
+      GoRoute(
         path: AppRoutes.imageLessonDetail,
         pageBuilder: (context, state) {
           final args = state.extra as Map<String, dynamic>;
@@ -403,6 +441,34 @@ class AppRouter {
         },
       ),
       GoRoute(
+        path: AppRoutes.caseStudyResultDetail,
+        pageBuilder: (context, state) {
+          final attempt = state.extra as LessonAttempt;
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: BlocProvider<CaseStudyBloc>(
+              create: (context) => _sl<CaseStudyBloc>(),
+              child: CaseStudyResultDetailScreen(attempt: attempt),
+            ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  final fade = CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                  );
+                  final slide = Tween<Offset>(
+                    begin: const Offset(0.04, 0),
+                    end: Offset.zero,
+                  ).animate(fade);
+                  return FadeTransition(
+                    opacity: fade,
+                    child: SlideTransition(position: slide, child: child),
+                  );
+                },
+          );
+        },
+      ),
+      GoRoute(
         path: AppRoutes.certificateDetail,
         builder: (context, state) {
           final course = state.extra as CourseEntity;
@@ -412,6 +478,17 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.certificateList,
         builder: (context, state) => const CertificateListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.gamesHub,
+        builder: (context, state) => BlocProvider<GamesHubBloc>(
+          create: (context) => _sl<GamesHubBloc>(),
+          child: const GamesHubScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.game2048,
+        builder: (context, state) => const Game2048Screen(),
       ),
     ],
   );
