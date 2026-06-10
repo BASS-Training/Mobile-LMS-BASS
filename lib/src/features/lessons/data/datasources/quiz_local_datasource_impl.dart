@@ -1,4 +1,5 @@
 /// Implementation QuizLocalDataSource - Data Layer (offline/dummy only)
+library;
 
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/quiz_dummy_data.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/quiz_local_datasource.dart';

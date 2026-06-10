@@ -10,7 +10,9 @@ import 'package:lms_mobile_app/src/features/lessons/data/datasources/quiz_remote
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/lesson_remote_datasource_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/discussion_remote_datasource_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/discussion_repository_impl.dart';
-import 'package:lms_mobile_app/src/features/lessons/domain/usecases/discussion_usecases.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/usecases/create_discussion_usecase.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/usecases/create_reply_usecase.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/usecases/get_discussion_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/discussion/discussion_cubit.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/essay_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/lesson_result_remote_impl.dart';
@@ -135,7 +137,7 @@ class LessonModule {
       final remote = DiscussionRemoteDataSourceImpl(dio: getIt<Dio>());
       final repository = DiscussionRepositoryImpl(remoteDataSource: remote);
       return DiscussionCubit(
-        getDiscussions: GetDiscussionsUseCase(repository),
+        getDiscussions: GetDiscussionUseCase(repository),
         createDiscussion: CreateDiscussionUseCase(repository),
         createReply: CreateReplyUseCase(repository),
         lessonId: lessonId,

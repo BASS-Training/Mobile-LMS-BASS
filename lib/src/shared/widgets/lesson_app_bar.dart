@@ -76,7 +76,7 @@ class LessonAppBar extends StatelessWidget implements PreferredSizeWidget {
         child: const Icon(Icons.arrow_back_rounded, color: Colors.white),
       ),
       actions: [
-        if (action != null) action!,
+        ?action,
         if (onMenuTap != null)
           Padding(
             padding: const EdgeInsets.only(right: 16),
