@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/core/di/injector.dart';
+import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 
 import '../../../../domain/entities/game_ids.dart';
 import '../../../../domain/usecases/get_game_score.dart';
 import '../../../../domain/usecases/manage_board_state.dart';
 import '../../../../domain/usecases/submit_game_result.dart';
+import '../../../audio/game_sound_effects.dart';
 import '../logic/game_2048_engine.dart';
 import '../logic/tile.dart';
 import '../widgets/board_2048.dart';
@@ -25,6 +27,11 @@ class _Game2048ScreenState extends State<Game2048Screen> {
   static const Color _accent = Color(0xFFEE7B30);
   static const String _gameId = GameIds.game2048;
 
+  // Sound effect assets (drop the files into assets/audio/, see README there).
+  static const String _sfxMove = 'audio/sfx_move.mp3';
+  static const String _sfxMerge = 'audio/sfx_merge.mp3';
+  static const String _sfxGameOver = 'audio/sfx_gameover.mp3';
+
   final _engine = Game2048Engine();
   final _sl = ServiceLocator().locator;
 
@@ -32,10 +39,13 @@ class _Game2048ScreenState extends State<Game2048Screen> {
   late final SubmitGameResult _submitResult = _sl<SubmitGameResult>();
   late final ManageBoardState _board = _sl<ManageBoardState>();
 
+  late final GameSoundEffects _sfx;
+
   bool _ready = false;
   bool _gameOver = false;
   bool _wonShown = false;
   bool _animating = false;
+  bool _soundMuted = false;
   int _best = 0;
 
   /// Tiles currently rendered. Driven through the two-phase move (slide, then
@@ -49,7 +59,23 @@ class _Game2048ScreenState extends State<Game2048Screen> {
   @override
   void initState() {
     super.initState();
+    _soundMuted = LocalStorage.isGameSoundMuted();
+    _sfx = GameSoundEffects(muted: _soundMuted);
+    _sfx.load(const [_sfxMove, _sfxMerge, _sfxGameOver]);
     _bootstrap();
+  }
+
+  @override
+  void dispose() {
+    _sfx.dispose();
+    super.dispose();
+  }
+
+  Future<void> _toggleSound() async {
+    final muted = !_soundMuted;
+    setState(() => _soundMuted = muted);
+    _sfx.muted = muted;
+    await LocalStorage.setGameSoundMuted(muted);
   }
 
   Future<void> _bootstrap() async {
@@ -99,6 +125,8 @@ class _Game2048ScreenState extends State<Game2048Screen> {
     final plan = _engine.planMove(dir);
     if (!plan.moved) return;
 
+    _sfx.play(_sfxMove);
+
     // Phase 1: slide every tile to its destination (old values preserved).
     setState(() {
       _tiles = plan.slid;
@@ -113,6 +141,8 @@ class _Game2048ScreenState extends State<Game2048Screen> {
       _tiles = _engine.tiles;
       _animating = false;
     });
+
+    if (plan.gained > 0) _sfx.play(_sfxMerge);
 
     unawaited(
       _board.save(
@@ -137,6 +167,7 @@ class _Game2048ScreenState extends State<Game2048Screen> {
   }
 
   Future<void> _finishGame() async {
+    _sfx.play(_sfxGameOver);
     final updated = await _submitResult(gameId: _gameId, score: _engine.score);
     await _board.clear(_gameId);
     if (!mounted) return;
@@ -176,6 +207,16 @@ class _Game2048ScreenState extends State<Game2048Screen> {
           style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20),
         ),
         actions: [
+          IconButton(
+            onPressed: _toggleSound,
+            tooltip: _soundMuted ? 'Nyalakan suara' : 'Matikan suara',
+            icon: Icon(
+              _soundMuted
+                  ? Icons.volume_off_rounded
+                  : Icons.volume_up_rounded,
+              color: const Color(0xFF776E65),
+            ),
+          ),
           if (_ready)
             Padding(
               padding: const EdgeInsets.only(right: 8),

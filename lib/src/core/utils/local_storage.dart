@@ -12,6 +12,7 @@ class LocalStorage {
   static const String _authTokenKey = 'auth_token';
   static const String _authUserKey = 'auth_user';
   static const String _introSeenKey = 'intro_seen';
+  static const String _gameSoundMutedKey = 'game_sound_muted';
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -113,6 +114,15 @@ class LocalStorage {
 
   static Future<void> markIntroSeen() async {
     await _box.put(_introSeenKey, true);
+  }
+
+  // Whether game sound effects are muted (shared across all mini games).
+  static bool isGameSoundMuted() {
+    return _box.get(_gameSoundMutedKey, defaultValue: false) == true;
+  }
+
+  static Future<void> setGameSoundMuted(bool muted) async {
+    await _box.put(_gameSoundMutedKey, muted);
   }
 
   // Get progress statistics

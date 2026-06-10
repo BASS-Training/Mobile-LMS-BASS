@@ -7,24 +7,27 @@ class _TileStyle {
   const _TileStyle(this.background, this.text);
 }
 
-const Color _darkText = Color(0xFF776E65);
-const Color _lightText = Color(0xFFF9F6F2);
+const Color _darkText = Color(0xFF4E342E);
+const Color _lightText = Color(0xFFFFFFFF);
 
+// A colorful spectrum that climbs the hue wheel as the tile value grows:
+// cyan → teal → green → lime → amber → orange → pink → purple → indigo.
 const Map<int, _TileStyle> _styles = {
-  2: _TileStyle(Color(0xFFEEE4DA), _darkText),
-  4: _TileStyle(Color(0xFFEDE0C8), _darkText),
-  8: _TileStyle(Color(0xFFF2B179), _lightText),
-  16: _TileStyle(Color(0xFFF59563), _lightText),
-  32: _TileStyle(Color(0xFFF67C5F), _lightText),
-  64: _TileStyle(Color(0xFFF65E3B), _lightText),
-  128: _TileStyle(Color(0xFFEDCF72), _lightText),
-  256: _TileStyle(Color(0xFFEDCC61), _lightText),
-  512: _TileStyle(Color(0xFFEDC850), _lightText),
-  1024: _TileStyle(Color(0xFFEDC53F), _lightText),
-  2048: _TileStyle(Color(0xFFEDC22E), _lightText),
+  2: _TileStyle(Color(0xFF26C6DA), _darkText), // cyan
+  4: _TileStyle(Color(0xFF26A69A), _lightText), // teal
+  8: _TileStyle(Color(0xFF66BB6A), _lightText), // green
+  16: _TileStyle(Color(0xFF9CCC65), _darkText), // light green
+  32: _TileStyle(Color(0xFFFFCA28), _darkText), // amber
+  64: _TileStyle(Color(0xFFFFA726), _lightText), // orange
+  128: _TileStyle(Color(0xFFFF7043), _lightText), // deep orange
+  256: _TileStyle(Color(0xFFEC407A), _lightText), // pink
+  512: _TileStyle(Color(0xFFAB47BC), _lightText), // purple
+  1024: _TileStyle(Color(0xFF7E57C2), _lightText), // deep purple
+  2048: _TileStyle(Color(0xFF5C6BC0), _lightText), // indigo
 };
 
-const _TileStyle _superStyle = _TileStyle(Color(0xFF3C3A32), _lightText);
+// Beyond 2048: a vivid magenta to make the rare high tiles feel rewarding.
+const _TileStyle _superStyle = _TileStyle(Color(0xFFD81B60), _lightText);
 
 /// A single (non-empty) board tile. Sliding between cells is handled by the
 /// parent's [AnimatedPositioned]; this widget owns the "pop" animation that
