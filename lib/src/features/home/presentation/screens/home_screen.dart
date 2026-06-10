@@ -19,13 +19,11 @@ import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
 
 class HomeScreen extends StatefulWidget {
   final VoidCallback? onShowCourses;
-  final VoidCallback? onShowSaved;
   final String accountRole;
 
   const HomeScreen({
     super.key,
     this.onShowCourses,
-    this.onShowSaved,
     this.accountRole = 'participant',
   });
 
@@ -55,11 +53,6 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
     context.push(AppRoutes.courses);
-  }
-
-  void _goToSaved() {
-    if (!mounted) return;
-    widget.onShowSaved?.call();
   }
 
   Future<void> _onRefresh() async {
@@ -252,10 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 18),
             FadeSlideIn(
               delayMs: 100,
-              child: HomeQuickActions(
-                onShowCourses: _goToCourseList,
-                onShowSaved: _goToSaved,
-              ),
+              child: HomeQuickActions(onShowCourses: _goToCourseList),
             ),
             const SizedBox(height: 22),
             FadeSlideIn(

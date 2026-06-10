@@ -35,6 +35,9 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/screens/essay_r
 import 'package:lms_mobile_app/src/features/certificates/presentation/screens/certificate_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/certificates/presentation/screens/certificate_list_screen.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/screens/join_class_screen.dart';
+import 'package:lms_mobile_app/src/features/games/presentation/hub/bloc/games_hub_bloc.dart';
+import 'package:lms_mobile_app/src/features/games/presentation/hub/screens/games_hub_screen.dart';
+import 'package:lms_mobile_app/src/features/games/presentation/games/game_2048/screens/game_2048_screen.dart';
 
 // Entity imports
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
@@ -475,6 +478,17 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.certificateList,
         builder: (context, state) => const CertificateListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.gamesHub,
+        builder: (context, state) => BlocProvider<GamesHubBloc>(
+          create: (context) => _sl<GamesHubBloc>(),
+          child: const GamesHubScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.game2048,
+        builder: (context, state) => const Game2048Screen(),
       ),
     ],
   );

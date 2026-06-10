@@ -44,4 +44,8 @@ class AppRoutes {
   // Certificate Details
   static const String certificateDetail = '/certificate-detail';
   static const String certificateList = '/certificate-list';
+
+  // Games
+  static const String gamesHub = '/games';
+  static const String game2048 = '/games/2048';
 }

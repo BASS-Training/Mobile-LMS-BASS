@@ -9,13 +9,8 @@ import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 /// (certificates, joining a class) that would otherwise be buried.
 class HomeQuickActions extends StatelessWidget {
   final VoidCallback onShowCourses;
-  final VoidCallback onShowSaved;
 
-  const HomeQuickActions({
-    super.key,
-    required this.onShowCourses,
-    required this.onShowSaved,
-  });
+  const HomeQuickActions({super.key, required this.onShowCourses});
 
   @override
   Widget build(BuildContext context) {
@@ -32,11 +27,13 @@ class HomeQuickActions extends StatelessWidget {
         color: AppColors.brandPrimary,
         onTap: onShowCourses,
       ),
+      // Replaces "Tersimpan" (already reachable from the bottom nav) with an
+      // entry point into the Games Hub for a refreshing break.
       _QuickAction(
-        icon: Icons.bookmark_rounded,
-        label: 'Tersimpan',
-        color: AppColors.info,
-        onTap: onShowSaved,
+        icon: Icons.sports_esports_rounded,
+        label: 'Game',
+        color: const Color(0xFF7C4DFF),
+        onTap: () => context.push(AppRoutes.gamesHub),
       ),
       _QuickAction(
         icon: Icons.vpn_key_rounded,
