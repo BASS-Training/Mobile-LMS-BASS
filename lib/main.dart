@@ -1,3 +1,4 @@
+import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -48,7 +49,14 @@ void main() async {
   final serviceLocator = ServiceLocator();
   await serviceLocator.setupServiceLocator();
 
-  runApp(const MainApp());
+  runApp(
+    //untuk device preview hapus sebelum build
+    DevicePreview(
+      // On in debug/profile, automatically off in release builds.
+      enabled: !kReleaseMode,
+      builder: (context) => const MainApp(),
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {
@@ -70,6 +78,10 @@ class MainApp extends StatelessWidget {
         theme: AppTheme.lightTheme,
         debugShowCheckedModeBanner: false,
         routerConfig: AppRouter.router,
+
+        //untuk device preview hapus sebelum build
+        locale: DevicePreview.locale(context),
+        builder: DevicePreview.appBuilder,
       ),
     );
   }

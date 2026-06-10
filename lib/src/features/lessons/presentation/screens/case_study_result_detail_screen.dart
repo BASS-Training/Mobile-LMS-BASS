@@ -10,6 +10,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/screens/case_st
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/case_study/case_study_table_widget.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/utils/app_date_formatter.dart';
+import 'package:lms_mobile_app/src/shared/widgets/app_chip.dart';
 import 'package:lms_mobile_app/src/shared/widgets/brand_app_bar.dart';
 
 /// Halaman hasil khusus untuk studi kasus: menampilkan nilai, feedback,
@@ -95,7 +96,7 @@ class _CaseStudyResultDetailScreenState
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.charcoal,
+                    color: AppColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -128,7 +129,7 @@ class _CaseStudyResultDetailScreenState
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
+        border: Border.all(color: AppColors.borderDefault.withValues(alpha: 0.8)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -145,31 +146,18 @@ class _CaseStudyResultDetailScreenState
             style: const TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.w800,
-              color: AppColors.charcoal,
+              color: AppColors.textPrimary,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             'Studi Kasus • ${formatAppDateTime(attempt.submittedAt)}',
-            style: const TextStyle(fontSize: 12, color: AppColors.slate),
+            style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
           ),
           const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            decoration: BoxDecoration(
-              color: (graded ? Colors.green : AppColors.red).withValues(
-                alpha: 0.12,
-              ),
-              borderRadius: BorderRadius.circular(999),
-            ),
-            child: Text(
-              graded ? 'Sudah Dinilai' : 'Menunggu Penilaian',
-              style: TextStyle(
-                color: graded ? Colors.green : AppColors.red,
-                fontSize: 12,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+          AppChip(
+            label: graded ? 'Sudah Dinilai' : 'Menunggu Penilaian',
+            color: graded ? AppColors.success : AppColors.brandPrimary,
           ),
           if (graded && scoringEnabled && score != null) ...[
             const SizedBox(height: 16),
@@ -178,7 +166,7 @@ class _CaseStudyResultDetailScreenState
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: AppColors.slate,
+                color: AppColors.textSecondary,
               ),
             ),
             const SizedBox(height: 2),
@@ -187,7 +175,7 @@ class _CaseStudyResultDetailScreenState
               style: const TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.w900,
-                color: AppColors.red,
+                color: AppColors.brandPrimary,
               ),
             ),
           ],
@@ -197,7 +185,7 @@ class _CaseStudyResultDetailScreenState
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w700,
-              color: AppColors.slate,
+              color: AppColors.textSecondary,
             ),
           ),
           const SizedBox(height: 6),
@@ -207,7 +195,7 @@ class _CaseStudyResultDetailScreenState
             decoration: BoxDecoration(
               color: AppColors.background,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.pearl),
+              border: Border.all(color: AppColors.borderDefault),
             ),
             child: Text(
               feedback.isNotEmpty
@@ -216,7 +204,7 @@ class _CaseStudyResultDetailScreenState
               style: const TextStyle(
                 fontSize: 14,
                 height: 1.5,
-                color: AppColors.charcoal,
+                color: AppColors.textPrimary,
               ),
             ),
           ),
@@ -242,7 +230,7 @@ class _CaseStudyResultDetailScreenState
                     : const Icon(Icons.picture_as_pdf),
                 label: const Text('Lihat / Unduh PDF'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.red,
+                  backgroundColor: AppColors.brandPrimary,
                   foregroundColor: Colors.white,
                 ),
               ),

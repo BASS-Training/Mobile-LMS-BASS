@@ -7,6 +7,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz_re
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz_result/quiz_performance_overview.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz_result/quiz_question_review_item.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/shared/widgets/app_chip.dart';
 import 'package:lms_mobile_app/src/shared/widgets/brand_app_bar.dart';
 
 class QuizResultDetailScreen extends StatefulWidget {
@@ -67,7 +68,7 @@ class _QuizResultDetailScreenState extends State<QuizResultDetailScreen> {
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 14,
-              color: AppColors.charcoal,
+              color: AppColors.textPrimary,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -112,27 +113,13 @@ class _QuizResultDetailScreenState extends State<QuizResultDetailScreen> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.charcoal,
+                    color: AppColors.textPrimary,
                   ),
                 ),
                 const Spacer(),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.red.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: Text(
-                    '${selectedAttempt.questions.length} soal',
-                    style: const TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.red,
-                    ),
-                  ),
+                AppChip(
+                  label: '${selectedAttempt.questions.length} soal',
+                  color: AppColors.brandPrimary,
                 ),
               ],
             ),

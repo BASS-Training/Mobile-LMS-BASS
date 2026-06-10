@@ -8,6 +8,7 @@ import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_r
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 import 'package:lms_mobile_app/src/shared/utils/app_date_formatter.dart';
+import 'package:lms_mobile_app/src/shared/widgets/app_chip.dart';
 import 'package:lms_mobile_app/src/shared/widgets/app_empty_state.dart';
 import 'package:lms_mobile_app/src/shared/widgets/brand_app_bar.dart';
 import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
@@ -185,24 +186,28 @@ class ResultsListScreen extends StatelessWidget {
                       spacing: 8,
                       runSpacing: 8,
                       children: [
-                        _buildStatusChip(statusText, statusColor),
+                        AppChip(label: statusText, color: statusColor),
                         if (isQuiz && attempt.maxScore != null)
-                          _buildStatusChip(
-                            '${attempt.percentage.toStringAsFixed(0)}%',
-                            AppColors.brandPrimary,
+                          AppChip(
+                            label: '${attempt.percentage.toStringAsFixed(0)}%',
+                            color: AppColors.brandPrimary,
                           ),
                         if (!isQuiz)
-                          _buildStatusChip(
-                            attempt.graded ? 'Dinilai' : 'Menunggu Nilai',
-                            attempt.graded ? AppColors.success : AppColors.brandPrimary,
+                          AppChip(
+                            label: attempt.graded
+                                ? 'Dinilai'
+                                : 'Menunggu Nilai',
+                            color: attempt.graded
+                                ? AppColors.success
+                                : AppColors.brandPrimary,
                           ),
                         if (isCaseStudy &&
                             attempt.graded &&
                             attempt.score != null &&
                             attempt.maxScore != null)
-                          _buildStatusChip(
-                            '${attempt.percentage.toStringAsFixed(0)}%',
-                            AppColors.brandPrimary,
+                          AppChip(
+                            label: '${attempt.percentage.toStringAsFixed(0)}%',
+                            color: AppColors.brandPrimary,
                           ),
                       ],
                     ),
@@ -228,24 +233,6 @@ class ResultsListScreen extends StatelessWidget {
               const Icon(Icons.chevron_right, color: AppColors.textSecondary),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatusChip(String label, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: color,
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
         ),
       ),
     );
