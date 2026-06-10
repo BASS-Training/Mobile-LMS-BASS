@@ -93,7 +93,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
           // Show loading
           if (state is QuizLoading) {
             return Scaffold(
-              backgroundColor: AppColors.quizBackgroundStart,
+              backgroundColor: AppColors.background,
               appBar: appBar,
               body: Container(
                 decoration: quizBackground,
@@ -105,7 +105,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
           // Show error
           if (state is QuizError) {
             return Scaffold(
-              backgroundColor: AppColors.quizBackgroundStart,
+              backgroundColor: AppColors.background,
               appBar: LessonAppBar(
                 courseTitle: widget.course.title,
                 subtitle: 'QUIZ',
@@ -192,7 +192,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
 
           // Initial state
           return Scaffold(
-            backgroundColor: AppColors.quizBackgroundStart,
+            backgroundColor: AppColors.background,
             appBar: appBar,
             body: Container(
               decoration: quizBackground,
@@ -215,7 +215,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
       },
       child: Scaffold(
         key: _scaffoldKey,
-        backgroundColor: AppColors.quizBackgroundStart,
+        backgroundColor: AppColors.background,
         appBar: LessonAppBar(
           courseTitle: widget.course.title,
           subtitle: 'QUIZ',
@@ -282,7 +282,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
       },
       child: Scaffold(
         key: _scaffoldKey,
-        backgroundColor: AppColors.quizBackgroundStart,
+        backgroundColor: AppColors.background,
         appBar: LessonAppBar(
           courseTitle: widget.course.title,
           subtitle: 'QUIZ',
@@ -556,7 +556,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
     final canProceed = quizState.result.passed && canGoNext;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F8FF),
+      backgroundColor: AppColors.background,
       appBar: LessonAppBar(
         courseTitle: widget.course.title,
         subtitle: 'HASIL QUIZ',
@@ -677,7 +677,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
   BoxDecoration _buildQuizBackground() {
     return const BoxDecoration(
       gradient: LinearGradient(
-        colors: [AppColors.quizBackgroundStart, AppColors.quizBackgroundEnd],
+        colors: [AppColors.background, AppColors.surfaceMuted],
         begin: Alignment.topCenter,
         end: Alignment.bottomCenter,
       ),

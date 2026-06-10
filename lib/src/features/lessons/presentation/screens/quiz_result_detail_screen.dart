@@ -7,6 +7,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz_re
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz_result/quiz_performance_overview.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz_result/quiz_question_review_item.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/shared/widgets/brand_app_bar.dart';
 
 class QuizResultDetailScreen extends StatefulWidget {
   final LessonAttempt attempt;
@@ -35,26 +36,12 @@ class _QuizResultDetailScreenState extends State<QuizResultDetailScreen> {
     return BlocBuilder<QuizResultBloc, QuizResultState>(
       builder: (context, state) {
         return Scaffold(
-          backgroundColor: const Color(0xFFF6F8FF),
-          appBar: AppBar(
-            title: const Text('Detail Hasil Quiz'),
-            backgroundColor: Colors.transparent,
-            surfaceTintColor: Colors.transparent,
-            elevation: 0,
-            flexibleSpace: Container(
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [AppColors.red, AppColors.tomato],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-            ),
-          ),
+          backgroundColor: AppColors.background,
+          appBar: const BrandAppBar(title: 'Detail Hasil Quiz'),
           body: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
+                colors: [AppColors.surface, AppColors.background],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),

@@ -12,6 +12,7 @@ import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_daily
 import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_header.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_quick_actions.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_recommended_courses.dart';
+import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_skeleton.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_summary_card.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
@@ -208,12 +209,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return BlocBuilder<CourseBloc, CourseState>(
       builder: (context, state) {
         if (state is CourseLoading) {
-          return const SizedBox(
-            height: 360,
-            child: Center(
-              child: CircularProgressIndicator(color: AppColors.brandPrimary),
-            ),
-          );
+          return const HomeSkeleton();
         }
 
         if (state is CourseFailure) {

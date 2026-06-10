@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
+import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
+import 'package:lms_mobile_app/src/shared/widgets/animated_count.dart';
+import 'package:lms_mobile_app/src/shared/widgets/brand_app_bar.dart';
 
 import '../../../domain/entities/game_score.dart';
 import '../../../domain/entities/overall_game_stats.dart';
@@ -40,16 +43,7 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        foregroundColor: AppColors.textPrimary,
-        title: const Text(
-          'Game & Hiburan',
-          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18),
-        ),
-      ),
+      appBar: const BrandAppBar(title: 'Game & Hiburan'),
       body: BlocBuilder<GamesHubBloc, GamesHubState>(
         builder: (context, state) {
           if (state is GamesHubFailure) {
@@ -129,40 +123,64 @@ class _OverallStatsHeader extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: AppColors.brandGradient,
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.borderSubtle),
+        boxShadow: AppShadows.sm,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Butuh penyegaran?',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 17,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          const SizedBox(height: 3),
-          const Text(
-            'Rehat sejenak, main game, lalu lanjut belajar.',
-            style: TextStyle(color: Colors.white70, fontSize: 12, height: 1.35),
+          Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.brandSurface,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.sports_esports_rounded,
+                  color: AppColors.brandPrimary,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Butuh penyegaran?',
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'Rehat sejenak, lalu lanjut belajar.',
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 12,
+                        height: 1.3,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
           Row(
             children: [
-              _StatPill(label: 'Game dimainkan', value: '${stats.gamesTried}'),
+              _StatPill(label: 'Game dimainkan', value: stats.gamesTried),
               const SizedBox(width: 10),
-              _StatPill(label: 'Total main', value: '${stats.totalPlays}'),
+              _StatPill(label: 'Total main', value: stats.totalPlays),
               const SizedBox(width: 10),
-              _StatPill(
-                label: 'Total skor',
-                value: '${stats.totalHighScore}',
-              ),
+              _StatPill(label: 'Total skor', value: stats.totalHighScore),
             ],
           ),
         ],
@@ -173,7 +191,7 @@ class _OverallStatsHeader extends StatelessWidget {
 
 class _StatPill extends StatelessWidget {
   final String label;
-  final String value;
+  final int value;
 
   const _StatPill({required this.label, required this.value});
 
@@ -181,17 +199,18 @@ class _StatPill extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.16),
+          color: AppColors.brandSurfaceAlt,
           borderRadius: BorderRadius.circular(13),
+          border: Border.all(color: AppColors.borderSubtle),
         ),
         child: Column(
           children: [
-            Text(
-              value,
+            AnimatedCount(
+              value: value,
               style: const TextStyle(
-                color: Colors.white,
+                color: AppColors.brandPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.w900,
               ),
@@ -201,7 +220,7 @@ class _StatPill extends StatelessWidget {
               label,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                color: Colors.white70,
+                color: AppColors.textTertiary,
                 fontSize: 10.5,
                 fontWeight: FontWeight.w600,
               ),

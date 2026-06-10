@@ -8,6 +8,7 @@ import 'package:lms_mobile_app/src/features/home/presentation/bloc/home_event.da
 import 'package:lms_mobile_app/src/features/home/presentation/bloc/home_state.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
+import 'package:lms_mobile_app/src/shared/widgets/brand_app_bar.dart';
 
 /// Dedicated screen for redeeming a class token. Extracted from the home
 /// dashboard so the home stays a glanceable summary and token entry has room
@@ -58,30 +59,7 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text(
-          'Gabung Kelas',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w700,
-            fontSize: 20,
-          ),
-        ),
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: Colors.white),
-        backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: AppColors.brandGradient,
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
-          ),
-        ),
-      ),
+      appBar: const BrandAppBar(title: 'Gabung Kelas'),
       body: BlocListener<HomeBloc, HomeState>(
         listener: _onState,
         child: SingleChildScrollView(
@@ -127,8 +105,6 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
                   ),
                 ),
               ),
-              // const SizedBox(height: 24),
-              // _buildStatusBadge(),
               const SizedBox(height: 20),
               const Text(
                 'Token Kelas',
@@ -207,32 +183,6 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildStatusBadge() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: AppColors.success.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.success.withValues(alpha: 0.25)),
-      ),
-      child: Row(
-        children: const [
-          Icon(Icons.verified_rounded, size: 18, color: AppColors.success),
-          SizedBox(width: 8),
-          Text(
-            'Verifikasi AVPN: APPROVED',
-            style: TextStyle(
-              fontSize: 12.5,
-              fontWeight: FontWeight.w700,
-              color: AppColors.success,
-            ),
-          ),
-        ],
       ),
     );
   }

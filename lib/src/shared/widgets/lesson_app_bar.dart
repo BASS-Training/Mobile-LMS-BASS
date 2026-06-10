@@ -21,7 +21,7 @@ class LessonAppBar extends StatelessWidget implements PreferredSizeWidget {
     super.key,
     required this.courseTitle,
     required this.subtitle,
-    this.gradientColors = const [AppColors.red, AppColors.tomato],
+    this.gradientColors = AppColors.brandGradient,
     required this.onBack,
     this.onMenuTap,
     this.action,

@@ -40,8 +40,8 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
     with LessonNavigationMixin {
   late final GlobalKey<ScaffoldState> _scaffoldKey;
 
-  static const _blueStart = Color(0xFF1976D2);
-  static const _blueEnd = Color(0xFF0D47A1);
+  static const _accent = AppColors.brandPrimary;
+  static const _accentDark = AppColors.brandPrimaryDark;
 
   @override
   void initState() {
@@ -174,7 +174,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: const Color(0xFFF5F7FF),
+      backgroundColor: AppColors.background,
       drawer: LessonDrawer(
         course: widget.course,
         currentLessonIndex: widget.lessonIndex,
@@ -194,7 +194,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
           lessonId: widget.lesson.id,
           lessonTitle: widget.lesson.title,
         ),
-        gradientColors: const [_blueStart, _blueEnd],
+        gradientColors: const [_accent, _accentDark],
         onBack: () {
           Navigator.pop(context);
           context.read<CourseBloc>().add(const RefreshCoursesEvent());
@@ -207,7 +207,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
           child: LessonNavigationBar(
             canGoPrevious: canGoPrevious,
             canGoNext: canGoNext,
-            primaryColor: _blueStart,
+            primaryColor: _accent,
             onPrevious: canGoPrevious
                 ? () {
                     Navigator.pop(context);
@@ -258,14 +258,14 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [_blueStart, _blueEnd],
+          colors: [_accent, _accentDark],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: _blueStart.withValues(alpha: 0.3),
+            color: _accent.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -412,7 +412,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
       case _ZoomStatus.available:
         bgColor = Colors.blue.shade50;
         borderColor = Colors.blue.shade200;
-        iconColor = _blueStart;
+        iconColor = _accent;
         icon = Icons.check_circle_rounded;
         title = 'Meeting Tersedia';
         subtitle = 'Dapat bergabung kapan saja';
@@ -468,7 +468,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
+        border: Border.all(color: AppColors.borderDefault.withValues(alpha: 0.8)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -486,10 +486,10 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: _blueStart.withValues(alpha: 0.1),
+                  color: _accent.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(Icons.info_outline_rounded, color: _blueStart, size: 20),
+                child: const Icon(Icons.info_outline_rounded, color: _accent, size: 20),
               ),
               const SizedBox(width: 10),
               const Text(
@@ -497,7 +497,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.charcoal,
+                  color: AppColors.textPrimary,
                 ),
               ),
             ],
@@ -537,7 +537,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
                 'Detail meeting belum tersedia. Silakan hubungi instruktur.',
                 style: TextStyle(
                   fontSize: 13,
-                  color: AppColors.slate.withValues(alpha: 0.7),
+                  color: AppColors.textSecondary.withValues(alpha: 0.7),
                 ),
               ),
             ),
@@ -556,7 +556,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 16, color: AppColors.slate),
+        Icon(icon, size: 16, color: AppColors.textSecondary),
         const SizedBox(width: 8),
         Expanded(
           child: Column(
@@ -567,7 +567,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
                 style: const TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.slate,
+                  color: AppColors.textSecondary,
                   letterSpacing: 0.3,
                 ),
               ),
@@ -579,7 +579,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
                 style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.charcoal,
+                  color: AppColors.textPrimary,
                 ),
               ),
             ],
@@ -587,7 +587,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
         ),
         IconButton(
           onPressed: onCopy,
-          icon: const Icon(Icons.copy_rounded, size: 16, color: AppColors.slate),
+          icon: const Icon(Icons.copy_rounded, size: 16, color: AppColors.textSecondary),
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
           tooltip: 'Salin',
@@ -626,9 +626,9 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
         child: ElevatedButton.icon(
           onPressed: canJoin ? _joinMeeting : null,
           style: ElevatedButton.styleFrom(
-            backgroundColor: canJoin ? _blueStart : Colors.grey.shade300,
+            backgroundColor: canJoin ? _accent : Colors.grey.shade300,
             foregroundColor: canJoin ? Colors.white : Colors.grey.shade600,
-            shadowColor: canJoin ? _blueStart.withValues(alpha: 0.4) : Colors.transparent,
+            shadowColor: canJoin ? _accent.withValues(alpha: 0.4) : Colors.transparent,
             elevation: canJoin ? 10 : 0,
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
@@ -652,7 +652,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.7)),
+        border: Border.all(color: AppColors.borderDefault.withValues(alpha: 0.7)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -668,10 +668,10 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: _blueStart.withValues(alpha: 0.1),
+              color: _accent.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.description_rounded, color: _blueStart, size: 18),
+            child: const Icon(Icons.description_rounded, color: _accent, size: 18),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -683,7 +683,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.charcoal,
+                    color: AppColors.textPrimary,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -692,7 +692,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
                   style: const TextStyle(
                     fontSize: 13,
                     height: 1.6,
-                    color: AppColors.slate,
+                    color: AppColors.textSecondary,
                   ),
                 ),
               ],

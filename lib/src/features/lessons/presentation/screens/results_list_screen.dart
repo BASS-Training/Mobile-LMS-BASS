@@ -6,7 +6,10 @@ import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entit
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_attempt_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_result_repository.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 import 'package:lms_mobile_app/src/shared/utils/app_date_formatter.dart';
+import 'package:lms_mobile_app/src/shared/widgets/app_empty_state.dart';
+import 'package:lms_mobile_app/src/shared/widgets/brand_app_bar.dart';
 import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
 class ResultsListScreen extends StatelessWidget {
@@ -17,59 +20,38 @@ class ResultsListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F8FF),
-      appBar: AppBar(
-        title: const Text('Nilai & Hasil'),
-        backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [AppColors.red, AppColors.tomato],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
+      backgroundColor: AppColors.background,
+      appBar: const BrandAppBar(title: 'Nilai & Hasil'),
+      body: FutureBuilder<List<LessonAttempt>>(
+        future: GetIt.instance<LessonResultRepository>().getAttemptsByCourse(
+          course.id,
         ),
-      ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
-        child: FutureBuilder<List<LessonAttempt>>(
-          future: GetIt.instance<LessonResultRepository>().getAttemptsByCourse(
-            course.id,
-          ),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            final attempts = snapshot.data ?? const <LessonAttempt>[];
-            if (attempts.isEmpty) {
-              return _buildEmptyState();
-            }
-
-            return ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: attempts.length + 1,
-              separatorBuilder: (context, _) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return _buildHeaderCard(attempts.length);
-                }
-
-                final attempt = attempts[index - 1];
-                return _buildAttemptCard(context, attempt);
-              },
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.brandPrimary),
             );
-          },
-        ),
+          }
+
+          final attempts = snapshot.data ?? const <LessonAttempt>[];
+          if (attempts.isEmpty) {
+            return _buildEmptyState();
+          }
+
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: attempts.length + 1,
+            separatorBuilder: (context, _) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              if (index == 0) {
+                return _buildHeaderCard(attempts.length);
+              }
+
+              final attempt = attempts[index - 1];
+              return _buildAttemptCard(context, attempt);
+            },
+          );
+        },
       ),
     );
   }
@@ -79,18 +61,12 @@ class ResultsListScreen extends StatelessWidget {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [AppColors.red, AppColors.tomato],
+          colors: AppColors.brandGradient,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.red.withValues(alpha: 0.18),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        boxShadow: AppShadows.brandPrimary,
       ),
       child: Row(
         children: [
@@ -136,8 +112,8 @@ class ResultsListScreen extends StatelessWidget {
     final isQuiz = attempt.lessonType == 'quiz';
     final isCaseStudy = attempt.lessonType == 'case_study';
     final statusColor = isQuiz
-        ? (attempt.passed == true ? Colors.green : Colors.orange)
-        : (attempt.graded ? Colors.green : AppColors.red);
+        ? (attempt.passed == true ? AppColors.success : AppColors.warning)
+        : (attempt.graded ? AppColors.success : AppColors.brandPrimary);
     final statusText = isQuiz
         ? (attempt.passed == true ? 'Lulus' : 'Tidak Lulus')
         : (attempt.graded ? 'Sudah Dinilai' : 'Sudah Dikumpulkan');
@@ -157,16 +133,10 @@ class ResultsListScreen extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
-                blurRadius: 16,
-                offset: const Offset(0, 6),
-              ),
-            ],
+            border: Border.all(color: AppColors.borderSubtle),
+            boxShadow: AppShadows.sm,
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -199,7 +169,7 @@ class ResultsListScreen extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
-                        color: AppColors.charcoal,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -207,7 +177,7 @@ class ResultsListScreen extends StatelessWidget {
                       '${attempt.attemptLabel} • ${formatAppDateTime(attempt.submittedAt)}',
                       style: const TextStyle(
                         fontSize: 12,
-                        color: AppColors.slate,
+                        color: AppColors.textSecondary,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -219,12 +189,12 @@ class ResultsListScreen extends StatelessWidget {
                         if (isQuiz && attempt.maxScore != null)
                           _buildStatusChip(
                             '${attempt.percentage.toStringAsFixed(0)}%',
-                            AppColors.red,
+                            AppColors.brandPrimary,
                           ),
                         if (!isQuiz)
                           _buildStatusChip(
                             attempt.graded ? 'Dinilai' : 'Menunggu Nilai',
-                            attempt.graded ? Colors.green : AppColors.red,
+                            attempt.graded ? AppColors.success : AppColors.brandPrimary,
                           ),
                         if (isCaseStudy &&
                             attempt.graded &&
@@ -232,7 +202,7 @@ class ResultsListScreen extends StatelessWidget {
                             attempt.maxScore != null)
                           _buildStatusChip(
                             '${attempt.percentage.toStringAsFixed(0)}%',
-                            AppColors.red,
+                            AppColors.brandPrimary,
                           ),
                       ],
                     ),
@@ -249,13 +219,13 @@ class ResultsListScreen extends StatelessWidget {
                           : '${attempt.questions.length} jawaban terkumpul',
                       style: const TextStyle(
                         fontSize: 12,
-                        color: AppColors.slate,
+                        color: AppColors.textSecondary,
                       ),
                     ),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: AppColors.slate),
+              const Icon(Icons.chevron_right, color: AppColors.textSecondary),
             ],
           ),
         ),
@@ -282,48 +252,11 @@ class ResultsListScreen extends StatelessWidget {
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 88,
-              height: 88,
-              decoration: BoxDecoration(
-                color: AppColors.red.withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.assessment_outlined,
-                size: 42,
-                color: AppColors.red,
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Belum ada nilai dan hasil',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                color: AppColors.charcoal,
-              ),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'Setelah quiz atau essay dikumpulkan, riwayat nilai akan muncul di sini.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 13,
-                height: 1.5,
-                color: AppColors.slate,
-              ),
-            ),
-          ],
-        ),
-      ),
+    return const AppEmptyState(
+      icon: Icons.assessment_outlined,
+      title: 'Belum ada nilai dan hasil',
+      message:
+          'Setelah quiz atau essay dikumpulkan, riwayat nilai akan muncul di sini.',
     );
   }
 }

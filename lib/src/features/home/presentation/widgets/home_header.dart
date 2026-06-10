@@ -67,7 +67,17 @@ class HomeHeader extends StatelessWidget {
     );
   }
 
+  /// Greeting text + a matching emoji based on the current time of day.
+  ({String text, String emoji}) _greeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 11) return (text: 'Selamat pagi', emoji: '☀️');
+    if (hour < 15) return (text: 'Selamat siang', emoji: '🌤️');
+    if (hour < 18) return (text: 'Selamat sore', emoji: '🌥️');
+    return (text: 'Selamat malam', emoji: '🌙');
+  }
+
   Widget _buildGreeting() {
+    final greeting = _greeting();
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         final name = state is AuthSuccess
@@ -81,7 +91,7 @@ class HomeHeader extends StatelessWidget {
               children: [
                 Flexible(
                   child: Text(
-                    'Halo, $name',
+                    '${greeting.text}, $name',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
@@ -92,7 +102,7 @@ class HomeHeader extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 4),
-                const Text('👋', style: TextStyle(fontSize: 16)),
+                Text(greeting.emoji, style: const TextStyle(fontSize: 16)),
               ],
             ),
             const SizedBox(height: 2),

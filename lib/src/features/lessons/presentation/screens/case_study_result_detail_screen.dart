@@ -10,6 +10,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/screens/case_st
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/case_study/case_study_table_widget.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/utils/app_date_formatter.dart';
+import 'package:lms_mobile_app/src/shared/widgets/brand_app_bar.dart';
 
 /// Halaman hasil khusus untuk studi kasus: menampilkan nilai, feedback,
 /// dan jawaban peserta (read-only). Berbeda dari halaman hasil essay.
@@ -52,22 +53,8 @@ class _CaseStudyResultDetailScreenState
   Widget build(BuildContext context) {
     final attempt = widget.attempt;
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F8FF),
-      appBar: AppBar(
-        title: const Text('Hasil Studi Kasus'),
-        backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [AppColors.red, AppColors.tomato],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
-      ),
+      backgroundColor: AppColors.background,
+      appBar: const BrandAppBar(title: 'Hasil Studi Kasus'),
       body: BlocConsumer<CaseStudyBloc, CaseStudyState>(
         listener: (context, state) {
           if (state.errorMessage != null) {
@@ -218,7 +205,7 @@ class _CaseStudyResultDetailScreenState
             width: double.infinity,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFFF6F8FF),
+              color: AppColors.background,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: AppColors.pearl),
             ),

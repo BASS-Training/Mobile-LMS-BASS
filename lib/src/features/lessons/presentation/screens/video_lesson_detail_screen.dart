@@ -129,7 +129,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
 
     if (videoId == null || videoId.isEmpty) {
       return Scaffold(
-        backgroundColor: const Color(0xFFF6F8FF),
+        backgroundColor: AppColors.background,
         appBar: LessonAppBar(
           courseTitle: widget.course.title,
           subtitle: 'VIDEO PLAYER',
@@ -138,7 +138,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
         body: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
+              colors: [AppColors.surface, AppColors.background],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
@@ -208,7 +208,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
               
             },
           ),
-          backgroundColor: const Color(0xFFF6F8FF),
+          backgroundColor: AppColors.background,
           appBar: LessonAppBar(
             courseTitle: widget.course.title,
             subtitle: 'VIDEO PLAYER',
@@ -225,7 +225,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
                 child: Container(
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Color(0xFFF8FAFF), Color(0xFFF1F4FF)],
+                      colors: [AppColors.surface, AppColors.background],
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                     ),

@@ -11,6 +11,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/case_study
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/case_study/case_study_state.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/case_study_pdf_viewer_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/case_study/case_study_table_widget.dart';
+import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 
 class CaseStudyLessonDetailScreen extends StatefulWidget {
   final LessonEntity lesson;
@@ -143,7 +144,7 @@ class _CaseStudyLessonDetailScreenState
         if (!didPop) _backToCourse();
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFFF6F8FF),
+        backgroundColor: AppColors.background,
         appBar: AppBar(
           title: const Text('Studi Kasus'),
           leading: IconButton(
