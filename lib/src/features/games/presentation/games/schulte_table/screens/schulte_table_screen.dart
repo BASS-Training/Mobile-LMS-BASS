@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:lms_mobile_app/src/core/di/injector.dart';
 import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/features/games/presentation/widgets/game_action_app_bar.dart';
+import 'package:lms_mobile_app/src/features/games/presentation/widgets/game_info_box.dart';
 
 import '../../../../domain/entities/game_ids.dart';
 import '../../../../domain/usecases/get_game_score.dart';
@@ -181,34 +183,13 @@ class _SchulteTableScreenState extends State<SchulteTableScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        foregroundColor: AppColors.textPrimary,
-        title: const Text(
-          'Tabel Schulte',
-          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20),
-        ),
-        actions: [
-          IconButton(
-            onPressed: _toggleSound,
-            tooltip: _soundMuted ? 'Nyalakan suara' : 'Matikan suara',
-            icon: Icon(
-              _soundMuted ? Icons.volume_off_rounded : Icons.volume_up_rounded,
-            ),
-          ),
-          if (_ready)
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: TextButton.icon(
-                onPressed: _restart,
-                icon: const Icon(Icons.refresh_rounded, size: 18),
-                label: const Text('Ulang'),
-                style: TextButton.styleFrom(foregroundColor: _accent),
-              ),
-            ),
-        ],
+      appBar: GameActionAppBar(
+        title: 'Tabel Schulte',
+        accent: _accent,
+        soundMuted: _soundMuted,
+        onToggleSound: _toggleSound,
+        onRestart: _restart,
+        showRestart: _ready,
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -256,7 +237,7 @@ class _SchulteTableScreenState extends State<SchulteTableScreen>
             scale: Tween<double>(begin: 0.97, end: 1.04).animate(
               CurvedAnimation(parent: _pulse, curve: Curves.easeInOut),
             ),
-            child: _InfoBox(
+            child: GameInfoBox(
               label: 'CARI',
               value: _finished ? '✓' : '${_engine.nextTarget}',
               accent: _accent,
@@ -266,7 +247,7 @@ class _SchulteTableScreenState extends State<SchulteTableScreen>
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: _InfoBox(
+          child: GameInfoBox(
             label: 'WAKTU',
             value: '${_elapsedSeconds.toStringAsFixed(1)}s',
             accent: _accent,
@@ -274,7 +255,7 @@ class _SchulteTableScreenState extends State<SchulteTableScreen>
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: _InfoBox(
+          child: GameInfoBox(
             label: 'TERBAIK',
             value: _hasBest ? '$_best' : '–',
             accent: _accent,
@@ -388,72 +369,6 @@ class _SchulteTableScreenState extends State<SchulteTableScreen>
           ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _InfoBox extends StatelessWidget {
-  final String label;
-  final String value;
-  final Color accent;
-  final bool emphasised;
-
-  const _InfoBox({
-    required this.label,
-    required this.value,
-    required this.accent,
-    this.emphasised = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      decoration: BoxDecoration(
-        gradient: emphasised
-            ? LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Color.lerp(accent, Colors.white, 0.20)!, accent],
-              )
-            : null,
-        color: emphasised ? null : AppColors.surface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: emphasised ? accent : AppColors.borderSubtle),
-        boxShadow: [
-          BoxShadow(
-            color: emphasised
-                ? accent.withValues(alpha: 0.32)
-                : Colors.black.withValues(alpha: 0.05),
-            blurRadius: emphasised ? 12 : 7,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              color: emphasised
-                  ? Colors.white.withValues(alpha: 0.85)
-                  : AppColors.textTertiary,
-              fontSize: 11,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 1,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            value,
-            style: TextStyle(
-              color: emphasised ? Colors.white : AppColors.textPrimary,
-              fontSize: 22,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-        ],
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/core/di/injector.dart';
 import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 import 'package:lms_mobile_app/src/shared/widgets/animated_count.dart';
+import 'package:lms_mobile_app/src/features/games/presentation/widgets/game_action_app_bar.dart';
 
 import '../../../../domain/entities/game_ids.dart';
 import '../../../../domain/usecases/get_game_score.dart';
@@ -198,37 +199,15 @@ class _Game2048ScreenState extends State<Game2048Screen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFAF8EF),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFFAF8EF),
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        foregroundColor: const Color(0xFF776E65),
-        title: const Text(
-          '2048',
-          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20),
-        ),
-        actions: [
-          IconButton(
-            onPressed: _toggleSound,
-            tooltip: _soundMuted ? 'Nyalakan suara' : 'Matikan suara',
-            icon: Icon(
-              _soundMuted
-                  ? Icons.volume_off_rounded
-                  : Icons.volume_up_rounded,
-              color: const Color(0xFF776E65),
-            ),
-          ),
-          if (_ready)
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: TextButton.icon(
-                onPressed: _restart,
-                icon: const Icon(Icons.refresh_rounded, size: 18),
-                label: const Text('Ulang'),
-                style: TextButton.styleFrom(foregroundColor: _accent),
-              ),
-            ),
-        ],
+      appBar: GameActionAppBar(
+        title: '2048',
+        accent: _accent,
+        soundMuted: _soundMuted,
+        onToggleSound: _toggleSound,
+        onRestart: _restart,
+        showRestart: _ready,
+        background: const Color(0xFFFAF8EF),
+        foreground: const Color(0xFF776E65),
       ),
       body: Container(
         decoration: const BoxDecoration(

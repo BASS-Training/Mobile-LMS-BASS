@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:lms_mobile_app/src/core/di/injector.dart';
 import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/features/games/presentation/widgets/game_action_app_bar.dart';
 
 import '../../../../domain/entities/game_ids.dart';
 import '../../../../domain/usecases/get_game_score.dart';
@@ -135,34 +136,13 @@ class _FlappyScreenState extends State<FlappyScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        foregroundColor: AppColors.textPrimary,
-        title: const Text(
-          'Flappy',
-          style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20),
-        ),
-        actions: [
-          IconButton(
-            onPressed: _toggleSound,
-            tooltip: _soundMuted ? 'Nyalakan suara' : 'Matikan suara',
-            icon: Icon(
-              _soundMuted ? Icons.volume_off_rounded : Icons.volume_up_rounded,
-            ),
-          ),
-          if (_ready)
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: TextButton.icon(
-                onPressed: _restart,
-                icon: const Icon(Icons.refresh_rounded, size: 18),
-                label: const Text('Ulang'),
-                style: TextButton.styleFrom(foregroundColor: _accent),
-              ),
-            ),
-        ],
+      appBar: GameActionAppBar(
+        title: 'Flappy',
+        accent: _accent,
+        soundMuted: _soundMuted,
+        onToggleSound: _toggleSound,
+        onRestart: _restart,
+        showRestart: _ready,
       ),
       body: !_ready
           ? const Center(child: CircularProgressIndicator(color: _accent))
