@@ -40,5 +40,13 @@ class GameCatalog {
       accent: Color(0xFF6C5CE7),
       route: AppRoutes.gameStackTower,
     ),
+    MiniGame(
+      id: GameIds.flappy,
+      title: 'Flappy',
+      description: 'Ketuk untuk terbang, lewati celah pipa sebanyak mungkin.',
+      icon: Icons.flutter_dash,
+      accent: Color(0xFF4AA8FF),
+      route: AppRoutes.gameFlappy,
+    ),
   ];
 }

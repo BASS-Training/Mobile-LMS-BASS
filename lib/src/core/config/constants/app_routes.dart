@@ -50,4 +50,5 @@ class AppRoutes {
   static const String game2048 = '/games/2048';
   static const String gameSchulte = '/games/schulte';
   static const String gameStackTower = '/games/stack-tower';
+  static const String gameFlappy = '/games/flappy';
 }
