@@ -137,7 +137,7 @@ class _TextLessonDetailScreenState extends State<TextLessonDetailScreen>
                         await Future.delayed(
                           const Duration(milliseconds: 100),
                         );
-                        if (!mounted) return;
+                        if (!context.mounted) return;
                         Navigator.pop(context);
                         if (canGoNext && nextLesson != null) {
                           Future.delayed(

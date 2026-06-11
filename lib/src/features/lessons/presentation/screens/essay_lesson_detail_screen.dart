@@ -140,6 +140,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
               if (state.lastAttempt != null) {
                 Navigator.pop(context);
                 Future.delayed(const Duration(milliseconds: 200), () {
+                  if (!context.mounted) return;
                   context.push(
                     AppRoutes.essayResultDetail,
                     extra: state.lastAttempt,

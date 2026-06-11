@@ -1,4 +1,5 @@
 import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
+import 'package:lms_mobile_app/src/core/utils/app_logger.dart';
 import '../../domain/repositories/lesson_repository.dart';
 import '../datasources/lesson_remote_datasource.dart';
 
@@ -34,7 +35,7 @@ class LessonRepositoryImpl implements LessonRepository {
             break;
           } catch (e) {
             // ignore: avoid_print
-            print('markLessonComplete attempt=$attempts failed: $e');
+            logDebug('markLessonComplete attempt=$attempts failed: $e');
             if (attempts >= 3) {
               // Give up after 3 attempts; will leave local mark so user can continue offline
               // Could schedule background retry here
@@ -62,7 +63,7 @@ class LessonRepositoryImpl implements LessonRepository {
             break;
           } catch (e) {
             // ignore: avoid_print
-            print('markLessonComplete attempt=$attempts failed: $e');
+            logDebug('markLessonComplete attempt=$attempts failed: $e');
             if (attempts >= 3) {
               // final failure
             } else {
@@ -74,9 +75,9 @@ class LessonRepositoryImpl implements LessonRepository {
     } catch (e, st) {
       // Log remote failure for debugging
       // ignore: avoid_print
-      print('markLessonComplete remote error: $e');
+      logDebug('markLessonComplete remote error: $e');
       // ignore: avoid_print
-      print(st);
+      logDebug(st);
     }
   }
 

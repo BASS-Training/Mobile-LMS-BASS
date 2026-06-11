@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:lms_mobile_app/src/core/utils/app_logger.dart';
 import 'package:lms_mobile_app/src/core/config/constants/api_endpoints.dart';
 import 'package:lms_mobile_app/src/features/home/data/datasources/home_remote_data_source.dart';
 
@@ -11,7 +12,7 @@ class HomeRemoteDataSourceImpl implements HomeRemoteDataSource {
   Future<void> submitJoinClassToken(String token) async {
     try {
       final endpoint = ApiEndpoints.enrollByToken;
-      print('>>> ENROLL REQUEST URL: ${dio.options.baseUrl}$endpoint');
+      logDebug('>>> ENROLL REQUEST URL: ${dio.options.baseUrl}$endpoint');
       final response = await dio.post(endpoint, data: {'token': token});
 
       final data = response.data;

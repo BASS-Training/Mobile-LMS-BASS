@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:lms_mobile_app/src/core/utils/app_logger.dart';
 import 'package:lms_mobile_app/src/core/config/constants/api_endpoints.dart';
 import 'package:lms_mobile_app/src/core/utils/offline_test_mode.dart';
 import 'quiz_remote_datasource.dart';
@@ -10,11 +11,11 @@ class QuizRemoteDataSourceImpl implements QuizRemoteDataSource {
 
   @override
   Future<String> startQuizAttempt(String quizId) async {
-    print(
+    logDebug(
       '[QUIZ][REMOTE][START] quizId=$quizId tester=${OfflineTestMode.describeContext()}',
     );
     if (OfflineTestMode.isActive()) {
-      print('[QUIZ][REMOTE][START] blocked by tester mode');
+      logDebug('[QUIZ][REMOTE][START] blocked by tester mode');
       return '';
     }
 
@@ -37,11 +38,11 @@ class QuizRemoteDataSourceImpl implements QuizRemoteDataSource {
 
   @override
   Future<Map<String, dynamic>> getQuizByLessonId(String lessonId) async {
-    print(
+    logDebug(
       '[QUIZ][REMOTE][GET] lessonId=$lessonId tester=${OfflineTestMode.describeContext()}',
     );
     if (OfflineTestMode.isActive()) {
-      print('[QUIZ][REMOTE][GET] blocked by tester mode');
+      logDebug('[QUIZ][REMOTE][GET] blocked by tester mode');
       return {
         'title': '',
         'totalQuestions': 0,
@@ -104,11 +105,11 @@ class QuizRemoteDataSourceImpl implements QuizRemoteDataSource {
     String attemptId,
     List<Map<String, dynamic>> answers,
   ) async {
-    print(
+    logDebug(
       '[QUIZ][REMOTE][SUBMIT] quizId=$quizId attemptId=$attemptId tester=${OfflineTestMode.describeContext()}',
     );
     if (OfflineTestMode.isActive()) {
-      print('[QUIZ][REMOTE][SUBMIT] blocked by tester mode');
+      logDebug('[QUIZ][REMOTE][SUBMIT] blocked by tester mode');
       return <String, dynamic>{};
     }
 
