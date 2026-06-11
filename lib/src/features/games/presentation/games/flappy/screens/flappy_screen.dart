@@ -364,12 +364,23 @@ class _ScenePainter extends CustomPainter {
 
     // Soft sun glow, top-right.
     final glow = Paint()
-      ..shader = RadialGradient(
-        colors: [Colors.white.withValues(alpha: 0.55), Colors.white.withValues(alpha: 0)],
-      ).createShader(
-        Rect.fromCircle(center: Offset(size.width * 0.82, size.height * 0.16), radius: size.width * 0.3),
-      );
-    canvas.drawCircle(Offset(size.width * 0.82, size.height * 0.16), size.width * 0.3, glow);
+      ..shader =
+          RadialGradient(
+            colors: [
+              Colors.white.withValues(alpha: 0.55),
+              Colors.white.withValues(alpha: 0),
+            ],
+          ).createShader(
+            Rect.fromCircle(
+              center: Offset(size.width * 0.82, size.height * 0.16),
+              radius: size.width * 0.3,
+            ),
+          );
+    canvas.drawCircle(
+      Offset(size.width * 0.82, size.height * 0.16),
+      size.width * 0.3,
+      glow,
+    );
   }
 
   void _paintClouds(Canvas canvas, Size size) {
@@ -537,12 +548,20 @@ class _ScenePainter extends CustomPainter {
 
     // Drop shadow.
     canvas.drawOval(
-      Rect.fromCenter(center: Offset(0, ry * 0.5), width: rx * 2, height: ry * 1.4),
+      Rect.fromCenter(
+        center: Offset(0, ry * 0.5),
+        width: rx * 2,
+        height: ry * 1.4,
+      ),
       Paint()..color = Colors.black.withValues(alpha: 0.12),
     );
 
     // Body.
-    final bodyRect = Rect.fromCenter(center: Offset.zero, width: rx * 2, height: ry * 2);
+    final bodyRect = Rect.fromCenter(
+      center: Offset.zero,
+      width: rx * 2,
+      height: ry * 2,
+    );
     canvas.drawOval(
       bodyRect,
       Paint()
@@ -560,7 +579,11 @@ class _ScenePainter extends CustomPainter {
 
     // Belly highlight.
     canvas.drawOval(
-      Rect.fromCenter(center: Offset(-rx * 0.1, ry * 0.45), width: rx * 1.2, height: ry * 0.9),
+      Rect.fromCenter(
+        center: Offset(-rx * 0.1, ry * 0.45),
+        width: rx * 1.2,
+        height: ry * 0.9,
+      ),
       Paint()..color = const Color(0xFFFFE9A3).withValues(alpha: 0.7),
     );
 
@@ -571,7 +594,11 @@ class _ScenePainter extends CustomPainter {
     canvas.translate(-rx * 0.15, ry * 0.05);
     canvas.rotate(wingAngle);
     canvas.drawOval(
-      Rect.fromCenter(center: Offset(-rx * 0.25, 0), width: rx * 1.1, height: ry * 0.85),
+      Rect.fromCenter(
+        center: Offset(-rx * 0.25, 0),
+        width: rx * 1.1,
+        height: ry * 0.85,
+      ),
       Paint()..color = const Color(0xFFF0930A),
     );
     canvas.restore();
@@ -579,7 +606,11 @@ class _ScenePainter extends CustomPainter {
     // Eye.
     final eyeCenter = Offset(rx * 0.45, -ry * 0.35);
     canvas.drawCircle(eyeCenter, ry * 0.36, Paint()..color = Colors.white);
-    canvas.drawCircle(eyeCenter + Offset(rx * 0.12, 0), ry * 0.17, Paint()..color = const Color(0xFF222222));
+    canvas.drawCircle(
+      eyeCenter + Offset(rx * 0.12, 0),
+      ry * 0.17,
+      Paint()..color = const Color(0xFF222222),
+    );
 
     // Beak.
     final beak = Path()
