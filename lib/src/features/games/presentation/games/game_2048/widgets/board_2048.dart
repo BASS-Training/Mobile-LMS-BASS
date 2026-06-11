@@ -31,19 +31,32 @@ class Board2048 extends StatelessWidget {
 
         double offset(int index) => _padding + index * (tileSize + _gap);
 
+        final cellRadius = tileSize * 0.16;
+
         return SizedBox(
           width: boardSize,
           height: boardSize,
           child: Stack(
             children: [
-              // Board background.
+              // Board background with depth.
               Container(
                 decoration: BoxDecoration(
-                  color: _boardBg,
-                  borderRadius: BorderRadius.circular(12),
+                  gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFFC3B5A8), _boardBg],
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.18),
+                      blurRadius: 22,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
                 ),
               ),
-              // Static empty slots.
+              // Static empty slots (slightly inset look).
               for (var r = 0; r < n; r++)
                 for (var c = 0; c < n; c++)
                   Positioned(
@@ -53,8 +66,8 @@ class Board2048 extends StatelessWidget {
                     height: tileSize,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: _emptyCell,
-                        borderRadius: BorderRadius.circular(8),
+                        color: _emptyCell.withValues(alpha: 0.75),
+                        borderRadius: BorderRadius.circular(cellRadius),
                       ),
                     ),
                   ),

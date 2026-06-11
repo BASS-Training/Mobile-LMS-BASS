@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/core/di/injector.dart';
 import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
+import 'package:lms_mobile_app/src/shared/widgets/animated_count.dart';
 
 import '../../../../domain/entities/game_ids.dart';
 import '../../../../domain/usecases/get_game_score.dart';
@@ -229,11 +230,19 @@ class _Game2048ScreenState extends State<Game2048Screen> {
             ),
         ],
       ),
-      body: !_ready
-          ? const Center(
-              child: CircularProgressIndicator(color: _accent),
-            )
-          : SafeArea(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFFFBF9F0), Color(0xFFEDE3D3)],
+          ),
+        ),
+        child: !_ready
+            ? const Center(
+                child: CircularProgressIndicator(color: _accent),
+              )
+            : SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(20),
                 child: Column(
@@ -281,6 +290,7 @@ class _Game2048ScreenState extends State<Game2048Screen> {
                 ),
               ),
             ),
+      ),
     );
   }
 
@@ -348,23 +358,34 @@ class _ScoreBox extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFBBADA0),
-        borderRadius: BorderRadius.circular(12),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFC7B9AC), Color(0xFFAD9F92)],
+        ),
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.12),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         children: [
           Text(
             label,
             style: const TextStyle(
-              color: Color(0xFFEEE4DA),
+              color: Color(0xFFF3EBE2),
               fontSize: 11,
               fontWeight: FontWeight.w800,
               letterSpacing: 1,
             ),
           ),
           const SizedBox(height: 2),
-          Text(
-            '$value',
+          AnimatedCount(
+            value: value,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 22,
