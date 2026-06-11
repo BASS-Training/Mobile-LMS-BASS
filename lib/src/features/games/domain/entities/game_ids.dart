@@ -9,4 +9,5 @@ class GameIds {
 
   static const String game2048 = '2048';
   static const String schulte = 'schulte';
+  static const String stackTower = 'stack_tower';
 }

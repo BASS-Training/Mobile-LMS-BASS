@@ -32,5 +32,13 @@ class GameCatalog {
       accent: Color(0xFF3DA9A3),
       route: AppRoutes.gameSchulte,
     ),
+    MiniGame(
+      id: GameIds.stackTower,
+      title: 'Stack Tower',
+      description: 'Ketuk untuk menumpuk balok setinggi mungkin. Jangan meleset!',
+      icon: Icons.layers_rounded,
+      accent: Color(0xFF6C5CE7),
+      route: AppRoutes.gameStackTower,
+    ),
   ];
 }

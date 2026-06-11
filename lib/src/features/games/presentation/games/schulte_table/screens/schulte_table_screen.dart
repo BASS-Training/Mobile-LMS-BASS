@@ -300,11 +300,7 @@ class _SchulteTableScreenState extends State<SchulteTableScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.emoji_events_rounded,
-              color: _accent,
-              size: 44,
-            ),
+            const Icon(Icons.emoji_events_rounded, color: _accent, size: 44),
             const SizedBox(height: 8),
             const Text(
               'Selesai!',
@@ -377,9 +373,7 @@ class _InfoBox extends StatelessWidget {
       decoration: BoxDecoration(
         color: emphasised ? accent : AppColors.surface,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: emphasised ? accent : AppColors.borderSubtle,
-        ),
+        border: Border.all(color: emphasised ? accent : AppColors.borderSubtle),
       ),
       child: Column(
         children: [

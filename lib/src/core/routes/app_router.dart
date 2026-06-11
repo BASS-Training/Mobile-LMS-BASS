@@ -39,6 +39,7 @@ import 'package:lms_mobile_app/src/features/games/presentation/hub/bloc/games_hu
 import 'package:lms_mobile_app/src/features/games/presentation/hub/screens/games_hub_screen.dart';
 import 'package:lms_mobile_app/src/features/games/presentation/games/game_2048/screens/game_2048_screen.dart';
 import 'package:lms_mobile_app/src/features/games/presentation/games/schulte_table/screens/schulte_table_screen.dart';
+import 'package:lms_mobile_app/src/features/games/presentation/games/stack_tower/screens/stack_tower_screen.dart';
 
 // Entity imports
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
@@ -494,6 +495,10 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.gameSchulte,
         builder: (context, state) => const SchulteTableScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.gameStackTower,
+        builder: (context, state) => const StackTowerScreen(),
       ),
     ],
   );
