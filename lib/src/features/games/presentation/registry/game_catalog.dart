@@ -24,5 +24,13 @@ class GameCatalog {
       accent: Color(0xFFEE7B30),
       route: AppRoutes.game2048,
     ),
+    MiniGame(
+      id: GameIds.schulte,
+      title: 'Tabel Schulte',
+      description: 'Sentuh angka 1–25 secepat mungkin. Latih fokus & kecepatan.',
+      icon: Icons.grid_on_rounded,
+      accent: Color(0xFF3DA9A3),
+      route: AppRoutes.gameSchulte,
+    ),
   ];
 }

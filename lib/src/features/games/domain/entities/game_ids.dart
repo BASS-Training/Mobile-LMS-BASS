@@ -8,4 +8,5 @@ class GameIds {
   GameIds._();
 
   static const String game2048 = '2048';
+  static const String schulte = 'schulte';
 }
