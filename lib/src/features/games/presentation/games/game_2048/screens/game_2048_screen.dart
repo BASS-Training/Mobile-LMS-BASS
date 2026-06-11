@@ -2,15 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/core/di/injector.dart';
-import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 import 'package:lms_mobile_app/src/shared/widgets/animated_count.dart';
 import 'package:lms_mobile_app/src/features/games/presentation/widgets/game_action_app_bar.dart';
+import 'package:lms_mobile_app/src/features/games/presentation/mixins/game_session_mixin.dart';
 
 import '../../../../domain/entities/game_ids.dart';
-import '../../../../domain/usecases/get_game_score.dart';
 import '../../../../domain/usecases/manage_board_state.dart';
-import '../../../../domain/usecases/submit_game_result.dart';
-import '../../../audio/game_sound_effects.dart';
 import '../logic/game_2048_engine.dart';
 import '../logic/tile.dart';
 import '../widgets/board_2048.dart';
@@ -25,7 +22,8 @@ class Game2048Screen extends StatefulWidget {
   State<Game2048Screen> createState() => _Game2048ScreenState();
 }
 
-class _Game2048ScreenState extends State<Game2048Screen> {
+class _Game2048ScreenState extends State<Game2048Screen>
+    with GameSessionMixin {
   static const Color _accent = Color(0xFFEE7B30);
   static const String _gameId = GameIds.game2048;
 
@@ -35,19 +33,14 @@ class _Game2048ScreenState extends State<Game2048Screen> {
   static const String _sfxGameOver = 'audio/sfx_gameover.mp3';
 
   final _engine = Game2048Engine();
-  final _sl = ServiceLocator().locator;
 
-  late final GetGameScore _getScore = _sl<GetGameScore>();
-  late final SubmitGameResult _submitResult = _sl<SubmitGameResult>();
-  late final ManageBoardState _board = _sl<ManageBoardState>();
-
-  late final GameSoundEffects _sfx;
+  late final ManageBoardState _board =
+      ServiceLocator().locator<ManageBoardState>();
 
   bool _ready = false;
   bool _gameOver = false;
   bool _wonShown = false;
   bool _animating = false;
-  bool _soundMuted = false;
   int _best = 0;
 
   /// Tiles currently rendered. Driven through the two-phase move (slide, then
@@ -61,27 +54,18 @@ class _Game2048ScreenState extends State<Game2048Screen> {
   @override
   void initState() {
     super.initState();
-    _soundMuted = LocalStorage.isGameSoundMuted();
-    _sfx = GameSoundEffects(muted: _soundMuted);
-    _sfx.load(const [_sfxMove, _sfxMerge, _sfxGameOver]);
+    initGameSession(const [_sfxMove, _sfxMerge, _sfxGameOver]);
     _bootstrap();
   }
 
   @override
   void dispose() {
-    _sfx.dispose();
+    disposeGameSession();
     super.dispose();
   }
 
-  Future<void> _toggleSound() async {
-    final muted = !_soundMuted;
-    setState(() => _soundMuted = muted);
-    _sfx.muted = muted;
-    await LocalStorage.setGameSoundMuted(muted);
-  }
-
   Future<void> _bootstrap() async {
-    final score = await _getScore(_gameId);
+    final score = await getScore(_gameId);
     final savedBoard = await _board.load(_gameId);
 
     if (savedBoard != null && savedBoard.any((v) => v != 0)) {
@@ -127,7 +111,7 @@ class _Game2048ScreenState extends State<Game2048Screen> {
     final plan = _engine.planMove(dir);
     if (!plan.moved) return;
 
-    _sfx.play(_sfxMove);
+    sfx.play(_sfxMove);
 
     // Phase 1: slide every tile to its destination (old values preserved).
     setState(() {
@@ -144,7 +128,7 @@ class _Game2048ScreenState extends State<Game2048Screen> {
       _animating = false;
     });
 
-    if (plan.gained > 0) _sfx.play(_sfxMerge);
+    if (plan.gained > 0) sfx.play(_sfxMerge);
 
     unawaited(
       _board.save(
@@ -169,8 +153,8 @@ class _Game2048ScreenState extends State<Game2048Screen> {
   }
 
   Future<void> _finishGame() async {
-    _sfx.play(_sfxGameOver);
-    final updated = await _submitResult(gameId: _gameId, score: _engine.score);
+    sfx.play(_sfxGameOver);
+    final updated = await submitResult(gameId: _gameId, score: _engine.score);
     await _board.clear(_gameId);
     if (!mounted) return;
     setState(() {
@@ -202,8 +186,8 @@ class _Game2048ScreenState extends State<Game2048Screen> {
       appBar: GameActionAppBar(
         title: '2048',
         accent: _accent,
-        soundMuted: _soundMuted,
-        onToggleSound: _toggleSound,
+        soundMuted: soundMuted,
+        onToggleSound: toggleGameSound,
         onRestart: _restart,
         showRestart: _ready,
         background: const Color(0xFFFAF8EF),

@@ -2,16 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:lms_mobile_app/src/core/di/injector.dart';
-import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/features/games/presentation/widgets/game_action_app_bar.dart';
 import 'package:lms_mobile_app/src/features/games/presentation/widgets/game_info_box.dart';
+import 'package:lms_mobile_app/src/features/games/presentation/mixins/game_session_mixin.dart';
 
 import '../../../../domain/entities/game_ids.dart';
-import '../../../../domain/usecases/get_game_score.dart';
-import '../../../../domain/usecases/submit_game_result.dart';
-import '../../../audio/game_sound_effects.dart';
 import '../logic/schulte_engine.dart';
 
 /// Schulte Table: tap the numbers 1..N in order as fast as you can. A focus /
@@ -30,7 +26,7 @@ class SchulteTableScreen extends StatefulWidget {
 }
 
 class _SchulteTableScreenState extends State<SchulteTableScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, GameSessionMixin {
   static const Color _accent = Color(0xFF3DA9A3);
   static const String _gameId = GameIds.schulte;
 
@@ -43,20 +39,12 @@ class _SchulteTableScreenState extends State<SchulteTableScreen>
   static const String _sfxWin = 'audio/sfx_win.wav';
 
   final _engine = SchulteEngine();
-  final _sl = ServiceLocator().locator;
-
-  late final GetGameScore _getScore = _sl<GetGameScore>();
-  late final SubmitGameResult _submitResult = _sl<SubmitGameResult>();
-
-  late final GameSoundEffects _sfx;
-
   final _stopwatch = Stopwatch();
   Timer? _ticker;
 
   bool _ready = false;
   bool _started = false;
   bool _finished = false;
-  bool _soundMuted = false;
   int _best = 0; // best points
   bool _hasBest = false;
   int _lastPoints = 0;
@@ -74,9 +62,7 @@ class _SchulteTableScreenState extends State<SchulteTableScreen>
   @override
   void initState() {
     super.initState();
-    _soundMuted = LocalStorage.isGameSoundMuted();
-    _sfx = GameSoundEffects(muted: _soundMuted);
-    _sfx.load(const [_sfxCorrect, _sfxWrong, _sfxWin]);
+    initGameSession(const [_sfxCorrect, _sfxWrong, _sfxWin]);
     _bootstrap();
   }
 
@@ -85,12 +71,12 @@ class _SchulteTableScreenState extends State<SchulteTableScreen>
     _ticker?.cancel();
     _wrongTimer?.cancel();
     _pulse.dispose();
-    _sfx.dispose();
+    disposeGameSession();
     super.dispose();
   }
 
   Future<void> _bootstrap() async {
-    final score = await _getScore(_gameId);
+    final score = await getScore(_gameId);
     _engine.newGame();
     if (!mounted) return;
     setState(() {
@@ -98,13 +84,6 @@ class _SchulteTableScreenState extends State<SchulteTableScreen>
       _hasBest = score.hasBeenPlayed;
       _ready = true;
     });
-  }
-
-  Future<void> _toggleSound() async {
-    final muted = !_soundMuted;
-    setState(() => _soundMuted = muted);
-    _sfx.muted = muted;
-    await LocalStorage.setGameSoundMuted(muted);
   }
 
   double get _elapsedSeconds => _stopwatch.elapsedMilliseconds / 1000;
@@ -127,15 +106,15 @@ class _SchulteTableScreenState extends State<SchulteTableScreen>
     final result = _engine.tap(value);
     switch (result) {
       case TapResult.correct:
-        _sfx.play(_sfxCorrect);
+        sfx.play(_sfxCorrect);
         HapticFeedback.selectionClick();
         setState(() {});
       case TapResult.finished:
-        _sfx.play(_sfxWin);
+        sfx.play(_sfxWin);
         HapticFeedback.mediumImpact();
         _finishGame();
       case TapResult.wrong:
-        _sfx.play(_sfxWrong);
+        sfx.play(_sfxWrong);
         HapticFeedback.heavyImpact();
         _flashWrong(value);
     }
@@ -156,7 +135,7 @@ class _SchulteTableScreenState extends State<SchulteTableScreen>
     final points = seconds > 0 ? (_scoreScale / seconds).round() : 0;
     _lastPoints = points;
 
-    final updated = await _submitResult(gameId: _gameId, score: points);
+    final updated = await submitResult(gameId: _gameId, score: points);
     if (!mounted) return;
     setState(() {
       _best = updated.highScore;
@@ -186,8 +165,8 @@ class _SchulteTableScreenState extends State<SchulteTableScreen>
       appBar: GameActionAppBar(
         title: 'Tabel Schulte',
         accent: _accent,
-        soundMuted: _soundMuted,
-        onToggleSound: _toggleSound,
+        soundMuted: soundMuted,
+        onToggleSound: toggleGameSound,
         onRestart: _restart,
         showRestart: _ready,
       ),

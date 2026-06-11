@@ -3,16 +3,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
-import 'package:lms_mobile_app/src/core/di/injector.dart';
-import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/features/games/presentation/widgets/game_action_app_bar.dart';
 import 'package:lms_mobile_app/src/features/games/presentation/widgets/game_info_box.dart';
+import 'package:lms_mobile_app/src/features/games/presentation/mixins/game_session_mixin.dart';
 
 import '../../../../domain/entities/game_ids.dart';
-import '../../../../domain/usecases/get_game_score.dart';
-import '../../../../domain/usecases/submit_game_result.dart';
-import '../../../audio/game_sound_effects.dart';
 import '../logic/stack_tower_engine.dart';
 
 /// Stack Tower: a horizontally sliding block; tap to drop it onto the stack.
@@ -29,7 +25,7 @@ class StackTowerScreen extends StatefulWidget {
 }
 
 class _StackTowerScreenState extends State<StackTowerScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, GameSessionMixin {
   static const Color _accent = Color(0xFF6C5CE7);
   static const String _gameId = GameIds.stackTower;
   static const double _blockHeight = 30;
@@ -39,13 +35,8 @@ class _StackTowerScreenState extends State<StackTowerScreen>
   static const String _sfxFall = 'audio/sfx_fall.wav';
 
   final _engine = StackTowerEngine();
-  final _sl = ServiceLocator().locator;
   final _rng = Random();
 
-  late final GetGameScore _getScore = _sl<GetGameScore>();
-  late final SubmitGameResult _submitResult = _sl<SubmitGameResult>();
-
-  late final GameSoundEffects _sfx;
   late final Ticker _ticker = createTicker(_onTick);
   Duration _lastTick = Duration.zero;
 
@@ -61,28 +52,25 @@ class _StackTowerScreenState extends State<StackTowerScreen>
 
   bool _ready = false;
   bool _gameOver = false;
-  bool _soundMuted = false;
   int _best = 0;
   bool _hasBest = false;
 
   @override
   void initState() {
     super.initState();
-    _soundMuted = LocalStorage.isGameSoundMuted();
-    _sfx = GameSoundEffects(muted: _soundMuted);
-    _sfx.load(const [_sfxStack, _sfxPerfect, _sfxFall]);
+    initGameSession(const [_sfxStack, _sfxPerfect, _sfxFall]);
     _bootstrap();
   }
 
   @override
   void dispose() {
     _ticker.dispose();
-    _sfx.dispose();
+    disposeGameSession();
     super.dispose();
   }
 
   Future<void> _bootstrap() async {
-    final score = await _getScore(_gameId);
+    final score = await getScore(_gameId);
     _engine.newGame();
     _cameraLevel = _engine.activeLevel.toDouble();
     if (!mounted) return;
@@ -124,13 +112,6 @@ class _StackTowerScreenState extends State<StackTowerScreen>
     if (mounted) setState(() {});
   }
 
-  Future<void> _toggleSound() async {
-    final muted = !_soundMuted;
-    setState(() => _soundMuted = muted);
-    _sfx.muted = muted;
-    await LocalStorage.setGameSoundMuted(muted);
-  }
-
   void _onDrop() {
     if (_engine.gameOver) return;
     final aLeft = _engine.activeLeft;
@@ -141,12 +122,12 @@ class _StackTowerScreenState extends State<StackTowerScreen>
     final result = _engine.drop();
     switch (result) {
       case DropResult.stacked:
-        _sfx.play(_sfxStack);
+        sfx.play(_sfxStack);
         HapticFeedback.lightImpact();
         _spawnOverhang(dropLevel, aLeft, aRight);
         setState(() {});
       case DropResult.perfect:
-        _sfx.play(_sfxPerfect);
+        sfx.play(_sfxPerfect);
         HapticFeedback.mediumImpact();
         _perfectFlash = 1;
         setState(() {});
@@ -197,9 +178,9 @@ class _StackTowerScreenState extends State<StackTowerScreen>
   }
 
   Future<void> _finishGame() async {
-    _sfx.play(_sfxFall);
+    sfx.play(_sfxFall);
     HapticFeedback.heavyImpact();
-    final updated = await _submitResult(gameId: _gameId, score: _engine.score);
+    final updated = await submitResult(gameId: _gameId, score: _engine.score);
     if (!mounted) return;
     setState(() {
       _best = updated.highScore;
@@ -224,8 +205,8 @@ class _StackTowerScreenState extends State<StackTowerScreen>
       appBar: GameActionAppBar(
         title: 'Stack Tower',
         accent: _accent,
-        soundMuted: _soundMuted,
-        onToggleSound: _toggleSound,
+        soundMuted: soundMuted,
+        onToggleSound: toggleGameSound,
         onRestart: _restart,
         showRestart: _ready,
       ),

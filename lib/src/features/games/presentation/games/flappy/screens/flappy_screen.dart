@@ -3,15 +3,11 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
-import 'package:lms_mobile_app/src/core/di/injector.dart';
-import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/features/games/presentation/widgets/game_action_app_bar.dart';
+import 'package:lms_mobile_app/src/features/games/presentation/mixins/game_session_mixin.dart';
 
 import '../../../../domain/entities/game_ids.dart';
-import '../../../../domain/usecases/get_game_score.dart';
-import '../../../../domain/usecases/submit_game_result.dart';
-import '../../../audio/game_sound_effects.dart';
 import '../logic/flappy_engine.dart';
 
 /// Flappy-style game: tap to flap, weave through gaps in scrolling pipes. A
@@ -28,7 +24,7 @@ class FlappyScreen extends StatefulWidget {
 }
 
 class _FlappyScreenState extends State<FlappyScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, GameSessionMixin {
   static const Color _accent = Color(0xFF4AA8FF);
   static const String _gameId = GameIds.flappy;
 
@@ -37,12 +33,7 @@ class _FlappyScreenState extends State<FlappyScreen>
   static const String _sfxCrash = 'audio/sfx_crash.wav';
 
   final _engine = FlappyEngine();
-  final _sl = ServiceLocator().locator;
 
-  late final GetGameScore _getScore = _sl<GetGameScore>();
-  late final SubmitGameResult _submitResult = _sl<SubmitGameResult>();
-
-  late final GameSoundEffects _sfx;
   late final Ticker _ticker = createTicker(_onTick);
   Duration _lastTick = Duration.zero;
 
@@ -51,27 +42,24 @@ class _FlappyScreenState extends State<FlappyScreen>
 
   bool _ready = false;
   bool _gameOver = false;
-  bool _soundMuted = false;
   int _best = 0;
 
   @override
   void initState() {
     super.initState();
-    _soundMuted = LocalStorage.isGameSoundMuted();
-    _sfx = GameSoundEffects(muted: _soundMuted);
-    _sfx.load(const [_sfxFlap, _sfxPoint, _sfxCrash]);
+    initGameSession(const [_sfxFlap, _sfxPoint, _sfxCrash]);
     _bootstrap();
   }
 
   @override
   void dispose() {
     _ticker.dispose();
-    _sfx.dispose();
+    disposeGameSession();
     super.dispose();
   }
 
   Future<void> _bootstrap() async {
-    final score = await _getScore(_gameId);
+    final score = await getScore(_gameId);
     _engine.newGame();
     if (!mounted) return;
     setState(() {
@@ -91,7 +79,7 @@ class _FlappyScreenState extends State<FlappyScreen>
     _clock += dt;
     final result = _engine.tick(dt);
     if (result == FlapTick.scored) {
-      _sfx.play(_sfxPoint);
+      sfx.play(_sfxPoint);
       HapticFeedback.selectionClick();
     } else if (result == FlapTick.crashed) {
       _finishGame();
@@ -99,25 +87,18 @@ class _FlappyScreenState extends State<FlappyScreen>
     if (mounted) setState(() {});
   }
 
-  Future<void> _toggleSound() async {
-    final muted = !_soundMuted;
-    setState(() => _soundMuted = muted);
-    _sfx.muted = muted;
-    await LocalStorage.setGameSoundMuted(muted);
-  }
-
   void _onTapScene() {
     if (_gameOver) return;
     _engine.flap();
-    _sfx.play(_sfxFlap);
+    sfx.play(_sfxFlap);
     HapticFeedback.lightImpact();
   }
 
   Future<void> _finishGame() async {
     _ticker.stop();
-    _sfx.play(_sfxCrash);
+    sfx.play(_sfxCrash);
     HapticFeedback.heavyImpact();
-    final updated = await _submitResult(gameId: _gameId, score: _engine.score);
+    final updated = await submitResult(gameId: _gameId, score: _engine.score);
     if (!mounted) return;
     setState(() {
       _best = updated.highScore;
@@ -139,8 +120,8 @@ class _FlappyScreenState extends State<FlappyScreen>
       appBar: GameActionAppBar(
         title: 'Flappy',
         accent: _accent,
-        soundMuted: _soundMuted,
-        onToggleSound: _toggleSound,
+        soundMuted: soundMuted,
+        onToggleSound: toggleGameSound,
         onRestart: _restart,
         showRestart: _ready,
       ),
