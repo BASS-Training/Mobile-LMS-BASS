@@ -40,6 +40,10 @@ class ApiEndpoints {
   static const String autosaveCaseStudy = '/case-studies/{id}/draft';
   static const String downloadCaseStudy = '/case-studies/{id}/download';
 
+  // Feedback (form survei, tanpa penilaian)
+  static const String getFeedbackByLesson = '/feedback/by-lesson/{id}';
+  static const String submitFeedback = '/feedback/{id}/submit';
+
   // Discussions (lesson = backend content.id)
   static const String getDiscussions = '/lessons/{contentId}/discussions';
   static const String createDiscussion = '/lessons/{contentId}/discussions';

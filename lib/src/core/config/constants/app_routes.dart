@@ -35,6 +35,7 @@ class AppRoutes {
   static const String imageLessonDetail = '/lesson-image-detail';
   static const String zoomLessonDetail = '/lesson-zoom-detail';
   static const String caseStudyLessonDetail = '/lesson-case-study-detail';
+  static const String feedbackLessonDetail = '/lesson-feedback-detail';
 
   // Result Details
   static const String quizResultDetail = '/quiz-result-detail';
