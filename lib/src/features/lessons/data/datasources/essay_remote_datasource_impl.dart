@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:lms_mobile_app/src/core/network/dio_error.dart';
 import 'package:lms_mobile_app/src/core/utils/app_logger.dart';
 import 'package:lms_mobile_app/src/core/config/constants/api_endpoints.dart';
 import 'package:lms_mobile_app/src/core/utils/offline_test_mode.dart';
@@ -58,7 +59,7 @@ class EssayRemoteDataSourceImpl implements EssayRemoteDataSource {
           )
           .toList();
     } on DioException catch (error) {
-      throw Exception(_extractErrorMessage(error, 'Gagal memuat soal essay'));
+      throw Exception(dioErrorMessage(error, 'Gagal memuat soal essay'));
     }
   }
 
@@ -97,7 +98,7 @@ class EssayRemoteDataSourceImpl implements EssayRemoteDataSource {
 
       return result;
     } on DioException catch (error) {
-      throw Exception(_extractErrorMessage(error, 'Gagal memuat draft essay'));
+      throw Exception(dioErrorMessage(error, 'Gagal memuat draft essay'));
     }
   }
 
@@ -122,9 +123,7 @@ class EssayRemoteDataSourceImpl implements EssayRemoteDataSource {
       final jsonResp = response.data as Map<String, dynamic>;
       return jsonResp['data'] as Map<String, dynamic>;
     } on DioException catch (error) {
-      throw Exception(
-        _extractErrorMessage(error, 'Gagal mengirim jawaban essay'),
-      );
+      throw Exception(dioErrorMessage(error, 'Gagal mengirim jawaban essay'));
     }
   }
 
@@ -148,21 +147,7 @@ class EssayRemoteDataSourceImpl implements EssayRemoteDataSource {
       return;
     } on DioException catch (error) {
       // don't fail hard on autosave; just log or rethrow if needed
-      throw Exception(
-        _extractErrorMessage(error, 'Gagal menyimpan draft essay'),
-      );
+      throw Exception(dioErrorMessage(error, 'Gagal menyimpan draft essay'));
     }
-  }
-
-  String _extractErrorMessage(DioException error, String fallback) {
-    final data = error.response?.data;
-    if (data is Map<String, dynamic>) {
-      final message = data['message']?.toString().trim();
-      if (message != null && message.isNotEmpty) {
-        return message;
-      }
-    }
-
-    return fallback;
   }
 }

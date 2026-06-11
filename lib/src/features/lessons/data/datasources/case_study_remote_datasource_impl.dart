@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:lms_mobile_app/src/core/network/dio_error.dart';
 
 import 'package:dio/dio.dart';
 import 'package:lms_mobile_app/src/core/config/constants/api_endpoints.dart';
@@ -23,7 +24,7 @@ class CaseStudyRemoteDataSourceImpl implements CaseStudyRemoteDataSource {
       final data = Map<String, dynamic>.from(jsonResp['data'] as Map);
       return CaseStudyModel.fromApi(data);
     } on DioException catch (error) {
-      throw Exception(_msg(error, 'Gagal memuat studi kasus'));
+      throw Exception(dioErrorMessage(error, 'Gagal memuat studi kasus'));
     }
   }
 
@@ -32,7 +33,10 @@ class CaseStudyRemoteDataSourceImpl implements CaseStudyRemoteDataSource {
     String lessonId,
     Map<String, dynamic> answers,
   ) async {
-    final endpoint = ApiEndpoints.submitCaseStudy.replaceFirst('{id}', lessonId);
+    final endpoint = ApiEndpoints.submitCaseStudy.replaceFirst(
+      '{id}',
+      lessonId,
+    );
     try {
       final response = await dio.post(endpoint, data: {'answers': answers});
       final jsonResp = response.data as Map<String, dynamic>;
@@ -45,7 +49,7 @@ class CaseStudyRemoteDataSourceImpl implements CaseStudyRemoteDataSource {
         answers: answers,
       );
     } on DioException catch (error) {
-      throw Exception(_msg(error, 'Gagal mengumpulkan jawaban'));
+      throw Exception(dioErrorMessage(error, 'Gagal mengumpulkan jawaban'));
     }
   }
 
@@ -58,7 +62,7 @@ class CaseStudyRemoteDataSourceImpl implements CaseStudyRemoteDataSource {
     try {
       await dio.post(endpoint, data: {'answers': answers});
     } on DioException catch (error) {
-      throw Exception(_msg(error, 'Gagal menyimpan draft'));
+      throw Exception(dioErrorMessage(error, 'Gagal menyimpan draft'));
     }
   }
 
@@ -75,16 +79,7 @@ class CaseStudyRemoteDataSourceImpl implements CaseStudyRemoteDataSource {
       );
       return Uint8List.fromList(response.data ?? const []);
     } on DioException catch (error) {
-      throw Exception(_msg(error, 'Gagal mengunduh PDF'));
+      throw Exception(dioErrorMessage(error, 'Gagal mengunduh PDF'));
     }
-  }
-
-  String _msg(DioException error, String fallback) {
-    final data = error.response?.data;
-    if (data is Map<String, dynamic>) {
-      final message = data['message']?.toString().trim();
-      if (message != null && message.isNotEmpty) return message;
-    }
-    return fallback;
   }
 }

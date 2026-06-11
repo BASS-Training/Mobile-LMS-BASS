@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:lms_mobile_app/src/core/network/dio_error.dart';
 import 'package:lms_mobile_app/src/core/utils/app_logger.dart';
 import 'package:lms_mobile_app/src/core/config/constants/api_endpoints.dart';
 import 'package:lms_mobile_app/src/core/utils/offline_test_mode.dart';
@@ -32,7 +33,7 @@ class QuizRemoteDataSourceImpl implements QuizRemoteDataSource {
       }
       return '';
     } on DioException catch (error) {
-      throw Exception(_extractErrorMessage(error, 'Start attempt failed'));
+      throw Exception(dioErrorMessage(error, 'Start attempt failed'));
     }
   }
 
@@ -95,7 +96,7 @@ class QuizRemoteDataSourceImpl implements QuizRemoteDataSource {
         'completed': completed == true,
       };
     } on DioException catch (error) {
-      throw Exception(_extractErrorMessage(error, 'Gagal memanggil API quiz'));
+      throw Exception(dioErrorMessage(error, 'Gagal memanggil API quiz'));
     }
   }
 
@@ -124,19 +125,7 @@ class QuizRemoteDataSourceImpl implements QuizRemoteDataSource {
       final jsonResponse = submitResp.data as Map<String, dynamic>;
       return jsonResponse['data'] as Map<String, dynamic>;
     } on DioException catch (error) {
-      throw Exception(_extractErrorMessage(error, 'Submit failed'));
+      throw Exception(dioErrorMessage(error, 'Submit failed'));
     }
-  }
-
-  String _extractErrorMessage(DioException error, String fallback) {
-    final data = error.response?.data;
-    if (data is Map<String, dynamic>) {
-      final message = data['message']?.toString().trim();
-      if (message != null && message.isNotEmpty) {
-        return message;
-      }
-    }
-
-    return fallback;
   }
 }

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:lms_mobile_app/src/core/network/dio_error.dart';
 import 'package:lms_mobile_app/src/core/config/constants/api_endpoints.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/feedback_remote_datasource.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/models/feedback_model.dart';
@@ -21,7 +22,7 @@ class FeedbackRemoteDataSourceImpl implements FeedbackRemoteDataSource {
       final data = Map<String, dynamic>.from(jsonResp['data'] as Map);
       return FeedbackModel.fromApi(data);
     } on DioException catch (error) {
-      throw Exception(_msg(error, 'Gagal memuat form feedback'));
+      throw Exception(dioErrorMessage(error, 'Gagal memuat form feedback'));
     }
   }
 
@@ -43,16 +44,7 @@ class FeedbackRemoteDataSourceImpl implements FeedbackRemoteDataSource {
         submittedAt: DateTime.now().toIso8601String(),
       );
     } on DioException catch (error) {
-      throw Exception(_msg(error, 'Gagal mengirim tanggapan'));
+      throw Exception(dioErrorMessage(error, 'Gagal mengirim tanggapan'));
     }
-  }
-
-  String _msg(DioException error, String fallback) {
-    final data = error.response?.data;
-    if (data is Map<String, dynamic>) {
-      final message = data['message']?.toString().trim();
-      if (message != null && message.isNotEmpty) return message;
-    }
-    return fallback;
   }
 }
