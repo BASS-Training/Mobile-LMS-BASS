@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_actions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -136,8 +137,7 @@ class _DocumentLessonDetailScreenState extends State<DocumentLessonDetailScreen>
           lessonTitle: widget.lesson.title,
         ),
         onBack: () {
-          Navigator.pop(context);
-          context.read<CourseBloc>().add(const RefreshCoursesEvent());
+          popToCourse(context);
         },
         onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
       ),

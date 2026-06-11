@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_actions.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
-import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
-import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/feedback_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/feedback/feedback_bloc.dart';
@@ -54,8 +53,7 @@ class _FeedbackLessonDetailScreenState
   }
 
   void _backToCourse() {
-    Navigator.pop(context);
-    context.read<CourseBloc>().add(const RefreshCoursesEvent());
+    popToCourse(context);
   }
 
   void _prefill(FeedbackEntity data) {
@@ -163,8 +161,9 @@ class _FeedbackLessonDetailScreenState
           if (state.status == FeedbackStatus.error || state.data == null) {
             return _ErrorView(
               message: state.errorMessage ?? 'Gagal memuat form.',
-              onRetry: () =>
-                  context.read<FeedbackBloc>().add(LoadFeedback(widget.lesson.id)),
+              onRetry: () => context.read<FeedbackBloc>().add(
+                LoadFeedback(widget.lesson.id),
+              ),
             );
           }
           return _buildForm(state, state.data!);
@@ -203,8 +202,11 @@ class _FeedbackLessonDetailScreenState
             const SizedBox(height: 10),
             Row(
               children: [
-                const Icon(Icons.lock_outline_rounded,
-                    size: 15, color: AppColors.textTertiary),
+                const Icon(
+                  Icons.lock_outline_rounded,
+                  size: 15,
+                  color: AppColors.textTertiary,
+                ),
                 const SizedBox(width: 5),
                 Expanded(
                   child: Text(
@@ -231,8 +233,11 @@ class _FeedbackLessonDetailScreenState
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.check_circle_rounded,
-                      color: AppColors.success, size: 20),
+                  const Icon(
+                    Icons.check_circle_rounded,
+                    color: AppColors.success,
+                    size: 20,
+                  ),
                   const SizedBox(width: 8),
                   const Expanded(
                     child: Text(
@@ -452,10 +457,7 @@ class _QuestionCard extends StatelessWidget {
             for (final opt in question.options)
               RadioListTile<String>(
                 value: opt.id,
-                title: Text(
-                  opt.label,
-                  style: const TextStyle(fontSize: 13.5),
-                ),
+                title: Text(opt.label, style: const TextStyle(fontSize: 13.5)),
                 activeColor: accent,
                 contentPadding: EdgeInsets.zero,
                 dense: true,
@@ -473,10 +475,7 @@ class _QuestionCard extends StatelessWidget {
             CheckboxListTile(
               value: multiValues.contains(opt.id),
               onChanged: (on) => onMultiToggle(opt.id, on ?? false),
-              title: Text(
-                opt.label,
-                style: const TextStyle(fontSize: 13.5),
-              ),
+              title: Text(opt.label, style: const TextStyle(fontSize: 13.5)),
               activeColor: accent,
               controlAffinity: ListTileControlAffinity.leading,
               contentPadding: EdgeInsets.zero,
@@ -528,8 +527,11 @@ class _ErrorView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline_rounded,
-                size: 44, color: AppColors.textTertiary),
+            const Icon(
+              Icons.error_outline_rounded,
+              size: 44,
+              color: AppColors.textTertiary,
+            ),
             const SizedBox(height: 12),
             Text(
               message,

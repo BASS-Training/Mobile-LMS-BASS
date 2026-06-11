@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_actions.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
@@ -65,8 +66,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
   int get currentLessonIndex => widget.lessonIndex;
 
   void _backToCourse() {
-    Navigator.pop(context);
-    context.read<CourseBloc>().add(const RefreshCoursesEvent());
+    popToCourse(context);
   }
 
   @override

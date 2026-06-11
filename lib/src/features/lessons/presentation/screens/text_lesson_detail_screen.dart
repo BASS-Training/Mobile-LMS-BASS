@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_actions.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -99,63 +100,60 @@ class _TextLessonDetailScreenState extends State<TextLessonDetailScreen>
           lessonTitle: widget.lesson.title,
         ),
         onBack: () {
-          Navigator.pop(context);
-          context.read<CourseBloc>().add(const RefreshCoursesEvent());
+          popToCourse(context);
         },
         onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
       ),
       body: SafeArea(
         child: LessonBackground(
           child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildAnimatedEntry(index: 0, child: _buildHeader(lesson)),
-                  const SizedBox(height: 16),
-                  _buildAnimatedEntry(index: 1, child: _buildMetaCard(lesson)),
-                  const SizedBox(height: 20),
-                  _buildAnimatedEntry(
-                    index: 2,
-                    child: LessonNavigationBar(
-                      canGoPrevious: canGoPrevious,
-                      canGoNext: canGoNext,
-                      onPrevious: canGoPrevious
-                          ? () {
-                              Navigator.pop(context);
-                              Future.delayed(
-                                const Duration(milliseconds: 200),
-                                () => navigateToLesson(
-                                  previousLesson!,
-                                  widget.lessonIndex - 1,
-                                ),
-                              );
-                            }
-                          : null,
-                      onForward: () async {
-                        _markComplete();
-                        await Future.delayed(
-                          const Duration(milliseconds: 100),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildAnimatedEntry(index: 0, child: _buildHeader(lesson)),
+                const SizedBox(height: 16),
+                _buildAnimatedEntry(index: 1, child: _buildMetaCard(lesson)),
+                const SizedBox(height: 20),
+                _buildAnimatedEntry(
+                  index: 2,
+                  child: LessonNavigationBar(
+                    canGoPrevious: canGoPrevious,
+                    canGoNext: canGoNext,
+                    onPrevious: canGoPrevious
+                        ? () {
+                            Navigator.pop(context);
+                            Future.delayed(
+                              const Duration(milliseconds: 200),
+                              () => navigateToLesson(
+                                previousLesson!,
+                                widget.lessonIndex - 1,
+                              ),
+                            );
+                          }
+                        : null,
+                    onForward: () async {
+                      _markComplete();
+                      await Future.delayed(const Duration(milliseconds: 100));
+                      if (!context.mounted) return;
+                      Navigator.pop(context);
+                      if (canGoNext && nextLesson != null) {
+                        Future.delayed(
+                          const Duration(milliseconds: 200),
+                          () => navigateToLesson(
+                            nextLesson!,
+                            widget.lessonIndex + 1,
+                          ),
                         );
-                        if (!context.mounted) return;
-                        Navigator.pop(context);
-                        if (canGoNext && nextLesson != null) {
-                          Future.delayed(
-                            const Duration(milliseconds: 200),
-                            () => navigateToLesson(
-                              nextLesson!,
-                              widget.lessonIndex + 1,
-                            ),
-                          );
-                        }
-                      },
-                    ),
+                      }
+                    },
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
+      ),
     );
   }
 
@@ -446,5 +444,4 @@ class _TextLessonDetailScreenState extends State<TextLessonDetailScreen>
       },
     );
   }
-
 }

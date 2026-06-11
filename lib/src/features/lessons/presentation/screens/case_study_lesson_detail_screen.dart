@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_actions.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
-import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
-import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/case_study_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/case_study/case_study_bloc.dart';
@@ -52,8 +51,7 @@ class _CaseStudyLessonDetailScreenState
   }
 
   void _backToCourse() {
-    Navigator.pop(context);
-    context.read<CourseBloc>().add(const RefreshCoursesEvent());
+    popToCourse(context);
   }
 
   // ---- HTML <-> plain helpers (web menyimpan jawaban teks sebagai HTML) ----
@@ -95,12 +93,7 @@ class _CaseStudyLessonDetailScreenState
     return '';
   }
 
-  String _cellAnswer(
-    CaseStudyEntity data,
-    String sid,
-    String bid,
-    String rc,
-  ) {
+  String _cellAnswer(CaseStudyEntity data, String sid, String bid, String rc) {
     final block = _existingAnswers(data)[sid];
     if (block is Map && block[bid] is Map) {
       final v = (block[bid] as Map)[rc];
@@ -156,14 +149,14 @@ class _CaseStudyLessonDetailScreenState
         body: BlocConsumer<CaseStudyBloc, CaseStudyState>(
           listener: (context, state) {
             if (state.errorMessage != null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.errorMessage!)),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
               context.read<CaseStudyBloc>().add(const ClearCaseStudyMessage());
             } else if (state.infoMessage != null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.infoMessage!)),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.infoMessage!)));
               context.read<CaseStudyBloc>().add(const ClearCaseStudyMessage());
             }
             if (state.pdfBytes != null) {
@@ -191,8 +184,11 @@ class _CaseStudyLessonDetailScreenState
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.error_outline_rounded,
-                          size: 48, color: AppColors.brandPrimary),
+                      const Icon(
+                        Icons.error_outline_rounded,
+                        size: 48,
+                        color: AppColors.brandPrimary,
+                      ),
                       const SizedBox(height: 12),
                       Text(
                         state.errorMessage ?? 'Gagal memuat studi kasus',
@@ -200,9 +196,9 @@ class _CaseStudyLessonDetailScreenState
                       ),
                       const SizedBox(height: 12),
                       ElevatedButton(
-                        onPressed: () => context
-                            .read<CaseStudyBloc>()
-                            .add(LoadCaseStudy(widget.lesson.id)),
+                        onPressed: () => context.read<CaseStudyBloc>().add(
+                          LoadCaseStudy(widget.lesson.id),
+                        ),
                         child: const Text('Coba lagi'),
                       ),
                     ],
@@ -398,10 +394,7 @@ class _CaseStudyLessonDetailScreenState
       decoration: isSub
           ? const BoxDecoration(
               border: Border(
-                left: BorderSide(
-                  color: AppColors.brandPrimaryLight,
-                  width: 3,
-                ),
+                left: BorderSide(color: AppColors.brandPrimaryLight, width: 3),
               ),
             )
           : null,
@@ -455,8 +448,7 @@ class _CaseStudyLessonDetailScreenState
               ),
             ),
           const SizedBox(height: 10),
-          ...section.blocks
-              .map((b) => _buildBlock(data, section, b, readOnly)),
+          ...section.blocks.map((b) => _buildBlock(data, section, b, readOnly)),
         ],
       ),
     );
@@ -557,9 +549,9 @@ class _CaseStudyLessonDetailScreenState
           controllerProvider: readOnly
               ? null
               : (cell) => _controller(
-                    'C::$sid::$bid::${cell.key}',
-                    _cellAnswer(data, sid, bid, cell.key),
-                  ),
+                  'C::$sid::$bid::${cell.key}',
+                  _cellAnswer(data, sid, bid, cell.key),
+                ),
           valueProvider: (cell) => _cellAnswer(data, sid, bid, cell.key),
         ),
       );
@@ -580,11 +572,11 @@ class _CaseStudyLessonDetailScreenState
             onPressed: state.draftSaving
                 ? null
                 : () => context.read<CaseStudyBloc>().add(
-                      SaveDraftCaseStudy(
-                        lessonId: widget.lesson.id,
-                        answers: _buildAnswers(data),
-                      ),
+                    SaveDraftCaseStudy(
+                      lessonId: widget.lesson.id,
+                      answers: _buildAnswers(data),
                     ),
+                  ),
             icon: state.draftSaving
                 ? const SizedBox(
                     width: 16,
@@ -595,10 +587,7 @@ class _CaseStudyLessonDetailScreenState
             label: const Text('Simpan Draft'),
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.brandPrimary,
-              side: const BorderSide(
-                color: AppColors.brandPrimary,
-                width: 1.5,
-              ),
+              side: const BorderSide(color: AppColors.brandPrimary, width: 1.5),
               padding: const EdgeInsets.symmetric(vertical: 14),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(14),
@@ -671,11 +660,11 @@ class _CaseStudyLessonDetailScreenState
     );
     if (ok == true && context.mounted) {
       context.read<CaseStudyBloc>().add(
-            SubmitCaseStudy(
-              lessonId: widget.lesson.id,
-              answers: _buildAnswers(data),
-            ),
-          );
+        SubmitCaseStudy(
+          lessonId: widget.lesson.id,
+          answers: _buildAnswers(data),
+        ),
+      );
     }
   }
 
@@ -687,9 +676,9 @@ class _CaseStudyLessonDetailScreenState
         child: ElevatedButton.icon(
           onPressed: state.downloading
               ? null
-              : () => context
-                  .read<CaseStudyBloc>()
-                  .add(DownloadCaseStudyPdf(widget.lesson.id)),
+              : () => context.read<CaseStudyBloc>().add(
+                  DownloadCaseStudyPdf(widget.lesson.id),
+                ),
           icon: state.downloading
               ? const SizedBox(
                   width: 16,
