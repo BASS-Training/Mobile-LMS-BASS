@@ -90,7 +90,7 @@ class _CaseStudyResultDetailScreenState
                   child: Center(child: CircularProgressIndicator()),
                 )
               else if (data != null && data.sections.isNotEmpty) ...[
-                const Text(
+                Text(
                   'Jawaban Anda',
                   style: TextStyle(
                     fontSize: 16,
@@ -142,7 +142,7 @@ class _CaseStudyResultDetailScreenState
         children: [
           Text(
             attempt.lessonTitle,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.w800,
               color: AppColors.charcoal,
@@ -151,7 +151,7 @@ class _CaseStudyResultDetailScreenState
           const SizedBox(height: 4),
           Text(
             'Studi Kasus • ${formatAppDateTime(attempt.submittedAt)}',
-            style: const TextStyle(fontSize: 12, color: AppColors.slate),
+            style: TextStyle(fontSize: 12, color: AppColors.slate),
           ),
           const SizedBox(height: 12),
           Container(
@@ -173,7 +173,7 @@ class _CaseStudyResultDetailScreenState
           ),
           if (graded && scoringEnabled && score != null) ...[
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Nilai',
               style: TextStyle(
                 fontSize: 13,
@@ -192,7 +192,7 @@ class _CaseStudyResultDetailScreenState
             ),
           ],
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'Feedback Instruktur',
             style: TextStyle(
               fontSize: 13,
@@ -213,7 +213,7 @@ class _CaseStudyResultDetailScreenState
               feedback.isNotEmpty
                   ? feedback
                   : (graded ? 'Tidak ada feedback.' : 'Belum dinilai.'),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 height: 1.5,
                 color: AppColors.charcoal,

@@ -140,7 +140,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
                           color: Colors.red,
                         ),
                         const SizedBox(height: 16),
-                        const Text(
+                        Text(
                           'Kuis belum bisa dimuat',
                           textAlign: TextAlign.center,
                           style: TextStyle(
@@ -153,7 +153,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
                         Text(
                           state.message,
                           textAlign: TextAlign.center,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
                             height: 1.5,
                             color: AppColors.slate,
@@ -364,11 +364,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
                   margin: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Colors.white, Color(0xFFF8FAFF)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
+                    color: AppColors.surface,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: AppColors.pearl.withValues(alpha: 0.8),

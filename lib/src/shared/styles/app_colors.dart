@@ -6,12 +6,15 @@ class AppColors {
   // ==========================================
   static const Color black = Color(0xFF000000);
   static const Color white = Color(0xFFFFFFFF);
-  static const Color mist = Color(0xFFF8F9FA);
   static const Color quizBackgroundStart = Color(0xFFF8FAFF);
   static const Color quizBackgroundEnd = Color(0xFFF1F4FF);
-  static const Color pearl = Color(0xFFE0E0E0);
-  static const Color charcoal = Color(0xFF2D3436);
-  static const Color slate = Color(0xFF636E72);
+  // These four legacy neutrals are widely used as text/border/background, so
+  // they are theme-aware (see _pick + brightness defined in the semantic
+  // section below) to adapt for dark mode.
+  static Color get mist => _pick(const Color(0xFFF8F9FA), const Color(0xFF1C1E21));
+  static Color get pearl => _pick(const Color(0xFFE0E0E0), const Color(0xFF3A3E44));
+  static Color get charcoal => _pick(const Color(0xFF2D3436), const Color(0xFFF1F2F4));
+  static Color get slate => _pick(const Color(0xFF636E72), const Color(0xFFAEB4BD));
   static const Color silver = Color(0xFFB2BEC3);
   static const Color graphite = Color(0xFF1F2937);
   static const Color stone = Color(0xFF6B7280);

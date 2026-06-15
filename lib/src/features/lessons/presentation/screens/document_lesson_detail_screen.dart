@@ -296,7 +296,7 @@ class _DocumentLessonDetailScreenState extends State<DocumentLessonDetailScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
+            Icon(
               Icons.picture_as_pdf_rounded,
               size: 56,
               color: AppColors.slate,

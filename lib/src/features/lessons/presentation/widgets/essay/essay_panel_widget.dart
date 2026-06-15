@@ -22,13 +22,9 @@ class EssayPanelWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Colors.white, Color(0xFFF6F8FF)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
+        border: Border.all(color: AppColors.borderSubtle),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -44,11 +40,7 @@ class EssayPanelWidget extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0xFFFFF1F0), Color(0xFFFFE5E3)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: AppColors.brandSurface,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -74,7 +66,7 @@ class EssayPanelWidget extends StatelessWidget {
                 Expanded(
                   child: Text(
                     state.currentQuestion,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: AppColors.charcoal,
@@ -89,17 +81,13 @@ class EssayPanelWidget extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFFF6F8FF), Color(0xFFE6E9FF)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: AppColors.surfaceMuted,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFFE0E4F7)),
+              border: Border.all(color: AppColors.borderSubtle),
               ),
               child: Text(
                 state.currentQuestion,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
                   height: 1.6,
                   color: AppColors.charcoal,
@@ -133,7 +121,7 @@ class EssayPanelWidget extends StatelessWidget {
             ),
             const SizedBox(height: 16),
           ],
-          const Text(
+          Text(
             'Jawaban Anda',
             style: TextStyle(
               fontSize: 13,
@@ -177,11 +165,11 @@ class EssayPanelWidget extends StatelessWidget {
               alignLabelWithHint: true,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.pearl),
+                borderSide: BorderSide(color: AppColors.pearl),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.pearl),
+                borderSide: BorderSide(color: AppColors.pearl),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),

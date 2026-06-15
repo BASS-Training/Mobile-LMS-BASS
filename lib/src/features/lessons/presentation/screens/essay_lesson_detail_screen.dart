@@ -309,11 +309,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
         width: double.infinity,
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Colors.white, Color(0xFFF9FAFF)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
           boxShadow: [
@@ -345,7 +341,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Deskripsi Lesson',
                     style: TextStyle(
                       fontSize: 13,
@@ -358,7 +354,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
                     description.isNotEmpty
                         ? description
                         : 'Tidak ada deskripsi tambahan untuk lesson ini.',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
                       height: 1.5,
                       color: AppColors.slate,

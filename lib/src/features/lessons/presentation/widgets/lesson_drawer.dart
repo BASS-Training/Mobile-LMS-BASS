@@ -177,7 +177,7 @@ class LessonDrawer extends StatelessWidget {
                               children: [
                                 Text(
                                   section.title,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w700,
                                     color: AppColors.charcoal,
@@ -204,7 +204,7 @@ class LessonDrawer extends StatelessWidget {
                                     const SizedBox(width: 8),
                                     Text(
                                       '$completedCount/$totalCount',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 10,
                                         color: AppColors.slate,
                                         fontWeight: FontWeight.w600,

@@ -43,22 +43,22 @@ class InstructionCardWidget extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Text(
+                Text(
                   'Instruksi Kuis',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.charcoal,
+                    color: AppColors.textPrimary,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 12),
-            const Text(
+            Text(
               'Baca pertanyaan dengan seksama dan pilih salah satu jawaban. Pastikan koneksi internet Anda stabil.',
               style: TextStyle(
                 fontSize: 13,
-                color: AppColors.slate,
+                color: AppColors.textSecondary,
                 height: 1.6,
               ),
             ),

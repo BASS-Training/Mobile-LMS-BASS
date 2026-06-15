@@ -50,7 +50,7 @@ class QuizQuestionReviewItem extends StatelessWidget {
               const Spacer(),
               Text(
                 '${question.options.length} opsi',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 11,
                   color: AppColors.slate,
                   fontWeight: FontWeight.w600,
@@ -61,7 +61,7 @@ class QuizQuestionReviewItem extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             question.questionText,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 15,
               height: 1.5,
               fontWeight: FontWeight.w700,
@@ -117,7 +117,7 @@ class QuizQuestionReviewItem extends StatelessWidget {
                   Expanded(
                     child: Text(
                       optionText,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         height: 1.45,
                         color: AppColors.charcoal,
@@ -212,7 +212,7 @@ class QuizQuestionReviewItem extends StatelessWidget {
       );
     }
 
-    return const _ReviewOptionStyle(
+    return _ReviewOptionStyle(
       backgroundColor: Color.fromRGBO(245, 245, 245, 1),
       borderColor: Colors.transparent,
       shadowColor: Color.fromRGBO(0, 0, 0, 0.03),

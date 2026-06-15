@@ -332,7 +332,7 @@ class _TextLessonDetailScreenState extends State<TextLessonDetailScreen>
                 ),
               ),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -378,11 +378,11 @@ class _TextLessonDetailScreenState extends State<TextLessonDetailScreen>
             ],
           ),
           const SizedBox(height: 14),
-          const Divider(height: 1, color: AppColors.pearl),
+          Divider(height: 1, color: AppColors.pearl),
           const SizedBox(height: 8),
           lesson.content.trim().isNotEmpty
               ? HtmlContent(html: lesson.content)
-              : const Text(
+              : Text(
                   'Materi untuk lesson ini belum tersedia.',
                   style: TextStyle(
                     fontSize: 14,
