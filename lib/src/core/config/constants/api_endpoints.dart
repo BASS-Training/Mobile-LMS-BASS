@@ -61,6 +61,8 @@ class ApiEndpoints {
   static const String instructorDashboard = '/instructor/dashboard';
   static const String instructorGlobalGradingQueue = '/instructor/grading-queue';
   static const String courseParticipants = '/courses/{id}/participants';
+  static const String participantProgress =
+      '/courses/{courseId}/participants/{userId}/progress';
   static const String courseGradingQueue = '/courses/{id}/grading-queue';
   static const String essaySubmissionDetail = '/essays/submissions/{id}';
   static const String gradeEssaySubmission = '/essays/submissions/{id}/grade';

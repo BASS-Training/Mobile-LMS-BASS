@@ -34,6 +34,13 @@ class InstructorModule {
         courseId: courseId,
       ),
     );
+    getIt.registerFactoryParam<ParticipantDetailCubit, String, String>(
+      (courseId, userId) => ParticipantDetailCubit(
+        repository: getIt<InstructorRepository>(),
+        courseId: courseId,
+        userId: userId,
+      ),
+    );
     getIt.registerFactoryParam<EssayGradingCubit, String, void>(
       (submissionId, _) => EssayGradingCubit(
         repository: getIt<InstructorRepository>(),

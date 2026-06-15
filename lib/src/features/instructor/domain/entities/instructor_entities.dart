@@ -156,6 +156,132 @@ class ParticipantProgress extends Equatable {
   ];
 }
 
+/// One assessment result (quiz / essay / case study) in a participant's detail.
+class AssessmentResult extends Equatable {
+  final String title;
+  final bool scoringEnabled;
+  final num? score;
+  final num? maxScore;
+  final num? percentage;
+  final bool graded;
+  final bool? passed;
+  final String? status;
+
+  const AssessmentResult({
+    required this.title,
+    this.scoringEnabled = true,
+    this.score,
+    this.maxScore,
+    this.percentage,
+    this.graded = false,
+    this.passed,
+    this.status,
+  });
+
+  factory AssessmentResult.fromJson(Map<String, dynamic> json) {
+    return AssessmentResult(
+      title: json['title']?.toString() ?? '',
+      scoringEnabled: json['scoringEnabled'] != false,
+      score: _asNum(json['score']),
+      maxScore: _asNum(json['maxScore']),
+      percentage: _asNum(json['percentage']),
+      graded: json['graded'] == true,
+      passed: json['passed'] is bool ? json['passed'] as bool : null,
+      status: json['status']?.toString(),
+    );
+  }
+
+  @override
+  List<Object?> get props =>
+      [title, scoringEnabled, score, maxScore, percentage, graded, passed, status];
+}
+
+/// Full per-participant progress detail in a course.
+class ParticipantProgressDetail extends Equatable {
+  final String name;
+  final String email;
+  final double progressPercentage;
+  final int completedContents;
+  final int totalContents;
+  final int completedLessons;
+  final int totalLessons;
+  final int completedQuizzes;
+  final int totalQuizzes;
+  final double averageQuizScore;
+  final List<AssessmentResult> quizzes;
+  final List<AssessmentResult> essays;
+  final List<AssessmentResult> caseStudies;
+
+  const ParticipantProgressDetail({
+    required this.name,
+    required this.email,
+    required this.progressPercentage,
+    required this.completedContents,
+    required this.totalContents,
+    required this.completedLessons,
+    required this.totalLessons,
+    required this.completedQuizzes,
+    required this.totalQuizzes,
+    required this.averageQuizScore,
+    required this.quizzes,
+    required this.essays,
+    required this.caseStudies,
+  });
+
+  static List<AssessmentResult> _parseList(dynamic raw) {
+    final out = <AssessmentResult>[];
+    if (raw is List) {
+      for (final e in raw) {
+        if (e is Map) {
+          out.add(AssessmentResult.fromJson(Map<String, dynamic>.from(e)));
+        }
+      }
+    }
+    return out;
+  }
+
+  factory ParticipantProgressDetail.fromJson(Map<String, dynamic> json) {
+    final participant = json['participant'] is Map
+        ? Map<String, dynamic>.from(json['participant'])
+        : <String, dynamic>{};
+    final overall = json['overall'] is Map
+        ? Map<String, dynamic>.from(json['overall'])
+        : <String, dynamic>{};
+    return ParticipantProgressDetail(
+      name: participant['name']?.toString() ?? 'Peserta',
+      email: participant['email']?.toString() ?? '',
+      progressPercentage: _asNum(overall['progressPercentage'])?.toDouble() ?? 0,
+      completedContents: _asInt(overall['completedContents']) ?? 0,
+      totalContents: _asInt(overall['totalContents']) ?? 0,
+      completedLessons: _asInt(overall['completedLessons']) ?? 0,
+      totalLessons: _asInt(overall['totalLessons']) ?? 0,
+      completedQuizzes: _asInt(overall['completedQuizzes']) ?? 0,
+      totalQuizzes: _asInt(overall['totalQuizzes']) ?? 0,
+      averageQuizScore: _asNum(overall['averageQuizScore'])?.toDouble() ?? 0,
+      quizzes: _parseList(json['quizzes']),
+      essays: _parseList(json['essays']),
+      caseStudies: _parseList(json['caseStudies']),
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+    name,
+    email,
+    progressPercentage,
+    completedContents,
+    totalContents,
+    completedLessons,
+    totalLessons,
+    completedQuizzes,
+    totalQuizzes,
+    averageQuizScore,
+    quizzes,
+    essays,
+    caseStudies,
+  ];
+}
+
 /// An essay / case-study submission shown in the grading queue.
 class GradingQueueItem extends Equatable {
   final String submissionId;

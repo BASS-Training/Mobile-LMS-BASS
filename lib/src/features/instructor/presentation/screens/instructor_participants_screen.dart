@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 import 'package:lms_mobile_app/src/core/di/injector.dart';
 import 'package:lms_mobile_app/src/features/instructor/domain/entities/instructor_entities.dart';
 import 'package:lms_mobile_app/src/features/instructor/presentation/cubit/instructor_overview_cubit.dart';
@@ -58,8 +60,16 @@ class InstructorParticipantsScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 itemCount: state.items.length,
                 separatorBuilder: (_, _) => const SizedBox(height: 12),
-                itemBuilder: (context, i) =>
-                    _ParticipantTile(participant: state.items[i]),
+                itemBuilder: (context, i) {
+                  final p = state.items[i];
+                  return _ParticipantTile(
+                    participant: p,
+                    onTap: () => context.push(
+                      AppRoutes.instructorParticipantDetail,
+                      extra: {'courseId': courseId, 'userId': p.id},
+                    ),
+                  );
+                },
               ),
             );
           },
@@ -71,8 +81,9 @@ class InstructorParticipantsScreen extends StatelessWidget {
 
 class _ParticipantTile extends StatelessWidget {
   final ParticipantProgress participant;
+  final VoidCallback onTap;
 
-  const _ParticipantTile({required this.participant});
+  const _ParticipantTile({required this.participant, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -81,15 +92,21 @@ class _ParticipantTile extends StatelessWidget {
         ? participant.name.trim()[0].toUpperCase()
         : '?';
 
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
+    return Material(
+      color: AppColors.surface,
+      borderRadius: BorderRadius.circular(18),
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.borderSubtle),
-        boxShadow: AppShadows.xs,
-      ),
-      child: Column(
+        child: Ink(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: AppColors.borderSubtle),
+            boxShadow: AppShadows.xs,
+          ),
+          child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -135,7 +152,13 @@ class _ParticipantTile extends StatelessWidget {
                   ],
                 ),
               ),
-              if (participant.pendingGrading > 0) _PendingBadge(participant.pendingGrading),
+              if (participant.pendingGrading > 0)
+                _PendingBadge(participant.pendingGrading),
+              const SizedBox(width: 6),
+              const Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.textTertiary,
+              ),
             ],
           ),
           const SizedBox(height: 14),
@@ -173,7 +196,9 @@ class _ParticipantTile extends StatelessWidget {
               color: AppColors.textTertiary,
             ),
           ),
-        ],
+            ],
+          ),
+        ),
       ),
     );
   }

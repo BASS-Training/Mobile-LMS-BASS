@@ -64,6 +64,22 @@ class InstructorRepository {
     }
   }
 
+  Future<ParticipantProgressDetail> getParticipantProgress(
+    String courseId,
+    String userId,
+  ) async {
+    try {
+      final res = await _dio.get(
+        ApiEndpoints.participantProgress
+            .replaceAll('{courseId}', courseId)
+            .replaceAll('{userId}', userId),
+      );
+      return ParticipantProgressDetail.fromJson(_map(res.data));
+    } on DioException catch (e) {
+      throw Exception(dioErrorMessage(e, 'Gagal memuat progres peserta'));
+    }
+  }
+
   Future<List<GradingQueueItem>> getGradingQueue(String courseId) async {
     try {
       final res = await _dio.get(

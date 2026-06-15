@@ -39,6 +39,7 @@ import 'package:lms_mobile_app/src/features/certificates/presentation/screens/ce
 import 'package:lms_mobile_app/src/features/home/presentation/screens/join_class_screen.dart';
 import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_participants_screen.dart';
 import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_grading_queue_screen.dart';
+import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_participant_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_essay_grading_screen.dart';
 import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_case_study_grading_screen.dart';
 import 'package:lms_mobile_app/src/features/games/presentation/hub/bloc/games_hub_bloc.dart';
@@ -526,6 +527,16 @@ class AppRouter {
           final args = state.extra as Map<String, dynamic>;
           return InstructorGradingQueueScreen(
             courseId: args['courseId'] as String,
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.instructorParticipantDetail,
+        builder: (context, state) {
+          final args = state.extra as Map<String, dynamic>;
+          return InstructorParticipantDetailScreen(
+            courseId: args['courseId'] as String,
+            userId: args['userId'] as String,
           );
         },
       ),

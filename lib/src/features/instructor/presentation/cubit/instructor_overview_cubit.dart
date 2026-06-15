@@ -105,6 +105,54 @@ class GradingQueueCubit extends Cubit<GradingQueueState> {
   }
 }
 
+/// Full progress detail for one participant in a course.
+class ParticipantDetailState extends Equatable {
+  final InstructorStatus status;
+  final ParticipantProgressDetail? data;
+  final String? error;
+
+  const ParticipantDetailState({
+    this.status = InstructorStatus.initial,
+    this.data,
+    this.error,
+  });
+
+  ParticipantDetailState copyWith({
+    InstructorStatus? status,
+    ParticipantProgressDetail? data,
+    String? error,
+  }) => ParticipantDetailState(
+    status: status ?? this.status,
+    data: data ?? this.data,
+    error: error,
+  );
+
+  @override
+  List<Object?> get props => [status, data, error];
+}
+
+class ParticipantDetailCubit extends Cubit<ParticipantDetailState> {
+  final InstructorRepository repository;
+  final String courseId;
+  final String userId;
+
+  ParticipantDetailCubit({
+    required this.repository,
+    required this.courseId,
+    required this.userId,
+  }) : super(const ParticipantDetailState());
+
+  Future<void> load() async {
+    emit(state.copyWith(status: InstructorStatus.loading, error: null));
+    try {
+      final data = await repository.getParticipantProgress(courseId, userId);
+      emit(state.copyWith(status: InstructorStatus.loaded, data: data));
+    } catch (e) {
+      emit(state.copyWith(status: InstructorStatus.error, error: _msg(e)));
+    }
+  }
+}
+
 /// Aggregate dashboard for the instructor/admin home.
 class InstructorDashboardState extends Equatable {
   final InstructorStatus status;

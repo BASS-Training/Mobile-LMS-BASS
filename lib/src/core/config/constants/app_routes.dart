@@ -48,6 +48,8 @@ class AppRoutes {
 
   // Instructor / admin
   static const String instructorParticipants = '/instructor/participants';
+  static const String instructorParticipantDetail =
+      '/instructor/participant-detail';
   static const String instructorGradingQueue = '/instructor/grading-queue';
   static const String instructorEssayGrading = '/instructor/grade-essay';
   static const String instructorCaseStudyGrading = '/instructor/grade-case-study';
