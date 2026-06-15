@@ -46,6 +46,12 @@ class AppRoutes {
   static const String certificateDetail = '/certificate-detail';
   static const String certificateList = '/certificate-list';
 
+  // Instructor / admin
+  static const String instructorParticipants = '/instructor/participants';
+  static const String instructorGradingQueue = '/instructor/grading-queue';
+  static const String instructorEssayGrading = '/instructor/grade-essay';
+  static const String instructorCaseStudyGrading = '/instructor/grade-case-study';
+
   // Games
   static const String gamesHub = '/games';
   static const String game2048 = '/games/2048';

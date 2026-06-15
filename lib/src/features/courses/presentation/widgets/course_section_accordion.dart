@@ -9,10 +9,14 @@ class CourseSectionAccordion extends StatelessWidget {
   final CourseSectionEntity section;
   final CourseEntity course;
 
+  /// When true (instructor/admin), every lesson tile is openable.
+  final bool unlockAll;
+
   const CourseSectionAccordion({
     super.key,
     required this.section,
     required this.course,
+    this.unlockAll = false,
   });
 
   @override
@@ -127,6 +131,7 @@ class CourseSectionAccordion extends StatelessWidget {
                     course: course,
                     lessonIndexInSection: entry.key,
                     overallLessonIndex: course.allLessons.indexOf(entry.value),
+                    unlockAll: unlockAll,
                   );
                 }).toList(),
               ),

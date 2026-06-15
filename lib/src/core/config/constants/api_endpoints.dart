@@ -56,4 +56,14 @@ class ApiEndpoints {
   // Profile
   static const String getProfile = '/profile';
   static const String updateProfile = '/profile';
+
+  // Instructor / admin (mobile): peserta, progres, dan penilaian.
+  static const String courseParticipants = '/courses/{id}/participants';
+  static const String courseGradingQueue = '/courses/{id}/grading-queue';
+  static const String essaySubmissionDetail = '/essays/submissions/{id}';
+  static const String gradeEssaySubmission = '/essays/submissions/{id}/grade';
+  static const String caseStudySubmissionDetail =
+      '/case-studies/submissions/{id}';
+  static const String gradeCaseStudySubmission =
+      '/case-studies/submissions/{id}/grade';
 }

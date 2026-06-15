@@ -37,6 +37,10 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/screens/essay_r
 import 'package:lms_mobile_app/src/features/certificates/presentation/screens/certificate_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/certificates/presentation/screens/certificate_list_screen.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/screens/join_class_screen.dart';
+import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_participants_screen.dart';
+import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_grading_queue_screen.dart';
+import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_essay_grading_screen.dart';
+import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_case_study_grading_screen.dart';
 import 'package:lms_mobile_app/src/features/games/presentation/hub/bloc/games_hub_bloc.dart';
 import 'package:lms_mobile_app/src/features/games/presentation/hub/screens/games_hub_screen.dart';
 import 'package:lms_mobile_app/src/features/games/presentation/games/game_2048/screens/game_2048_screen.dart';
@@ -503,6 +507,40 @@ class AppRouter {
                   );
                 },
           );
+        },
+      ),
+      // ── Instructor / admin ───────────────────────────────────────────────
+      GoRoute(
+        path: AppRoutes.instructorParticipants,
+        builder: (context, state) {
+          final args = state.extra as Map<String, dynamic>;
+          return InstructorParticipantsScreen(
+            courseId: args['courseId'] as String,
+            courseTitle: (args['courseTitle'] as String?) ?? '',
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.instructorGradingQueue,
+        builder: (context, state) {
+          final args = state.extra as Map<String, dynamic>;
+          return InstructorGradingQueueScreen(
+            courseId: args['courseId'] as String,
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.instructorEssayGrading,
+        builder: (context, state) {
+          final submissionId = state.extra as String;
+          return InstructorEssayGradingScreen(submissionId: submissionId);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.instructorCaseStudyGrading,
+        builder: (context, state) {
+          final submissionId = state.extra as String;
+          return InstructorCaseStudyGradingScreen(submissionId: submissionId);
         },
       ),
       GoRoute(

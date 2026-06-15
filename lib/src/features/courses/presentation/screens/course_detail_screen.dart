@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
+import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_bloc.dart';
+import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_state.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_detail_header.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_info_cards.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_locked_access.dart';
@@ -104,6 +106,15 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
           );
         }
 
+        // Instructor/admin see a management view (open any lesson, grade &
+        // view participant progress) instead of the participant's own progress.
+        final authState = context.watch<AuthBloc>().state;
+        final canManage =
+            authState is AuthSuccess &&
+            (authState.user.hasRole('instructor') ||
+                authState.user.hasRole('admin') ||
+                authState.user.hasRole('super-admin'));
+
         return Scaffold(
           backgroundColor: AppColors.background,
           body: Column(
@@ -169,46 +180,65 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                               const SizedBox(height: 24),
 
                               if (currentCourse.isOwned) ...[
-                                CourseProgressIndicator(
-                                  progress: currentCourse.progressPercentage,
-                                  label: 'Progres Kamu',
-                                  showPercentage: true,
-                                ),
-                                const SizedBox(height: 24),
-                                SizedBox(
-                                  width: double.infinity,
-                                  height: 54,
-                                  child: ElevatedButton.icon(
-                                    onPressed: () => context.push(
-                                      AppRoutes.courseResults,
-                                      extra: currentCourse,
-                                    ),
-                                    icon: const Icon(Icons.assessment_rounded),
-                                    label: const Text('Nilai & Hasil'),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppColors.brandPrimary,
-                                      foregroundColor: Colors.white,
-                                      elevation: 0,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(16),
+                                if (canManage) ...[
+                                  _InstructorPanel(course: currentCourse),
+                                  const SizedBox(height: 24),
+                                  const CourseSectionHeader(
+                                    title: 'Materi Kursus',
+                                  ),
+                                  const SizedBox(height: 12),
+                                  ...currentCourse.sections.map((section) {
+                                    return CourseSectionAccordion(
+                                      section: section,
+                                      course: currentCourse,
+                                      unlockAll: true,
+                                    );
+                                  }),
+                                  const SizedBox(height: 24),
+                                ] else ...[
+                                  CourseProgressIndicator(
+                                    progress: currentCourse.progressPercentage,
+                                    label: 'Progres Kamu',
+                                    showPercentage: true,
+                                  ),
+                                  const SizedBox(height: 24),
+                                  SizedBox(
+                                    width: double.infinity,
+                                    height: 54,
+                                    child: ElevatedButton.icon(
+                                      onPressed: () => context.push(
+                                        AppRoutes.courseResults,
+                                        extra: currentCourse,
+                                      ),
+                                      icon: const Icon(Icons.assessment_rounded),
+                                      label: const Text('Nilai & Hasil'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppColors.brandPrimary,
+                                        foregroundColor: Colors.white,
+                                        elevation: 0,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                const SizedBox(height: 24),
-                                CourseSectionHeader(
-                                  title: 'Materi Kursus',
-                                  trailing:
-                                      '${currentCourse.completedLessons}/${currentCourse.totalLessons}',
-                                ),
-                                const SizedBox(height: 12),
-                                ...currentCourse.sections.map((section) {
-                                  return CourseSectionAccordion(
-                                    section: section,
-                                    course: currentCourse,
-                                  );
-                                }),
-                                const SizedBox(height: 24),
+                                  const SizedBox(height: 24),
+                                  CourseSectionHeader(
+                                    title: 'Materi Kursus',
+                                    trailing:
+                                        '${currentCourse.completedLessons}/${currentCourse.totalLessons}',
+                                  ),
+                                  const SizedBox(height: 12),
+                                  ...currentCourse.sections.map((section) {
+                                    return CourseSectionAccordion(
+                                      section: section,
+                                      course: currentCourse,
+                                    );
+                                  }),
+                                  const SizedBox(height: 24),
+                                ],
                               ] else ...[
                                 CourseLockedAccess(course: currentCourse),
                                 const SizedBox(height: 24),
@@ -236,6 +266,141 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
           ),
         );
       },
+    );
+  }
+}
+
+/// Management actions shown on the course detail for instructors/admins:
+/// view participant progress and grade essay / case-study submissions.
+class _InstructorPanel extends StatelessWidget {
+  final CourseEntity course;
+
+  const _InstructorPanel({required this.course});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.brandSurfaceAlt,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.borderSubtle),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: const [
+              Icon(
+                Icons.workspace_premium_rounded,
+                size: 18,
+                color: AppColors.brandPrimary,
+              ),
+              SizedBox(width: 8),
+              Text(
+                'Mode Instruktur',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            'Pantau progres peserta dan nilai essay & studi kasus. Semua materi bisa kamu buka.',
+            style: TextStyle(
+              fontSize: 12.5,
+              height: 1.4,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Expanded(
+                child: _ActionButton(
+                  icon: Icons.groups_rounded,
+                  label: 'Progres Peserta',
+                  onTap: () => context.push(
+                    AppRoutes.instructorParticipants,
+                    extra: {'courseId': course.id, 'courseTitle': course.title},
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _ActionButton(
+                  icon: Icons.rate_review_rounded,
+                  label: 'Penilaian',
+                  filled: true,
+                  onTap: () => context.push(
+                    AppRoutes.instructorGradingQueue,
+                    extra: {'courseId': course.id},
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ActionButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool filled;
+  final VoidCallback onTap;
+
+  const _ActionButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.filled = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final fg = filled ? Colors.white : AppColors.brandPrimary;
+    return Material(
+      color: filled ? AppColors.brandPrimary : AppColors.surface,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            border: filled
+                ? null
+                : Border.all(color: AppColors.brandPrimary.withValues(alpha: 0.4)),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 18, color: fg),
+              const SizedBox(width: 8),
+              Flexible(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w800,
+                    color: fg,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

@@ -11,12 +11,16 @@ class CourseLessonTile extends StatelessWidget {
   final int lessonIndexInSection;
   final int overallLessonIndex;
 
+  /// Instructors/admins may open any lesson regardless of completion order.
+  final bool unlockAll;
+
   const CourseLessonTile({
     super.key,
     required this.lesson,
     required this.course,
     required this.lessonIndexInSection,
     required this.overallLessonIndex,
+    this.unlockAll = false,
   });
 
   Color _getLessonTypeColor(String type) {
@@ -67,7 +71,7 @@ class CourseLessonTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isUnlocked = course.isLessonUnlocked(lesson);
+    final bool isUnlocked = unlockAll || course.isLessonUnlocked(lesson);
     final bool isCompleted = lesson.isCompleted;
     final Color typeColor = isUnlocked
         ? _getLessonTypeColor(lesson.type)
