@@ -4,15 +4,22 @@ import 'app_typography.dart';
 import 'app_measures.dart';
 
 class AppTheme {
-  static ThemeData get lightTheme {
+  /// The active theme. Reads theme-aware [AppColors] (driven by
+  /// `AppColors.brightness`), so it reflects light or dark automatically. The
+  /// root sets `AppColors.brightness` and remounts before building MaterialApp.
+  static ThemeData get theme {
+    final isDark = AppColors.isDark;
+    final base = isDark ? const ColorScheme.dark() : const ColorScheme.light();
+
     return ThemeData(
       useMaterial3: true,
+      brightness: AppColors.brightness,
       visualDensity: VisualDensity.standard,
       // Poppins (geometric-rounded) app-wide for a friendlier, more polished
       // feel that matches the onboarding and the reference designs.
       fontFamily: 'Poppins',
       scaffoldBackgroundColor: AppColors.background,
-      colorScheme: const ColorScheme.light(
+      colorScheme: base.copyWith(
         primary: AppColors.brandPrimary,
         onPrimary: AppColors.white,
         secondary: AppColors.brandPrimaryDark,
@@ -21,7 +28,7 @@ class AppTheme {
         onSurface: AppColors.textPrimary,
         error: AppColors.brandPrimaryDark,
       ),
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
@@ -39,7 +46,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(AppMeasures.radiusXLarge),
         ),
       ),
-      dividerTheme: const DividerThemeData(
+      dividerTheme: DividerThemeData(
         color: AppColors.borderSubtle,
         thickness: 1,
         space: AppMeasures.paddingLarge,
@@ -50,9 +57,9 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppMeasures.radiusCircle),
         ),
-        side: const BorderSide(color: AppColors.borderSubtle),
+        side: BorderSide(color: AppColors.borderSubtle),
       ),
-      textTheme: const TextTheme(
+      textTheme: TextTheme(
         displayLarge: AppTypography.displayLarge,
         displayMedium: AppTypography.displayMedium,
         displaySmall: AppTypography.displaySmall,
@@ -75,11 +82,11 @@ class AppTheme {
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppMeasures.radiusMedium),
-          borderSide: const BorderSide(color: AppColors.borderDefault),
+          borderSide: BorderSide(color: AppColors.borderDefault),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppMeasures.radiusMedium),
-          borderSide: const BorderSide(color: AppColors.borderDefault),
+          borderSide: BorderSide(color: AppColors.borderDefault),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppMeasures.radiusMedium),
@@ -89,7 +96,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(AppMeasures.radiusMedium),
           borderSide: const BorderSide(color: AppColors.brandPrimaryDark),
         ),
-        hintStyle: const TextStyle(color: AppColors.textTertiary, fontSize: 14),
+        hintStyle: TextStyle(color: AppColors.textTertiary, fontSize: 14),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -134,10 +141,14 @@ class AppTheme {
       progressIndicatorTheme: const ProgressIndicatorThemeData(
         color: AppColors.brandPrimary,
       ),
+      dialogTheme: DialogThemeData(backgroundColor: AppColors.surface),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: AppColors.surface,
+      ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppColors.textPrimary,
-        contentTextStyle: const TextStyle(color: AppColors.white, fontSize: 13),
+        contentTextStyle: TextStyle(color: AppColors.surface, fontSize: 13),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppMeasures.radiusMedium),
         ),

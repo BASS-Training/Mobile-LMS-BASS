@@ -21,7 +21,7 @@ class FeatureCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
@@ -55,7 +55,7 @@ class FeatureCard extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.charcoal,
+                  color: AppColors.textPrimary,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -66,7 +66,7 @@ class FeatureCard extends StatelessWidget {
                 description,
                 style: TextStyle(
                   fontSize: 12,
-                  color: AppColors.slate,
+                  color: AppColors.textSecondary,
                   height: 1.4,
                 ),
                 maxLines: 2,

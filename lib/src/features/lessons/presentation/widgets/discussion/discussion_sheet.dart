@@ -26,16 +26,16 @@ class DiscussionSheet extends StatelessWidget {
         expand: false,
         builder: (context, scrollController) {
           return Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: AppColors.background,
               borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
             ),
             child: Column(
               children: [
                 _buildHeader(context),
-                const Divider(height: 1, color: AppColors.borderSubtle),
+                Divider(height: 1, color: AppColors.borderSubtle),
                 Expanded(child: _buildBody(scrollController)),
-                const Divider(height: 1, color: AppColors.borderSubtle),
+                Divider(height: 1, color: AppColors.borderSubtle),
                 const _NewTopicComposer(),
               ],
             ),
@@ -67,7 +67,7 @@ class DiscussionSheet extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Diskusi',
                       style: TextStyle(
                         fontSize: 17,
@@ -79,7 +79,7 @@ class DiscussionSheet extends StatelessWidget {
                       lessonTitle,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         color: AppColors.textTertiary,
                       ),
@@ -144,7 +144,7 @@ class _EmptyView extends StatelessWidget {
             color: AppColors.textTertiary.withValues(alpha: 0.6),
           ),
           const SizedBox(height: 12),
-          const Text(
+          Text(
             'Belum ada diskusi',
             style: TextStyle(
               fontWeight: FontWeight.w700,
@@ -152,7 +152,7 @@ class _EmptyView extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          const Text(
+          Text(
             'Jadilah yang pertama memulai diskusi.',
             style: TextStyle(fontSize: 13, color: AppColors.textTertiary),
           ),
@@ -176,13 +176,13 @@ class _ErrorView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.cloud_off_rounded,
+            Icon(Icons.cloud_off_rounded,
                 size: 48, color: AppColors.textTertiary),
             const SizedBox(height: 12),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.textSecondary),
+              style: TextStyle(color: AppColors.textSecondary),
             ),
             const SizedBox(height: 12),
             OutlinedButton.icon(
@@ -254,7 +254,7 @@ class _ThreadTileState extends State<_ThreadTile> {
           const SizedBox(height: 8),
           Text(
             d.title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w800,
               color: AppColors.textPrimary,
@@ -263,7 +263,7 @@ class _ThreadTileState extends State<_ThreadTile> {
           const SizedBox(height: 4),
           Text(
             d.body,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13.5,
               height: 1.45,
               color: AppColors.textSecondary,
@@ -273,7 +273,7 @@ class _ThreadTileState extends State<_ThreadTile> {
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.only(left: 12),
-              decoration: const Border(
+              decoration: Border(
                       left: BorderSide(color: AppColors.borderDefault, width: 2))
                   .toDecoration(),
               child: Column(
@@ -331,7 +331,7 @@ class _ReplyTile extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             reply.body,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               height: 1.4,
               color: AppColors.textSecondary,
@@ -364,7 +364,7 @@ class _AuthorRow extends StatelessWidget {
           width: size,
           height: size,
           alignment: Alignment.center,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             color: AppColors.brandSurface,
             shape: BoxShape.circle,
           ),
@@ -393,7 +393,7 @@ class _AuthorRow extends StatelessWidget {
         if (timeLabel.isNotEmpty)
           Text(
             timeLabel,
-            style: const TextStyle(fontSize: 11, color: AppColors.textTertiary),
+            style: TextStyle(fontSize: 11, color: AppColors.textTertiary),
           ),
       ],
     );

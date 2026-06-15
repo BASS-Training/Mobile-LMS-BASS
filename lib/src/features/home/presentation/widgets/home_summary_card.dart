@@ -38,14 +38,14 @@ class HomeSummaryCard extends StatelessWidget {
                   AnimatedCount(
                     value: stats.overallProgressPercentage,
                     formatter: (v) => '$v%',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w800,
                       color: AppColors.textPrimary,
                       height: 1.0,
                     ),
                   ),
-                  const Text(
+                  Text(
                     'progres',
                     style: TextStyle(
                       fontSize: 9,
@@ -109,7 +109,7 @@ class _MetricRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const valueStyle = TextStyle(
+    final valueStyle = TextStyle(
       fontSize: 13.5,
       fontWeight: FontWeight.w800,
       color: AppColors.textPrimary,
@@ -129,7 +129,7 @@ class _MetricRow extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12.5,
               color: AppColors.textSecondary,
             ),
@@ -148,7 +148,7 @@ class _MetricDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
+    return Padding(
       padding: EdgeInsets.symmetric(vertical: 6),
       child: Divider(height: 1, thickness: 1, color: AppColors.borderSubtle),
     );

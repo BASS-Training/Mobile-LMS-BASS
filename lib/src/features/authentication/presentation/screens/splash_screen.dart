@@ -122,7 +122,7 @@ class _SplashScreenState extends State<SplashScreen>
                 const SizedBox(height: 8),
                 FadeTransition(
                   opacity: taglineFade,
-                  child: const Text(
+                  child: Text(
                     'Belajar di Bass Lebih Terarah',
                     style: TextStyle(
                       fontSize: 13.5,

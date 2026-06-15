@@ -233,7 +233,7 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
           Expanded(
             child: Text(
               widget.lesson.content.trim(),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 height: 1.5,
                 color: AppColors.textSecondary,
@@ -436,7 +436,7 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
                 color: AppColors.textSecondary.withValues(alpha: 0.4),
               ),
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 'Gambar belum tersedia',
                 style: TextStyle(
                   fontSize: 15,

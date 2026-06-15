@@ -117,7 +117,7 @@ class _CertificateCard extends StatelessWidget {
                 children: [
                   _seal(),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'SERTIFIKAT KELULUSAN',
                     style: TextStyle(
                       fontSize: 14,
@@ -138,7 +138,7 @@ class _CertificateCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 22),
-                  const Text(
+                  Text(
                     'Dengan bangga diberikan kepada',
                     style: TextStyle(
                       fontSize: 12.5,
@@ -157,7 +157,7 @@ class _CertificateCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 14),
-                  const Text(
+                  Text(
                     'atas keberhasilan menyelesaikan kursus',
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -169,7 +169,7 @@ class _CertificateCard extends StatelessWidget {
                   Text(
                     courseTitle,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w800,
                       color: AppColors.textPrimary,
@@ -177,7 +177,7 @@ class _CertificateCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  const Divider(color: AppColors.borderSubtle, height: 1),
+                  Divider(color: AppColors.borderSubtle, height: 1),
                   const SizedBox(height: 14),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -189,7 +189,7 @@ class _CertificateCard extends StatelessWidget {
                   const SizedBox(height: 12),
                   Text(
                     'No. $certificateId',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
                       letterSpacing: 0.5,
                       color: AppColors.textTertiary,
@@ -239,12 +239,12 @@ class _CertificateCard extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(fontSize: 10, color: AppColors.textTertiary),
+          style: TextStyle(fontSize: 10, color: AppColors.textTertiary),
         ),
         const SizedBox(height: 2),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12.5,
             fontWeight: FontWeight.w700,
             color: AppColors.textPrimary,
@@ -336,9 +336,13 @@ class _DetailCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            children: const [
-              Icon(Icons.verified_user_rounded, color: AppColors.success, size: 20),
-              SizedBox(width: 8),
+            children: [
+              const Icon(
+                Icons.verified_user_rounded,
+                color: AppColors.success,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
               Text(
                 'Sertifikat Terverifikasi',
                 style: TextStyle(
@@ -352,7 +356,7 @@ class _DetailCard extends StatelessWidget {
           const SizedBox(height: 14),
           for (var i = 0; i < rows.length; i++) ...[
             if (i > 0)
-              const Divider(
+              Divider(
                 height: 22,
                 thickness: 1,
                 color: AppColors.borderSubtle,
@@ -391,7 +395,7 @@ class _DetailRow extends StatelessWidget {
             children: [
               Text(
                 detail.label,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 11.5,
                   color: AppColors.textTertiary,
                 ),
@@ -399,7 +403,7 @@ class _DetailRow extends StatelessWidget {
               const SizedBox(height: 2),
               Text(
                 detail.value,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                   color: AppColors.textPrimary,

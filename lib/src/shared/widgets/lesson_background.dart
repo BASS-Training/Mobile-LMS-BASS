@@ -21,7 +21,7 @@ class LessonBackground extends StatelessWidget {
     return Stack(
       children: [
         Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [AppColors.surface, AppColors.background],
               begin: Alignment.topCenter,

@@ -94,7 +94,7 @@ class HomeHeader extends StatelessWidget {
                     '${greeting.text}, $name',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w800,
                       color: AppColors.textPrimary,
@@ -106,7 +106,7 @@ class HomeHeader extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 2),
-            const Text(
+            Text(
               'Siap belajar hari ini?',
               style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
             ),
@@ -130,7 +130,7 @@ class HomeHeader extends StatelessWidget {
         child: Stack(
           alignment: Alignment.center,
           children: [
-            const Icon(
+            Icon(
               Icons.notifications_none_rounded,
               color: AppColors.textPrimary,
               size: 24,

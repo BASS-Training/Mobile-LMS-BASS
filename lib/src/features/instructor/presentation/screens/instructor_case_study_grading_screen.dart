@@ -149,7 +149,7 @@ class _CaseStudyGradingViewState extends State<_CaseStudyGradingView> {
         children: [
           Text(
             review.participantName,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w800,
               color: AppColors.textPrimary,
@@ -158,7 +158,7 @@ class _CaseStudyGradingViewState extends State<_CaseStudyGradingView> {
           const SizedBox(height: 2),
           Text(
             review.caseStudy.title,
-            style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
           ),
         ],
       ),
@@ -191,7 +191,7 @@ class _CaseStudyGradingViewState extends State<_CaseStudyGradingView> {
             const SizedBox(height: 4),
             Text(
               section.instruction,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12.5,
                 color: AppColors.textSecondary,
                 height: 1.4,
@@ -233,7 +233,7 @@ class _CaseStudyGradingViewState extends State<_CaseStudyGradingView> {
               padding: const EdgeInsets.only(bottom: 6),
               child: Text(
                 block.label,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w700,
                   color: AppColors.textPrimary,
@@ -248,7 +248,7 @@ class _CaseStudyGradingViewState extends State<_CaseStudyGradingView> {
               borderRadius: BorderRadius.circular(12),
             ),
             child: answer.trim().isEmpty
-                ? const Text(
+                ? Text(
                     '(Tidak diisi)',
                     style: TextStyle(
                       fontSize: 13,
@@ -273,7 +273,7 @@ class _CaseStudyGradingViewState extends State<_CaseStudyGradingView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Penilaian',
             style: TextStyle(
               fontSize: 14,
@@ -346,11 +346,11 @@ class _CaseStudyGradingViewState extends State<_CaseStudyGradingView> {
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColors.borderDefault),
+        borderSide: BorderSide(color: AppColors.borderDefault),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColors.borderDefault),
+        borderSide: BorderSide(color: AppColors.borderDefault),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),

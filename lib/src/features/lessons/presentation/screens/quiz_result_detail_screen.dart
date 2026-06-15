@@ -39,7 +39,7 @@ class _QuizResultDetailScreenState extends State<QuizResultDetailScreen> {
           backgroundColor: AppColors.background,
           appBar: const BrandAppBar(title: 'Detail Hasil Quiz'),
           body: Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [AppColors.surface, AppColors.background],
                 begin: Alignment.topCenter,

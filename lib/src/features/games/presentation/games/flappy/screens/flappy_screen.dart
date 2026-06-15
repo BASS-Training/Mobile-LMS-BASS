@@ -184,7 +184,7 @@ class _FlappyScreenState extends State<FlappyScreen>
             children: [
               const Icon(Icons.flutter_dash, color: _accent, size: 48),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Gagal Terbang!',
                 style: TextStyle(
                   fontSize: 24,
@@ -238,7 +238,7 @@ class _ResultStat extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w800,
             letterSpacing: 1,
@@ -248,7 +248,7 @@ class _ResultStat extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 26,
             fontWeight: FontWeight.w900,
             color: AppColors.textPrimary,

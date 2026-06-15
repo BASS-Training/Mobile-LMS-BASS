@@ -194,7 +194,7 @@ class _EssayGradingViewState extends State<_EssayGradingView> {
         children: [
           Text(
             d.participantName,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w800,
               color: AppColors.textPrimary,
@@ -203,7 +203,7 @@ class _EssayGradingViewState extends State<_EssayGradingView> {
           const SizedBox(height: 2),
           Text(
             d.contentTitle,
-            style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
           ),
           const SizedBox(height: 12),
           Wrap(
@@ -247,7 +247,7 @@ class _EssayGradingViewState extends State<_EssayGradingView> {
             const SizedBox(height: 6),
             Text(
               a.question,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13.5,
                 fontWeight: FontWeight.w700,
                 color: AppColors.textPrimary,
@@ -264,7 +264,7 @@ class _EssayGradingViewState extends State<_EssayGradingView> {
               borderRadius: BorderRadius.circular(12),
             ),
             child: a.answer.trim().isEmpty
-                ? const Text(
+                ? Text(
                     '(Tidak ada jawaban)',
                     style: TextStyle(
                       fontSize: 13,
@@ -303,7 +303,7 @@ class _EssayGradingViewState extends State<_EssayGradingView> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Penilaian keseluruhan',
             style: TextStyle(
               fontSize: 14,
@@ -360,11 +360,11 @@ class _EssayGradingViewState extends State<_EssayGradingView> {
       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColors.borderDefault),
+        borderSide: BorderSide(color: AppColors.borderDefault),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColors.borderDefault),
+        borderSide: BorderSide(color: AppColors.borderDefault),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),

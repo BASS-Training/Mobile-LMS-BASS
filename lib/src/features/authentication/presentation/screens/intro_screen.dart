@@ -186,7 +186,7 @@ class _IntroScreenState extends State<IntroScreen>
                 ),
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 'Bass Training',
                 style: TextStyle(
                   fontFamily: _kFont,
@@ -203,7 +203,7 @@ class _IntroScreenState extends State<IntroScreen>
             duration: const Duration(milliseconds: 200),
             child: TextButton(
               onPressed: _isLast ? null : _finishIntro,
-              child: const Text(
+              child: Text(
                 'Lewati',
                 style: TextStyle(
                   fontFamily: _kFont,
@@ -400,7 +400,7 @@ class _IntroText extends StatelessWidget {
         Text(
           slide.title,
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: _kFont,
             fontSize: 27,
             height: 1.18,
@@ -413,7 +413,7 @@ class _IntroText extends StatelessWidget {
         Text(
           slide.description,
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: TextStyle(
             fontFamily: _kFont,
             fontSize: 14,
             height: 1.6,

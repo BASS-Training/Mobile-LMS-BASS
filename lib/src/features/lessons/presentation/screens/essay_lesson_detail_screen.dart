@@ -167,7 +167,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
 
             return SafeArea(
               child: Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [AppColors.surface, AppColors.background],
                     begin: Alignment.topCenter,

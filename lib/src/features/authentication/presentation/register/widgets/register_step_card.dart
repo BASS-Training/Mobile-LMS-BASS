@@ -23,7 +23,7 @@ class RegisterStepCard extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w800,
             color: AppColors.textSecondary,
@@ -32,7 +32,7 @@ class RegisterStepCard extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           subtitle,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             color: AppColors.textTertiary,
             height: 1.4,
@@ -55,7 +55,7 @@ class RegisterSectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w700,
         color: AppColors.textSecondary,

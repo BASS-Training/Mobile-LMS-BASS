@@ -131,7 +131,7 @@ class _ParticipantTile extends StatelessWidget {
                       participant.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14.5,
                         fontWeight: FontWeight.w800,
                         color: AppColors.textPrimary,
@@ -143,7 +143,7 @@ class _ParticipantTile extends StatelessWidget {
                         participant.email,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,
                         ),
@@ -155,7 +155,7 @@ class _ParticipantTile extends StatelessWidget {
               if (participant.pendingGrading > 0)
                 _PendingBadge(participant.pendingGrading),
               const SizedBox(width: 6),
-              const Icon(
+              Icon(
                 Icons.chevron_right_rounded,
                 color: AppColors.textTertiary,
               ),
@@ -180,7 +180,7 @@ class _ParticipantTile extends StatelessWidget {
               const SizedBox(width: 10),
               Text(
                 '${pct.toInt()}%',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w800,
                   color: AppColors.textPrimary,
@@ -191,7 +191,7 @@ class _ParticipantTile extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             '${participant.completedContents}/${participant.totalContents} materi selesai',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11.5,
               color: AppColors.textTertiary,
             ),

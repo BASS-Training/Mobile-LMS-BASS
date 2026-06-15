@@ -13,6 +13,7 @@ class LocalStorage {
   static const String _authUserKey = 'auth_user';
   static const String _introSeenKey = 'intro_seen';
   static const String _gameSoundMutedKey = 'game_sound_muted';
+  static const String _themeModeKey = 'theme_mode';
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -123,6 +124,16 @@ class LocalStorage {
 
   static Future<void> setGameSoundMuted(bool muted) async {
     await _box.put(_gameSoundMutedKey, muted);
+  }
+
+  // Theme mode preference: 'light' (default) | 'dark' | 'system'.
+  static String getThemeMode() {
+    final v = _box.get(_themeModeKey, defaultValue: 'light');
+    return v is String ? v : 'light';
+  }
+
+  static Future<void> setThemeMode(String mode) async {
+    await _box.put(_themeModeKey, mode);
   }
 
   // Get progress statistics

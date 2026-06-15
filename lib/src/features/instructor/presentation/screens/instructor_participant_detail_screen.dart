@@ -113,7 +113,7 @@ class InstructorParticipantDetailScreen extends StatelessWidget {
             children: [
               Text(
                 d.name,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
                   color: AppColors.textPrimary,
@@ -123,7 +123,7 @@ class InstructorParticipantDetailScreen extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   d.email,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     color: AppColors.textSecondary,
                   ),
@@ -150,7 +150,7 @@ class InstructorParticipantDetailScreen extends StatelessWidget {
                 strokeWidth: 7,
                 center: Text(
                   '${d.progressPercentage.toInt()}%',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
                     color: AppColors.textPrimary,
@@ -187,7 +187,7 @@ class InstructorParticipantDetailScreen extends StatelessWidget {
                   const Icon(Icons.insights_rounded,
                       size: 16, color: AppColors.info),
                   const SizedBox(width: 8),
-                  const Text(
+                  Text(
                     'Rata-rata nilai kuis',
                     style: TextStyle(
                       fontSize: 12.5,
@@ -218,7 +218,7 @@ class InstructorParticipantDetailScreen extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12.5,
               color: AppColors.textSecondary,
             ),
@@ -226,7 +226,7 @@ class InstructorParticipantDetailScreen extends StatelessWidget {
         ),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 13.5,
             fontWeight: FontWeight.w800,
             color: AppColors.textPrimary,
@@ -241,7 +241,7 @@ class InstructorParticipantDetailScreen extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w800,
             color: AppColors.textPrimary,
@@ -256,7 +256,7 @@ class InstructorParticipantDetailScreen extends StatelessWidget {
           ),
           child: Text(
             '$count',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w800,
               color: AppColors.textSecondary,
@@ -336,7 +336,7 @@ class InstructorParticipantDetailScreen extends StatelessWidget {
                   title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13.5,
                     fontWeight: FontWeight.w800,
                     color: AppColors.textPrimary,
@@ -345,7 +345,7 @@ class InstructorParticipantDetailScreen extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11.5,
                     color: AppColors.textTertiary,
                   ),
@@ -385,7 +385,7 @@ class InstructorParticipantDetailScreen extends StatelessWidget {
       decoration: _card(),
       child: Text(
         text,
-        style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+        style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
       ),
     );
   }
@@ -403,7 +403,7 @@ class _Divider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
+    return Padding(
       padding: EdgeInsets.symmetric(vertical: 7),
       child: Divider(height: 1, thickness: 1, color: AppColors.borderSubtle),
     );

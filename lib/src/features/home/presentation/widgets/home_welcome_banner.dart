@@ -18,7 +18,7 @@ class HomeWelcomeBanner extends StatelessWidget {
         decoration: BoxDecoration(
           // Soft brand-tinted wash (not saturated red) so it feels welcoming
           // and stays easy on the eyes.
-          gradient: const LinearGradient(
+          gradient: LinearGradient(
             colors: [AppColors.brandSurface, AppColors.surface],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -41,7 +41,7 @@ class HomeWelcomeBanner extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 14),
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

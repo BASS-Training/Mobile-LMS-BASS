@@ -63,7 +63,7 @@ class HomeAchievements extends StatelessWidget {
           children: [
             Row(
               children: [
-                const Text(
+                Text(
                   'Pencapaianmu',
                   style: TextStyle(
                     fontSize: 16,
@@ -182,11 +182,11 @@ class _BadgeView extends StatelessWidget {
                     bottom: 2,
                     child: Container(
                       padding: const EdgeInsets.all(3),
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: AppColors.surface,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.lock_rounded,
                         size: 11,
                         color: AppColors.textTertiary,

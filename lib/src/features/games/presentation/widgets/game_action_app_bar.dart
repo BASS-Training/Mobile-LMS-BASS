@@ -14,8 +14,9 @@ class GameActionAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// Whether to show the restart action (usually gated on the game being ready).
   final bool showRestart;
 
-  final Color background;
-  final Color foreground;
+  /// Null = use the theme-aware default (resolved in build).
+  final Color? background;
+  final Color? foreground;
 
   const GameActionAppBar({
     super.key,
@@ -25,8 +26,8 @@ class GameActionAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.onToggleSound,
     required this.onRestart,
     this.showRestart = true,
-    this.background = AppColors.background,
-    this.foreground = AppColors.textPrimary,
+    this.background,
+    this.foreground,
   });
 
   @override
@@ -35,10 +36,10 @@ class GameActionAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: background,
+      backgroundColor: background ?? AppColors.background,
       elevation: 0,
       scrolledUnderElevation: 0,
-      foregroundColor: foreground,
+      foregroundColor: foreground ?? AppColors.textPrimary,
       title: Text(
         title,
         style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 20),

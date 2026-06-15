@@ -181,7 +181,7 @@ class _FeedbackLessonDetailScreenState
         children: [
           Text(
             data.title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w900,
               color: AppColors.textPrimary,
@@ -191,7 +191,7 @@ class _FeedbackLessonDetailScreenState
             const SizedBox(height: 6),
             Text(
               data.description,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13.5,
                 height: 1.4,
                 color: AppColors.textSecondary,
@@ -202,7 +202,7 @@ class _FeedbackLessonDetailScreenState
             const SizedBox(height: 10),
             Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.lock_outline_rounded,
                   size: 15,
                   color: AppColors.textTertiary,
@@ -357,7 +357,7 @@ class _QuestionCard extends StatelessWidget {
         children: [
           RichText(
             text: TextSpan(
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14.5,
                 fontWeight: FontWeight.w700,
                 color: AppColors.textPrimary,
@@ -376,7 +376,7 @@ class _QuestionCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               question.helpText!,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
                 color: AppColors.textTertiary,
               ),
@@ -413,7 +413,7 @@ class _QuestionCard extends StatelessWidget {
               if (ratingValue != null)
                 Text(
                   '$ratingValue / ${question.ratingMax}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                     color: AppColors.textSecondary,
@@ -429,14 +429,14 @@ class _QuestionCard extends StatelessWidget {
                 children: [
                   Text(
                     question.minLabel ?? '',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 10.5,
                       color: AppColors.textTertiary,
                     ),
                   ),
                   Text(
                     question.maxLabel ?? '',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 10.5,
                       color: AppColors.textTertiary,
                     ),
@@ -527,7 +527,7 @@ class _ErrorView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
+            Icon(
               Icons.error_outline_rounded,
               size: 44,
               color: AppColors.textTertiary,
@@ -536,7 +536,7 @@ class _ErrorView extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.textSecondary),
+              style: TextStyle(color: AppColors.textSecondary),
             ),
             const SizedBox(height: 16),
             ElevatedButton(onPressed: onRetry, child: const Text('Coba lagi')),

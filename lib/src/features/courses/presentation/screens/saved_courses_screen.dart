@@ -115,7 +115,7 @@ class _SavedCourseTile extends StatelessWidget {
                       course.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
                         color: AppColors.textPrimary,
@@ -127,7 +127,7 @@ class _SavedCourseTile extends StatelessWidget {
                       course.instructor,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
@@ -135,7 +135,7 @@ class _SavedCourseTile extends StatelessWidget {
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.menu_book_rounded,
                           size: 13,
                           color: AppColors.textTertiary,
@@ -143,7 +143,7 @@ class _SavedCourseTile extends StatelessWidget {
                         const SizedBox(width: 4),
                         Text(
                           '${course.totalLessons} lesson',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
                             color: AppColors.textTertiary,
@@ -154,7 +154,7 @@ class _SavedCourseTile extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(
+              Icon(
                 Icons.chevron_right_rounded,
                 color: AppColors.textTertiary,
               ),

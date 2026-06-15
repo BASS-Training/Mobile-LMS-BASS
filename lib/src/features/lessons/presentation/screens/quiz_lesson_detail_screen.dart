@@ -675,7 +675,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
   }
 
   BoxDecoration _buildQuizBackground() {
-    return const BoxDecoration(
+    return BoxDecoration(
       gradient: LinearGradient(
         colors: [AppColors.background, AppColors.surfaceMuted],
         begin: Alignment.topCenter,

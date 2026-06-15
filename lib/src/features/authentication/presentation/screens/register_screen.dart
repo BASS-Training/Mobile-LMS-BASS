@@ -191,7 +191,7 @@ class _Navigation extends StatelessWidget {
             label: const Text(RegisterStrings.back),
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.textSecondary,
-              side: const BorderSide(color: AppColors.borderDefault),
+              side: BorderSide(color: AppColors.borderDefault),
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
             ),
           ),

@@ -15,6 +15,7 @@ import 'package:lms_mobile_app/src/features/authentication/presentation/screens/
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/register_screen.dart';
 import 'package:lms_mobile_app/src/features/main/presentation/screens/main_screen.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/screens/course_detail_screen.dart';
+import 'package:lms_mobile_app/src/features/courses/presentation/screens/saved_courses_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/essay/essay_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/quiz/quiz_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/quiz_result/quiz_result_bloc.dart';
@@ -564,6 +565,10 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.certificateList,
         builder: (context, state) => const CertificateListScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.savedCourses,
+        builder: (context, state) => const SavedCoursesScreen(),
       ),
       GoRoute(
         path: AppRoutes.gamesHub,

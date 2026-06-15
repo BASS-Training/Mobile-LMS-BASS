@@ -65,7 +65,7 @@ class GameCard extends StatelessWidget {
               const SizedBox(height: 14),
               Text(
                 game.title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w800,
                   color: AppColors.textPrimary,
@@ -76,7 +76,7 @@ class GameCard extends StatelessWidget {
                 game.description,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   height: 1.35,
                   color: AppColors.textSecondary,
@@ -97,7 +97,7 @@ class GameCard extends StatelessWidget {
     if (!score.hasBeenPlayed) {
       return Row(
         children: [
-          const Icon(
+          Icon(
             Icons.fiber_new_rounded,
             size: 16,
             color: AppColors.textTertiary,

@@ -144,7 +144,7 @@ class _InstructorDashboardView extends StatelessWidget {
                 d.name.isEmpty ? 'Halo 👋' : 'Halo, ${d.name} 👋',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
                   color: AppColors.textPrimary,
@@ -155,7 +155,7 @@ class _InstructorDashboardView extends StatelessWidget {
                 d.isAdmin
                     ? 'Mode Admin · kelola & nilai semua kelas'
                     : 'Mode Instruktur · kelola & nilai peserta',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   color: AppColors.textSecondary,
                 ),
@@ -316,7 +316,7 @@ class _InstructorDashboardView extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               value,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w900,
                 color: AppColors.textPrimary,
@@ -327,7 +327,7 @@ class _InstructorDashboardView extends StatelessWidget {
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
                 color: AppColors.textSecondary,
               ),
@@ -341,7 +341,7 @@ class _InstructorDashboardView extends StatelessWidget {
   Widget _sectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w800,
         color: AppColors.textPrimary,
@@ -360,7 +360,7 @@ class _InstructorDashboardView extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+        style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
       ),
     );
   }
@@ -389,7 +389,7 @@ class _CourseCard extends StatelessWidget {
               children: [
                 Text(
                   summary.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
                     color: AppColors.textPrimary,
@@ -451,7 +451,7 @@ class _CourseCard extends StatelessWidget {
               const SizedBox(width: 12),
               Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                   color: AppColors.textPrimary,
@@ -476,7 +476,7 @@ class _CourseCard extends StatelessWidget {
                   ),
                 ),
               const SizedBox(width: 4),
-              const Icon(
+              Icon(
                 Icons.chevron_right_rounded,
                 color: AppColors.textTertiary,
               ),
@@ -514,7 +514,7 @@ class _CourseCard extends StatelessWidget {
                         summary.title,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w800,
                           color: AppColors.textPrimary,
@@ -619,7 +619,7 @@ class _RecentFeed extends StatelessWidget {
               borderRadius: BorderRadius.circular(18),
               border: Border.all(color: AppColors.borderSubtle),
             ),
-            child: const Text(
+            child: Text(
               'Tidak ada submission yang menunggu dinilai.',
               style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
             ),
@@ -702,7 +702,7 @@ class _FeedTile extends StatelessWidget {
                         item.participantName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13.5,
                           fontWeight: FontWeight.w800,
                           color: AppColors.textPrimary,
@@ -713,7 +713,7 @@ class _FeedTile extends StatelessWidget {
                         '${item.isEssay ? 'Essay' : 'Studi Kasus'} · ${item.contentTitle}',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,
                         ),
@@ -721,7 +721,7 @@ class _FeedTile extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Icon(
+                Icon(
                   Icons.chevron_right_rounded,
                   color: AppColors.textTertiary,
                 ),

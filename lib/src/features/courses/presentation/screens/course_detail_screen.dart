@@ -160,7 +160,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                               CourseInfoCards(course: currentCourse),
                               const SizedBox(height: 24),
 
-                              const Text(
+                              Text(
                                 'Tentang Kursus',
                                 style: TextStyle(
                                   fontSize: 16,
@@ -171,7 +171,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                               const SizedBox(height: 8),
                               Text(
                                 currentCourse.description,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
                                   color: AppColors.textSecondary,
                                   height: 1.6,
@@ -291,8 +291,8 @@ class _InstructorPanel extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            children: const [
-              Icon(
+            children: [
+              const Icon(
                 Icons.workspace_premium_rounded,
                 size: 18,
                 color: AppColors.brandPrimary,
@@ -309,7 +309,7 @@ class _InstructorPanel extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 4),
-          const Text(
+          Text(
             'Pantau progres peserta dan nilai essay & studi kasus. Semua materi bisa kamu buka.',
             style: TextStyle(
               fontSize: 12.5,

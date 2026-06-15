@@ -9,6 +9,13 @@ class UserMapper {
       email: model.email,
       role: model.role,
       roles: model.roles,
+      dateOfBirth: model.dateOfBirth,
+      gender: model.gender,
+      institutionName: model.institutionName,
+      occupation: model.occupation,
+      registrationProgram: model.registrationProgram,
+      avpnVerificationStatus: model.avpnVerificationStatus,
+      joinedAt: model.joinedAt,
     );
   }
 
@@ -19,6 +26,13 @@ class UserMapper {
       email: entity.email,
       role: entity.role,
       roles: entity.roles,
+      dateOfBirth: entity.dateOfBirth,
+      gender: entity.gender,
+      institutionName: entity.institutionName,
+      occupation: entity.occupation,
+      registrationProgram: entity.registrationProgram,
+      avpnVerificationStatus: entity.avpnVerificationStatus,
+      joinedAt: entity.joinedAt,
     );
   }
 }

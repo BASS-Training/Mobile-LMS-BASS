@@ -79,8 +79,8 @@ class _CourseListScreenState extends State<CourseListScreen> {
                         ),
                       ),
                       child: Row(
-                        children: const [
-                          Icon(
+                        children: [
+                          const Icon(
                             Icons.workspace_premium_rounded,
                             color: AppColors.brandPrimary,
                             size: 20,
@@ -144,7 +144,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
             },
             decoration: InputDecoration(
               hintText: AppStrings.searchCourses,
-              hintStyle: const TextStyle(color: AppColors.textTertiary),
+              hintStyle: TextStyle(color: AppColors.textTertiary),
               prefixIcon: const Icon(
                 Icons.search_rounded,
                 color: AppColors.brandPrimary,
@@ -157,7 +157,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
                           const SearchCoursesEvent(query: ''),
                         );
                       },
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.close_rounded,
                         color: AppColors.textTertiary,
                       ),
@@ -337,7 +337,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
             child: Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
                 color: AppColors.textPrimary,
@@ -351,7 +351,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
               child: Text(
                 message,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   color: AppColors.textSecondary,
                   height: 1.4,
@@ -418,7 +418,7 @@ class _ManageCourseTile extends StatelessWidget {
                       course.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
                         color: AppColors.textPrimary,
@@ -453,7 +453,7 @@ class _ManageCourseTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              const Icon(
+              Icon(
                 Icons.chevron_right_rounded,
                 color: AppColors.textTertiary,
               ),
@@ -488,6 +488,6 @@ class _CourseListBackdrop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const IgnorePointer(child: ColoredBox(color: AppColors.background));
+    return IgnorePointer(child: ColoredBox(color: AppColors.background));
   }
 }

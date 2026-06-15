@@ -291,7 +291,7 @@ class _CaseStudyLessonDetailScreenState
                 const SizedBox(height: 4),
                 Text(
                   data.title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     color: AppColors.textPrimary,
@@ -302,7 +302,7 @@ class _CaseStudyLessonDetailScreenState
                   const SizedBox(height: 6),
                   Text(
                     data.description,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
                       color: AppColors.textSecondary,
                       height: 1.45,
@@ -355,7 +355,7 @@ class _CaseStudyLessonDetailScreenState
               padding: const EdgeInsets.only(top: 8),
               child: Text(
                 'Nilai: ${sub.score}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13.5,
                   fontWeight: FontWeight.w700,
                   color: AppColors.textPrimary,
@@ -367,7 +367,7 @@ class _CaseStudyLessonDetailScreenState
               padding: const EdgeInsets.only(top: 6),
               child: Text(
                 'Feedback: ${sub.feedback}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   color: AppColors.textSecondary,
                   height: 1.45,
@@ -404,7 +404,7 @@ class _CaseStudyLessonDetailScreenState
           if (isSub)
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
                 color: AppColors.textPrimary,
@@ -426,7 +426,7 @@ class _CaseStudyLessonDetailScreenState
                 Expanded(
                   child: Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w800,
                       color: AppColors.textPrimary,
@@ -440,7 +440,7 @@ class _CaseStudyLessonDetailScreenState
               padding: const EdgeInsets.only(top: 6),
               child: Text(
                 section.instruction,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   color: AppColors.textSecondary,
                   height: 1.45,
@@ -474,7 +474,7 @@ class _CaseStudyLessonDetailScreenState
                 padding: const EdgeInsets.only(bottom: 6),
                 child: Text(
                   block.label,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 13.5,
                     color: AppColors.textPrimary,
@@ -503,26 +503,26 @@ class _CaseStudyLessonDetailScreenState
                 ),
                 maxLines: null,
                 minLines: 3,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   color: AppColors.textPrimary,
                   height: 1.45,
                 ),
                 decoration: InputDecoration(
                   hintText: 'Tuliskan jawaban Anda...',
-                  hintStyle: const TextStyle(color: AppColors.textTertiary),
+                  hintStyle: TextStyle(color: AppColors.textTertiary),
                   contentPadding: const EdgeInsets.all(14),
                   filled: true,
                   fillColor: AppColors.surface,
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
+                    borderSide: BorderSide(
                       color: AppColors.borderDefault,
                     ),
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
+                    borderSide: BorderSide(
                       color: AppColors.borderDefault,
                     ),
                   ),

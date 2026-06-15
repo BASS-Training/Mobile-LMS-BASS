@@ -308,7 +308,7 @@ class _StackTowerScreenState extends State<StackTowerScreen>
               children: [
                 const Icon(Icons.layers_rounded, color: _accent, size: 46),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Menara Runtuh!',
                   style: TextStyle(
                     fontSize: 24,
@@ -319,7 +319,7 @@ class _StackTowerScreenState extends State<StackTowerScreen>
                 const SizedBox(height: 10),
                 Text(
                   'Tinggi ${_engine.score}  •  Terbaik $_best',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textSecondary,

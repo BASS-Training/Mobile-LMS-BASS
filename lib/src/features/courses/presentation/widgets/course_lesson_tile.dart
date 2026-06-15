@@ -80,7 +80,11 @@ class CourseLessonTile extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: isCompleted ? const Color(0xFFF4FBF6) : Colors.white,
+        color: isCompleted
+            ? (AppColors.isDark
+                  ? const Color(0xFF15211A)
+                  : const Color(0xFFF4FBF6))
+            : AppColors.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: isCompleted

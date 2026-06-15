@@ -102,7 +102,9 @@ class CourseCard extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  isSaved ? Icons.bookmark_rounded : Icons.bookmark_outline_rounded,
+                  isSaved
+                      ? Icons.bookmark_rounded
+                      : Icons.bookmark_outline_rounded,
                   color: accent.solid,
                   size: 18,
                 ),
@@ -174,7 +176,7 @@ class CourseCard extends StatelessWidget {
                 course.title,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14.5,
                   height: 1.2,
                   fontWeight: FontWeight.w800,
@@ -184,7 +186,7 @@ class CourseCard extends StatelessWidget {
               const SizedBox(height: 4),
               Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.person_rounded,
                     size: 13,
                     color: AppColors.textTertiary,
@@ -195,7 +197,7 @@ class CourseCard extends StatelessWidget {
                       course.instructor,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11.5,
                         color: AppColors.textSecondary,
                       ),
@@ -223,7 +225,7 @@ class CourseCard extends StatelessWidget {
                 const SizedBox(height: 5),
                 Text(
                   '${course.completedLessons}/${course.totalLessons} lesson selesai',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 10.5,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textTertiary,
@@ -244,7 +246,7 @@ class CourseCard extends StatelessWidget {
                 const SizedBox(width: 4),
                 Text(
                   duration ?? '${course.totalLessons} lesson',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
                     color: AppColors.textSecondary,

@@ -6,7 +6,9 @@ import 'package:lms_mobile_app/src/core/config/constants/app_strings.dart';
 import 'package:lms_mobile_app/src/core/config/flavor_config.dart';
 
 // Core - Theme & DI
+import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_theme.dart';
+import 'package:lms_mobile_app/src/shared/theme/theme_controller.dart';
 import 'package:lms_mobile_app/src/core/di/injector.dart';
 import 'package:lms_mobile_app/src/core/routes/app_router.dart';
 
@@ -51,8 +53,31 @@ void main() async {
   runApp(const MainApp());
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   const MainApp({super.key});
+
+  @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    // Rebuild when the OS switches light/dark while in "system" mode.
+    if (mounted) setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,11 +90,26 @@ class MainApp extends StatelessWidget {
         BlocProvider<HomeBloc>(create: (context) => sl<HomeBloc>()),
         BlocProvider<LessonBloc>(create: (context) => sl<LessonBloc>()),
       ],
-      child: MaterialApp.router(
-        title: AppStrings.appName,
-        theme: AppTheme.lightTheme,
-        debugShowCheckedModeBanner: false,
-        routerConfig: AppRouter.router,
+      child: ListenableBuilder(
+        listenable: ThemeController.instance,
+        builder: (context, _) {
+          final platform =
+              WidgetsBinding.instance.platformDispatcher.platformBrightness;
+          final brightness =
+              ThemeController.instance.resolveBrightness(platform);
+          // Drive the theme-aware AppColors getters used across the app.
+          AppColors.brightness = brightness;
+
+          return MaterialApp.router(
+            // Keying by brightness forces a clean remount on theme change so
+            // even cached `const` subtrees repaint with the new palette.
+            key: ValueKey(brightness),
+            title: AppStrings.appName,
+            theme: AppTheme.theme,
+            debugShowCheckedModeBanner: false,
+            routerConfig: AppRouter.router,
+          );
+        },
       ),
     );
   }

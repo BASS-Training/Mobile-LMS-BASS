@@ -88,7 +88,7 @@ class _CountHeader extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             '$count sertifikat diraih',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
               color: AppColors.textPrimary,

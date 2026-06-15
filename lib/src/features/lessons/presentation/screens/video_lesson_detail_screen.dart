@@ -136,7 +136,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
           onBack: () => Navigator.pop(context),
         ),
         body: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [AppColors.surface, AppColors.background],
               begin: Alignment.topCenter,
@@ -223,7 +223,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
             builder: (context, state) {
               return SafeArea(
                 child: Container(
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [AppColors.surface, AppColors.background],
                       begin: Alignment.topCenter,

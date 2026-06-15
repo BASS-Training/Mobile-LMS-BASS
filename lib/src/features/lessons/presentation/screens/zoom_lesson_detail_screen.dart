@@ -509,7 +509,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
                 ),
               ),
               const SizedBox(width: 10),
-              const Text(
+              Text(
                 'Detail Meeting',
                 style: TextStyle(
                   fontSize: 14,
@@ -581,7 +581,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
             children: [
               Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textSecondary,
@@ -593,7 +593,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
                 truncate && value.length > 40
                     ? '${value.substring(0, 40)}...'
                     : value,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
@@ -604,7 +604,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
         ),
         IconButton(
           onPressed: onCopy,
-          icon: const Icon(
+          icon: Icon(
             Icons.copy_rounded,
             size: 16,
             color: AppColors.textSecondary,
@@ -707,7 +707,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Deskripsi',
                   style: TextStyle(
                     fontSize: 12,
@@ -718,7 +718,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
                 const SizedBox(height: 4),
                 Text(
                   widget.lesson.content.trim(),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     height: 1.6,
                     color: AppColors.textSecondary,

@@ -301,7 +301,7 @@ class _SchulteTableScreenState extends State<SchulteTableScreen>
             children: [
               const Icon(Icons.emoji_events_rounded, color: _accent, size: 44),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Selesai!',
               style: TextStyle(
                 fontSize: 26,
@@ -312,7 +312,7 @@ class _SchulteTableScreenState extends State<SchulteTableScreen>
             const SizedBox(height: 6),
             Text(
               'Waktu ${_elapsedSeconds.toStringAsFixed(1)} dtk  •  +$_lastPoints poin',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textSecondary,
@@ -321,7 +321,7 @@ class _SchulteTableScreenState extends State<SchulteTableScreen>
             const SizedBox(height: 2),
             Text(
               'Terbaik: $_best poin',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textTertiary,

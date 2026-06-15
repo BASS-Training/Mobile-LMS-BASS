@@ -26,10 +26,12 @@ class LessonTile extends StatelessWidget {
           margin: EdgeInsets.symmetric(vertical: 8),
           padding: EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: lesson.isCompleted ? AppColors.emerald : AppColors.pearl,
+              color: lesson.isCompleted
+                  ? AppColors.emerald
+                  : AppColors.borderDefault,
               width: 1.5,
             ),
             boxShadow: [

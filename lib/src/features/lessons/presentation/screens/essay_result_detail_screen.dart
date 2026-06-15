@@ -38,7 +38,7 @@ class _EssayResultDetailScreenState extends State<EssayResultDetailScreen> {
       backgroundColor: AppColors.background,
       appBar: const BrandAppBar(title: 'Detail Hasil Essay'),
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [AppColors.surface, AppColors.background],
             begin: Alignment.topCenter,

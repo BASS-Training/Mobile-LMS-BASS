@@ -207,7 +207,7 @@ class _HomeRecommendedCoursesState extends State<HomeRecommendedCourses> {
             semanticsLabel: 'Belum ada kursus',
           ),
           const SizedBox(height: 18),
-          const Text(
+          Text(
             'Belum ada kursus',
             textAlign: TextAlign.center,
             style: TextStyle(
@@ -217,7 +217,7 @@ class _HomeRecommendedCoursesState extends State<HomeRecommendedCourses> {
             ),
           ),
           const SizedBox(height: 6),
-          const Text(
+          Text(
             'Gabung kelas dengan token dari instrukturmu untuk membuka kursus pertamamu.',
             textAlign: TextAlign.center,
             style: TextStyle(
