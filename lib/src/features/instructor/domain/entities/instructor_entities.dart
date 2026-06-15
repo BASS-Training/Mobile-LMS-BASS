@@ -1,5 +1,20 @@
 import 'package:equatable/equatable.dart';
 
+/// Tolerant numeric parsing — the backend (MySQL aggregates / decimal columns)
+/// can return numbers as strings, so a plain `as num` cast would crash.
+int? _asInt(dynamic v) {
+  if (v == null) return null;
+  if (v is int) return v;
+  if (v is num) return v.toInt();
+  return int.tryParse(v.toString()) ?? double.tryParse(v.toString())?.toInt();
+}
+
+num? _asNum(dynamic v) {
+  if (v == null) return null;
+  if (v is num) return v;
+  return num.tryParse(v.toString());
+}
+
 /// One enrolled participant with a concise progress snapshot for a course.
 class ParticipantProgress extends Equatable {
   final String id;
@@ -29,11 +44,11 @@ class ParticipantProgress extends Equatable {
       id: json['id']?.toString() ?? '',
       name: json['name']?.toString() ?? 'Peserta',
       email: json['email']?.toString() ?? '',
-      progressPercentage: (json['progressPercentage'] as num?)?.toDouble() ?? 0,
-      completedContents: (json['completedContents'] as num?)?.toInt() ?? 0,
-      totalContents: (json['totalContents'] as num?)?.toInt() ?? 0,
-      completedLessons: (json['completedLessons'] as num?)?.toInt() ?? 0,
-      pendingGrading: (json['pendingGrading'] as num?)?.toInt() ?? 0,
+      progressPercentage: _asNum(json['progressPercentage'])?.toDouble() ?? 0,
+      completedContents: _asInt(json['completedContents']) ?? 0,
+      totalContents: _asInt(json['totalContents']) ?? 0,
+      completedLessons: _asInt(json['completedLessons']) ?? 0,
+      pendingGrading: _asInt(json['pendingGrading']) ?? 0,
     );
   }
 
@@ -134,9 +149,9 @@ class EssayAnswerItem extends Equatable {
       answerId: json['answerId']?.toString() ?? '',
       questionId: json['questionId']?.toString() ?? '',
       question: json['question']?.toString() ?? '',
-      maxScore: (json['maxScore'] as num?)?.toInt() ?? 0,
+      maxScore: _asInt(json['maxScore']) ?? 0,
       answer: json['answer']?.toString() ?? '',
-      score: (json['score'] as num?)?.toInt(),
+      score: _asInt(json['score']),
       feedback: json['feedback']?.toString(),
     );
   }
@@ -195,8 +210,8 @@ class EssaySubmissionDetail extends Equatable {
       requiresReview: json['requiresReview'] != false,
       status: json['status']?.toString() ?? 'submitted',
       isFullyGraded: json['isFullyGraded'] == true,
-      totalScore: json['totalScore'] as num?,
-      maxTotalScore: json['maxTotalScore'] as num?,
+      totalScore: _asNum(json['totalScore']),
+      maxTotalScore: _asNum(json['maxTotalScore']),
       answers: answers,
     );
   }
