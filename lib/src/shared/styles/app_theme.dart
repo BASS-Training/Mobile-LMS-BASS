@@ -8,6 +8,9 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       visualDensity: VisualDensity.standard,
+      // Poppins (geometric-rounded) app-wide for a friendlier, more polished
+      // feel that matches the onboarding and the reference designs.
+      fontFamily: 'Poppins',
       scaffoldBackgroundColor: AppColors.background,
       colorScheme: const ColorScheme.light(
         primary: AppColors.brandPrimary,

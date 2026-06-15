@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
+import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_accent.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 
@@ -24,6 +25,9 @@ class CourseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Each course carries its own colour identity so a list of cards reads as a
+    // varied, premium set rather than a wall of identical red thumbnails.
+    final accent = CourseAccent.of(course.id);
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -39,8 +43,8 @@ class CourseCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(flex: 5, child: _buildCover()),
-              Expanded(flex: 6, child: _buildBody()),
+              Expanded(flex: 5, child: _buildCover(accent)),
+              Expanded(flex: 6, child: _buildBody(accent)),
             ],
           ),
         ),
@@ -48,18 +52,18 @@ class CourseCard extends StatelessWidget {
     );
   }
 
-  Widget _buildCover() {
+  Widget _buildCover(CourseAccent accent) {
     return Stack(
       children: [
         Container(
           width: double.infinity,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: AppColors.brandGradient,
+              colors: accent.gradient,
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
-            borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
           ),
         ),
         Positioned(
@@ -99,7 +103,7 @@ class CourseCard extends StatelessWidget {
                 ),
                 child: Icon(
                   isSaved ? Icons.bookmark_rounded : Icons.bookmark_outline_rounded,
-                  color: AppColors.brandPrimary,
+                  color: accent.solid,
                   size: 18,
                 ),
               ),
@@ -124,15 +128,15 @@ class CourseCard extends StatelessWidget {
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: const [
-                  Icon(Icons.lock_rounded, size: 12, color: AppColors.brandPrimary),
-                  SizedBox(width: 4),
+                children: [
+                  Icon(Icons.lock_rounded, size: 12, color: accent.solid),
+                  const SizedBox(width: 4),
                   Text(
                     'Beli',
                     style: TextStyle(
                       fontSize: 10.5,
                       fontWeight: FontWeight.w800,
-                      color: AppColors.brandPrimary,
+                      color: accent.solid,
                     ),
                   ),
                 ],
@@ -152,7 +156,7 @@ class CourseCard extends StatelessWidget {
     return d;
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(CourseAccent accent) {
     final progress = course.progressPercentage / 100.0;
     final hasProgress = course.isOwned && course.totalLessons > 0;
     final duration = _durationLabel;
@@ -202,7 +206,7 @@ class CourseCard extends StatelessWidget {
             ],
           ),
           if (!course.isOwned)
-            _CatalogHint(duration: duration)
+            _CatalogHint(duration: duration, accent: accent)
           else if (hasProgress)
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -213,9 +217,7 @@ class CourseCard extends StatelessWidget {
                     value: progress.clamp(0.0, 1.0),
                     minHeight: 5,
                     backgroundColor: AppColors.surfaceMuted,
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                      AppColors.brandPrimary,
-                    ),
+                    valueColor: AlwaysStoppedAnimation<Color>(accent.solid),
                   ),
                 ),
                 const SizedBox(height: 5),
@@ -285,28 +287,25 @@ class _Pill extends StatelessWidget {
 /// Footer shown on catalog (unowned) cards instead of a progress bar.
 class _CatalogHint extends StatelessWidget {
   final String? duration;
+  final CourseAccent accent;
 
-  const _CatalogHint({required this.duration});
+  const _CatalogHint({required this.duration, required this.accent});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Icon(
-          Icons.shopping_bag_rounded,
-          size: 13,
-          color: AppColors.brandPrimary,
-        ),
+        Icon(Icons.shopping_bag_rounded, size: 13, color: accent.solid),
         const SizedBox(width: 4),
         Expanded(
           child: Text(
             duration != null ? 'Beli · $duration' : 'Beli untuk akses',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w700,
-              color: AppColors.brandPrimary,
+              color: accent.solid,
             ),
           ),
         ),
