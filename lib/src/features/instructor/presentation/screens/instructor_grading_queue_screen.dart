@@ -23,7 +23,9 @@ class InstructorGradingQueueScreen extends StatelessWidget {
           ServiceLocator().locator<GradingQueueCubit>(param1: courseId)..load(),
       child: Scaffold(
         backgroundColor: AppColors.background,
-        appBar: const BrandAppBar(title: 'Penilaian'),
+        appBar: BrandAppBar(
+          title: courseId.isEmpty ? 'Inbox Penilaian' : 'Penilaian',
+        ),
         body: BlocBuilder<GradingQueueCubit, GradingQueueState>(
           builder: (context, state) {
             if (state.status == InstructorStatus.loading ||

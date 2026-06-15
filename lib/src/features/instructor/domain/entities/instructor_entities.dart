@@ -15,6 +15,97 @@ num? _asNum(dynamic v) {
   return num.tryParse(v.toString());
 }
 
+/// Per-course summary card on the instructor/admin dashboard.
+class InstructorCourseSummary extends Equatable {
+  final String id;
+  final String title;
+  final String status;
+  final int participantCount;
+  final int pendingCount;
+
+  const InstructorCourseSummary({
+    required this.id,
+    required this.title,
+    required this.status,
+    required this.participantCount,
+    required this.pendingCount,
+  });
+
+  factory InstructorCourseSummary.fromJson(Map<String, dynamic> json) {
+    return InstructorCourseSummary(
+      id: json['id']?.toString() ?? '',
+      title: json['title']?.toString() ?? '',
+      status: json['status']?.toString() ?? '',
+      participantCount: _asInt(json['participantCount']) ?? 0,
+      pendingCount: _asInt(json['pendingCount']) ?? 0,
+    );
+  }
+
+  @override
+  List<Object?> get props =>
+      [id, title, status, participantCount, pendingCount];
+}
+
+/// Aggregate dashboard for the instructor/admin home (mirrors web stats).
+class InstructorDashboard extends Equatable {
+  final String role; // 'admin' | 'instructor'
+  final String name;
+  final int totalCourses;
+  final int publishedCourses;
+  final int totalParticipants;
+  final int pendingGrading;
+  final List<InstructorCourseSummary> courses;
+
+  const InstructorDashboard({
+    required this.role,
+    required this.name,
+    required this.totalCourses,
+    required this.publishedCourses,
+    required this.totalParticipants,
+    required this.pendingGrading,
+    required this.courses,
+  });
+
+  bool get isAdmin => role == 'admin';
+
+  factory InstructorDashboard.fromJson(Map<String, dynamic> json) {
+    final totals = json['totals'] is Map
+        ? Map<String, dynamic>.from(json['totals'])
+        : <String, dynamic>{};
+    final rawCourses = json['courses'];
+    final courses = <InstructorCourseSummary>[];
+    if (rawCourses is List) {
+      for (final c in rawCourses) {
+        if (c is Map) {
+          courses.add(
+            InstructorCourseSummary.fromJson(Map<String, dynamic>.from(c)),
+          );
+        }
+      }
+    }
+    return InstructorDashboard(
+      role: json['role']?.toString() ?? 'instructor',
+      name: json['name']?.toString() ?? '',
+      totalCourses: _asInt(totals['courses']) ?? 0,
+      publishedCourses: _asInt(totals['published']) ?? 0,
+      totalParticipants: _asInt(totals['participants']) ?? 0,
+      pendingGrading: _asInt(totals['pendingGrading']) ?? 0,
+      courses: courses,
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+    role,
+    name,
+    totalCourses,
+    publishedCourses,
+    totalParticipants,
+    pendingGrading,
+    courses,
+  ];
+}
+
 /// One enrolled participant with a concise progress snapshot for a course.
 class ParticipantProgress extends Equatable {
   final String id;

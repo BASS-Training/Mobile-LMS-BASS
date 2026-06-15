@@ -29,6 +29,27 @@ class InstructorRepository {
 
   InstructorRepository({required Dio dio}) : _dio = dio;
 
+  Future<InstructorDashboard> getDashboard() async {
+    try {
+      final res = await _dio.get(ApiEndpoints.instructorDashboard);
+      return InstructorDashboard.fromJson(_map(res.data));
+    } on DioException catch (e) {
+      throw Exception(dioErrorMessage(e, 'Gagal memuat dashboard'));
+    }
+  }
+
+  Future<List<GradingQueueItem>> getGlobalGradingQueue() async {
+    try {
+      final res = await _dio.get(ApiEndpoints.instructorGlobalGradingQueue);
+      return _list(res.data)
+          .whereType<Map>()
+          .map((e) => GradingQueueItem.fromJson(Map<String, dynamic>.from(e)))
+          .toList();
+    } on DioException catch (e) {
+      throw Exception(dioErrorMessage(e, 'Gagal memuat antrian penilaian'));
+    }
+  }
+
   Future<List<ParticipantProgress>> getParticipants(String courseId) async {
     try {
       final res = await _dio.get(

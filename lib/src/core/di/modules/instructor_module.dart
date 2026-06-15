@@ -17,6 +17,10 @@ class InstructorModule {
       () => InstructorRepository(dio: getIt<Dio>()),
     );
 
+    getIt.registerFactory<InstructorDashboardCubit>(
+      () => InstructorDashboardCubit(repository: getIt<InstructorRepository>()),
+    );
+
     // Cubits — created per screen with the relevant id (courseId / submissionId).
     getIt.registerFactoryParam<ParticipantsCubit, String, void>(
       (courseId, _) => ParticipantsCubit(

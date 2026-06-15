@@ -58,6 +58,8 @@ class ApiEndpoints {
   static const String updateProfile = '/profile';
 
   // Instructor / admin (mobile): peserta, progres, dan penilaian.
+  static const String instructorDashboard = '/instructor/dashboard';
+  static const String instructorGlobalGradingQueue = '/instructor/grading-queue';
   static const String courseParticipants = '/courses/{id}/participants';
   static const String courseGradingQueue = '/courses/{id}/grading-queue';
   static const String essaySubmissionDetail = '/essays/submissions/{id}';

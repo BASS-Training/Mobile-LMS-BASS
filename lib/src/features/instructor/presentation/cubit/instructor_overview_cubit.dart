@@ -89,11 +89,59 @@ class GradingQueueCubit extends Cubit<GradingQueueState> {
   GradingQueueCubit({required this.repository, required this.courseId})
     : super(const GradingQueueState());
 
+  /// Empty [courseId] means the global inbox across all managed courses.
+  bool get isGlobal => courseId.isEmpty;
+
   Future<void> load() async {
     emit(state.copyWith(status: InstructorStatus.loading, error: null));
     try {
-      final items = await repository.getGradingQueue(courseId);
+      final items = isGlobal
+          ? await repository.getGlobalGradingQueue()
+          : await repository.getGradingQueue(courseId);
       emit(state.copyWith(status: InstructorStatus.loaded, items: items));
+    } catch (e) {
+      emit(state.copyWith(status: InstructorStatus.error, error: _msg(e)));
+    }
+  }
+}
+
+/// Aggregate dashboard for the instructor/admin home.
+class InstructorDashboardState extends Equatable {
+  final InstructorStatus status;
+  final InstructorDashboard? data;
+  final String? error;
+
+  const InstructorDashboardState({
+    this.status = InstructorStatus.initial,
+    this.data,
+    this.error,
+  });
+
+  InstructorDashboardState copyWith({
+    InstructorStatus? status,
+    InstructorDashboard? data,
+    String? error,
+  }) => InstructorDashboardState(
+    status: status ?? this.status,
+    data: data ?? this.data,
+    error: error,
+  );
+
+  @override
+  List<Object?> get props => [status, data, error];
+}
+
+class InstructorDashboardCubit extends Cubit<InstructorDashboardState> {
+  final InstructorRepository repository;
+
+  InstructorDashboardCubit({required this.repository})
+    : super(const InstructorDashboardState());
+
+  Future<void> load() async {
+    emit(state.copyWith(status: InstructorStatus.loading, error: null));
+    try {
+      final data = await repository.getDashboard();
+      emit(state.copyWith(status: InstructorStatus.loaded, data: data));
     } catch (e) {
       emit(state.copyWith(status: InstructorStatus.error, error: _msg(e)));
     }
