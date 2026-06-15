@@ -14,6 +14,7 @@ import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_quick
 import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_recommended_courses.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_skeleton.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_summary_card.dart';
+import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_welcome_banner.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
 import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
@@ -236,8 +237,15 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             FadeSlideIn(child: HomeContinueLearning(courses: ownedCourses)),
-            const SizedBox(height: 16),
-            FadeSlideIn(delayMs: 60, child: HomeSummaryCard(stats: stats)),
+            // New learners (no owned course) see a warm welcome instead of an
+            // all-zero progress summary.
+            if (ownedCourses.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              FadeSlideIn(delayMs: 60, child: HomeSummaryCard(stats: stats)),
+            ] else ...[
+              const SizedBox(height: 4),
+              const FadeSlideIn(delayMs: 60, child: HomeWelcomeBanner()),
+            ],
             const SizedBox(height: 18),
             FadeSlideIn(
               delayMs: 100,

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
+import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
 /// Row of quick shortcuts to the most useful destinations. Surfaces actions
@@ -84,6 +85,7 @@ class _QuickAction extends StatelessWidget {
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(18),
                 border: Border.all(color: AppColors.borderSubtle),
+                boxShadow: AppShadows.xs,
               ),
               child: Center(
                 child: Container(

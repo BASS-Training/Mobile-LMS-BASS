@@ -48,13 +48,16 @@ class HomeContinueLearning extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
+              // Softer, airier red sweep (bright coral → brand) instead of the
+              // heavy near-maroon, so the hero feels lighter on the eyes during
+              // long sessions while still reading as the signature brand card.
               gradient: const LinearGradient(
-                colors: AppColors.brandGradient,
+                colors: [Color(0xFFFF5147), Color(0xFFE7140C), Color(0xFFC10000)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(24),
-              boxShadow: AppShadows.brandPrimary,
+              boxShadow: AppShadows.brand(AppColors.brandPrimary, opacity: 0.18),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
