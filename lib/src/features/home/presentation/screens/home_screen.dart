@@ -15,6 +15,8 @@ import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_recom
 import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_skeleton.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_summary_card.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_welcome_banner.dart';
+import 'package:lms_mobile_app/src/core/di/injector.dart';
+import 'package:lms_mobile_app/src/features/notifications/presentation/cubit/notifications_cubit.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
 import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
@@ -35,11 +37,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _searchController = TextEditingController();
+  final _notifCubit = ServiceLocator().locator<NotificationsCubit>();
 
   @override
   void initState() {
     super.initState();
     context.read<CourseBloc>().add(const GetCoursesEvent());
+    _notifCubit.refreshUnreadCount();
   }
 
   @override
@@ -161,10 +165,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _showComingSoon() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Notifikasi akan segera hadir!')),
-    );
+  Future<void> _openNotifications() async {
+    await context.push(AppRoutes.notifications);
+    // Marking items read on the notification screen updates the shared singleton;
+    // refresh once more in case anything changed server-side meanwhile.
+    await _notifCubit.refreshUnreadCount();
   }
 
   @override
@@ -181,9 +186,14 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                HomeHeader(
-                  searchController: _searchController,
-                  onNotificationsTap: _showComingSoon,
+                BlocBuilder<NotificationsCubit, NotificationsState>(
+                  bloc: _notifCubit,
+                  buildWhen: (a, b) => a.unreadCount != b.unreadCount,
+                  builder: (context, state) => HomeHeader(
+                    searchController: _searchController,
+                    unreadCount: state.unreadCount,
+                    onNotificationsTap: _openNotifications,
+                  ),
                 ),
                 if (widget.accountRole == 'instructor')
                   Padding(

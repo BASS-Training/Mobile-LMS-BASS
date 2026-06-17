@@ -12,6 +12,7 @@ import 'modules/lesson_module.dart';
 import 'modules/certificate_module.dart';
 import 'modules/game_module.dart';
 import 'modules/instructor_module.dart';
+import 'modules/notification_module.dart';
 
 class ServiceLocator {
   static final ServiceLocator _instance = ServiceLocator._internal();
@@ -44,6 +45,7 @@ class ServiceLocator {
     CertificateModule.register(_getIt);
     GameModule.register(_getIt);
     InstructorModule.register(_getIt);
+    NotificationModule.register(_getIt);
   }
 
   GetIt get locator => _getIt;

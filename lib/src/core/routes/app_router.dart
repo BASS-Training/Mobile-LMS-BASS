@@ -38,6 +38,8 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/screens/essay_r
 import 'package:lms_mobile_app/src/features/certificates/presentation/screens/certificate_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/certificates/presentation/screens/certificate_list_screen.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/screens/join_class_screen.dart';
+import 'package:lms_mobile_app/src/features/notifications/presentation/cubit/notifications_cubit.dart';
+import 'package:lms_mobile_app/src/features/notifications/presentation/screens/notifications_screen.dart';
 import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_participants_screen.dart';
 import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_grading_queue_screen.dart';
 import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_participant_detail_screen.dart';
@@ -123,6 +125,13 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.joinClass,
         builder: (context, state) => const JoinClassScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.notifications,
+        builder: (context, state) => BlocProvider<NotificationsCubit>.value(
+          value: _sl<NotificationsCubit>(),
+          child: const NotificationsScreen(),
+        ),
       ),
       GoRoute(
         path: AppRoutes.courseDetail,

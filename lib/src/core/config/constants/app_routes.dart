@@ -20,6 +20,7 @@ class AppRoutes {
   static const String certificates = '/certificates';
   static const String profile = '/profile';
   static const String joinClass = '/join-class';
+  static const String notifications = '/notifications-center';
 
   // Course Details
   static const String courseDetail = '/course-detail';

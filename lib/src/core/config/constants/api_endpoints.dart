@@ -57,6 +57,12 @@ class ApiEndpoints {
   static const String getProfile = '/profile';
   static const String updateProfile = '/profile';
 
+  // Notifications (gabungan: notifikasi DB + pengumuman web)
+  static const String notifications = '/notifications';
+  static const String notificationsUnreadCount = '/notifications/unread-count';
+  static const String notificationsMarkRead = '/notifications/mark-read';
+  static const String notificationsMarkAllRead = '/notifications/mark-all-read';
+
   // Instructor / admin (mobile): peserta, progres, dan penilaian.
   static const String instructorDashboard = '/instructor/dashboard';
   static const String instructorGlobalGradingQueue = '/instructor/grading-queue';

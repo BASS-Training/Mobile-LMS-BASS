@@ -5,6 +5,7 @@ import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 import 'package:lms_mobile_app/src/core/di/injector.dart';
 import 'package:lms_mobile_app/src/features/instructor/domain/entities/instructor_entities.dart';
 import 'package:lms_mobile_app/src/features/instructor/presentation/cubit/instructor_overview_cubit.dart';
+import 'package:lms_mobile_app/src/features/notifications/presentation/cubit/notifications_cubit.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 import 'package:lms_mobile_app/src/shared/widgets/app_empty_state.dart';
@@ -163,6 +164,8 @@ class _InstructorDashboardView extends StatelessWidget {
             ],
           ),
         ),
+        const SizedBox(width: 8),
+        const _NotificationBell(),
       ],
     );
   }
@@ -727,6 +730,87 @@ class _FeedTile extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Bell + unread badge for the instructor/admin dashboard. Reads the shared
+/// NotificationsCubit singleton so the badge stays in sync with the feed.
+class _NotificationBell extends StatefulWidget {
+  const _NotificationBell();
+
+  @override
+  State<_NotificationBell> createState() => _NotificationBellState();
+}
+
+class _NotificationBellState extends State<_NotificationBell> {
+  final _cubit = ServiceLocator().locator<NotificationsCubit>();
+
+  @override
+  void initState() {
+    super.initState();
+    _cubit.refreshUnreadCount();
+  }
+
+  Future<void> _open() async {
+    await context.push(AppRoutes.notifications);
+    await _cubit.refreshUnreadCount();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: _open,
+      child: Container(
+        width: 46,
+        height: 46,
+        decoration: BoxDecoration(
+          color: AppColors.surface,
+          shape: BoxShape.circle,
+          border: Border.all(color: AppColors.borderSubtle),
+        ),
+        child: BlocBuilder<NotificationsCubit, NotificationsState>(
+          bloc: _cubit,
+          buildWhen: (a, b) => a.unreadCount != b.unreadCount,
+          builder: (context, state) => Stack(
+            alignment: Alignment.center,
+            clipBehavior: Clip.none,
+            children: [
+              Icon(
+                Icons.notifications_none_rounded,
+                color: AppColors.textPrimary,
+                size: 24,
+              ),
+              if (state.unreadCount > 0)
+                Positioned(
+                  top: 7,
+                  right: 7,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    constraints:
+                        const BoxConstraints(minWidth: 16, minHeight: 16),
+                    decoration: BoxDecoration(
+                      color: AppColors.brandPrimary,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColors.surface, width: 1.5),
+                    ),
+                    child: Center(
+                      child: Text(
+                        state.unreadCount > 99 ? '99+' : '${state.unreadCount}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 9,
+                          fontWeight: FontWeight.w800,
+                          height: 1,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
       ),

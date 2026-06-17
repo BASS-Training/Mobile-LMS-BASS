@@ -12,11 +12,13 @@ import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 class HomeHeader extends StatelessWidget {
   final TextEditingController searchController;
   final VoidCallback? onNotificationsTap;
+  final int unreadCount;
 
   const HomeHeader({
     super.key,
     required this.searchController,
     this.onNotificationsTap,
+    this.unreadCount = 0,
   });
 
   @override
@@ -129,25 +131,38 @@ class HomeHeader extends StatelessWidget {
         ),
         child: Stack(
           alignment: Alignment.center,
+          clipBehavior: Clip.none,
           children: [
             Icon(
               Icons.notifications_none_rounded,
               color: AppColors.textPrimary,
               size: 24,
             ),
-            Positioned(
-              top: 13,
-              right: 14,
-              child: Container(
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: AppColors.brandPrimary,
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.surface, width: 1.5),
+            if (unreadCount > 0)
+              Positioned(
+                top: 7,
+                right: 7,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                  decoration: BoxDecoration(
+                    color: AppColors.brandPrimary,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: AppColors.surface, width: 1.5),
+                  ),
+                  child: Center(
+                    child: Text(
+                      unreadCount > 99 ? '99+' : '$unreadCount',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 9,
+                        fontWeight: FontWeight.w800,
+                        height: 1,
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),
