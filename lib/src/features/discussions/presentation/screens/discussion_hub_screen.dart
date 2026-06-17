@@ -1,240 +1,289 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 import 'package:lms_mobile_app/src/core/di/injector.dart';
-import 'package:lms_mobile_app/src/features/discussions/domain/entities/discussion_feed_item.dart';
-import 'package:lms_mobile_app/src/features/discussions/presentation/cubit/discussion_feed_cubit.dart';
+import 'package:lms_mobile_app/src/features/discussions/domain/entities/discussion_structure.dart';
+import 'package:lms_mobile_app/src/features/discussions/presentation/cubit/discussion_structure_cubit.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/discussion/discussion_cubit.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion/discussion_panel.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
-import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 import 'package:lms_mobile_app/src/shared/widgets/app_empty_state.dart';
 import 'package:lms_mobile_app/src/shared/widgets/brand_app_bar.dart';
 
-/// Discussion hub: a recent-activity feed of discussions across every course the
-/// user is part of. Tapping an item opens that lesson's full discussion thread.
-class DiscussionHubScreen extends StatelessWidget {
+/// Discussion hub: pick a course (dropdown) and a lesson (chip strip) at the
+/// top; the selected lesson's discussion thread fills the rest of the screen.
+/// Mirrors the course→lesson structure so browsing feels contextual.
+class DiscussionHubScreen extends StatefulWidget {
   const DiscussionHubScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider<DiscussionFeedCubit>(
-      create: (_) => ServiceLocator().locator<DiscussionFeedCubit>()..load(),
-      child: const _DiscussionHubView(),
-    );
-  }
+  State<DiscussionHubScreen> createState() => _DiscussionHubScreenState();
 }
 
-class _DiscussionHubView extends StatelessWidget {
-  const _DiscussionHubView();
+class _DiscussionHubScreenState extends State<DiscussionHubScreen> {
+  final _cubit = ServiceLocator().locator<DiscussionStructureCubit>();
+
+  // Current selection (null = fall back to the first available).
+  String? _courseId;
+  String? _contentId;
+
+  @override
+  void initState() {
+    super.initState();
+    _cubit.load();
+  }
+
+  DiscussionCourseGroup? _course(List<DiscussionCourseGroup> groups) {
+    if (groups.isEmpty) return null;
+    return groups.firstWhere(
+      (g) => g.courseId == _courseId,
+      orElse: () => groups.first,
+    );
+  }
+
+  DiscussionLessonRef? _lesson(DiscussionCourseGroup course) {
+    if (course.lessons.isEmpty) return null;
+    return course.lessons.firstWhere(
+      (l) => l.contentId == _contentId,
+      orElse: () => course.lessons.first,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const BrandAppBar(title: 'Diskusi'),
-      body: BlocBuilder<DiscussionFeedCubit, DiscussionFeedState>(
+      appBar: BrandAppBar(
+        title: 'Diskusi',
+        actions: [
+          IconButton(
+            tooltip: 'Muat ulang',
+            onPressed: () => _cubit.load(),
+            icon: const Icon(Icons.refresh_rounded, color: Colors.white),
+          ),
+        ],
+      ),
+      body: BlocBuilder<DiscussionStructureCubit, DiscussionStructureState>(
+        bloc: _cubit,
         builder: (context, state) {
-          if (state.status == DiscussionFeedStatus.loading ||
-              state.status == DiscussionFeedStatus.initial) {
+          if (state.status == DiscussionStructureStatus.loading ||
+              state.status == DiscussionStructureStatus.initial) {
             return const Center(
               child: CircularProgressIndicator(color: AppColors.brandPrimary),
             );
           }
-          if (state.status == DiscussionFeedStatus.error) {
+          if (state.status == DiscussionStructureStatus.error) {
             return AppEmptyState(
               icon: Icons.error_outline_rounded,
               title: 'Gagal memuat diskusi',
               message: state.error ?? 'Terjadi kesalahan.',
               actionLabel: 'Coba lagi',
-              onAction: () => context.read<DiscussionFeedCubit>().load(),
+              onAction: () => _cubit.load(),
             );
           }
-          if (state.items.isEmpty) {
-            return RefreshIndicator(
-              color: AppColors.brandPrimary,
-              onRefresh: () => context.read<DiscussionFeedCubit>().load(),
-              child: ListView(
-                children: const [
-                  SizedBox(height: 120),
-                  AppEmptyState(
-                    icon: Icons.forum_outlined,
-                    title: 'Belum ada diskusi',
-                    message:
-                        'Diskusi dari semua kelas yang kamu ikuti akan muncul di sini. Mulai diskusi dari halaman materi.',
-                  ),
-                ],
+
+          final course = _course(state.groups);
+          if (course == null) {
+            return const AppEmptyState(
+              icon: Icons.forum_outlined,
+              title: 'Belum ada kelas',
+              message:
+                  'Diskusi dari kelas yang kamu ikuti akan muncul di sini setelah ada materinya.',
+            );
+          }
+          final lesson = _lesson(course);
+
+          return Column(
+            children: [
+              _Selector(
+                groups: state.groups,
+                course: course,
+                lesson: lesson,
+                onCourseChanged: (id) => setState(() {
+                  _courseId = id;
+                  _contentId = null; // reset to first lesson of the new course
+                }),
+                onLessonChanged: (id) => setState(() => _contentId = id),
               ),
-            );
-          }
-          return RefreshIndicator(
-            color: AppColors.brandPrimary,
-            onRefresh: () => context.read<DiscussionFeedCubit>().load(),
-            child: ListView.separated(
-              padding: const EdgeInsets.all(16),
-              itemCount: state.items.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 10),
-              itemBuilder: (context, i) {
-                final item = state.items[i];
-                return _FeedTile(
-                  item: item,
-                  onTap: () => _openThread(context, item),
-                );
-              },
-            ),
+              Divider(height: 1, color: AppColors.borderSubtle),
+              Expanded(
+                child: lesson == null
+                    ? const AppEmptyState(
+                        icon: Icons.menu_book_outlined,
+                        title: 'Kelas ini belum punya materi',
+                        message: 'Belum ada materi untuk didiskusikan.',
+                      )
+                    : BlocProvider<DiscussionCubit>(
+                        key: ValueKey(lesson.contentId),
+                        create: (_) => ServiceLocator()
+                            .locator<DiscussionCubit>(param1: lesson.contentId)
+                          ..load(),
+                        child: const DiscussionPanel(),
+                      ),
+              ),
+            ],
           );
         },
       ),
     );
   }
-
-  Future<void> _openThread(
-    BuildContext context,
-    DiscussionFeedItem item,
-  ) async {
-    final cubit = context.read<DiscussionFeedCubit>();
-    await context.push(
-      AppRoutes.discussionThread,
-      extra: {
-        'contentId': item.contentId,
-        'lessonTitle': item.lessonTitle,
-        'courseTitle': item.courseTitle,
-      },
-    );
-    // Reply counts may have changed after visiting the thread.
-    await cubit.load();
-  }
 }
 
-class _FeedTile extends StatelessWidget {
-  final DiscussionFeedItem item;
-  final VoidCallback onTap;
+/// The course dropdown + horizontal lesson chip strip.
+class _Selector extends StatelessWidget {
+  final List<DiscussionCourseGroup> groups;
+  final DiscussionCourseGroup course;
+  final DiscussionLessonRef? lesson;
+  final ValueChanged<String> onCourseChanged;
+  final ValueChanged<String> onLessonChanged;
 
-  const _FeedTile({required this.item, required this.onTap});
+  const _Selector({
+    required this.groups,
+    required this.course,
+    required this.lesson,
+    required this.onCourseChanged,
+    required this.onLessonChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final context2 = [
-      if (item.lessonTitle.isNotEmpty) item.lessonTitle,
-      if (item.courseTitle.isNotEmpty) item.courseTitle,
-    ].join(' · ');
+    return Container(
+      color: AppColors.surface,
+      padding: const EdgeInsets.only(top: 12, bottom: 10),
+      child: Column(
+        children: [
+          // Course dropdown
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceMuted,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.borderSubtle),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  value: course.courseId,
+                  borderRadius: BorderRadius.circular(12),
+                  icon: const Icon(Icons.keyboard_arrow_down_rounded),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
+                  items: [
+                    for (final g in groups)
+                      DropdownMenuItem(
+                        value: g.courseId,
+                        child: Text(
+                          g.courseTitle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                  ],
+                  onChanged: (v) {
+                    if (v != null && v != course.courseId) onCourseChanged(v);
+                  },
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          // Lesson chips
+          SizedBox(
+            height: 36,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: course.lessons.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 8),
+              itemBuilder: (context, i) {
+                final l = course.lessons[i];
+                return _LessonChip(
+                  lesson: l,
+                  active: l.contentId == lesson?.contentId,
+                  onTap: () => onLessonChanged(l.contentId),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
+class _LessonChip extends StatelessWidget {
+  final DiscussionLessonRef lesson;
+  final bool active;
+  final VoidCallback onTap;
+
+  const _LessonChip({
+    required this.lesson,
+    required this.active,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final fg = active ? Colors.white : AppColors.textSecondary;
     return Material(
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Ink(
-          padding: const EdgeInsets.all(14),
+        borderRadius: BorderRadius.circular(999),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.borderSubtle),
-            boxShadow: AppShadows.xs,
+            color: active ? AppColors.brandPrimary : AppColors.surface,
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(
+              color: active ? AppColors.brandPrimary : AppColors.borderDefault,
+            ),
           ),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  color: AppColors.brandPrimary.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.forum_rounded,
-                  color: AppColors.brandPrimary,
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 14.5,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.textPrimary,
-                      ),
-                    ),
-                    if (context2.isNotEmpty) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        context2,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.brandPrimary,
-                        ),
-                      ),
-                    ],
-                    if (item.snippet.isNotEmpty) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        item.snippet,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 12.5,
-                          height: 1.35,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.chat_bubble_outline_rounded,
-                          size: 13,
-                          color: AppColors.textTertiary,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${item.repliesCount} balasan',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textTertiary,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          '· ${_relativeTime(item.lastActivityAt)}',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.textTertiary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+              Flexible(
+                child: Text(
+                  lesson.lessonTitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w700,
+                    color: fg,
+                  ),
                 ),
               ),
+              if (lesson.discussionCount > 0) ...[
+                const SizedBox(width: 6),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                  decoration: BoxDecoration(
+                    color: active
+                        ? Colors.white.withValues(alpha: 0.25)
+                        : AppColors.brandPrimary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    '${lesson.discussionCount}',
+                    style: TextStyle(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w800,
+                      color: active ? Colors.white : AppColors.brandPrimary,
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),
       ),
     );
-  }
-
-  String _relativeTime(DateTime? time) {
-    if (time == null) return '';
-    final diff = DateTime.now().difference(time);
-    if (diff.inSeconds < 60) return 'baru saja';
-    if (diff.inMinutes < 60) return '${diff.inMinutes} menit lalu';
-    if (diff.inHours < 24) return '${diff.inHours} jam lalu';
-    if (diff.inDays < 7) return '${diff.inDays} hari lalu';
-    if (diff.inDays < 30) return '${(diff.inDays / 7).floor()} minggu lalu';
-    if (diff.inDays < 365) return '${(diff.inDays / 30).floor()} bulan lalu';
-    return '${(diff.inDays / 365).floor()} tahun lalu';
   }
 }

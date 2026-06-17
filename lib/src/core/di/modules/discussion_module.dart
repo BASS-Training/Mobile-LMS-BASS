@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lms_mobile_app/src/features/discussions/data/discussion_feed_repository.dart';
 import 'package:lms_mobile_app/src/features/discussions/presentation/cubit/discussion_feed_cubit.dart';
+import 'package:lms_mobile_app/src/features/discussions/presentation/cubit/discussion_structure_cubit.dart';
 
 class DiscussionModule {
   static void register(GetIt getIt) {
@@ -17,6 +18,11 @@ class DiscussionModule {
 
     getIt.registerFactory<DiscussionFeedCubit>(
       () => DiscussionFeedCubit(repository: getIt<DiscussionFeedRepository>()),
+    );
+
+    getIt.registerFactory<DiscussionStructureCubit>(
+      () =>
+          DiscussionStructureCubit(repository: getIt<DiscussionFeedRepository>()),
     );
   }
 }
