@@ -15,8 +15,18 @@ class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   static const _months = [
-    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember',
   ];
 
   @override
@@ -58,8 +68,7 @@ class ProfileScreen extends StatelessWidget {
                               accent: AppColors.brandPrimary,
                               title: 'Kursus Tersimpan',
                               subtitle: 'Koleksi kursus yang kamu simpan',
-                              onTap: () =>
-                                  context.push(AppRoutes.savedCourses),
+                              onTap: () => context.push(AppRoutes.savedCourses),
                             ),
                           ],
                         ),
@@ -104,9 +113,7 @@ class ProfileScreen extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 24),
-                        _LogoutButton(
-                          onTap: () => _confirmLogout(context),
-                        ),
+                        _LogoutButton(onTap: () => _confirmLogout(context)),
                         const SizedBox(height: 24),
                       ],
                     ),
@@ -166,7 +173,7 @@ class ProfileScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _sectionLabel('Akun'),
+        // _sectionLabel('Akun'),
         _SectionCard(
           children: [
             _InfoRow(
@@ -277,9 +284,7 @@ class ProfileScreen extends StatelessWidget {
     showDialog<void>(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(22),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
         contentPadding: const EdgeInsets.fromLTRB(24, 24, 24, 12),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -371,7 +376,9 @@ class ProfileScreen extends StatelessWidget {
           return ListTile(
             leading: Icon(
               icon,
-              color: selected ? AppColors.brandPrimary : AppColors.textSecondary,
+              color: selected
+                  ? AppColors.brandPrimary
+                  : AppColors.textSecondary,
             ),
             title: Text(
               label,
@@ -488,7 +495,9 @@ class ProfileScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
-            style: TextButton.styleFrom(foregroundColor: AppColors.brandPrimary),
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.brandPrimary,
+            ),
             child: const Text('Tutup'),
           ),
         ],
@@ -512,7 +521,9 @@ class ProfileScreen extends StatelessWidget {
               Navigator.pop(dialogContext);
               context.read<AuthBloc>().add(const AuthLogoutEvent());
             },
-            style: TextButton.styleFrom(foregroundColor: AppColors.brandPrimary),
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.brandPrimary,
+            ),
             child: const Text('Keluar'),
           ),
         ],
@@ -529,8 +540,9 @@ class _ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final initial =
-        user.name.trim().isNotEmpty ? user.name.trim()[0].toUpperCase() : '?';
+    final initial = user.name.trim().isNotEmpty
+        ? user.name.trim()[0].toUpperCase()
+        : '?';
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 44),
@@ -641,13 +653,15 @@ class _SectionCard extends StatelessWidget {
     final rows = <Widget>[];
     for (var i = 0; i < children.length; i++) {
       if (i > 0) {
-        rows.add(Divider(
-          height: 1,
-          thickness: 1,
-          indent: 16,
-          endIndent: 16,
-          color: AppColors.borderSubtle,
-        ));
+        rows.add(
+          Divider(
+            height: 1,
+            thickness: 1,
+            indent: 16,
+            endIndent: 16,
+            color: AppColors.borderSubtle,
+          ),
+        );
       }
       rows.add(children[i]);
     }
@@ -699,10 +713,7 @@ class _InfoRow extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textTertiary,
-                  ),
+                  style: TextStyle(fontSize: 12, color: AppColors.textTertiary),
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -780,10 +791,7 @@ class _NavRow extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: AppColors.textTertiary,
-              ),
+              Icon(Icons.chevron_right_rounded, color: AppColors.textTertiary),
             ],
           ),
         ),
