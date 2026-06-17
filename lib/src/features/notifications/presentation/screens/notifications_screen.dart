@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 import 'package:lms_mobile_app/src/features/notifications/domain/entities/app_notification.dart';
 import 'package:lms_mobile_app/src/features/notifications/presentation/cubit/notifications_cubit.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
@@ -21,6 +23,26 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   void initState() {
     super.initState();
     context.read<NotificationsCubit>().load();
+  }
+
+  /// Marks the notification read, then deep-links to its target where supported.
+  /// For now only discussion replies open a destination (the lesson thread);
+  /// other categories simply mark as read.
+  void _onTap(AppNotification item) {
+    context.read<NotificationsCubit>().markRead(item);
+
+    if (item.category == 'discussion_reply' &&
+        (item.contentId ?? '').isNotEmpty) {
+      context.push(
+        AppRoutes.discussionThread,
+        extra: {
+          'contentId': item.contentId,
+          'lessonTitle': item.lessonTitle ?? '',
+          'courseTitle': item.courseTitle,
+          'highlightDiscussionId': item.discussionId,
+        },
+      );
+    }
   }
 
   @override
@@ -94,7 +116,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 final item = state.items[i];
                 return _NotificationTile(
                   item: item,
-                  onTap: () => context.read<NotificationsCubit>().markRead(item),
+                  onTap: () => _onTap(item),
                 );
               },
             ),

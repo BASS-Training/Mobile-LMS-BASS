@@ -45,6 +45,7 @@ class ApiEndpoints {
   static const String submitFeedback = '/feedback/{id}/submit';
 
   // Discussions (lesson = backend content.id)
+  static const String discussionsFeed = '/discussions';
   static const String getDiscussions = '/lessons/{contentId}/discussions';
   static const String createDiscussion = '/lessons/{contentId}/discussions';
   static const String createReply = '/discussions/{discussionId}/replies';

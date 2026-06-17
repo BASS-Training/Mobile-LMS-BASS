@@ -21,6 +21,8 @@ class AppRoutes {
   static const String profile = '/profile';
   static const String joinClass = '/join-class';
   static const String notifications = '/notifications-center';
+  static const String discussionHub = '/discussions';
+  static const String discussionThread = '/discussion-thread';
 
   // Course Details
   static const String courseDetail = '/course-detail';

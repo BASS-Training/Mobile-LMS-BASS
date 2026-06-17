@@ -40,6 +40,8 @@ import 'package:lms_mobile_app/src/features/certificates/presentation/screens/ce
 import 'package:lms_mobile_app/src/features/home/presentation/screens/join_class_screen.dart';
 import 'package:lms_mobile_app/src/features/notifications/presentation/cubit/notifications_cubit.dart';
 import 'package:lms_mobile_app/src/features/notifications/presentation/screens/notifications_screen.dart';
+import 'package:lms_mobile_app/src/features/discussions/presentation/screens/discussion_hub_screen.dart';
+import 'package:lms_mobile_app/src/features/discussions/presentation/screens/discussion_thread_screen.dart';
 import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_participants_screen.dart';
 import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_grading_queue_screen.dart';
 import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_participant_detail_screen.dart';
@@ -132,6 +134,22 @@ class AppRouter {
           value: _sl<NotificationsCubit>(),
           child: const NotificationsScreen(),
         ),
+      ),
+      GoRoute(
+        path: AppRoutes.discussionHub,
+        builder: (context, state) => const DiscussionHubScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.discussionThread,
+        builder: (context, state) {
+          final args = state.extra as Map<String, dynamic>;
+          return DiscussionThreadScreen(
+            contentId: args['contentId'] as String,
+            lessonTitle: (args['lessonTitle'] as String?) ?? '',
+            courseTitle: args['courseTitle'] as String?,
+            highlightDiscussionId: args['highlightDiscussionId'] as String?,
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.courseDetail,

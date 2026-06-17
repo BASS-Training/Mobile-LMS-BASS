@@ -28,6 +28,13 @@ class HomeQuickActions extends StatelessWidget {
         color: AppColors.brandPrimary,
         onTap: onShowCourses,
       ),
+      // Central hub for discussions across all enrolled courses.
+      _QuickAction(
+        icon: Icons.forum_rounded,
+        label: 'Diskusi',
+        color: const Color(0xFF3B82F6),
+        onTap: () => context.push(AppRoutes.discussionHub),
+      ),
       // Replaces "Tersimpan" (already reachable from the bottom nav) with an
       // entry point into the Games Hub for a refreshing break.
       _QuickAction(

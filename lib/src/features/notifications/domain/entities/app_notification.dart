@@ -10,6 +10,9 @@ class AppNotification extends Equatable {
   final String title;
   final String message;
   final String? courseTitle;
+  final String? contentId;
+  final String? lessonTitle;
+  final String? discussionId;
   final bool isRead;
   final DateTime? createdAt;
 
@@ -20,6 +23,9 @@ class AppNotification extends Equatable {
     required this.title,
     required this.message,
     this.courseTitle,
+    this.contentId,
+    this.lessonTitle,
+    this.discussionId,
     this.isRead = false,
     this.createdAt,
   });
@@ -37,6 +43,9 @@ class AppNotification extends Equatable {
       title: '${json['title'] ?? 'Notifikasi'}',
       message: '${json['message'] ?? ''}',
       courseTitle: json['courseTitle'] as String?,
+      contentId: json['contentId'] as String?,
+      lessonTitle: json['lessonTitle'] as String?,
+      discussionId: json['discussionId'] as String?,
       isRead: json['isRead'] == true,
       createdAt: parseDate(json['createdAt']),
     );
@@ -49,6 +58,9 @@ class AppNotification extends Equatable {
     title: title,
     message: message,
     courseTitle: courseTitle,
+    contentId: contentId,
+    lessonTitle: lessonTitle,
+    discussionId: discussionId,
     isRead: isRead ?? this.isRead,
     createdAt: createdAt,
   );
