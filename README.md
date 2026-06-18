@@ -1,170 +1,238 @@
-dart format .
-# LMS Mobile App — Mobile Learning for Bass Training
+<div align="center">
 
-Versi dokumentasi yang lebih lengkap untuk pengguna dan pengembang.
+# 📚 BASS Academy — Aplikasi Mobile LMS
 
-## Ringkasan Singkat
+**Learning Management System (LMS) untuk akademi BASS (Bintang Anugrah Surya Semesta).**
+Aplikasi mobile pendamping backend Laravel — tempat peserta belajar, mengerjakan asesmen, berdiskusi, dan meraih sertifikat, serta instruktur memantau & menilai peserta.
 
-- Platform: Flutter (Dart)
-- Tujuan: Aplikasi mobile Learning Management System (LMS) untuk pelatihan bass
-- Arsitektur: Clean Architecture (Domain / Data / Presentation)
-- State management: BLoC (`flutter_bloc`) atau pola serupa
+[![Flutter](https://img.shields.io/badge/Flutter-3.11%2B-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-3.11%2B-0175C2?logo=dart&logoColor=white)](https://dart.dev)
+[![State](https://img.shields.io/badge/State-BLoC%20%2F%20Cubit-13B9FD)](https://bloclibrary.dev)
+[![Architecture](https://img.shields.io/badge/Architecture-Clean-success)](#-arsitektur)
+[![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20iOS-3DDC84)](#)
 
-README ini memberikan panduan instalasi, arsitektur, alur pengembangan, dan referensi cepat untuk kontributor.
+</div>
 
-## Arsitektur
-
-Arsitektur proyek mengikuti prinsip Clean Architecture dengan pemisahan tanggung jawab ke dalam tiga lapisan utama:
-
-- Presentation: UI, screens, widgets, dan BLoC/State management. Hanya bertanggung jawab pada rendering dan menerima event dari pengguna.
-- Domain: Usecases, entities, dan kontrak repository. Berisi business rules — lapisan paling independen dan mudah diuji.
-- Data: Implementasi repository, data sources (API, local DB, cache), model mapping, dan DTO. Berinteraksi dengan eksternal.
-
-Aturan dependensi (Dependency Rule): lapisan atas hanya boleh bergantung pada lapisan di bawahnya melalui abstraksi (interface). Domain tidak boleh bergantung pada Data atau Presentation secara langsung.
-
-Pemetaan folder ke lapisan:
-
-- `lib/src/features/<feature>/presentation/` — UI & BLoC
-- `lib/src/features/<feature>/domain/` — entities, repositories (interface), usecases
-- `lib/src/features/<feature>/data/` — models, datasources, repository implementations
-
-Dependensi & Injeksi:
-
-- Gunakan modul DI terpusat (service locator / provider module) untuk mendaftarkan repository, BLoC, dan service (network, local storage).
-- Hindari singletons global tersebar; daftarkan dependency per-module ketika memungkinkan.
-
-State management:
-
-- BLoC (`flutter_bloc`) untuk stateful logic pada fitur yang kompleks. Untuk fitur sederhana, gunakan `Cubit` atau state-less widget.
-
-Alur data singkat (contoh: ambil daftar kursus):
-
-1. UI (screen) kirim Event ke BLoC.
-2. BLoC memanggil Usecase dari layer Domain.
-3. Usecase meminta data dari Repository (interface).
-4. Repository (implementasi di Data) memanggil RemoteDataSource / LocalDataSource.
-5. Data diterima, dimapping ke Entity, dan dikembalikan ke UI melalui BLoC state.
-
-Testing:
-
-- Tulis unit test untuk Usecases dan BLoC (mock repository).
-- Tulis integration test untuk alur end-to-end penting (pemetaan API → UI).
-
-Diagram & dokumentasi tambahan bisa ditempatkan di `ARCHITECTURE_GUIDE.md` dengan diagram layer dan contoh sequence.
+> ℹ️ **Catatan nama:** "BASS" adalah **merek akademi** (singkatan *Bintang Anugrah Surya Semesta*), **bukan** alat musik bass. Ini adalah LMS multi-kursus serbaguna (gaya Udemy) untuk pelatihan vokasi/keprofesian — materinya lintas bidang (akuntansi, ekonomi, seni & desain, biologi, dll.).
 
 ---
 
-## Untuk Pengguna (End-User)
+## 📋 Daftar Isi
 
-### Fitur Utama
-
-- Dashboard dengan progress belajar dan statistik
-- Daftar kursus dan detail kursus
-- Materi pelajaran: video, dokumen, kuis, dan tugas
-- Sertifikat untuk kursus yang terselesaikan
-- Otentikasi pengguna dan manajemen profil
-
-### Cepat Mulai (User)
-
-1. Pastikan perangkat Anda memenuhi persyaratan Android/iOS.
-2. Jalankan aplikasi yang sudah dibuild oleh maintainer, atau ikuti bagian "Menjalankan Aplikasi" di bawah jika ingin build sendiri.
+- [Tentang Aplikasi](#-tentang-aplikasi)
+- [Fitur Utama](#-fitur-utama)
+- [Tangkapan Layar](#-tangkapan-layar)
+- [Untuk Pengguna](#-untuk-pengguna)
+- [Untuk Pengembang](#-untuk-pengembang)
+  - [Teknologi](#teknologi--paket-utama)
+  - [Arsitektur](#-arsitektur)
+  - [Struktur Folder](#-struktur-folder)
+  - [Memulai (Setup)](#-memulai-setup)
+  - [Konfigurasi Backend / API](#-konfigurasi-backend--api)
+  - [Menjalankan & Build](#-menjalankan--build)
+  - [Konvensi & Panduan Kontribusi](#-konvensi--panduan-kontribusi)
+- [Pemecahan Masalah](#-pemecahan-masalah)
 
 ---
 
-## Untuk Pengembang
+## 🎯 Tentang Aplikasi
 
-### Prasyarat
+Aplikasi ini adalah **klien mobile** dari LMS BASS. Backend-nya adalah aplikasi **Laravel 12** terpisah (`LMS_LARAVEL`) yang menyediakan REST API ber-autentikasi **Laravel Sanctum** di bawah prefiks `/api/mobile`. Data (kursus, materi, diskusi, nilai, notifikasi, sertifikat) **sinkron dua arah** antara aplikasi web dan mobile karena berbagi basis data yang sama.
 
-- Flutter SDK (stable channel), versi sesuai `pubspec.yaml`
-- Java JDK & Android SDK (untuk Android)
-- Xcode (untuk iOS, macOS only)
+Terdapat 4 peran pada platform: **Admin, Instruktur, Peserta, Event Organizer**. Aplikasi mobile fokus pada pengalaman **Peserta** dan **Instruktur**.
 
-### Menjalankan di Lokal
+---
+
+## ✨ Fitur Utama
+
+| Modul | Deskripsi |
+|---|---|
+| 🔐 **Autentikasi** | Login & registrasi dengan token Sanctum; profil peserta lengkap (data diri, institusi, program, status AVPN). |
+| 🏠 **Beranda** | Dashboard ringkas: lanjutkan belajar, ringkasan progres, kursus, tip harian, dan teaser pencapaian. |
+| 📚 **Kursus & Materi** | Daftar kursus, detail kursus, dan materi multi-tipe: **teks, video, dokumen (PDF), gambar, kuis, esai, studi kasus, feedback, dan sesi Zoom**. |
+| 📝 **Asesmen** | Kuis terkoreksi otomatis, esai & studi kasus yang dinilai instruktur, serta survei feedback (gaya Google Form). |
+| 💬 **Diskusi** | Hub diskusi terstruktur (pilih kursus → lesson) + thread per-materi, sinkron dengan web. |
+| 🔔 **Notifikasi** | Lonceng & feed yang menggabungkan balasan diskusi, nilai keluar, materi baru, dan pengumuman. |
+| 🏆 **Pencapaian** | Halaman bergaya Duolingo: lencana **bertingkat** (Perunggu→Platinum), level & poin, plus dialog perayaan saat naik tingkat. |
+| 🎮 **Mini Games** | Permainan penyegar: 2048, Schulte Table, Stack Tower, dan Flappy (skor tersimpan lokal). |
+| 🎓 **Sertifikat** | Lihat & unduh sertifikat untuk kursus yang tuntas. |
+| 👨‍🏫 **Mode Instruktur** | Pantau progres peserta dan nilai esai & studi kasus langsung dari mobile. |
+| 🌗 **Tema Terang/Gelap** | Dukungan dark mode penuh (terang/gelap/ikuti sistem), dapat diatur dari Profil. |
+
+---
+
+## 📸 Tangkapan Layar
+
+> Tambahkan tangkapan layar di sini. Contoh penataan (letakkan berkas di `docs/screenshots/`):
+>
+> | Beranda | Pencapaian | Diskusi |
+> |---|---|---|
+> | _(home.png)_ | _(achievements.png)_ | _(discussion.png)_ |
+
+---
+
+## 👤 Untuk Pengguna
+
+### Alur singkat
+1. **Masuk** dengan akun yang terdaftar (atau **daftar** sebagai peserta baru).
+2. Di **Beranda**, lanjutkan materi terakhir atau jelajahi **Kursus**.
+3. Buka sebuah materi → tonton/baca, kerjakan **kuis/esai/studi kasus**, atau ikut **diskusi**.
+4. Pantau perkembangan di **Pencapaian** dan unduh **Sertifikat** saat kursus tuntas.
+5. Atur tampilan (tema terang/gelap) dan data diri di **Profil**.
+
+### Persyaratan perangkat
+- **Android** (disarankan Android 5.0 / API 21 ke atas) atau **iOS**.
+- Koneksi internet untuk menyinkronkan data dengan server LMS.
+
+> Aplikasi terkunci dalam orientasi **potret**.
+
+---
+
+## 🛠️ Untuk Pengembang
+
+### Teknologi & Paket Utama
+
+| Area | Pilihan |
+|---|---|
+| Bahasa / SDK | Dart, Flutter `^3.11.5` |
+| State management | `flutter_bloc` (BLoC & Cubit) |
+| Dependency Injection | `get_it` (service locator modular) |
+| Navigasi | `go_router` |
+| Jaringan | `dio` (REST + token Sanctum) |
+| Penyimpanan lokal | `hive` / `hive_flutter` |
+| Form & validasi | `formz` |
+| Lain-lain | `flutter_svg`, `flutter_html`, `syncfusion_flutter_pdfviewer`, `youtube_player_flutter`, `audioplayers`, `url_launcher`, `open_filex` |
+
+Font: **Poppins**. Warna brand: merah `#DC0000`.
+
+### 🏗️ Arsitektur
+
+Proyek menerapkan **Clean Architecture** dengan tiga lapisan per fitur:
+
+```
+Presentation  →  UI (screens, widgets) + BLoC/Cubit. Hanya render & terima event.
+Domain        →  Entities, kontrak Repository (interface), Usecases. Business rules, paling independen.
+Data          →  Model/DTO, DataSource (remote/local), implementasi Repository.
+```
+
+**Aturan dependensi:** lapisan atas hanya bergantung pada lapisan bawah melalui **abstraksi**. Domain tidak boleh bergantung langsung pada Data atau Presentation.
+
+**Alur data (contoh: ambil daftar kursus):**
+```
+UI → kirim Event → BLoC → panggil Usecase → Repository (interface)
+   → DataSource (dio/Hive) → map ke Entity → balik ke UI via BLoC state
+```
+
+Setiap fitur mendaftarkan dependensinya melalui **modul DI** di `lib/src/core/di/modules/` (mis. `course_module.dart`, `achievement_module.dart`) yang dirangkai oleh `ServiceLocator` saat startup.
+
+### 📁 Struktur Folder
+
+```
+lib/
+├─ main.dart                     # Entry point + inisialisasi flavor & DI
+└─ src/
+   ├─ core/                      # Fondasi lintas-fitur
+   │  ├─ config/                 # FlavorConfig, konstanta (rute, endpoint API)
+   │  ├─ di/                     # ServiceLocator + modules/ (DI per fitur)
+   │  ├─ network/                # Dio, interceptor, helper error
+   │  ├─ routes/                 # GoRouter (app_router.dart)
+   │  ├─ error/                  # Failure & exception
+   │  └─ utils/                  # Utilitas umum
+   ├─ shared/                    # Dipakai banyak fitur
+   │  ├─ styles/                 # AppColors, AppShadows, AppMeasures, tipografi
+   │  ├─ theme/                  # Tema terang/gelap + ThemeController
+   │  ├─ widgets/                # Widget bersama (BrandAppBar, AppEmptyState, dll.)
+   │  ├─ dialogs/  states/  utils/
+   └─ features/                  # Tiap fitur = domain/ + data/ + presentation/
+      ├─ authentication/   home/         courses/      lessons/
+      ├─ discussions/      notifications/ achievements/ certificates/
+      ├─ games/            instructor/    main/
+```
+
+### 🚀 Memulai (Setup)
+
+**Prasyarat**
+- Flutter SDK (channel *stable*, sesuai `pubspec.yaml` ≥ 3.11.5)
+- Android Studio / SDK (untuk Android) atau Xcode (untuk iOS, hanya di macOS)
+- Backend **LMS_LARAVEL** berjalan & dapat diakses dari perangkat/emulator
 
 ```bash
-# Pasang dependency
+# 1. Masuk ke folder aplikasi mobile
+cd lms_mobile_app
+
+# 2. Pasang dependency
 flutter pub get
 
-# Jalankan aplikasi pada emulator atau perangkat fisik
+# 3. Jalankan
 flutter run
 ```
 
-Perintah lain yang sering dipakai:
+### 🔌 Konfigurasi Backend / API
 
-```bash
-dart format .
-flutter analyze
-flutter test
-flutter build apk --release
+Alamat API diatur di **`lib/src/core/config/flavor_config.dart`**. Flavor dipilih otomatis di `main.dart` berdasarkan mode build:
+
+- **Debug / `flutter run`** → memakai `DevelopmentFlavorConfig`
+- **Release / `flutter build`** → memakai `ProductionFlavorConfig`
+
+Ubah `apiBaseUrl` sesuai lingkunganmu (perhatikan akhiran **`/api/mobile`**):
+
+```dart
+// Development — ganti dengan alamat backend kamu
+class DevelopmentFlavorConfig {
+  static const String apiBaseUrl = 'http://192.168.x.x:8000/api/mobile';
+  ...
+}
 ```
 
-### Struktur Kode (Ringkasan)
+> 💡 **Tips:** untuk perangkat fisik, gunakan **alamat IP LAN** komputer (mis. `http://192.168.1.10:8000/...`), bukan `localhost`. Untuk emulator Android, `localhost` host bisa diakses lewat `http://10.0.2.2:8000/...`.
 
-- `lib/` — kode aplikasi utama
-	- `lib/src/features/` — setiap fitur (home, courses, lessons, auth, dll.)
-	- `lib/src/core/` — konfigurasi aplikasi (routing, tema, DI, error handling)
-	- `lib/src/shared/` — widget dan utilitas bersama
-- `assets/` — gambar, icon, dan aset media
-- `android/`, `ios/`, `windows/`, `macos/`, `web/`, `linux/` — platform-specific
+### 🧪 Menjalankan & Build
 
-Untuk arsitektur detil, lihat dokumentasi arsitektur: ARCHITECTURE_GUIDE.md
+```bash
+flutter pub get          # Pasang dependency
+flutter run              # Jalankan di emulator/perangkat (mode debug)
+dart format .            # Rapikan format kode
+flutter analyze          # Static analysis (wajib bersih sebelum PR)
+flutter test             # Unit & widget test
 
-### Panduan Pengembangan
+# Build rilis
+flutter build apk --release      # Android APK
+flutter build appbundle --release # Android App Bundle (Play Store)
+flutter build ios --release      # iOS (macOS + Xcode)
+```
 
-- Ikuti prinsip Clean Architecture: pisahkan Domain, Data, dan Presentation.
-- Gunakan BLoC (atau pattern yang disepakati) untuk business logic dan state.
-- Jangan letakkan logika pada widget; buat unit test untuk usecases dan bloc.
-- Registrasi dependency pada modul DI agar mudah isolasi fitur.
+### 🤝 Konvensi & Panduan Kontribusi
 
-### Menambahkan Fitur Baru
+- Patuhi **Clean Architecture**: pisahkan `domain/`, `data/`, `presentation/` per fitur.
+- Gunakan **BLoC/Cubit** untuk logika & state; jangan menaruh business logic di dalam widget.
+- Daftarkan dependensi baru lewat **modul DI** di `core/di/modules/`.
+- Pakai **token desain** dari `shared/styles/` (mis. `AppColors`, `AppShadows`) — hindari warna/ukuran hardcode agar konsisten & ramah dark mode.
+- Pastikan `dart format .` dan `flutter analyze` **lulus tanpa isu** sebelum membuat PR.
 
-1. Buat branch fitur: `feature/<nama-fitur>`.
-2. Buat folder fitur di `lib/src/features/<nama-fitur>/` dengan struktur domain/data/presentation.
-3. Tambahkan unit test untuk logic fitur (usecase/repository/bloc).
-4. Pastikan `dart format .` dan `flutter analyze` lulus sebelum PR.
-
----
-
-## Testing
-
-- Unit & widget tests: `flutter test`
-- Integration tests: sesuaikan konfigurasi (lihat folder `test_driver` atau `integration_test` jika ada)
-
----
-
-## Debugging & Troubleshooting
-
-- Error DI / BLoC not found: pastikan modul di-register pada startup (`main.dart`).
-- Masalah routing: periksa router/route names di `lib/src/core/`.
-- Masalah asset tidak muncul: pastikan `pubspec.yaml` menyertakan path `assets/` dan jalankan `flutter pub get`.
-
-Jika menemukan issue teknis, mohon buatkan issue di repository dengan langkah reproduksi dan log terkait.
+**Menambah fitur baru**
+1. Buat branch: `feature/<nama-fitur>`.
+2. Buat `lib/src/features/<nama-fitur>/` dengan sub-folder `domain/`, `data/`, `presentation/`.
+3. Buat modul DI di `core/di/modules/<nama-fitur>_module.dart` dan daftarkan di `ServiceLocator`.
+4. Daftarkan rute baru di `core/routes/app_router.dart` (+ konstanta di `core/config/constants/`).
+5. Tambah/perbarui test; jalankan format & analyze; sertakan tangkapan layar bila ada perubahan UI.
 
 ---
 
-## Kontribusi
+## 🐞 Pemecahan Masalah
 
-Silakan buka issue atau buat Pull Request. Panduan singkat:
-
-1. Fork repo dan buat branch baru.
-2. Sertakan deskripsi perubahan dan screenshot bila UI berubah.
-3. Tambahkan atau perbarui test jika perlu.
-4. Pastikan formatting dan lint lulus.
-
----
-
-## Referensi & Dokumen Tambahan
-
-- Panduan arsitektur: ARCHITECTURE_GUIDE.md
-- Dokumen lengkap proyek: DOKUMENTASI_LENGKAP_PROJECT.md
-- Panduan migrasi: MIGRATION_GUIDE.md
-
-Lihat juga `pubspec.yaml` untuk daftar dependensi dan versi yang digunakan.
+| Gejala | Kemungkinan penyebab & solusi |
+|---|---|
+| Gagal login / data tak muncul | `apiBaseUrl` salah atau backend tidak terjangkau. Cek IP LAN, port `:8000`, dan akhiran `/api/mobile`. |
+| Perangkat fisik tak bisa konek | Gunakan IP LAN komputer, bukan `localhost`; pastikan satu jaringan & firewall mengizinkan port. |
+| `DI / bloc not found` | Dependensi belum diregistrasi — pastikan modulnya dipanggil di `ServiceLocator.setupServiceLocator()`. |
+| Aset tidak tampil | Periksa path di `pubspec.yaml` (`assets/`) lalu jalankan `flutter pub get`. |
+| Error rute / argumen | Cek nama rute di `core/routes/app_router.dart` dan tipe `state.extra` yang dikirim. |
 
 ---
 
-## Lisensi & Kontak
+<div align="center">
 
-Jika ada pertanyaan atau ingin berkolaborasi, silakan buka issue atau hubungi maintainer proyek.
+Dibuat dengan ❤️ menggunakan **Flutter** untuk **BASS Academy**.
+Menemukan bug atau punya ide? Silakan buka **Issue** atau kirim **Pull Request**.
 
-Terima kasih telah menggunakan atau berkontribusi pada proyek ini. Semoga membantu dalam pembelajaran bass dan pengembangan Flutter! 🎸🚀
+</div>
