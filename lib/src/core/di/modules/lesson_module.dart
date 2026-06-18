@@ -31,6 +31,9 @@ import 'package:lms_mobile_app/src/features/lessons/domain/usecases/toggle_lesso
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/case_study_remote_datasource_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/case_study_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/case_study/case_study_bloc.dart';
+import 'package:lms_mobile_app/src/features/lessons/data/datasources/feedback_remote_datasource_impl.dart';
+import 'package:lms_mobile_app/src/features/lessons/data/repositories/feedback_repository_impl.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/feedback/feedback_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/essay/essay_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/quiz/quiz_bloc.dart';
@@ -128,6 +131,14 @@ class LessonModule {
         remoteDataSource: remoteDataSource,
       );
       return CaseStudyBloc(repository: repository);
+    });
+
+    getIt.registerFactory<FeedbackBloc>(() {
+      final remoteDataSource = FeedbackRemoteDataSourceImpl(dio: getIt<Dio>());
+      final repository = FeedbackRepositoryImpl(
+        remoteDataSource: remoteDataSource,
+      );
+      return FeedbackBloc(repository: repository);
     });
 
     getIt.registerFactory<VideoBloc>(() => VideoBloc());

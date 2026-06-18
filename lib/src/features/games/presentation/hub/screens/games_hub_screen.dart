@@ -70,7 +70,7 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
               children: [
                 _OverallStatsHeader(stats: overall),
                 const SizedBox(height: 22),
-                const Text(
+                Text(
                   'Pilih Game',
                   style: TextStyle(
                     fontSize: 16,
@@ -147,7 +147,7 @@ class _OverallStatsHeader extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -219,7 +219,7 @@ class _StatPill extends StatelessWidget {
             Text(
               label,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppColors.textTertiary,
                 fontSize: 10.5,
                 fontWeight: FontWeight.w600,
@@ -245,7 +245,7 @@ class _CenteredMessage extends StatelessWidget {
         child: Text(
           message,
           textAlign: TextAlign.center,
-          style: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
+          style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
         ),
       ),
     );

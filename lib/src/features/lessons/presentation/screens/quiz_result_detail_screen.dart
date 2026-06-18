@@ -39,7 +39,7 @@ class _QuizResultDetailScreenState extends State<QuizResultDetailScreen> {
           backgroundColor: AppColors.background,
           appBar: const BrandAppBar(title: 'Detail Hasil Quiz'),
           body: Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [AppColors.surface, AppColors.background],
                 begin: Alignment.topCenter,
@@ -65,7 +65,7 @@ class _QuizResultDetailScreenState extends State<QuizResultDetailScreen> {
           child: Text(
             state.message,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               color: AppColors.charcoal,
               fontWeight: FontWeight.w600,
@@ -107,7 +107,7 @@ class _QuizResultDetailScreenState extends State<QuizResultDetailScreen> {
             delayMs: 180,
             child: Row(
               children: [
-                const Text(
+                Text(
                   'Tinjauan Jawaban',
                   style: TextStyle(
                     fontSize: 16,

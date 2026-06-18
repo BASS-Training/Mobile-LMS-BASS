@@ -1,6 +1,7 @@
 // Network module untuk API client dan interceptors
 // Berisi: Dio client, request/response interceptors, API response model
 import 'package:dio/dio.dart';
+import 'package:lms_mobile_app/src/core/utils/app_logger.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lms_mobile_app/src/core/config/flavor_config.dart';
 import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
@@ -63,7 +64,7 @@ class LoggingInterceptor extends Interceptor {
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     options.extra['__start'] = DateTime.now().millisecondsSinceEpoch;
     // ignore: avoid_print
-    print('>>> ${options.method} ${options.path}');
+    logDebug('>>> ${options.method} ${options.path}');
     super.onRequest(options, handler);
   }
 
@@ -80,7 +81,7 @@ class LoggingInterceptor extends Interceptor {
         ? '${raw.substring(0, _maxPreview)}… (+${size - _maxPreview} chars)'
         : raw;
     // ignore: avoid_print
-    print(
+    logDebug(
       '<<< ${response.statusCode} ${response.requestOptions.path} '
       '($ms, ${size}B) $preview',
     );
@@ -90,7 +91,7 @@ class LoggingInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     // ignore: avoid_print
-    print(
+    logDebug(
       '!!! ${err.requestOptions.path} '
       '${err.response?.statusCode ?? ''} ${err.message}',
     );

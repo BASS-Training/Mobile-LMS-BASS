@@ -15,12 +15,15 @@ import 'package:lms_mobile_app/src/features/authentication/presentation/screens/
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/register_screen.dart';
 import 'package:lms_mobile_app/src/features/main/presentation/screens/main_screen.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/screens/course_detail_screen.dart';
+import 'package:lms_mobile_app/src/features/courses/presentation/screens/saved_courses_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/essay/essay_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/quiz/quiz_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/quiz_result/quiz_result_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/video/video_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/case_study/case_study_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/case_study_lesson_detail_screen.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/feedback/feedback_bloc.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/screens/feedback_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/case_study_result_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/video_lesson_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/text_lesson_detail_screen.dart';
@@ -35,9 +38,23 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/screens/essay_r
 import 'package:lms_mobile_app/src/features/certificates/presentation/screens/certificate_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/certificates/presentation/screens/certificate_list_screen.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/screens/join_class_screen.dart';
+import 'package:lms_mobile_app/src/features/notifications/presentation/cubit/notifications_cubit.dart';
+import 'package:lms_mobile_app/src/features/notifications/presentation/screens/notifications_screen.dart';
+import 'package:lms_mobile_app/src/features/discussions/presentation/screens/discussion_hub_screen.dart';
+import 'package:lms_mobile_app/src/features/discussions/presentation/screens/discussion_thread_screen.dart';
+import 'package:lms_mobile_app/src/features/achievements/presentation/screens/achievements_screen.dart';
+import 'package:lms_mobile_app/src/features/home/domain/entities/home_stats.entity.dart';
+import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_participants_screen.dart';
+import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_grading_queue_screen.dart';
+import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_participant_detail_screen.dart';
+import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_essay_grading_screen.dart';
+import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_case_study_grading_screen.dart';
 import 'package:lms_mobile_app/src/features/games/presentation/hub/bloc/games_hub_bloc.dart';
 import 'package:lms_mobile_app/src/features/games/presentation/hub/screens/games_hub_screen.dart';
 import 'package:lms_mobile_app/src/features/games/presentation/games/game_2048/screens/game_2048_screen.dart';
+import 'package:lms_mobile_app/src/features/games/presentation/games/schulte_table/screens/schulte_table_screen.dart';
+import 'package:lms_mobile_app/src/features/games/presentation/games/stack_tower/screens/stack_tower_screen.dart';
+import 'package:lms_mobile_app/src/features/games/presentation/games/flappy/screens/flappy_screen.dart';
 
 // Entity imports
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
@@ -112,6 +129,34 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.joinClass,
         builder: (context, state) => const JoinClassScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.notifications,
+        builder: (context, state) => BlocProvider<NotificationsCubit>.value(
+          value: _sl<NotificationsCubit>(),
+          child: const NotificationsScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.discussionHub,
+        builder: (context, state) => const DiscussionHubScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.achievements,
+        builder: (context, state) =>
+            AchievementsScreen(stats: state.extra as HomeStatsEntity),
+      ),
+      GoRoute(
+        path: AppRoutes.discussionThread,
+        builder: (context, state) {
+          final args = state.extra as Map<String, dynamic>;
+          return DiscussionThreadScreen(
+            contentId: args['contentId'] as String,
+            lessonTitle: (args['lessonTitle'] as String?) ?? '',
+            courseTitle: args['courseTitle'] as String?,
+            highlightDiscussionId: args['highlightDiscussionId'] as String?,
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.courseDetail,
@@ -324,6 +369,38 @@ class AppRouter {
         },
       ),
       GoRoute(
+        path: AppRoutes.feedbackLessonDetail,
+        pageBuilder: (context, state) {
+          final args = state.extra as Map<String, dynamic>;
+          return CustomTransitionPage(
+            key: state.pageKey,
+            child: BlocProvider<FeedbackBloc>(
+              create: (context) => _sl<FeedbackBloc>(),
+              child: FeedbackLessonDetailScreen(
+                lesson: args['lesson'],
+                course: args['course'],
+                lessonIndex: args['lessonIndex'],
+              ),
+            ),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  final fade = CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                  );
+                  final slide = Tween<Offset>(
+                    begin: const Offset(0.04, 0),
+                    end: Offset.zero,
+                  ).animate(fade);
+                  return FadeTransition(
+                    opacity: fade,
+                    child: SlideTransition(position: slide, child: child),
+                  );
+                },
+          );
+        },
+      ),
+      GoRoute(
         path: AppRoutes.imageLessonDetail,
         pageBuilder: (context, state) {
           final args = state.extra as Map<String, dynamic>;
@@ -468,6 +545,50 @@ class AppRouter {
           );
         },
       ),
+      // ── Instructor / admin ───────────────────────────────────────────────
+      GoRoute(
+        path: AppRoutes.instructorParticipants,
+        builder: (context, state) {
+          final args = state.extra as Map<String, dynamic>;
+          return InstructorParticipantsScreen(
+            courseId: args['courseId'] as String,
+            courseTitle: (args['courseTitle'] as String?) ?? '',
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.instructorGradingQueue,
+        builder: (context, state) {
+          final args = state.extra as Map<String, dynamic>;
+          return InstructorGradingQueueScreen(
+            courseId: args['courseId'] as String,
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.instructorParticipantDetail,
+        builder: (context, state) {
+          final args = state.extra as Map<String, dynamic>;
+          return InstructorParticipantDetailScreen(
+            courseId: args['courseId'] as String,
+            userId: args['userId'] as String,
+          );
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.instructorEssayGrading,
+        builder: (context, state) {
+          final submissionId = state.extra as String;
+          return InstructorEssayGradingScreen(submissionId: submissionId);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.instructorCaseStudyGrading,
+        builder: (context, state) {
+          final submissionId = state.extra as String;
+          return InstructorCaseStudyGradingScreen(submissionId: submissionId);
+        },
+      ),
       GoRoute(
         path: AppRoutes.certificateDetail,
         builder: (context, state) {
@@ -480,6 +601,10 @@ class AppRouter {
         builder: (context, state) => const CertificateListScreen(),
       ),
       GoRoute(
+        path: AppRoutes.savedCourses,
+        builder: (context, state) => const SavedCoursesScreen(),
+      ),
+      GoRoute(
         path: AppRoutes.gamesHub,
         builder: (context, state) => BlocProvider<GamesHubBloc>(
           create: (context) => _sl<GamesHubBloc>(),
@@ -489,6 +614,18 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.game2048,
         builder: (context, state) => const Game2048Screen(),
+      ),
+      GoRoute(
+        path: AppRoutes.gameSchulte,
+        builder: (context, state) => const SchulteTableScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.gameStackTower,
+        builder: (context, state) => const StackTowerScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.gameFlappy,
+        builder: (context, state) => const FlappyScreen(),
       ),
     ],
   );

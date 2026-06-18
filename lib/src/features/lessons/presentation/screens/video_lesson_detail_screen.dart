@@ -136,7 +136,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
           onBack: () => Navigator.pop(context),
         ),
         body: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [AppColors.surface, AppColors.background],
               begin: Alignment.topCenter,
@@ -161,7 +161,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
                   ),
                 ],
               ),
-              child: const Column(
+              child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
@@ -223,7 +223,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
             builder: (context, state) {
               return SafeArea(
                 child: Container(
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [AppColors.surface, AppColors.background],
                       begin: Alignment.topCenter,
@@ -435,7 +435,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
         children: [
           Text(
             lessonTitle,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
               color: AppColors.charcoal,
@@ -444,7 +444,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
           const SizedBox(height: 8),
           Text(
             lessonTitle,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               height: 1.6,
               color: AppColors.slate,
@@ -453,11 +453,11 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
           const SizedBox(height: 12),
           Row(
             children: [
-              const Icon(Icons.timer, size: 16, color: AppColors.slate),
+              Icon(Icons.timer, size: 16, color: AppColors.slate),
               const SizedBox(width: 6),
               Text(
                 lessonTitle,
-                style: const TextStyle(fontSize: 12, color: AppColors.slate),
+                style: TextStyle(fontSize: 12, color: AppColors.slate),
               ),
               const SizedBox(width: 12),
               Container(

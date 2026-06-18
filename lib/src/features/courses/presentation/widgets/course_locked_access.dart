@@ -157,7 +157,7 @@ class CourseSyllabusTile extends StatelessWidget {
             child: Center(
               child: Text(
                 '${section.sectionNumber}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w800,
                   color: AppColors.textSecondary,
@@ -174,7 +174,7 @@ class CourseSyllabusTile extends StatelessWidget {
                   section.title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13.5,
                     fontWeight: FontWeight.w700,
                     color: AppColors.textPrimary,
@@ -183,7 +183,7 @@ class CourseSyllabusTile extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   '${section.lessons.length} lesson',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11.5,
                     color: AppColors.textTertiary,
                   ),
@@ -191,7 +191,7 @@ class CourseSyllabusTile extends StatelessWidget {
               ],
             ),
           ),
-          const Icon(Icons.lock_rounded, size: 16, color: AppColors.textTertiary),
+          Icon(Icons.lock_rounded, size: 16, color: AppColors.textTertiary),
         ],
       ),
     );

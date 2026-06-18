@@ -1,4 +1,5 @@
 import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
+import 'package:lms_mobile_app/src/core/utils/app_logger.dart';
 import 'package:lms_mobile_app/src/core/utils/offline_test_mode.dart';
 
 import '../../domain/entities/course_entity.dart';
@@ -20,7 +21,7 @@ class CourseRepositoryImpl implements CourseRepository {
   @override
   Future<List<CourseEntity>> getCourses() async {
     if (_isOfflineTestSession()) {
-      print(
+      logDebug(
         '[COURSE][FETCH] using local dummy getCourses tester=${OfflineTestMode.describeContext()}',
       );
       final localCourses = await localDataSource.getCourses();
@@ -29,7 +30,7 @@ class CourseRepositoryImpl implements CourseRepository {
     }
 
     try {
-      print(
+      logDebug(
         '[COURSE][FETCH] using remote API getCourses tester=${OfflineTestMode.describeContext()}',
       );
       // Strategi: Coba remote dulu untuk data terbaru
@@ -40,7 +41,7 @@ class CourseRepositoryImpl implements CourseRepository {
       return _mapCoursesToEntities(remoteCourses);
     } catch (e) {
       // Fallback ke local cache jika remote gagal
-      print("===== ERROR DARI LARAVEL: $e =====");
+      logDebug("===== ERROR DARI LARAVEL: $e =====");
       final localCourses = await localDataSource.getCourses();
       await _reconcileCompletionStatus(localCourses);
       return _mapCoursesToEntities(localCourses);
@@ -50,7 +51,7 @@ class CourseRepositoryImpl implements CourseRepository {
   @override
   Stream<List<CourseEntity>> watchCourses() async* {
     if (_isOfflineTestSession()) {
-      print(
+      logDebug(
         '[COURSE][WATCH] using local dummy watchCourses tester=${OfflineTestMode.describeContext()}',
       );
       final localCourses = await localDataSource.getCourses();
@@ -59,7 +60,7 @@ class CourseRepositoryImpl implements CourseRepository {
       return;
     }
 
-    print(
+    logDebug(
       '[COURSE][WATCH] using remote API watchCourses tester=${OfflineTestMode.describeContext()}',
     );
     await for (final courses in remoteDataSource.watchCourses()) {
@@ -71,7 +72,7 @@ class CourseRepositoryImpl implements CourseRepository {
   @override
   Future<CourseEntity?> getCourseById(String id) async {
     if (_isOfflineTestSession()) {
-      print(
+      logDebug(
         '[COURSE][DETAIL] using local dummy getCourseById id=$id tester=${OfflineTestMode.describeContext()}',
       );
       final localCourse = await localDataSource.getCourseById(id);
@@ -83,7 +84,7 @@ class CourseRepositoryImpl implements CourseRepository {
     }
 
     try {
-      print(
+      logDebug(
         '[COURSE][DETAIL] using remote API getCourseById id=$id tester=${OfflineTestMode.describeContext()}',
       );
       // Coba remote dulu
@@ -111,7 +112,7 @@ class CourseRepositoryImpl implements CourseRepository {
   @override
   Future<List<CourseEntity>> searchCourses(String query) async {
     if (_isOfflineTestSession()) {
-      print(
+      logDebug(
         '[COURSE][SEARCH] using local dummy searchCourses query=$query tester=${OfflineTestMode.describeContext()}',
       );
       final localCourses = await localDataSource.searchCourses(query);
@@ -120,7 +121,7 @@ class CourseRepositoryImpl implements CourseRepository {
     }
 
     try {
-      print(
+      logDebug(
         '[COURSE][SEARCH] using remote API searchCourses query=$query tester=${OfflineTestMode.describeContext()}',
       );
       // Coba remote dulu
@@ -157,14 +158,14 @@ class CourseRepositoryImpl implements CourseRepository {
   Future<void> addCourse(CourseEntity course) async {
     final model = CourseMapper.fromDomain(course);
     if (_isOfflineTestSession()) {
-      print(
+      logDebug(
         '[COURSE][ADD] using local dummy addCourse id=${course.id} tester=${OfflineTestMode.describeContext()}',
       );
       await localDataSource.saveCourse(model);
       return;
     }
 
-    print(
+    logDebug(
       '[COURSE][ADD] using remote API addCourse id=${course.id} tester=${OfflineTestMode.describeContext()}',
     );
     await remoteDataSource.addCourse(model);
@@ -174,7 +175,7 @@ class CourseRepositoryImpl implements CourseRepository {
   @override
   Future<List<CourseEntity>> getSavedCourses() async {
     if (_isOfflineTestSession()) {
-      print(
+      logDebug(
         '[COURSE][SAVED] using local dummy getSavedCourses tester=${OfflineTestMode.describeContext()}',
       );
       final localCourses = await localDataSource.getCourses();
@@ -184,7 +185,7 @@ class CourseRepositoryImpl implements CourseRepository {
     }
 
     try {
-      print(
+      logDebug(
         '[COURSE][SAVED] using remote API getSavedCourses tester=${OfflineTestMode.describeContext()}',
       );
       // Coba remote dulu untuk list terbaru
@@ -205,7 +206,7 @@ class CourseRepositoryImpl implements CourseRepository {
   @override
   Future<void> refreshCourses() async {
     if (_isOfflineTestSession()) {
-      print(
+      logDebug(
         '[COURSE][REFRESH] using local dummy refreshCourses tester=${OfflineTestMode.describeContext()}',
       );
       final localCourses = await localDataSource.getCourses();
@@ -213,7 +214,7 @@ class CourseRepositoryImpl implements CourseRepository {
       return;
     }
 
-    print(
+    logDebug(
       '[COURSE][REFRESH] using remote API refreshCourses tester=${OfflineTestMode.describeContext()}',
     );
     // Refresh akan coba remote dulu, fallback ke local

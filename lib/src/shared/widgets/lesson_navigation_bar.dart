@@ -45,7 +45,7 @@ class LessonNavigationBar extends StatelessWidget {
                   icon: const Icon(Icons.arrow_back_rounded),
                   label: const Text('Sebelumnya'),
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppColors.borderDefault),
+                    side: BorderSide(color: AppColors.borderDefault),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     backgroundColor: AppColors.surface,
                     foregroundColor: AppColors.textPrimary,

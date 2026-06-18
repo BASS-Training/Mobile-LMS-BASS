@@ -56,7 +56,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ),
       );
     } catch (error) {
-      emit(AuthFailure(message: 'Login error: $error'));
+      emit(
+        AuthFailure(message: _readableError(error, 'Login gagal. Coba lagi.')),
+      );
     }
   }
 
@@ -95,7 +97,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ),
       );
     } catch (error) {
-      emit(AuthFailure(message: 'Register error: $error'));
+      emit(
+        AuthFailure(
+          message: _readableError(error, 'Register gagal. Coba lagi.'),
+        ),
+      );
     }
   }
 
@@ -131,5 +137,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     if (state is AuthFailure) {
       emit(const AuthInitial());
     }
+  }
+
+  /// The data layer wraps failures as `Exception('<friendly message>')`
+  /// (server-500/connection errors already mapped to user-facing text). Strip
+  /// the `Exception:` prefix so the message reaches the UI cleanly.
+  String _readableError(Object error, String fallback) {
+    final text = error.toString().replaceFirst('Exception: ', '').trim();
+    return text.isEmpty ? fallback : text;
   }
 }

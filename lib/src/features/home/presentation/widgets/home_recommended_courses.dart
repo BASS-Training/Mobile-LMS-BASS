@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
@@ -70,11 +71,11 @@ class _HomeRecommendedCoursesState extends State<HomeRecommendedCourses> {
       recentCourses,
     );
 
+    if (visibleRecentCourses.isEmpty) return _buildTokenPrompt(context);
+
     return SizedBox(
       height: 250,
-      child: visibleRecentCourses.isEmpty
-          ? _buildTokenPrompt()
-          : NotificationListener<ScrollNotification>(
+      child: NotificationListener<ScrollNotification>(
               onNotification: (notification) {
                 if (_didNavigateFromEdgeSwipe) return false;
                 if (notification.metrics.axis != Axis.horizontal) return false;
@@ -186,46 +187,65 @@ class _HomeRecommendedCoursesState extends State<HomeRecommendedCourses> {
     return visibleCourses.take(3).toList();
   }
 
-  Widget _buildTokenPrompt() {
+  Widget _buildTokenPrompt(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: AppMeasures.paddingLarge),
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(20, 22, 20, 22),
       decoration: BoxDecoration(
         color: AppColors.brandSurfaceAlt,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(color: AppColors.borderSubtle),
         boxShadow: AppShadows.xs,
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 52,
-            height: 52,
-            decoration: BoxDecoration(
-              color: AppColors.brandPrimary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: const Icon(
-              Icons.vpn_key_rounded,
-              color: AppColors.brandPrimary,
-              size: 26,
-            ),
+          SvgPicture.asset(
+            'assets/illustrations/empty_courses.svg',
+            height: 116,
+            fit: BoxFit.contain,
+            semanticsLabel: 'Belum ada kursus',
           ),
-          const SizedBox(height: 12),
-          const Text(
-            'Masukkan token untuk mendapatkan course',
+          const SizedBox(height: 18),
+          Text(
+            'Belum ada kursus',
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
+              fontSize: 16,
+              fontWeight: FontWeight.w800,
               color: AppColors.textPrimary,
-              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Gabung kelas dengan token dari instrukturmu untuk membuka kursus pertamamu.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 13,
+              height: 1.5,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 18),
+          ElevatedButton.icon(
+            onPressed: () => context.push(AppRoutes.joinClass),
+            icon: const Icon(Icons.vpn_key_rounded, size: 18),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.brandPrimary,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+            label: const Text(
+              'Gabung Kelas',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
             ),
           ),
         ],
       ),
     );
   }
-
 }

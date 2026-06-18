@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_actions.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
-import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
-import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/case_study_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/case_study/case_study_bloc.dart';
@@ -12,6 +11,9 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/case_study
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/case_study_pdf_viewer_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/case_study/case_study_table_widget.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
+import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
+import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
 class CaseStudyLessonDetailScreen extends StatefulWidget {
   final LessonEntity lesson;
@@ -49,8 +51,7 @@ class _CaseStudyLessonDetailScreenState
   }
 
   void _backToCourse() {
-    Navigator.pop(context);
-    context.read<CourseBloc>().add(const RefreshCoursesEvent());
+    popToCourse(context);
   }
 
   // ---- HTML <-> plain helpers (web menyimpan jawaban teks sebagai HTML) ----
@@ -92,12 +93,7 @@ class _CaseStudyLessonDetailScreenState
     return '';
   }
 
-  String _cellAnswer(
-    CaseStudyEntity data,
-    String sid,
-    String bid,
-    String rc,
-  ) {
+  String _cellAnswer(CaseStudyEntity data, String sid, String bid, String rc) {
     final block = _existingAnswers(data)[sid];
     if (block is Map && block[bid] is Map) {
       final v = (block[bid] as Map)[rc];
@@ -145,24 +141,22 @@ class _CaseStudyLessonDetailScreenState
       },
       child: Scaffold(
         backgroundColor: AppColors.background,
-        appBar: AppBar(
-          title: const Text('Studi Kasus'),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: _backToCourse,
-          ),
+        appBar: LessonAppBar(
+          courseTitle: widget.course.title,
+          subtitle: 'STUDI KASUS',
+          onBack: _backToCourse,
         ),
         body: BlocConsumer<CaseStudyBloc, CaseStudyState>(
           listener: (context, state) {
             if (state.errorMessage != null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.errorMessage!)),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
               context.read<CaseStudyBloc>().add(const ClearCaseStudyMessage());
             } else if (state.infoMessage != null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.infoMessage!)),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.infoMessage!)));
               context.read<CaseStudyBloc>().add(const ClearCaseStudyMessage());
             }
             if (state.pdfBytes != null) {
@@ -190,8 +184,11 @@ class _CaseStudyLessonDetailScreenState
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.error_outline,
-                          size: 48, color: Colors.redAccent),
+                      const Icon(
+                        Icons.error_outline_rounded,
+                        size: 48,
+                        color: AppColors.brandPrimary,
+                      ),
                       const SizedBox(height: 12),
                       Text(
                         state.errorMessage ?? 'Gagal memuat studi kasus',
@@ -199,9 +196,9 @@ class _CaseStudyLessonDetailScreenState
                       ),
                       const SizedBox(height: 12),
                       ElevatedButton(
-                        onPressed: () => context
-                            .read<CaseStudyBloc>()
-                            .add(LoadCaseStudy(widget.lesson.id)),
+                        onPressed: () => context.read<CaseStudyBloc>().add(
+                          LoadCaseStudy(widget.lesson.id),
+                        ),
                         child: const Text('Coba lagi'),
                       ),
                     ],
@@ -226,20 +223,13 @@ class _CaseStudyLessonDetailScreenState
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
       children: [
-        // Header
-        Text(
-          data.title,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        if (data.description.isNotEmpty) ...[
-          const SizedBox(height: 4),
-          Text(data.description,
-              style: const TextStyle(color: Color(0xFF6B7280))),
-        ],
-        const SizedBox(height: 8),
-        if (data.submission != null && data.submission!.isSubmitted)
+        // Header hero
+        _buildHeader(data),
+        if (data.submission != null && data.submission!.isSubmitted) ...[
+          const SizedBox(height: 12),
           _statusCard(data),
-        const SizedBox(height: 12),
+        ],
+        const SizedBox(height: 16),
 
         // Sections
         if (data.sections.isEmpty)
@@ -259,36 +249,130 @@ class _CaseStudyLessonDetailScreenState
     );
   }
 
+  Widget _buildHeader(CaseStudyEntity data) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.borderSubtle),
+        boxShadow: AppShadows.sm,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: AppColors.brandSurface,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: const Icon(
+              Icons.assignment_rounded,
+              color: AppColors.brandPrimary,
+              size: 26,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'STUDI KASUS',
+                  style: TextStyle(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.2,
+                    color: AppColors.brandPrimary,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  data.title,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
+                    height: 1.2,
+                  ),
+                ),
+                if (data.description.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    data.description,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.textSecondary,
+                      height: 1.45,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _statusCard(CaseStudyEntity data) {
     final sub = data.submission!;
+    final accent = sub.isGraded ? AppColors.info : AppColors.success;
     return Container(
-      margin: const EdgeInsets.only(top: 8),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: sub.isGraded ? const Color(0xFFEFF6FF) : const Color(0xFFECFDF5),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: sub.isGraded
-              ? const Color(0xFFBFDBFE)
-              : const Color(0xFFA7F3D0),
-        ),
+        color: accent.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: accent.withValues(alpha: 0.25)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            sub.isGraded ? '✓ Sudah dinilai' : '✓ Sudah dikumpulkan',
-            style: const TextStyle(fontWeight: FontWeight.bold),
+          Row(
+            children: [
+              Icon(
+                sub.isGraded
+                    ? Icons.verified_rounded
+                    : Icons.check_circle_rounded,
+                color: accent,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                sub.isGraded ? 'Sudah dinilai' : 'Sudah dikumpulkan',
+                style: TextStyle(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 14,
+                  color: accent,
+                ),
+              ),
+            ],
           ),
           if (sub.isGraded && data.scoringEnabled && sub.score != null)
             Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text('Nilai: ${sub.score}'),
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                'Nilai: ${sub.score}',
+                style: TextStyle(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                ),
+              ),
             ),
           if (sub.feedback != null && sub.feedback!.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Text('Feedback: ${sub.feedback}'),
+              padding: const EdgeInsets.only(top: 6),
+              child: Text(
+                'Feedback: ${sub.feedback}',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: AppColors.textSecondary,
+                  height: 1.45,
+                ),
+              ),
             ),
         ],
       ),
@@ -301,39 +385,70 @@ class _CaseStudyLessonDetailScreenState
     bool readOnly,
   ) {
     final isSub = section.level == 2;
+    final title = section.title.isEmpty
+        ? (isSub ? 'Subbab' : 'Bab')
+        : section.title;
     return Container(
-      margin: EdgeInsets.only(top: 16, left: isSub ? 12 : 0),
-      padding: EdgeInsets.only(left: isSub ? 10 : 0),
+      margin: EdgeInsets.only(top: 18, left: isSub ? 12 : 0),
+      padding: EdgeInsets.only(left: isSub ? 14 : 0),
       decoration: isSub
-          ? const Border(
-                  left: BorderSide(color: Color(0xFFFCD34D), width: 2))
-              .toBoxDecoration()
+          ? const BoxDecoration(
+              border: Border(
+                left: BorderSide(color: AppColors.brandPrimaryLight, width: 3),
+              ),
+            )
           : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            section.title.isEmpty
-                ? (isSub ? 'Subbab' : 'Bab')
-                : section.title,
-            style: TextStyle(
-              fontSize: isSub ? 15 : 17,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF111827),
+          if (isSub)
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
+            )
+          else
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 4,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: AppColors.brandPrimary,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ),
           if (section.instruction.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.only(top: 4),
+              padding: const EdgeInsets.only(top: 6),
               child: Text(
                 section.instruction,
-                style: const TextStyle(
-                    fontSize: 13, color: Color(0xFF6B7280)),
+                style: TextStyle(
+                  fontSize: 13,
+                  color: AppColors.textSecondary,
+                  height: 1.45,
+                ),
               ),
             ),
-          const SizedBox(height: 8),
-          ...section.blocks
-              .map((b) => _buildBlock(data, section, b, readOnly)),
+          const SizedBox(height: 10),
+          ...section.blocks.map((b) => _buildBlock(data, section, b, readOnly)),
         ],
       ),
     );
@@ -356,20 +471,27 @@ class _CaseStudyLessonDetailScreenState
           children: [
             if (block.label.isNotEmpty)
               Padding(
-                padding: const EdgeInsets.only(bottom: 4),
+                padding: const EdgeInsets.only(bottom: 6),
                 child: Text(
                   block.label,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13.5,
+                    color: AppColors.textPrimary,
+                  ),
                 ),
               ),
             if (readOnly)
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF9FAFB),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: const Color(0xFFE5E7EB)),
+                  color: AppColors.surfaceMuted,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppColors.borderSubtle),
                 ),
                 child: Html(data: _textAnswer(data, sid, bid)),
               )
@@ -381,13 +503,36 @@ class _CaseStudyLessonDetailScreenState
                 ),
                 maxLines: null,
                 minLines: 3,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: AppColors.textPrimary,
+                  height: 1.45,
+                ),
                 decoration: InputDecoration(
                   hintText: 'Tuliskan jawaban Anda...',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                  hintStyle: TextStyle(color: AppColors.textTertiary),
+                  contentPadding: const EdgeInsets.all(14),
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: AppColors.surface,
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: AppColors.borderDefault,
+                    ),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: AppColors.borderDefault,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(
+                      color: AppColors.brandPrimary,
+                      width: 1.5,
+                    ),
+                  ),
                 ),
               ),
           ],
@@ -404,9 +549,9 @@ class _CaseStudyLessonDetailScreenState
           controllerProvider: readOnly
               ? null
               : (cell) => _controller(
-                    'C::$sid::$bid::${cell.key}',
-                    _cellAnswer(data, sid, bid, cell.key),
-                  ),
+                  'C::$sid::$bid::${cell.key}',
+                  _cellAnswer(data, sid, bid, cell.key),
+                ),
           valueProvider: (cell) => _cellAnswer(data, sid, bid, cell.key),
         ),
       );
@@ -427,19 +572,31 @@ class _CaseStudyLessonDetailScreenState
             onPressed: state.draftSaving
                 ? null
                 : () => context.read<CaseStudyBloc>().add(
-                      SaveDraftCaseStudy(
-                        lessonId: widget.lesson.id,
-                        answers: _buildAnswers(data),
-                      ),
+                    SaveDraftCaseStudy(
+                      lessonId: widget.lesson.id,
+                      answers: _buildAnswers(data),
                     ),
+                  ),
             icon: state.draftSaving
                 ? const SizedBox(
                     width: 16,
                     height: 16,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Icon(Icons.save_outlined),
+                : const Icon(Icons.save_outlined, size: 18),
             label: const Text('Simpan Draft'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.brandPrimary,
+              side: const BorderSide(color: AppColors.brandPrimary, width: 1.5),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              textStyle: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
         ),
         const SizedBox(width: 12),
@@ -457,8 +614,21 @@ class _CaseStudyLessonDetailScreenState
                       color: Colors.white,
                     ),
                   )
-                : const Icon(Icons.send),
+                : const Icon(Icons.send_rounded, size: 18),
             label: const Text('Kumpulkan'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.brandPrimary,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              textStyle: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
           ),
         ),
       ],
@@ -490,36 +660,50 @@ class _CaseStudyLessonDetailScreenState
     );
     if (ok == true && context.mounted) {
       context.read<CaseStudyBloc>().add(
-            SubmitCaseStudy(
-              lessonId: widget.lesson.id,
-              answers: _buildAnswers(data),
-            ),
-          );
+        SubmitCaseStudy(
+          lessonId: widget.lesson.id,
+          answers: _buildAnswers(data),
+        ),
+      );
     }
   }
 
   Widget _buildDownloadButton(BuildContext context, CaseStudyState state) {
-    return ElevatedButton.icon(
-      onPressed: state.downloading
-          ? null
-          : () => context
-              .read<CaseStudyBloc>()
-              .add(DownloadCaseStudyPdf(widget.lesson.id)),
-      icon: state.downloading
-          ? const SizedBox(
-              width: 16,
-              height: 16,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: Colors.white,
-              ),
-            )
-          : const Icon(Icons.picture_as_pdf),
-      label: const Text('Lihat / Unduh PDF'),
+    return PressScale(
+      child: SizedBox(
+        width: double.infinity,
+        height: 52,
+        child: ElevatedButton.icon(
+          onPressed: state.downloading
+              ? null
+              : () => context.read<CaseStudyBloc>().add(
+                  DownloadCaseStudyPdf(widget.lesson.id),
+                ),
+          icon: state.downloading
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              : const Icon(Icons.picture_as_pdf_rounded, size: 20),
+          label: const Text('Lihat / Unduh PDF'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.brandPrimary,
+            foregroundColor: Colors.white,
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            textStyle: const TextStyle(
+              fontSize: 14.5,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ),
     );
   }
-}
-
-extension _BorderToDecoration on Border {
-  BoxDecoration toBoxDecoration() => BoxDecoration(border: this);
 }

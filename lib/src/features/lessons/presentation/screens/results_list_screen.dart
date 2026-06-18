@@ -166,7 +166,7 @@ class ResultsListScreen extends StatelessWidget {
                       attempt.lessonTitle,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
                         color: AppColors.textPrimary,
@@ -175,7 +175,7 @@ class ResultsListScreen extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       '${attempt.attemptLabel} • ${formatAppDateTime(attempt.submittedAt)}',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
@@ -217,7 +217,7 @@ class ResultsListScreen extends StatelessWidget {
                                       : 'Sudah dinilai instruktur')
                                 : 'Menunggu penilaian instruktur')
                           : '${attempt.questions.length} jawaban terkumpul',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
@@ -225,7 +225,7 @@ class ResultsListScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+              Icon(Icons.chevron_right, color: AppColors.textSecondary),
             ],
           ),
         ),

@@ -20,7 +20,9 @@ class HomeContinueLearning extends StatelessWidget {
     if (courses.isEmpty) return null;
     final inProgress =
         courses
-            .where((c) => c.progressPercentage > 0 && c.progressPercentage < 100)
+            .where(
+              (c) => c.progressPercentage > 0 && c.progressPercentage < 100,
+            )
             .toList()
           ..sort(
             (a, b) => b.progressPercentage.compareTo(a.progressPercentage),
@@ -48,13 +50,19 @@ class HomeContinueLearning extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
+              // Softer, airier red sweep (bright coral → brand) instead of the
+              // heavy near-maroon, so the hero feels lighter on the eyes during
+              // long sessions while still reading as the signature brand card.
               gradient: const LinearGradient(
                 colors: AppColors.brandGradient,
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(24),
-              boxShadow: AppShadows.brandPrimary,
+              boxShadow: AppShadows.brand(
+                AppColors.brandPrimary,
+                opacity: 0.18,
+              ),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,7 +71,8 @@ class HomeContinueLearning extends StatelessWidget {
                   children: [
                     _overline(started ? 'LANJUTKAN BELAJAR' : 'MULAI BELAJAR'),
                     const Spacer(),
-                    if (started && lessonsLeft > 0) _lessonsLeftBadge(lessonsLeft),
+                    if (started && lessonsLeft > 0)
+                      _lessonsLeftBadge(lessonsLeft),
                   ],
                 ),
                 const SizedBox(height: 16),

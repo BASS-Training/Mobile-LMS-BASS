@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 import 'package:lms_mobile_app/src/features/certificates/presentation/widgets/certificate_list_tile.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_state.dart';
@@ -30,12 +32,13 @@ class CertificateListScreen extends StatelessWidget {
                 .toList();
 
             if (completedCourses.isEmpty) {
-              return const AppEmptyState(
-                icon: Icons.workspace_premium_rounded,
-                iconColor: AppColors.warning,
+              return AppEmptyState(
+                illustration: 'assets/illustrations/onboard_certificate.svg',
                 title: 'Belum ada sertifikat',
                 message:
                     'Selesaikan sebuah kursus hingga 100% untuk membuka sertifikat resmimu di sini.',
+                actionLabel: 'Mulai Belajar',
+                onAction: () => context.push(AppRoutes.courses),
               );
             }
 
@@ -85,7 +88,7 @@ class _CountHeader extends StatelessWidget {
           const SizedBox(width: 8),
           Text(
             '$count sertifikat diraih',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
               color: AppColors.textPrimary,

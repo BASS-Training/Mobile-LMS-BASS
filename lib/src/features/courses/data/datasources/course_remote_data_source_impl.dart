@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:lms_mobile_app/src/core/network/dio_error.dart';
 import 'package:lms_mobile_app/src/core/config/constants/api_endpoints.dart';
 import '../models/course.dart';
 import 'course_remote_data_source.dart';
@@ -21,9 +22,7 @@ class CourseRemoteDataSourceImpl implements CourseRemoteDataSource {
         return Course.fromJson(json);
       }).toList();
     } on DioException catch (error) {
-      throw Exception(
-        _extractErrorMessage(error, 'Terjadi kesalahan jaringan'),
-      );
+      throw Exception(dioErrorMessage(error, 'Terjadi kesalahan jaringan'));
     } catch (e) {
       throw Exception('Terjadi kesalahan jaringan: $e');
     }
@@ -66,7 +65,7 @@ class CourseRemoteDataSourceImpl implements CourseRemoteDataSource {
       );
     } on DioException catch (error) {
       throw Exception(
-        _extractErrorMessage(error, 'Gagal menyimpan course ke koleksi'),
+        dioErrorMessage(error, 'Gagal menyimpan course ke koleksi'),
       );
     }
   }
@@ -90,21 +89,7 @@ class CourseRemoteDataSourceImpl implements CourseRemoteDataSource {
         return Course.fromJson(json);
       }).toList();
     } on DioException catch (error) {
-      throw Exception(
-        _extractErrorMessage(error, 'Gagal memuat course tersimpan'),
-      );
+      throw Exception(dioErrorMessage(error, 'Gagal memuat course tersimpan'));
     }
-  }
-
-  String _extractErrorMessage(DioException error, String fallback) {
-    final data = error.response?.data;
-    if (data is Map<String, dynamic>) {
-      final message = data['message']?.toString().trim();
-      if (message != null && message.isNotEmpty) {
-        return message;
-      }
-    }
-
-    return fallback;
   }
 }

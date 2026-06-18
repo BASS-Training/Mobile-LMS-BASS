@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:lms_mobile_app/src/core/network/dio_error.dart';
+import 'package:lms_mobile_app/src/core/utils/app_logger.dart';
 import 'package:lms_mobile_app/src/core/config/constants/api_endpoints.dart';
 import 'package:lms_mobile_app/src/core/utils/offline_test_mode.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/essay_remote_datasource.dart';
@@ -15,11 +17,11 @@ class EssayRemoteDataSourceImpl implements EssayRemoteDataSource {
     String lessonId,
   ) async {
     try {
-      print(
+      logDebug(
         '[ESSAY][REMOTE][GET] lessonId=$lessonId tester=${OfflineTestMode.describeContext()}',
       );
       if (OfflineTestMode.isActive()) {
-        print('[ESSAY][REMOTE][GET] blocked by tester mode');
+        logDebug('[ESSAY][REMOTE][GET] blocked by tester mode');
         return const [];
       }
 
@@ -57,7 +59,7 @@ class EssayRemoteDataSourceImpl implements EssayRemoteDataSource {
           )
           .toList();
     } on DioException catch (error) {
-      throw Exception(_extractErrorMessage(error, 'Gagal memuat soal essay'));
+      throw Exception(dioErrorMessage(error, 'Gagal memuat soal essay'));
     }
   }
 
@@ -96,7 +98,7 @@ class EssayRemoteDataSourceImpl implements EssayRemoteDataSource {
 
       return result;
     } on DioException catch (error) {
-      throw Exception(_extractErrorMessage(error, 'Gagal memuat draft essay'));
+      throw Exception(dioErrorMessage(error, 'Gagal memuat draft essay'));
     }
   }
 
@@ -106,11 +108,11 @@ class EssayRemoteDataSourceImpl implements EssayRemoteDataSource {
     required List<Map<String, dynamic>> answers,
     String? userEmail,
   }) async {
-    print(
+    logDebug(
       '[ESSAY][REMOTE][SUBMIT] lessonId=$lessonId tester=${OfflineTestMode.describeContext()}',
     );
     if (OfflineTestMode.isActive()) {
-      print('[ESSAY][REMOTE][SUBMIT] blocked by tester mode');
+      logDebug('[ESSAY][REMOTE][SUBMIT] blocked by tester mode');
       return <String, dynamic>{};
     }
 
@@ -121,9 +123,7 @@ class EssayRemoteDataSourceImpl implements EssayRemoteDataSource {
       final jsonResp = response.data as Map<String, dynamic>;
       return jsonResp['data'] as Map<String, dynamic>;
     } on DioException catch (error) {
-      throw Exception(
-        _extractErrorMessage(error, 'Gagal mengirim jawaban essay'),
-      );
+      throw Exception(dioErrorMessage(error, 'Gagal mengirim jawaban essay'));
     }
   }
 
@@ -132,12 +132,12 @@ class EssayRemoteDataSourceImpl implements EssayRemoteDataSource {
     required String lessonId,
     required List<Map<String, dynamic>> answers,
   }) async {
-    print(
+    logDebug(
       '[ESSAY][REMOTE][AUTOSAVE] lessonId=$lessonId tester=${OfflineTestMode.describeContext()}',
     );
 
     if (OfflineTestMode.isActive()) {
-      print('[ESSAY][REMOTE][AUTOSAVE] blocked by tester mode');
+      logDebug('[ESSAY][REMOTE][AUTOSAVE] blocked by tester mode');
       return;
     }
 
@@ -147,21 +147,7 @@ class EssayRemoteDataSourceImpl implements EssayRemoteDataSource {
       return;
     } on DioException catch (error) {
       // don't fail hard on autosave; just log or rethrow if needed
-      throw Exception(
-        _extractErrorMessage(error, 'Gagal menyimpan draft essay'),
-      );
+      throw Exception(dioErrorMessage(error, 'Gagal menyimpan draft essay'));
     }
-  }
-
-  String _extractErrorMessage(DioException error, String fallback) {
-    final data = error.response?.data;
-    if (data is Map<String, dynamic>) {
-      final message = data['message']?.toString().trim();
-      if (message != null && message.isNotEmpty) {
-        return message;
-      }
-    }
-
-    return fallback;
   }
 }

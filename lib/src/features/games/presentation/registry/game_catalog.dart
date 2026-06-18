@@ -24,5 +24,29 @@ class GameCatalog {
       accent: Color(0xFFEE7B30),
       route: AppRoutes.game2048,
     ),
+    MiniGame(
+      id: GameIds.schulte,
+      title: 'Tabel Schulte',
+      description: 'Sentuh angka 1–25 secepat mungkin. Latih fokus & kecepatan.',
+      icon: Icons.grid_on_rounded,
+      accent: Color(0xFF3DA9A3),
+      route: AppRoutes.gameSchulte,
+    ),
+    MiniGame(
+      id: GameIds.stackTower,
+      title: 'Stack Tower',
+      description: 'Ketuk untuk menumpuk balok setinggi mungkin. Jangan meleset!',
+      icon: Icons.layers_rounded,
+      accent: Color(0xFF6C5CE7),
+      route: AppRoutes.gameStackTower,
+    ),
+    MiniGame(
+      id: GameIds.flappy,
+      title: 'Flappy',
+      description: 'Ketuk untuk terbang, lewati celah pipa sebanyak mungkin.',
+      icon: Icons.flutter_dash,
+      accent: Color(0xFF4AA8FF),
+      route: AppRoutes.gameFlappy,
+    ),
   ];
 }

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
+import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
 /// Row of quick shortcuts to the most useful destinations. Surfaces actions
@@ -26,6 +27,13 @@ class HomeQuickActions extends StatelessWidget {
         label: 'Kursus',
         color: AppColors.brandPrimary,
         onTap: onShowCourses,
+      ),
+      // Central hub for discussions across all enrolled courses.
+      _QuickAction(
+        icon: Icons.forum_rounded,
+        label: 'Diskusi',
+        color: const Color(0xFF3B82F6),
+        onTap: () => context.push(AppRoutes.discussionHub),
       ),
       // Replaces "Tersimpan" (already reachable from the bottom nav) with an
       // entry point into the Games Hub for a refreshing break.
@@ -84,6 +92,7 @@ class _QuickAction extends StatelessWidget {
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(18),
                 border: Border.all(color: AppColors.borderSubtle),
+                boxShadow: AppShadows.xs,
               ),
               child: Center(
                 child: Container(
@@ -102,7 +111,7 @@ class _QuickAction extends StatelessWidget {
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textSecondary,

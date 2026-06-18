@@ -6,6 +6,7 @@ import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/aut
 import 'package:lms_mobile_app/src/features/courses/presentation/screens/course_list_screen.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/screens/saved_courses_screen.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/screens/home_screen.dart';
+import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_dashboard_screen.dart';
 import 'package:lms_mobile_app/src/shared/widgets/bottom_nav_bar.dart';
 
 class MainScreen extends StatefulWidget {
@@ -26,16 +27,20 @@ class _MainScreenState extends State<MainScreen> {
     _selectedIndex = widget.initialTab;
   }
 
-  List<Widget> _buildScreens(String role) {
+  List<Widget> _buildScreens(String role, {required bool canManage}) {
     return [
-      HomeScreen(
-        accountRole: role,
-        onShowCourses: () {
-          setState(() {
-            _selectedIndex = 1;
-          });
-        },
-      ),
+      // Instructors/admins get an action-oriented dashboard; participants get
+      // the learning home.
+      canManage
+          ? const InstructorDashboardScreen()
+          : HomeScreen(
+              accountRole: role,
+              onShowCourses: () {
+                setState(() {
+                  _selectedIndex = 1;
+                });
+              },
+            ),
       const CourseListScreen(),
       const SavedCoursesScreen(),
       const ProfileScreen(),
@@ -47,7 +52,12 @@ class _MainScreenState extends State<MainScreen> {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         final role = state is AuthSuccess ? state.user.role : 'participant';
-        final screens = _buildScreens(role);
+        final canManage =
+            state is AuthSuccess &&
+            (state.user.hasRole('instructor') ||
+                state.user.hasRole('admin') ||
+                state.user.hasRole('super-admin'));
+        final screens = _buildScreens(role, canManage: canManage);
 
         return Scaffold(
           body: screens[_selectedIndex],

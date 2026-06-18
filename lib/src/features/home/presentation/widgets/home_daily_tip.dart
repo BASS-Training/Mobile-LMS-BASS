@@ -31,7 +31,7 @@ class HomeDailyTip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: AppColors.textPrimary,
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(22),
         ),
         child: Row(
@@ -57,12 +57,12 @@ class HomeDailyTip extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      const Text(
+                      Text(
                         'Tips Hari Ini',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
-                          color: Colors.white,
+                          color: AppColors.textPrimary,
                         ),
                       ),
                       const SizedBox(width: 6),
@@ -75,7 +75,7 @@ class HomeDailyTip extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 13,
                       height: 1.5,
-                      color: Colors.white.withValues(alpha: 0.85),
+                      color: AppColors.textPrimary.withValues(alpha: 0.85),
                     ),
                   ),
                 ],

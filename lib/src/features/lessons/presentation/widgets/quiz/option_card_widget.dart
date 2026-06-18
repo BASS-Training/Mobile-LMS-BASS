@@ -36,13 +36,13 @@ class OptionCardWidget extends StatelessWidget {
                         AppColors.red.withValues(alpha: 0.14),
                         AppColors.tomato.withValues(alpha: 0.12),
                       ]
-                    : [Colors.white, const Color(0xFFF9FAFF)],
+                    : [AppColors.surface, AppColors.surface],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isSelected ? AppColors.red : Colors.grey[300]!,
+                color: isSelected ? AppColors.red : AppColors.borderDefault,
                 width: isSelected ? 2 : 1,
               ),
             ),
@@ -54,9 +54,9 @@ class OptionCardWidget extends StatelessWidget {
                   height: 28,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isSelected ? AppColors.red : Colors.white,
+                    color: isSelected ? AppColors.red : AppColors.surfaceMuted,
                     border: Border.all(
-                      color: isSelected ? AppColors.red : AppColors.pearl,
+                      color: isSelected ? AppColors.red : AppColors.borderDefault,
                       width: 1.5,
                     ),
                   ),
@@ -66,7 +66,7 @@ class OptionCardWidget extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
-                        color: isSelected ? Colors.white : AppColors.slate,
+                        color: isSelected ? Colors.white : AppColors.textSecondary,
                       ),
                     ),
                   ),
@@ -77,7 +77,7 @@ class OptionCardWidget extends StatelessWidget {
                     option,
                     style: TextStyle(
                       fontSize: 14,
-                      color: isSelected ? AppColors.red : AppColors.charcoal,
+                      color: isSelected ? AppColors.red : AppColors.textPrimary,
                       fontWeight: isSelected
                           ? FontWeight.w600
                           : FontWeight.w500,

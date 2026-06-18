@@ -19,6 +19,8 @@ class LessonRouteResolver {
         return AppRoutes.zoomLessonDetail;
       case 'case_study':
         return AppRoutes.caseStudyLessonDetail;
+      case 'feedback':
+        return AppRoutes.feedbackLessonDetail;
       case 'text':
       default:
         return AppRoutes.textLessonDetail;

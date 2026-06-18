@@ -11,12 +11,16 @@ class CourseLessonTile extends StatelessWidget {
   final int lessonIndexInSection;
   final int overallLessonIndex;
 
+  /// Instructors/admins may open any lesson regardless of completion order.
+  final bool unlockAll;
+
   const CourseLessonTile({
     super.key,
     required this.lesson,
     required this.course,
     required this.lessonIndexInSection,
     required this.overallLessonIndex,
+    this.unlockAll = false,
   });
 
   Color _getLessonTypeColor(String type) {
@@ -35,6 +39,8 @@ class CourseLessonTile extends StatelessWidget {
         return const Color(0xFF4F46E5);
       case 'case_study':
         return const Color(0xFFD97706);
+      case 'feedback':
+        return const Color(0xFF4AA8FF);
       default:
         return AppColors.violet;
     }
@@ -56,6 +62,8 @@ class CourseLessonTile extends StatelessWidget {
         return Icons.videocam_rounded;
       case 'case_study':
         return Icons.assignment_rounded;
+      case 'feedback':
+        return Icons.rate_review_rounded;
       default:
         return Icons.menu_book_rounded;
     }
@@ -63,7 +71,7 @@ class CourseLessonTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isUnlocked = course.isLessonUnlocked(lesson);
+    final bool isUnlocked = unlockAll || course.isLessonUnlocked(lesson);
     final bool isCompleted = lesson.isCompleted;
     final Color typeColor = isUnlocked
         ? _getLessonTypeColor(lesson.type)
@@ -72,7 +80,11 @@ class CourseLessonTile extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: isCompleted ? const Color(0xFFF4FBF6) : Colors.white,
+        color: isCompleted
+            ? (AppColors.isDark
+                  ? const Color(0xFF15211A)
+                  : const Color(0xFFF4FBF6))
+            : AppColors.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: isCompleted

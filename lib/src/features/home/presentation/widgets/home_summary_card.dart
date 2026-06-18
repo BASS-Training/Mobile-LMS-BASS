@@ -19,10 +19,10 @@ class HomeSummaryCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppMeasures.paddingLarge),
       child: Container(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(color: AppColors.borderSubtle),
           boxShadow: AppShadows.sm,
         ),
@@ -30,32 +30,32 @@ class HomeSummaryCard extends StatelessWidget {
           children: [
             ProgressRing(
               percent: stats.overallProgressPercentage / 100.0,
-              size: 92,
-              strokeWidth: 9,
+              size: 72,
+              strokeWidth: 7,
               center: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   AnimatedCount(
                     value: stats.overallProgressPercentage,
                     formatter: (v) => '$v%',
-                    style: const TextStyle(
-                      fontSize: 20,
+                    style: TextStyle(
+                      fontSize: 17,
                       fontWeight: FontWeight.w800,
                       color: AppColors.textPrimary,
                       height: 1.0,
                     ),
                   ),
-                  const Text(
+                  Text(
                     'progres',
                     style: TextStyle(
-                      fontSize: 10,
+                      fontSize: 9,
                       color: AppColors.textTertiary,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(width: 18),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 children: [
@@ -109,7 +109,7 @@ class _MetricRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const valueStyle = TextStyle(
+    final valueStyle = TextStyle(
       fontSize: 13.5,
       fontWeight: FontWeight.w800,
       color: AppColors.textPrimary,
@@ -117,19 +117,19 @@ class _MetricRow extends StatelessWidget {
     return Row(
       children: [
         Container(
-          width: 30,
-          height: 30,
+          width: 28,
+          height: 28,
           decoration: BoxDecoration(
             color: accent.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(9),
+            borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(icon, color: accent, size: 16),
+          child: Icon(icon, color: accent, size: 15),
         ),
         const SizedBox(width: 10),
         Expanded(
           child: Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12.5,
               color: AppColors.textSecondary,
             ),
@@ -148,8 +148,8 @@ class _MetricDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(vertical: 9),
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 6),
       child: Divider(height: 1, thickness: 1, color: AppColors.borderSubtle),
     );
   }

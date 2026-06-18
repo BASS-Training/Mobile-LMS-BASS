@@ -54,15 +54,9 @@ class QuizQuestionsWidget extends StatelessWidget {
           // Question card
           Container(
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Colors.white, Color(0xFFFDFDFF)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: AppColors.surface,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: AppColors.pearl.withValues(alpha: 0.85),
-              ),
+              border: Border.all(color: AppColors.borderSubtle),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.05),
@@ -113,10 +107,10 @@ class QuizQuestionsWidget extends StatelessWidget {
                         Expanded(
                           child: Text(
                             'Pertanyaan ${currentQuestionIndex + 1} dari ${quiz.questions.length}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
-                              color: AppColors.charcoal,
+                              color: AppColors.textPrimary,
                             ),
                           ),
                         ),
@@ -127,10 +121,10 @@ class QuizQuestionsWidget extends StatelessWidget {
 
                   Text(
                     question.text,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.charcoal,
+                      color: AppColors.textPrimary,
                       height: 1.5,
                     ),
                   ),

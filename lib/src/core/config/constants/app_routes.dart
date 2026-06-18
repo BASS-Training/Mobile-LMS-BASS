@@ -20,6 +20,10 @@ class AppRoutes {
   static const String certificates = '/certificates';
   static const String profile = '/profile';
   static const String joinClass = '/join-class';
+  static const String notifications = '/notifications-center';
+  static const String discussionHub = '/discussions';
+  static const String discussionThread = '/discussion-thread';
+  static const String achievements = '/achievements';
 
   // Course Details
   static const String courseDetail = '/course-detail';
@@ -35,6 +39,7 @@ class AppRoutes {
   static const String imageLessonDetail = '/lesson-image-detail';
   static const String zoomLessonDetail = '/lesson-zoom-detail';
   static const String caseStudyLessonDetail = '/lesson-case-study-detail';
+  static const String feedbackLessonDetail = '/lesson-feedback-detail';
 
   // Result Details
   static const String quizResultDetail = '/quiz-result-detail';
@@ -45,7 +50,18 @@ class AppRoutes {
   static const String certificateDetail = '/certificate-detail';
   static const String certificateList = '/certificate-list';
 
+  // Instructor / admin
+  static const String instructorParticipants = '/instructor/participants';
+  static const String instructorParticipantDetail =
+      '/instructor/participant-detail';
+  static const String instructorGradingQueue = '/instructor/grading-queue';
+  static const String instructorEssayGrading = '/instructor/grade-essay';
+  static const String instructorCaseStudyGrading = '/instructor/grade-case-study';
+
   // Games
   static const String gamesHub = '/games';
   static const String game2048 = '/games/2048';
+  static const String gameSchulte = '/games/schulte';
+  static const String gameStackTower = '/games/stack-tower';
+  static const String gameFlappy = '/games/flappy';
 }

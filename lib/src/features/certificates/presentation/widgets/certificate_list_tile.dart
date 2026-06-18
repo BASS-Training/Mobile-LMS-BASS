@@ -56,7 +56,7 @@ class CertificateListTile extends StatelessWidget {
                       course.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
                         color: AppColors.textPrimary,
@@ -65,13 +65,13 @@ class CertificateListTile extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Row(
-                      children: const [
-                        Icon(
+                      children: [
+                        const Icon(
                           Icons.verified_rounded,
                           size: 14,
                           color: AppColors.success,
                         ),
-                        SizedBox(width: 4),
+                        const SizedBox(width: 4),
                         Text(
                           'Terverifikasi · Selesai 100%',
                           style: TextStyle(
@@ -84,7 +84,7 @@ class CertificateListTile extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(
+              Icon(
                 Icons.chevron_right_rounded,
                 color: AppColors.textTertiary,
               ),

@@ -14,6 +14,12 @@ import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_quick
 import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_recommended_courses.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_skeleton.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_summary_card.dart';
+import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_welcome_banner.dart';
+import 'package:lms_mobile_app/src/core/di/injector.dart';
+import 'package:lms_mobile_app/src/features/achievements/data/achievement_store.dart';
+import 'package:lms_mobile_app/src/features/achievements/domain/achievement_catalog.dart';
+import 'package:lms_mobile_app/src/features/achievements/presentation/widgets/achievement_celebration.dart';
+import 'package:lms_mobile_app/src/features/notifications/presentation/cubit/notifications_cubit.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
 import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
@@ -34,11 +40,17 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _searchController = TextEditingController();
+  final _notifCubit = ServiceLocator().locator<NotificationsCubit>();
+  final _achievementStore = ServiceLocator().locator<AchievementStore>();
+
+  /// Guards the once-per-screen-mount achievement celebration check.
+  bool _celebrationChecked = false;
 
   @override
   void initState() {
     super.initState();
     context.read<CourseBloc>().add(const GetCoursesEvent());
+    _notifCubit.refreshUnreadCount();
   }
 
   @override
@@ -69,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w800,
               color: AppColors.textPrimary,
@@ -160,10 +172,25 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _showComingSoon() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Notifikasi akan segera hadir!')),
-    );
+  /// Once stats are available, celebrate any achievement tier the learner has
+  /// reached since they last saw it. Runs once per mount; the store seeds
+  /// silently on first ever run so pre-existing progress isn't celebrated.
+  void _maybeCelebrate(HomeStatsEntity stats) {
+    if (_celebrationChecked) return;
+    _celebrationChecked = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final unlocked =
+          await _achievementStore.detectNewlyUnlocked(buildAchievements(stats));
+      if (!mounted) return;
+      await showAchievementCelebrations(context, unlocked);
+    });
+  }
+
+  Future<void> _openNotifications() async {
+    await context.push(AppRoutes.notifications);
+    // Marking items read on the notification screen updates the shared singleton;
+    // refresh once more in case anything changed server-side meanwhile.
+    await _notifCubit.refreshUnreadCount();
   }
 
   @override
@@ -180,9 +207,14 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                HomeHeader(
-                  searchController: _searchController,
-                  onNotificationsTap: _showComingSoon,
+                BlocBuilder<NotificationsCubit, NotificationsState>(
+                  bloc: _notifCubit,
+                  buildWhen: (a, b) => a.unreadCount != b.unreadCount,
+                  builder: (context, state) => HomeHeader(
+                    searchController: _searchController,
+                    unreadCount: state.unreadCount,
+                    onNotificationsTap: _openNotifications,
+                  ),
                 ),
                 if (widget.accountRole == 'instructor')
                   Padding(
@@ -231,13 +263,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
         final ownedCourses = state.courses.where((c) => c.isOwned).toList();
         final stats = HomeStatsEntity.fromCourses(ownedCourses);
+        _maybeCelebrate(stats);
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             FadeSlideIn(child: HomeContinueLearning(courses: ownedCourses)),
-            const SizedBox(height: 16),
-            FadeSlideIn(delayMs: 60, child: HomeSummaryCard(stats: stats)),
+            // New learners (no owned course) see a warm welcome instead of an
+            // all-zero progress summary.
+            if (ownedCourses.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              FadeSlideIn(delayMs: 60, child: HomeSummaryCard(stats: stats)),
+            ] else ...[
+              const SizedBox(height: 4),
+              const FadeSlideIn(delayMs: 60, child: HomeWelcomeBanner()),
+            ],
             const SizedBox(height: 18),
             FadeSlideIn(
               delayMs: 100,

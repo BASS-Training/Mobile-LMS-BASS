@@ -38,7 +38,7 @@ class _EssayResultDetailScreenState extends State<EssayResultDetailScreen> {
       backgroundColor: AppColors.background,
       appBar: const BrandAppBar(title: 'Detail Hasil Essay'),
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [AppColors.surface, AppColors.background],
             begin: Alignment.topCenter,
@@ -83,7 +83,7 @@ class _EssayResultDetailScreenState extends State<EssayResultDetailScreen> {
                     child: _buildOverviewBanner(_selectedAttempt),
                   ),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'Pertanyaan dan Jawaban',
                     style: TextStyle(
                       fontSize: 16,
@@ -204,14 +204,14 @@ class _EssayResultDetailScreenState extends State<EssayResultDetailScreen> {
         children: [
           Text(
             label,
-            style: const TextStyle(fontSize: 11, color: AppColors.slate),
+            style: TextStyle(fontSize: 11, color: AppColors.slate),
           ),
           const SizedBox(height: 8),
           Text(
             value,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w800,
               color: AppColors.charcoal,
@@ -273,7 +273,7 @@ class _EssayResultDetailScreenState extends State<EssayResultDetailScreen> {
           const SizedBox(height: 8),
           Text(
             question.questionText,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 15,
               height: 1.5,
               fontWeight: FontWeight.w700,
@@ -293,7 +293,7 @@ class _EssayResultDetailScreenState extends State<EssayResultDetailScreen> {
               question.writtenAnswer?.trim().isNotEmpty == true
                   ? question.writtenAnswer!.trim()
                   : 'Belum ada jawaban tersimpan',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 height: 1.5,
                 color: AppColors.charcoal,

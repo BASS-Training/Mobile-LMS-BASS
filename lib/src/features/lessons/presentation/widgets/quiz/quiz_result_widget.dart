@@ -90,15 +90,9 @@ class QuizResultWidget extends StatelessWidget {
             delayMs: 70,
             child: Container(
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Colors.white, Color(0xFFF9FAFF)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                color: AppColors.surface,
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(
-                  color: AppColors.pearl.withValues(alpha: 0.8),
-                ),
+                border: Border.all(color: AppColors.borderSubtle),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.05),
@@ -112,7 +106,7 @@ class QuizResultWidget extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Hasil Kuis Anda',
                       style: TextStyle(
                         fontSize: 18,

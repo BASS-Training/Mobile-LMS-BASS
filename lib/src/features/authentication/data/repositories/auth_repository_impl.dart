@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:lms_mobile_app/src/core/network/dio_error.dart';
 import 'package:lms_mobile_app/src/core/config/constants/api_endpoints.dart';
 import 'package:lms_mobile_app/src/core/utils/offline_test_mode.dart';
 import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
@@ -31,7 +32,9 @@ class AuthRepositoryImpl implements AuthRepository {
     }
 
     if (_canUseOfflineTestAccount(cleanedEmail, password)) {
-      _log('login -> offline test account used (${OfflineTestMode.describeContext()})');
+      _log(
+        'login -> offline test account used (${OfflineTestMode.describeContext()})',
+      );
       final user = _buildOfflineTestUser();
       await LocalStorage.saveAuthSession(
         token: OfflineTestMode.offlineToken,
@@ -49,7 +52,7 @@ class AuthRepositoryImpl implements AuthRepository {
       final payload = _decodeResponse(response.data);
       return _persistSessionFromPayload(payload);
     } on DioException catch (error) {
-      throw Exception(_extractMessageFromException(error, 'Login gagal.'));
+      throw Exception(friendlyDioMessage(error, 'Login gagal.'));
     }
   }
 
@@ -89,7 +92,7 @@ class AuthRepositoryImpl implements AuthRepository {
       final payload = _decodeResponse(response.data);
       return _persistSessionFromPayload(payload);
     } on DioException catch (error) {
-      throw Exception(_extractMessageFromException(error, 'Register gagal.'));
+      throw Exception(friendlyDioMessage(error, 'Register gagal.'));
     }
   }
 
@@ -199,19 +202,6 @@ class AuthRepositoryImpl implements AuthRepository {
       return body.map((key, value) => MapEntry(key.toString(), value));
     }
     return <String, dynamic>{};
-  }
-
-  String _extractMessageFromException(DioException error, String fallback) {
-    final data = error.response?.data;
-    if (data is Map<String, dynamic>) {
-      final message = data['message']?.toString().trim();
-      if (message != null && message.isNotEmpty) {
-        return message;
-      }
-    }
-
-    final message = error.message?.trim();
-    return message != null && message.isNotEmpty ? message : fallback;
   }
 
   bool _canUseOfflineTestAccount(String email, String password) {

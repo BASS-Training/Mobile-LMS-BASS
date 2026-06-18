@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_actions.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -94,9 +95,7 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
   }
 
   List<String> get _imageUrls {
-    final urls = widget.lesson.imageUrls
-        .where((u) => u.isNotEmpty)
-        .toList();
+    final urls = widget.lesson.imageUrls.where((u) => u.isNotEmpty).toList();
     // Fall back to documentUrl / content if no imageUrls array
     if (urls.isEmpty) {
       final fallback = widget.lesson.documentUrl?.trim() ?? '';
@@ -126,11 +125,14 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
         currentLessonIndex: widget.lessonIndex,
         onSelectLesson: (selectedLesson, index) {
           final route = LessonRouteResolver.routeForType(selectedLesson.type);
-          context.push(route, extra: {
-            'lesson': selectedLesson,
-            'course': widget.course,
-            'lessonIndex': index,
-          });
+          context.push(
+            route,
+            extra: {
+              'lesson': selectedLesson,
+              'course': widget.course,
+              'lessonIndex': index,
+            },
+          );
         },
       ),
       appBar: LessonAppBar(
@@ -142,8 +144,7 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
         ),
         gradientColors: const [_accent, _accentDark],
         onBack: () {
-          Navigator.pop(context);
-          context.read<CourseBloc>().add(const RefreshCoursesEvent());
+          popToCourse(context);
         },
         onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
       ),
@@ -198,7 +199,6 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
     );
   }
 
-
   Widget _buildDescriptionCard() {
     return Container(
       width: double.infinity,
@@ -206,7 +206,9 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.borderDefault.withValues(alpha: 0.8)),
+        border: Border.all(
+          color: AppColors.borderDefault.withValues(alpha: 0.8),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -231,7 +233,7 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
           Expanded(
             child: Text(
               widget.lesson.content.trim(),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 height: 1.5,
                 color: AppColors.textSecondary,
@@ -248,7 +250,9 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AppColors.borderDefault.withValues(alpha: 0.9)),
+        border: Border.all(
+          color: AppColors.borderDefault.withValues(alpha: 0.9),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
@@ -346,7 +350,7 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
             child: CircularProgressIndicator(
               value: loadingProgress.expectedTotalBytes != null
                   ? loadingProgress.cumulativeBytesLoaded /
-                      loadingProgress.expectedTotalBytes!
+                        loadingProgress.expectedTotalBytes!
                   : null,
               color: _accent,
               strokeWidth: 2.5,
@@ -357,8 +361,11 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.broken_image_rounded,
-                  size: 48, color: AppColors.textSecondary.withValues(alpha: 0.5)),
+              Icon(
+                Icons.broken_image_rounded,
+                size: 48,
+                color: AppColors.textSecondary.withValues(alpha: 0.5),
+              ),
               const SizedBox(height: 8),
               Text(
                 'Gambar tidak dapat dimuat',
@@ -413,7 +420,9 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AppColors.borderDefault.withValues(alpha: 0.9)),
+        border: Border.all(
+          color: AppColors.borderDefault.withValues(alpha: 0.9),
+        ),
       ),
       child: Center(
         child: Padding(
@@ -427,7 +436,7 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
                 color: AppColors.textSecondary.withValues(alpha: 0.4),
               ),
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 'Gambar belum tersedia',
                 style: TextStyle(
                   fontSize: 15,
@@ -450,5 +459,4 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
       ),
     );
   }
-
 }

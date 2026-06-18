@@ -157,9 +157,9 @@ class QuizIntroWidget extends StatelessWidget {
           ),
           if (quiz.completed) const SizedBox(height: 12),
           if (quiz.completed)
-            const Text(
+            Text(
               'Anda telah menyelesaikan kuis ini. Tidak dapat diulang lagi.',
-              style: TextStyle(color: AppColors.slate),
+              style: TextStyle(color: AppColors.textSecondary),
             ),
           const SizedBox(height: 16),
         ],

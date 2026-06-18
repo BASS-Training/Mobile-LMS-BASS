@@ -6,12 +6,15 @@ class AppColors {
   // ==========================================
   static const Color black = Color(0xFF000000);
   static const Color white = Color(0xFFFFFFFF);
-  static const Color mist = Color(0xFFF8F9FA);
   static const Color quizBackgroundStart = Color(0xFFF8FAFF);
   static const Color quizBackgroundEnd = Color(0xFFF1F4FF);
-  static const Color pearl = Color(0xFFE0E0E0);
-  static const Color charcoal = Color(0xFF2D3436);
-  static const Color slate = Color(0xFF636E72);
+  // These four legacy neutrals are widely used as text/border/background, so
+  // they are theme-aware (see _pick + brightness defined in the semantic
+  // section below) to adapt for dark mode.
+  static Color get mist => _pick(const Color(0xFFF8F9FA), const Color(0xFF1C1E21));
+  static Color get pearl => _pick(const Color(0xFFE0E0E0), const Color(0xFF3A3E44));
+  static Color get charcoal => _pick(const Color(0xFF2D3436), const Color(0xFFF1F2F4));
+  static Color get slate => _pick(const Color(0xFF636E72), const Color(0xFFAEB4BD));
   static const Color silver = Color(0xFFB2BEC3);
   static const Color graphite = Color(0xFF1F2937);
   static const Color stone = Color(0xFF6B7280);
@@ -292,25 +295,50 @@ class AppColors {
   /// Lighter brand shade for subtle highlights.
   static const Color brandPrimaryLight = Color(0xFFFF4D3D);
 
+  // ==========================================
+  // THEME-AWARE NEUTRAL TOKENS (light / dark)
+  // ------------------------------------------
+  // These resolve at runtime based on [brightness]. The app sets [brightness]
+  // and remounts on theme change (see MainApp), so every widget reading these
+  // getters repaints with the correct palette. Brand & status colours stay
+  // fixed (const) — only neutrals/surfaces/text/borders flip for dark mode.
+  // ==========================================
+
+  /// Current app brightness. Set by the root before building MaterialApp.
+  static Brightness brightness = Brightness.light;
+  static bool get isDark => brightness == Brightness.dark;
+
+  static Color _pick(Color light, Color dark) => isDark ? dark : light;
+
   /// Soft red-tinted surface for chips, badges and highlighted cards.
-  static const Color brandSurface = Color(0xFFFFF1EF);
+  static Color get brandSurface =>
+      _pick(const Color(0xFFFFF1EF), const Color(0xFF36211F));
 
   /// Even softer brand wash for large section backgrounds.
-  static const Color brandSurfaceAlt = Color(0xFFFFF7F5);
+  static Color get brandSurfaceAlt =>
+      _pick(const Color(0xFFFFF7F5), const Color(0xFF2A201F));
 
   // Surfaces & backgrounds
-  static const Color background = Color(0xFFF6F7F9);
-  static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceMuted = Color(0xFFF1F3F6);
+  static Color get background =>
+      _pick(const Color(0xFFF6F7F9), const Color(0xFF121316));
+  static Color get surface =>
+      _pick(const Color(0xFFFFFFFF), const Color(0xFF1C1E21));
+  static Color get surfaceMuted =>
+      _pick(const Color(0xFFF1F3F6), const Color(0xFF2A2D31));
 
   // Text
-  static const Color textPrimary = Color(0xFF1A1C1E);
-  static const Color textSecondary = Color(0xFF5C636E);
-  static const Color textTertiary = Color(0xFF9AA0A6);
+  static Color get textPrimary =>
+      _pick(const Color(0xFF1A1C1E), const Color(0xFFF1F2F4));
+  static Color get textSecondary =>
+      _pick(const Color(0xFF5C636E), const Color(0xFFAEB4BD));
+  static Color get textTertiary =>
+      _pick(const Color(0xFF9AA0A6), const Color(0xFF7C828B));
 
   // Borders & dividers
-  static const Color borderSubtle = Color(0xFFEDEFF2);
-  static const Color borderDefault = Color(0xFFE1E4E9);
+  static Color get borderSubtle =>
+      _pick(const Color(0xFFEDEFF2), const Color(0xFF2C2F34));
+  static Color get borderDefault =>
+      _pick(const Color(0xFFE1E4E9), const Color(0xFF3A3E44));
 
   // Status colors (kept neutral and modern)
   static const Color success = Color(0xFF1FA971);

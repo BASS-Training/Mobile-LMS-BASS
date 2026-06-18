@@ -83,7 +83,7 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              const Center(
+              Center(
                 child: Text(
                   'Punya token kelas?',
                   style: TextStyle(
@@ -94,7 +94,7 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
                 ),
               ),
               const SizedBox(height: 6),
-              const Center(
+              Center(
                 child: Text(
                   'Masukkan token yang kamu dapat dari instruktur untuk membuka akses ke kelas.',
                   textAlign: TextAlign.center,
@@ -106,7 +106,7 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              const Text(
+              Text(
                 'Token Kelas',
                 style: TextStyle(
                   fontSize: 13,
@@ -126,7 +126,7 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
                   controller: _tokenController,
                   textInputAction: TextInputAction.done,
                   onSubmitted: (_) => _submit(),
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Contoh: BASS-2026-XYZ',
                     hintStyle: TextStyle(color: AppColors.textTertiary),
                     prefixIcon: Icon(
@@ -198,9 +198,9 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Icon(Icons.lightbulb_rounded, size: 20, color: AppColors.warning),
-          SizedBox(width: 10),
+        children: [
+          const Icon(Icons.lightbulb_rounded, size: 20, color: AppColors.warning),
+          const SizedBox(width: 10),
           Expanded(
             child: Text(
               'Belum punya token? Hubungi instruktur atau beli kelas di website Bass Training untuk mendapatkannya.',

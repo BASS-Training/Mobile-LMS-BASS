@@ -5,7 +5,7 @@ import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entit
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_entity.dart';
 
 /// Mixin untuk menangani logika navigasi antar lesson (Next/Previous).
-/// Tambahkan mixin ini ke State<T> dari screen lesson Anda.
+/// Tambahkan mixin ini ke `State<T>` dari screen lesson Anda.
 mixin LessonNavigationMixin<T extends StatefulWidget> on State<T> {
   // Memaksa screen yang menggunakan mixin ini untuk menyediakan data course dan index
   CourseEntity get currentCourse;

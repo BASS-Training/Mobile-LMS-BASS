@@ -13,9 +13,9 @@ class QuizPerformanceOverview extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
+        border: Border.all(color: AppColors.borderSubtle),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -45,7 +45,7 @@ class QuizPerformanceOverview extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Expanded(
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -156,14 +156,14 @@ class QuizPerformanceOverview extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             label,
-            style: const TextStyle(fontSize: 11, color: AppColors.slate),
+            style: TextStyle(fontSize: 11, color: AppColors.slate),
           ),
           const SizedBox(height: 4),
           Text(
             value,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.w900,
               color: AppColors.charcoal,

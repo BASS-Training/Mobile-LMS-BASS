@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_actions.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
@@ -71,8 +72,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
   }
 
   void _backToCourse() {
-    Navigator.pop(context);
-    context.read<CourseBloc>().add(const RefreshCoursesEvent());
+    popToCourse(context);
   }
 
   @override
@@ -140,6 +140,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
               if (state.lastAttempt != null) {
                 Navigator.pop(context);
                 Future.delayed(const Duration(milliseconds: 200), () {
+                  if (!context.mounted) return;
                   context.push(
                     AppRoutes.essayResultDetail,
                     extra: state.lastAttempt,
@@ -166,7 +167,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
 
             return SafeArea(
               child: Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [AppColors.surface, AppColors.background],
                     begin: Alignment.topCenter,
@@ -180,7 +181,10 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
                       builder: (context, constraints) {
                         final useDesktopLayout = constraints.maxWidth >= 900;
                         final sidePanel = EssaySidePanelWidget(state: state);
-                        final mainPanel = EssayPanelWidget(state: state, answerController: _answerController);
+                        final mainPanel = EssayPanelWidget(
+                          state: state,
+                          answerController: _answerController,
+                        );
                         final header = EssayPageHeader();
 
                         if (!useDesktopLayout) {
@@ -235,8 +239,6 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
       ),
     );
   }
-
-
 
   Widget _buildDrawer() {
     return LessonDrawer(
@@ -307,11 +309,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
         width: double.infinity,
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [Colors.white, Color(0xFFF9FAFF)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
           boxShadow: [
@@ -343,7 +341,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Deskripsi Lesson',
                     style: TextStyle(
                       fontSize: 13,
@@ -356,7 +354,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
                     description.isNotEmpty
                         ? description
                         : 'Tidak ada deskripsi tambahan untuk lesson ini.',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
                       height: 1.5,
                       color: AppColors.slate,
@@ -370,7 +368,6 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
       ),
     );
   }
-
 
   Widget _buildBottomActionBar(EssayState state) {
     final canGoBackAction =
@@ -572,4 +569,3 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
     );
   }
 }
-  

@@ -79,7 +79,7 @@ class _InstructorCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              const Text(
+              Text(
                 'Instruktur',
                 style: TextStyle(
                   fontSize: 11,
@@ -111,7 +111,7 @@ class _InstructorCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           if (instructors.isEmpty)
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(left: 2),
               child: Text(
                 'Belum ada instruktur',
@@ -189,7 +189,7 @@ class _InstructorTile extends StatelessWidget {
             name,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               height: 1.3,
               fontWeight: FontWeight.w700,
@@ -241,7 +241,7 @@ class _StatCard extends StatelessWidget {
           const SizedBox(width: 10),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11,
               color: AppColors.textTertiary,
             ),
@@ -249,7 +249,7 @@ class _StatCard extends StatelessWidget {
           const Spacer(),
           Text(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w800,
               color: AppColors.textPrimary,

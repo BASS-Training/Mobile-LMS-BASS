@@ -9,10 +9,14 @@ class CourseSectionAccordion extends StatelessWidget {
   final CourseSectionEntity section;
   final CourseEntity course;
 
+  /// When true (instructor/admin), every lesson tile is openable.
+  final bool unlockAll;
+
   const CourseSectionAccordion({
     super.key,
     required this.section,
     required this.course,
+    this.unlockAll = false,
   });
 
   @override
@@ -68,7 +72,7 @@ class CourseSectionAccordion extends StatelessWidget {
                   children: [
                     Text(
                       section.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
@@ -79,7 +83,7 @@ class CourseSectionAccordion extends StatelessWidget {
                       section.description,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
@@ -108,7 +112,7 @@ class CourseSectionAccordion extends StatelessWidget {
                 const SizedBox(height: 5),
                 Text(
                   '$completedCount/$totalCount lesson selesai',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
                     color: AppColors.textSecondary,
                   ),
@@ -127,6 +131,7 @@ class CourseSectionAccordion extends StatelessWidget {
                     course: course,
                     lessonIndexInSection: entry.key,
                     overallLessonIndex: course.allLessons.indexOf(entry.value),
+                    unlockAll: unlockAll,
                   );
                 }).toList(),
               ),

@@ -16,13 +16,9 @@ class EssaySidePanelWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Colors.white, Color(0xFFF6F8FF)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
+        border: Border.all(color: AppColors.borderSubtle),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
@@ -34,7 +30,7 @@ class EssaySidePanelWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Progress Essay',
             style: TextStyle(
               fontSize: 13,
@@ -55,14 +51,14 @@ class EssaySidePanelWidget extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             '${progress.toStringAsFixed(0)}% • Soal ${state.currentQuestionIndex + 1} dari ${state.totalQuestions}',
-            style: const TextStyle(fontSize: 12, color: AppColors.slate),
+            style: TextStyle(fontSize: 12, color: AppColors.slate),
           ),
           const SizedBox(height: 4),
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: const Color(0xFFFFF1F0),
+              color: AppColors.brandSurface,
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
@@ -75,7 +71,7 @@ class EssaySidePanelWidget extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             'Karakter: ${state.currentAnswer.length}',
-            style: const TextStyle(fontSize: 12, color: AppColors.slate),
+            style: TextStyle(fontSize: 12, color: AppColors.slate),
           ),
         ],
       ),

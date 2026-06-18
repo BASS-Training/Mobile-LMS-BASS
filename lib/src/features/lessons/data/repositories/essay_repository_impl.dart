@@ -1,4 +1,5 @@
 import 'package:lms_mobile_app/src/core/utils/offline_test_mode.dart';
+import 'package:lms_mobile_app/src/core/utils/app_logger.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/datasources/essay_remote_datasource.dart';
 import '../../domain/repositories/essay_repository.dart';
 import '../datasources/essay_local_data_source.dart';
@@ -16,12 +17,12 @@ class EssayRepositoryImpl implements EssayRepository {
     String content,
   ) async {
     try {
-      print(
+      logDebug(
         '[ESSAY][FETCH] lessonId=$lessonId tester=${OfflineTestMode.describeContext()} remoteAvailable=${remoteDataSource != null}',
       );
 
       if (!_isOfflineTestSession() && remoteDataSource != null) {
-        print('[ESSAY][FETCH] using remote API for lessonId=$lessonId');
+        logDebug('[ESSAY][FETCH] using remote API for lessonId=$lessonId');
         final questions = await remoteDataSource!.getQuestionsByLessonId(
           lessonId,
         );
@@ -33,7 +34,7 @@ class EssayRepositoryImpl implements EssayRepository {
       // fallback ke local dummy saat API belum tersedia
     }
 
-    print('[ESSAY][FETCH] using local dummy for lessonId=$lessonId');
+    logDebug('[ESSAY][FETCH] using local dummy for lessonId=$lessonId');
     return localDataSource.getQuestions(lessonId, content);
   }
 
@@ -136,7 +137,7 @@ class EssayRepositoryImpl implements EssayRepository {
     }
 
     if (!_isOfflineTestSession() && remoteDataSource != null) {
-      print(
+      logDebug(
         '[ESSAY][SUBMIT] using remote API lessonId=$lessonId tester=${OfflineTestMode.describeContext()}',
       );
       await remoteDataSource!.submitEssayAnswers(
@@ -145,7 +146,7 @@ class EssayRepositoryImpl implements EssayRepository {
         userEmail: userEmail,
       );
     } else {
-      print(
+      logDebug(
         '[ESSAY][SUBMIT] using local storage only lessonId=$lessonId tester=${OfflineTestMode.describeContext()}',
       );
     }

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
-import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
-import 'package:lms_mobile_app/src/shared/widgets/achievement_artwork.dart';
-import 'package:lms_mobile_app/src/shared/widgets/learning_artwork.dart';
-import 'package:lms_mobile_app/src/shared/widgets/quiz_artwork.dart';
+
+/// Onboarding uses Poppins (geometric-rounded sans) for a friendlier, more
+/// polished feel that matches the reference designs.
+const String _kFont = 'Poppins';
 
 class IntroScreen extends StatefulWidget {
   const IntroScreen({super.key});
@@ -21,24 +22,33 @@ class _IntroScreenState extends State<IntroScreen>
   int _pageIndex = 0;
   double _page = 0;
 
+  // One continuous warm gradient spans all pages. Swiping slides a window
+  // across it, so transitions are always a smooth gradasi (no hard seam) while
+  // still clearly moving. Kept soft/pastel so the red figures stay readable.
+  static const List<Color> _washColors = [
+    Color(0xFFFFCDBE), // coral  (page 1)
+    Color(0xFFFFE0C0), // amber  (page 2)
+    Color(0xFFFFCBC8), // rose   (page 3)
+  ];
+
   static const List<_IntroSlide> _slides = [
     _IntroSlide(
       title: 'Ribuan Kelas\ndalam Genggaman',
       description:
           'Jelajahi beragam kursus — dari bisnis, sains, hingga seni — yang tersusun rapi dari dasar sampai mahir. Pilih topikmu, kami siapkan jalurnya.',
-      art: _IntroArt.learning,
+      asset: 'assets/illustrations/onboard_learning.svg',
     ),
     _IntroSlide(
       title: 'Pahami, Bukan\nSekadar Hafal',
       description:
           'Setiap kelas dilengkapi kuis interaktif dan esai reflektif, memastikan kamu benar-benar menguasai materi sebelum lanjut.',
-      art: _IntroArt.quiz,
+      asset: 'assets/illustrations/onboard_quiz.svg',
     ),
     _IntroSlide(
       title: 'Pantau Progres,\nRaih Sertifikat',
       description:
           'Lihat perkembangan belajarmu secara langsung dan dapatkan sertifikat resmi setiap kali menuntaskan sebuah kelas.',
-      art: _IntroArt.achievement,
+      asset: 'assets/illustrations/onboard_certificate.svg',
     ),
   ];
 
@@ -81,48 +91,74 @@ class _IntroScreenState extends State<IntroScreen>
 
   @override
   Widget build(BuildContext context) {
+    final media = MediaQuery.of(context);
+    final w = media.size.width;
+    final headerH = media.size.height * 0.42;
+    final maxIndex = _slides.length - 1;
+    // 0..1 scroll fraction → how far the gradient window has travelled.
+    final frac = maxIndex > 0 ? (_page / maxIndex).clamp(0.0, 1.0) : 0.0;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildTopBar(),
-            Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: _slides.length,
-                onPageChanged: (i) => setState(() => _pageIndex = i),
-                itemBuilder: (context, index) {
-                  // Parallax: scale pages by their distance from center.
-                  final delta = (_page - index).abs().clamp(0.0, 1.0);
-                  final scale = 1 - delta * 0.12;
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(24, 4, 24, 8),
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: Transform.scale(
-                            scale: scale,
-                            child: _IntroHero(
-                              slide: _slides[index],
-                              floatAnimation: _floatController,
-                            ),
+      backgroundColor: AppColors.surface,
+      body: Stack(
+        children: [
+          // Continuous gradient header, windowed + translated by scroll so the
+          // colour flows as one smooth gradasi while moving with the swipe.
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: ClipPath(
+              clipper: _HeroCurveClipper(),
+              child: SizedBox(
+                height: headerH,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned(
+                      top: 0,
+                      left: -frac * 2 * w,
+                      width: 3 * w,
+                      height: headerH,
+                      child: const DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: _washColors,
+                            stops: [0.0, 0.5, 1.0],
                           ),
                         ),
-                        const SizedBox(height: 28),
-                        Opacity(
-                          opacity: (1 - delta).clamp(0.0, 1.0),
-                          child: _IntroText(slide: _slides[index]),
-                        ),
-                      ],
+                      ),
                     ),
-                  );
-                },
+                  ],
+                ),
               ),
             ),
-            _buildBottomControls(),
-          ],
-        ),
+          ),
+          // Pages: illustration + copy only (transparent, so the header shows).
+          PageView.builder(
+            controller: _pageController,
+            itemCount: _slides.length,
+            onPageChanged: (i) => setState(() => _pageIndex = i),
+            itemBuilder: (context, index) => _IntroPage(
+              slide: _slides[index],
+              floatAnimation: _floatController,
+            ),
+          ),
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(bottom: false, child: _buildTopBar()),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: SafeArea(top: false, child: _buildBottomControls()),
+          ),
+        ],
       ),
     );
   }
@@ -150,10 +186,11 @@ class _IntroScreenState extends State<IntroScreen>
                 ),
               ),
               const SizedBox(width: 8),
-              const Text(
+              Text(
                 'Bass Training',
                 style: TextStyle(
-                  fontWeight: FontWeight.w800,
+                  fontFamily: _kFont,
+                  fontWeight: FontWeight.w700,
                   color: AppColors.textPrimary,
                   fontSize: 15,
                 ),
@@ -166,11 +203,12 @@ class _IntroScreenState extends State<IntroScreen>
             duration: const Duration(milliseconds: 200),
             child: TextButton(
               onPressed: _isLast ? null : _finishIntro,
-              child: const Text(
+              child: Text(
                 'Lewati',
                 style: TextStyle(
-                  color: AppColors.textTertiary,
-                  fontWeight: FontWeight.w700,
+                  fontFamily: _kFont,
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),
@@ -182,17 +220,17 @@ class _IntroScreenState extends State<IntroScreen>
 
   Widget _buildBottomControls() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-      child: Column(
+      padding: const EdgeInsets.fromLTRB(30, 8, 30, 28),
+      child: Row(
         children: [
+          // Page dots, left-aligned for an airy, reference-clean footer.
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(_slides.length, (i) {
               final active = _pageIndex == i;
               return AnimatedContainer(
                 duration: const Duration(milliseconds: 260),
                 curve: Curves.easeOutCubic,
-                margin: const EdgeInsets.symmetric(horizontal: 3),
+                margin: const EdgeInsets.only(right: 6),
                 width: active ? 22 : 8,
                 height: 8,
                 decoration: BoxDecoration(
@@ -204,44 +242,60 @@ class _IntroScreenState extends State<IntroScreen>
               );
             }),
           ),
-          const SizedBox(height: 22),
-          SizedBox(
-            width: double.infinity,
-            height: 54,
-            child: ElevatedButton(
-              onPressed: _next,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.brandPrimary,
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(18),
-                ),
-              ),
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 250),
-                child: Row(
-                  key: ValueKey<bool>(_isLast),
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      _isLast ? 'Mulai Belajar' : 'Lanjut',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
+          const Spacer(),
+          // A small circular "next" that morphs into a wide CTA on the last slide.
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            transitionBuilder: (child, anim) =>
+                FadeTransition(opacity: anim, child: child),
+            child: _isLast
+                ? SizedBox(
+                    key: const ValueKey('cta'),
+                    height: 56,
+                    child: ElevatedButton(
+                      onPressed: _next,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.brandPrimary,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 26),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Mulai Belajar',
+                            style: TextStyle(
+                              fontFamily: _kFont,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          Icon(Icons.rocket_launch_rounded, size: 19),
+                        ],
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Icon(
-                      _isLast
-                          ? Icons.rocket_launch_rounded
-                          : Icons.arrow_forward_rounded,
-                      size: 19,
+                  )
+                : SizedBox(
+                    key: const ValueKey('next'),
+                    width: 56,
+                    height: 56,
+                    child: ElevatedButton(
+                      onPressed: _next,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.brandPrimary,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        padding: EdgeInsets.zero,
+                        shape: const CircleBorder(),
+                      ),
+                      child: const Icon(Icons.arrow_forward_rounded, size: 22),
                     ),
-                  ],
-                ),
-              ),
-            ),
+                  ),
           ),
         ],
       ),
@@ -249,94 +303,89 @@ class _IntroScreenState extends State<IntroScreen>
   }
 }
 
-enum _IntroArt { learning, quiz, achievement }
-
 class _IntroSlide {
   final String title;
   final String description;
-  final _IntroArt art;
+
+  /// Brand-recolored unDraw illustration (flat-vector SVG) for this slide.
+  final String asset;
 
   const _IntroSlide({
     required this.title,
     required this.description,
-    required this.art,
+    required this.asset,
   });
 }
 
-/// Animated brand-gradient hero panel with floating decorative shapes.
-class _IntroHero extends StatelessWidget {
+/// One page's foreground: the floating illustration and the copy, both pushed
+/// lower and centered, over the shared continuous gradient header behind.
+class _IntroPage extends StatelessWidget {
   final _IntroSlide slide;
   final Animation<double> floatAnimation;
 
-  const _IntroHero({required this.slide, required this.floatAnimation});
+  const _IntroPage({required this.slide, required this.floatAnimation});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: AppColors.brandGradient,
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(40),
-        boxShadow: AppShadows.brandPrimary,
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(40),
-        child: AnimatedBuilder(
-          animation: floatAnimation,
-          builder: (context, _) {
-            final t = floatAnimation.value; // 0..1
-            final bob = (t - 0.5) * 18; // gentle vertical bob
-            return Stack(
-              children: [
-                // Decorative floating circles
-                Positioned(top: 30 + bob, right: -30, child: _glow(120, 0.12)),
-                Positioned(
-                  bottom: -40 - bob,
-                  left: -30,
-                  child: _glow(140, 0.10),
+    final media = MediaQuery.of(context);
+    final topInset = media.padding.top;
+    final illoH = media.size.height * 0.31;
+    // Spacers (5:4) bias the block slightly low to fill the bottom space, while
+    // the fixed 32px gap guarantees the illustration and copy never collide.
+    return Padding(
+      padding: EdgeInsets.only(top: topInset + 40, bottom: 112),
+      child: Column(
+        children: [
+          const Spacer(flex: 5),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 36),
+            child: SizedBox(
+              height: illoH,
+              width: double.infinity,
+              child: AnimatedBuilder(
+                animation: floatAnimation,
+                builder: (context, child) {
+                  final bob = (floatAnimation.value - 0.5) * 14;
+                  return Transform.translate(
+                    offset: Offset(0, bob),
+                    child: child,
+                  );
+                },
+                child: SvgPicture.asset(
+                  slide.asset,
+                  fit: BoxFit.contain,
+                  semanticsLabel: slide.title,
                 ),
-                Positioned(top: 60 - bob, left: 28, child: _glow(16, 0.5)),
-                Positioned(bottom: 70 + bob, right: 34, child: _glow(10, 0.4)),
-                // Centerpiece
-                Center(
-                  child: Transform.translate(
-                    offset: Offset(0, bob * 0.6),
-                    child: _artworkFor(slide.art),
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 32),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30),
+            child: _IntroText(slide: slide),
+          ),
+          const Spacer(flex: 4),
+        ],
       ),
     );
   }
+}
 
-  Widget _artworkFor(_IntroArt art) {
-    switch (art) {
-      case _IntroArt.learning:
-        return const LearningArtwork(height: 240);
-      case _IntroArt.quiz:
-        return const QuizArtwork(height: 240);
-      case _IntroArt.achievement:
-        return const AchievementArtwork(height: 240);
-    }
+/// Soft, slightly asymmetric organic curve for the header's bottom edge.
+class _HeroCurveClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final w = size.width;
+    final h = size.height;
+    return Path()
+      ..lineTo(0, h - 52)
+      ..cubicTo(w * 0.25, h - 16, w * 0.60, h - 80, w, h - 44)
+      ..lineTo(w, 0)
+      ..close();
   }
 
-  Widget _glow(double size, double opacity) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white.withValues(alpha: opacity),
-      ),
-    );
-  }
+  @override
+  bool shouldReclip(covariant _HeroCurveClipper oldClipper) => false;
 }
 
 class _IntroText extends StatelessWidget {
@@ -351,20 +400,24 @@ class _IntroText extends StatelessWidget {
         Text(
           slide.title,
           textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontSize: 26,
-            height: 1.15,
-            fontWeight: FontWeight.w900,
+          style: TextStyle(
+            fontFamily: _kFont,
+            fontSize: 27,
+            height: 1.18,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.3,
             color: AppColors.textPrimary,
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 14),
         Text(
           slide.description,
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: TextStyle(
+            fontFamily: _kFont,
             fontSize: 14,
-            height: 1.55,
+            height: 1.6,
+            fontWeight: FontWeight.w500,
             color: AppColors.textSecondary,
           ),
         ),

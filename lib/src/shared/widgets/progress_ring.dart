@@ -12,7 +12,9 @@ class ProgressRing extends StatelessWidget {
   final double size;
   final double strokeWidth;
   final Color color;
-  final Color trackColor;
+
+  /// Null = theme-aware default (resolved in build).
+  final Color? trackColor;
   final Widget? center;
   final Duration duration;
 
@@ -22,7 +24,7 @@ class ProgressRing extends StatelessWidget {
     this.size = 64,
     this.strokeWidth = 7,
     this.color = AppColors.brandPrimary,
-    this.trackColor = AppColors.surfaceMuted,
+    this.trackColor,
     this.center,
     this.duration = const Duration(milliseconds: 900),
   });
@@ -41,7 +43,7 @@ class ProgressRing extends StatelessWidget {
             painter: _RingPainter(
               progress: value,
               color: color,
-              trackColor: trackColor,
+              trackColor: trackColor ?? AppColors.surfaceMuted,
               strokeWidth: strokeWidth,
             ),
             child: center == null ? null : Center(child: center),

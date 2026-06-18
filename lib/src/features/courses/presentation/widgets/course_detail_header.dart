@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_accent.dart';
 import '../../domain/entities/course_entity.dart';
 import '../bloc/course/course_bloc.dart';
 import '../bloc/course/course_event.dart';
@@ -55,14 +55,17 @@ class _CourseDetailHeaderState extends State<CourseDetailHeader> {
   @override
   Widget build(BuildContext context) {
     final course = widget.course;
+    // Match the course's own colour identity (same as its card) so navigating
+    // from a card into the detail screen feels visually continuous.
+    final accent = CourseAccent.of(course.id);
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: AppColors.brandGradient,
+          colors: accent.gradient,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(28)),
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)),
       ),
       child: SafeArea(
         bottom: false,

@@ -145,9 +145,9 @@ class _LoginCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            const Divider(height: 1, color: AppColors.borderSubtle),
+            Divider(height: 1, color: AppColors.borderSubtle),
             const SizedBox(height: 18),
-            const Text(
+            Text(
               'Masuk',
               style: TextStyle(
                 fontSize: 22,
@@ -156,7 +156,7 @@ class _LoginCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'Gunakan akun yang sama untuk web dan mobile.',
               style: TextStyle(
                 fontSize: 13,
@@ -168,7 +168,7 @@ class _LoginCard extends StatelessWidget {
             TextFormField(
               controller: emailController,
               keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: AppStrings.email,
                 prefixIcon: Icon(Icons.mail_outline_rounded),
                 fillColor: AppColors.surfaceMuted,
@@ -268,7 +268,7 @@ class _LoginCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
+                Text(
                   'Belum punya akun? ',
                   style: TextStyle(
                     color: AppColors.textSecondary,

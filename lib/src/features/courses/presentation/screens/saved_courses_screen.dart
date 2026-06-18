@@ -6,6 +6,7 @@ import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entit
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_state.dart';
+import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_accent.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 import 'package:lms_mobile_app/src/shared/widgets/app_empty_state.dart';
@@ -41,11 +42,13 @@ class _SavedCoursesScreenState extends State<SavedCoursesScreen> {
           if (state is SavedCoursesLoaded) {
             final savedCourses = state.courses;
             if (savedCourses.isEmpty) {
-              return const AppEmptyState(
-                icon: Icons.bookmark_outline_rounded,
-                title: 'Belum ada kursus tersimpan',
+              return AppEmptyState(
+                illustration: 'assets/illustrations/empty_collection.svg',
+                title: 'Koleksimu masih kosong',
                 message:
-                    'Simpan kursus favoritmu dengan menekan ikon bookmark agar mudah ditemukan di sini.',
+                    'Simpan kursus favoritmu dengan menekan ikon bookmark agar mudah ditemukan kembali di sini.',
+                actionLabel: 'Jelajahi Kursus',
+                onAction: () => context.push(AppRoutes.courses),
               );
             }
             return ListView.separated(
@@ -89,8 +92,8 @@ class _SavedCourseTile extends StatelessWidget {
                 width: 60,
                 height: 60,
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: AppColors.brandGradient,
+                  gradient: LinearGradient(
+                    colors: CourseAccent.of(course.id).gradient,
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -112,7 +115,7 @@ class _SavedCourseTile extends StatelessWidget {
                       course.title,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
                         color: AppColors.textPrimary,
@@ -124,7 +127,7 @@ class _SavedCourseTile extends StatelessWidget {
                       course.instructor,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         color: AppColors.textSecondary,
                       ),
@@ -132,7 +135,7 @@ class _SavedCourseTile extends StatelessWidget {
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.menu_book_rounded,
                           size: 13,
                           color: AppColors.textTertiary,
@@ -140,7 +143,7 @@ class _SavedCourseTile extends StatelessWidget {
                         const SizedBox(width: 4),
                         Text(
                           '${course.totalLessons} lesson',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
                             color: AppColors.textTertiary,
@@ -151,7 +154,7 @@ class _SavedCourseTile extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(
+              Icon(
                 Icons.chevron_right_rounded,
                 color: AppColors.textTertiary,
               ),

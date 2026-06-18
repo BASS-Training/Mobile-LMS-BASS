@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_actions.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -122,7 +123,9 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
         _copyToClipboard(link, 'Link meeting');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Tidak bisa membuka browser. Link disalin ke clipboard.'),
+            content: Text(
+              'Tidak bisa membuka browser. Link disalin ke clipboard.',
+            ),
           ),
         );
       }
@@ -140,9 +143,9 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
 
   void _copyToClipboard(String text, String label) {
     Clipboard.setData(ClipboardData(text: text));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$label disalin ke clipboard')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('$label disalin ke clipboard')));
   }
 
   Future<void> _markComplete({bool goToNext = false}) async {
@@ -180,11 +183,14 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
         currentLessonIndex: widget.lessonIndex,
         onSelectLesson: (lesson, index) {
           final route = LessonRouteResolver.routeForType(lesson.type);
-          context.push(route, extra: {
-            'lesson': lesson,
-            'course': widget.course,
-            'lessonIndex': index,
-          });
+          context.push(
+            route,
+            extra: {
+              'lesson': lesson,
+              'course': widget.course,
+              'lessonIndex': index,
+            },
+          );
         },
       ),
       appBar: LessonAppBar(
@@ -196,8 +202,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
         ),
         gradientColors: const [_accent, _accentDark],
         onBack: () {
-          Navigator.pop(context);
-          context.read<CourseBloc>().add(const RefreshCoursesEvent());
+          popToCourse(context);
         },
         onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
       ),
@@ -214,7 +219,9 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
                     Future.delayed(
                       const Duration(milliseconds: 200),
                       () => navigateToLesson(
-                          previousLesson!, widget.lessonIndex - 1),
+                        previousLesson!,
+                        widget.lessonIndex - 1,
+                      ),
                     );
                   }
                 : null,
@@ -281,7 +288,11 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
             ),
-            child: const Icon(Icons.videocam_rounded, color: Colors.white, size: 28),
+            child: const Icon(
+              Icons.videocam_rounded,
+              color: Colors.white,
+              size: 28,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -468,7 +479,9 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderDefault.withValues(alpha: 0.8)),
+        border: Border.all(
+          color: AppColors.borderDefault.withValues(alpha: 0.8),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -489,10 +502,14 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
                   color: _accent.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(Icons.info_outline_rounded, color: _accent, size: 20),
+                child: const Icon(
+                  Icons.info_outline_rounded,
+                  color: _accent,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 10),
-              const Text(
+              Text(
                 'Detail Meeting',
                 style: TextStyle(
                   fontSize: 14,
@@ -564,7 +581,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
             children: [
               Text(
                 label,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textSecondary,
@@ -576,7 +593,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
                 truncate && value.length > 40
                     ? '${value.substring(0, 40)}...'
                     : value,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: AppColors.textPrimary,
@@ -587,7 +604,11 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
         ),
         IconButton(
           onPressed: onCopy,
-          icon: const Icon(Icons.copy_rounded, size: 16, color: AppColors.textSecondary),
+          icon: Icon(
+            Icons.copy_rounded,
+            size: 16,
+            color: AppColors.textSecondary,
+          ),
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
           tooltip: 'Salin',
@@ -628,7 +649,9 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
           style: ElevatedButton.styleFrom(
             backgroundColor: canJoin ? _accent : Colors.grey.shade300,
             foregroundColor: canJoin ? Colors.white : Colors.grey.shade600,
-            shadowColor: canJoin ? _accent.withValues(alpha: 0.4) : Colors.transparent,
+            shadowColor: canJoin
+                ? _accent.withValues(alpha: 0.4)
+                : Colors.transparent,
             elevation: canJoin ? 10 : 0,
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
@@ -652,7 +675,9 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.borderDefault.withValues(alpha: 0.7)),
+        border: Border.all(
+          color: AppColors.borderDefault.withValues(alpha: 0.7),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -671,14 +696,18 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
               color: _accent.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.description_rounded, color: _accent, size: 18),
+            child: const Icon(
+              Icons.description_rounded,
+              color: _accent,
+              size: 18,
+            ),
           ),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'Deskripsi',
                   style: TextStyle(
                     fontSize: 12,
@@ -689,7 +718,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
                 const SizedBox(height: 4),
                 Text(
                   widget.lesson.content.trim(),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     height: 1.6,
                     color: AppColors.textSecondary,
@@ -713,8 +742,19 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
   String _formatDateTime(DateTime dt) {
     final local = dt.toLocal();
     const months = [
-      '', 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-      'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'
+      '',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'Mei',
+      'Jun',
+      'Jul',
+      'Agt',
+      'Sep',
+      'Okt',
+      'Nov',
+      'Des',
     ];
     return '${local.day} ${months[local.month]} ${local.year}, ${_formatTime(local)}';
   }

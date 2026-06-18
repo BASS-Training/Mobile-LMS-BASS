@@ -40,7 +40,13 @@ class ApiEndpoints {
   static const String autosaveCaseStudy = '/case-studies/{id}/draft';
   static const String downloadCaseStudy = '/case-studies/{id}/download';
 
+  // Feedback (form survei, tanpa penilaian)
+  static const String getFeedbackByLesson = '/feedback/by-lesson/{id}';
+  static const String submitFeedback = '/feedback/{id}/submit';
+
   // Discussions (lesson = backend content.id)
+  static const String discussionsFeed = '/discussions';
+  static const String discussionsStructure = '/discussions/structure';
   static const String getDiscussions = '/lessons/{contentId}/discussions';
   static const String createDiscussion = '/lessons/{contentId}/discussions';
   static const String createReply = '/discussions/{discussionId}/replies';
@@ -52,4 +58,24 @@ class ApiEndpoints {
   // Profile
   static const String getProfile = '/profile';
   static const String updateProfile = '/profile';
+
+  // Notifications (gabungan: notifikasi DB + pengumuman web)
+  static const String notifications = '/notifications';
+  static const String notificationsUnreadCount = '/notifications/unread-count';
+  static const String notificationsMarkRead = '/notifications/mark-read';
+  static const String notificationsMarkAllRead = '/notifications/mark-all-read';
+
+  // Instructor / admin (mobile): peserta, progres, dan penilaian.
+  static const String instructorDashboard = '/instructor/dashboard';
+  static const String instructorGlobalGradingQueue = '/instructor/grading-queue';
+  static const String courseParticipants = '/courses/{id}/participants';
+  static const String participantProgress =
+      '/courses/{courseId}/participants/{userId}/progress';
+  static const String courseGradingQueue = '/courses/{id}/grading-queue';
+  static const String essaySubmissionDetail = '/essays/submissions/{id}';
+  static const String gradeEssaySubmission = '/essays/submissions/{id}/grade';
+  static const String caseStudySubmissionDetail =
+      '/case-studies/submissions/{id}';
+  static const String gradeCaseStudySubmission =
+      '/case-studies/submissions/{id}/grade';
 }

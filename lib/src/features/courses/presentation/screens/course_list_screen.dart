@@ -3,13 +3,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_strings.dart';
+import 'package:lms_mobile_app/src/core/di/injector.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_bloc.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_state.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_state.dart';
+import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_accent.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_card.dart';
+import 'package:lms_mobile_app/src/features/instructor/domain/entities/instructor_entities.dart';
+import 'package:lms_mobile_app/src/features/instructor/presentation/cubit/instructor_overview_cubit.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
@@ -41,33 +45,26 @@ class _CourseListScreenState extends State<CourseListScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, authState) {
-        final isInstructor =
+        final canManage =
             authState is AuthSuccess &&
             (authState.user.hasRole('instructor') ||
                 authState.user.hasRole('admin') ||
                 authState.user.hasRole('super-admin'));
 
-        return Scaffold(
+        final scaffold = Scaffold(
           backgroundColor: Colors.transparent,
-          appBar: const BrandAppBar(title: 'Semua Kursus'),
-          floatingActionButton: isInstructor
-              ? FloatingActionButton.extended(
-                  onPressed: () => _showAddCourseDialog(context),
-                  backgroundColor: AppColors.brandPrimary,
-                  foregroundColor: Colors.white,
-                  icon: const Icon(Icons.add_rounded),
-                  label: const Text('Tambah Kursus'),
-                )
-              : null,
+          appBar: BrandAppBar(
+            title: canManage ? 'Kelas Saya' : 'Semua Kursus',
+          ),
           body: Stack(
             children: [
               const _CourseListBackdrop(),
               Column(
                 children: [
-                  if (isInstructor)
+                  if (canManage)
                     Container(
                       width: double.infinity,
-                      margin: EdgeInsets.fromLTRB(
+                      margin: const EdgeInsets.fromLTRB(
                         AppMeasures.paddingLarge,
                         AppMeasures.paddingLarge,
                         AppMeasures.paddingLarge,
@@ -82,16 +79,16 @@ class _CourseListScreenState extends State<CourseListScreen> {
                         ),
                       ),
                       child: Row(
-                        children: const [
-                          Icon(
-                            Icons.info_rounded,
+                        children: [
+                          const Icon(
+                            Icons.workspace_premium_rounded,
                             color: AppColors.brandPrimary,
                             size: 20,
                           ),
                           SizedBox(width: 10),
                           Expanded(
                             child: Text(
-                              'Mode pengelola aktif. Kursus baru akan tersinkron ke peserta secara otomatis.',
+                              'Kelas yang Anda ampu. Ketuk untuk melihat materi & menilai peserta.',
                               style: TextStyle(
                                 color: AppColors.textSecondary,
                                 fontSize: 12,
@@ -103,329 +100,386 @@ class _CourseListScreenState extends State<CourseListScreen> {
                       ),
                     ),
                   Padding(
-                    padding: EdgeInsets.all(AppMeasures.paddingLarge),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(color: AppColors.borderSubtle),
-                        boxShadow: AppShadows.sm,
-                      ),
-                      child: ValueListenableBuilder<TextEditingValue>(
-                        valueListenable: _searchController,
-                        builder: (context, value, _) {
-                          return TextField(
-                            controller: _searchController,
-                            onChanged: (value) {
-                              context.read<CourseBloc>().add(
-                                SearchCoursesEvent(query: value),
-                              );
-                            },
-                            decoration: InputDecoration(
-                              hintText: AppStrings.searchCourses,
-                              hintStyle: const TextStyle(
-                                color: AppColors.textTertiary,
-                              ),
-                              prefixIcon: const Icon(
-                                Icons.search_rounded,
-                                color: AppColors.brandPrimary,
-                              ),
-                              suffixIcon: value.text.isNotEmpty
-                                  ? IconButton(
-                                      onPressed: () {
-                                        _searchController.clear();
-                                        context.read<CourseBloc>().add(
-                                          const SearchCoursesEvent(query: ''),
-                                        );
-                                      },
-                                      icon: const Icon(
-                                        Icons.close_rounded,
-                                        color: AppColors.textTertiary,
-                                      ),
-                                    )
-                                  : null,
-                              filled: false,
-                              border: InputBorder.none,
-                              enabledBorder: InputBorder.none,
-                              focusedBorder: InputBorder.none,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 15,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
+                    padding: const EdgeInsets.all(AppMeasures.paddingLarge),
+                    child: _buildSearchField(),
                   ),
                   Expanded(
-                    child: BlocBuilder<CourseBloc, CourseState>(
-                      builder: (context, state) {
-                        if (state is CourseLoading) {
-                          return const Center(
-                            child: CircularProgressIndicator(
-                              color: AppColors.brandPrimary,
-                            ),
-                          );
-                        }
-
-                        if (state is CourseLoaded) {
-                          final courses = state.courses;
-                          if (courses.isEmpty) {
-                            return Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    width: 92,
-                                    height: 92,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: AppColors.brandPrimary.withValues(
-                                        alpha: 0.1,
-                                      ),
-                                    ),
-                                    child: const Icon(
-                                      Icons.search_off_rounded,
-                                      size: 44,
-                                      color: AppColors.brandPrimary,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  const Text(
-                                    'Kursus tidak ditemukan',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                      color: AppColors.textPrimary,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 6),
-                                  const Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 32,
-                                    ),
-                                    child: Text(
-                                      'Coba kata kunci lain atau kosongkan pencarian.',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: AppColors.textSecondary,
-                                        height: 1.4,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-
-                          return GridView.builder(
-                            padding: EdgeInsets.fromLTRB(
-                              AppMeasures.paddingLarge,
-                              4,
-                              AppMeasures.paddingLarge,
-                              AppMeasures.paddingLarge,
-                            ),
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  childAspectRatio: 0.72,
-                                  crossAxisSpacing: 14,
-                                  mainAxisSpacing: 14,
-                                ),
-                            itemCount: courses.length,
-                            itemBuilder: (context, index) {
-                              final courseEntity = courses[index];
-                              return CourseCard(
-                                course: courseEntity,
-                                isSaved: courseEntity.isSaved,
-                                onTap: () {
-                                  context.push(
-                                    AppRoutes.courseDetail,
-                                    extra: courseEntity,
-                                  );
-                                },
-                                onSavePressed: () {
-                                  final willSave = !courseEntity.isSaved;
-                                  context.read<CourseBloc>().add(
-                                    ToggleSaveCourseEvent(
-                                      courseId: courseEntity.id,
-                                    ),
-                                  );
-                                  ScaffoldMessenger.of(context)
-                                    ..hideCurrentSnackBar()
-                                    ..showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          willSave
-                                              ? 'Kursus disimpan ke koleksi'
-                                              : 'Kursus dihapus dari koleksi',
-                                        ),
-                                        duration: const Duration(seconds: 2),
-                                        behavior: SnackBarBehavior.floating,
-                                      ),
-                                    );
-                                },
-                              );
-                            },
-                          );
-                        }
-
-                        if (state is CourseFailure) {
-                          return Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  width: 92,
-                                  height: 92,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: AppColors.brandPrimary.withValues(
-                                      alpha: 0.1,
-                                    ),
-                                  ),
-                                  child: const Icon(
-                                    Icons.error_outline_rounded,
-                                    size: 44,
-                                    color: AppColors.brandPrimary,
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 24,
-                                  ),
-                                  child: Text(
-                                    state.message,
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                      color: AppColors.textPrimary,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-
-                        return const SizedBox.shrink();
-                      },
-                    ),
+                    child: canManage ? _buildManageList() : _buildParticipantGrid(),
                   ),
                 ],
               ),
             ],
           ),
         );
+
+        // Instructors/admins also load the aggregate dashboard so each class
+        // card can show participant + pending-grading counts.
+        if (canManage) {
+          return BlocProvider<InstructorDashboardCubit>(
+            create: (_) =>
+                ServiceLocator().locator<InstructorDashboardCubit>()..load(),
+            child: scaffold,
+          );
+        }
+        return scaffold;
       },
     );
   }
 
-  Future<void> _showAddCourseDialog(BuildContext context) async {
-    final titleController = TextEditingController();
-    final descriptionController = TextEditingController();
-    final instructorController = TextEditingController();
-    final durationController = TextEditingController(text: '4 hours');
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
-
-    final result = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: const Text('Tambah Kursus Baru'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: titleController,
-                  decoration: const InputDecoration(labelText: 'Judul'),
-                ),
-                TextField(
-                  controller: descriptionController,
-                  decoration: const InputDecoration(labelText: 'Deskripsi'),
-                  maxLines: 2,
-                ),
-                TextField(
-                  controller: instructorController,
-                  decoration: const InputDecoration(labelText: 'Instruktur'),
-                ),
-                TextField(
-                  controller: durationController,
-                  decoration: const InputDecoration(labelText: 'Durasi'),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext, false),
-              child: const Text('Batal'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                final title = titleController.text.trim();
-                final description = descriptionController.text.trim();
-                final instructor = instructorController.text.trim();
-
-                if (title.isEmpty ||
-                    description.isEmpty ||
-                    instructor.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Judul, deskripsi, dan instruktur wajib diisi.',
+  Widget _buildSearchField() {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.borderSubtle),
+        boxShadow: AppShadows.sm,
+      ),
+      child: ValueListenableBuilder<TextEditingValue>(
+        valueListenable: _searchController,
+        builder: (context, value, _) {
+          return TextField(
+            controller: _searchController,
+            onChanged: (value) {
+              context.read<CourseBloc>().add(SearchCoursesEvent(query: value));
+            },
+            decoration: InputDecoration(
+              hintText: AppStrings.searchCourses,
+              hintStyle: TextStyle(color: AppColors.textTertiary),
+              prefixIcon: const Icon(
+                Icons.search_rounded,
+                color: AppColors.brandPrimary,
+              ),
+              suffixIcon: value.text.isNotEmpty
+                  ? IconButton(
+                      onPressed: () {
+                        _searchController.clear();
+                        context.read<CourseBloc>().add(
+                          const SearchCoursesEvent(query: ''),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.close_rounded,
+                        color: AppColors.textTertiary,
                       ),
-                    ),
-                  );
-                  return;
-                }
-
-                final course = CourseEntity(
-                  id: DateTime.now().millisecondsSinceEpoch.toString(),
-                  title: title,
-                  description: description,
-                  instructor: instructor,
-                  color: '#6C5CE7',
-                  icon: '📚',
-                  chaptersCount: 0,
-                  duration: durationController.text.trim().isEmpty
-                      ? '4 hours'
-                      : durationController.text.trim(),
-                  sections: const [],
-                  lessons: const [],
-                );
-
-                context.read<CourseBloc>().add(AddCourseEvent(course: course));
-                Navigator.pop(dialogContext, true);
-              },
-              child: const Text('Simpan'),
+                    )
+                  : null,
+              filled: false,
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 15,
+              ),
             ),
-          ],
-        );
+          );
+        },
+      ),
+    );
+  }
+
+  // ── Participant view ──────────────────────────────────────────────────────
+  Widget _buildParticipantGrid() {
+    return BlocBuilder<CourseBloc, CourseState>(
+      builder: (context, state) {
+        if (state is CourseLoading) {
+          return const Center(
+            child: CircularProgressIndicator(color: AppColors.brandPrimary),
+          );
+        }
+
+        if (state is CourseLoaded) {
+          final courses = state.courses;
+          if (courses.isEmpty) {
+            return _centeredMessage(
+              icon: Icons.search_off_rounded,
+              title: 'Kursus tidak ditemukan',
+              message: 'Coba kata kunci lain atau kosongkan pencarian.',
+            );
+          }
+
+          return GridView.builder(
+            padding: const EdgeInsets.fromLTRB(
+              AppMeasures.paddingLarge,
+              4,
+              AppMeasures.paddingLarge,
+              AppMeasures.paddingLarge,
+            ),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 0.72,
+              crossAxisSpacing: 14,
+              mainAxisSpacing: 14,
+            ),
+            itemCount: courses.length,
+            itemBuilder: (context, index) {
+              final courseEntity = courses[index];
+              return CourseCard(
+                course: courseEntity,
+                isSaved: courseEntity.isSaved,
+                onTap: () {
+                  context.push(AppRoutes.courseDetail, extra: courseEntity);
+                },
+                onSavePressed: () {
+                  final willSave = !courseEntity.isSaved;
+                  context.read<CourseBloc>().add(
+                    ToggleSaveCourseEvent(courseId: courseEntity.id),
+                  );
+                  ScaffoldMessenger.of(context)
+                    ..hideCurrentSnackBar()
+                    ..showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          willSave
+                              ? 'Kursus disimpan ke koleksi'
+                              : 'Kursus dihapus dari koleksi',
+                        ),
+                        duration: const Duration(seconds: 2),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                },
+              );
+            },
+          );
+        }
+
+        if (state is CourseFailure) {
+          return _centeredMessage(
+            icon: Icons.error_outline_rounded,
+            title: state.message,
+          );
+        }
+
+        return const SizedBox.shrink();
       },
     );
+  }
 
-    if (result == true) {
-      scaffoldMessenger.showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Kursus dikirim ke Laravel dan akan tersinkron ke peserta.',
+  // ── Instructor / admin view ───────────────────────────────────────────────
+  Widget _buildManageList() {
+    return BlocBuilder<CourseBloc, CourseState>(
+      builder: (context, state) {
+        if (state is CourseLoading) {
+          return const Center(
+            child: CircularProgressIndicator(color: AppColors.brandPrimary),
+          );
+        }
+
+        if (state is CourseLoaded) {
+          final courses = state.courses;
+          if (courses.isEmpty) {
+            return _centeredMessage(
+              icon: Icons.menu_book_rounded,
+              title: 'Belum ada kelas',
+              message: 'Kelas yang Anda ampu akan muncul di sini.',
+            );
+          }
+
+          // Merge per-course teaching stats (participants / pending) by id.
+          final dashState = context.watch<InstructorDashboardCubit>().state;
+          final summaries = <String, InstructorCourseSummary>{
+            for (final c in dashState.data?.courses ?? const []) c.id: c,
+          };
+
+          return ListView.separated(
+            padding: const EdgeInsets.fromLTRB(
+              AppMeasures.paddingLarge,
+              4,
+              AppMeasures.paddingLarge,
+              AppMeasures.paddingLarge,
+            ),
+            itemCount: courses.length,
+            separatorBuilder: (_, _) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final course = courses[index];
+              return _ManageCourseTile(
+                course: course,
+                summary: summaries[course.id],
+              );
+            },
+          );
+        }
+
+        if (state is CourseFailure) {
+          return _centeredMessage(
+            icon: Icons.error_outline_rounded,
+            title: state.message,
+          );
+        }
+
+        return const SizedBox.shrink();
+      },
+    );
+  }
+
+  Widget _centeredMessage({
+    required IconData icon,
+    required String title,
+    String? message,
+  }) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 92,
+            height: 92,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.brandPrimary.withValues(alpha: 0.1),
+            ),
+            child: Icon(icon, size: 44, color: AppColors.brandPrimary),
           ),
-          backgroundColor: AppColors.emerald,
-        ),
-      );
-    }
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ),
+          if (message != null) ...[
+            const SizedBox(height: 6),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Text(
+                message,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textSecondary,
+                  height: 1.4,
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
 
-    titleController.dispose();
-    descriptionController.dispose();
-    instructorController.dispose();
-    durationController.dispose();
+/// Manage-style course row for instructors: title + teaching stats, opening the
+/// course detail (instructor mode) where all materials are accessible.
+class _ManageCourseTile extends StatelessWidget {
+  final CourseEntity course;
+  final InstructorCourseSummary? summary;
+
+  const _ManageCourseTile({required this.course, this.summary});
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = CourseAccent.of(course.id);
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => context.push(AppRoutes.courseDetail, extra: course),
+        borderRadius: BorderRadius.circular(18),
+        child: Ink(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: AppColors.borderSubtle),
+            boxShadow: AppShadows.xs,
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: accent.gradient,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Center(
+                  child: Text(
+                    course.icon,
+                    style: const TextStyle(fontSize: 28),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      course.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary,
+                        height: 1.2,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Wrap(
+                      spacing: 14,
+                      runSpacing: 4,
+                      children: [
+                        _miniStat(
+                          Icons.menu_book_rounded,
+                          '${course.totalLessons} lesson',
+                          AppColors.textTertiary,
+                        ),
+                        if (summary != null)
+                          _miniStat(
+                            Icons.groups_rounded,
+                            '${summary!.participantCount} peserta',
+                            AppColors.info,
+                          ),
+                        if (summary != null && summary!.pendingCount > 0)
+                          _miniStat(
+                            Icons.rate_review_rounded,
+                            '${summary!.pendingCount} perlu nilai',
+                            AppColors.warning,
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.textTertiary,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _miniStat(IconData icon, String label, Color color) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 14, color: color),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11.5,
+            fontWeight: FontWeight.w700,
+            color: color,
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -434,8 +488,6 @@ class _CourseListBackdrop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const IgnorePointer(
-      child: ColoredBox(color: AppColors.background),
-    );
+    return IgnorePointer(child: ColoredBox(color: AppColors.background));
   }
 }

@@ -55,9 +55,9 @@ class _Tile2048State extends State<Tile2048>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 130),
+      duration: const Duration(milliseconds: 150),
     );
-    _scale = Tween<double>(begin: 0.55, end: 1).animate(
+    _scale = Tween<double>(begin: 0.5, end: 1).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeOutBack),
     );
     _controller.forward(); // pop in on first appearance (spawn / load)
@@ -81,6 +81,11 @@ class _Tile2048State extends State<Tile2048>
   @override
   Widget build(BuildContext context) {
     final style = _styles[widget.value] ?? _superStyle;
+    final base = style.background;
+    // Diagonal sheen: lighter top-left → base → a touch darker bottom-right.
+    final top = Color.lerp(base, Colors.white, 0.22)!;
+    final bottom = Color.lerp(base, Colors.black, 0.14)!;
+    final radius = widget.size * 0.16;
 
     return ScaleTransition(
       scale: _scale,
@@ -89,22 +94,53 @@ class _Tile2048State extends State<Tile2048>
         height: widget.size,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: style.background,
-          borderRadius: BorderRadius.circular(8),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [top, base, bottom],
+            stops: const [0, 0.55, 1],
+          ),
+          borderRadius: BorderRadius.circular(radius),
         ),
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Padding(
-            padding: const EdgeInsets.all(6),
-            child: Text(
-              '${widget.value}',
-              style: TextStyle(
-                color: style.text,
-                fontWeight: FontWeight.w900,
-                fontSize: widget.size * 0.42,
+        child: Stack(
+          children: [
+            // Glossy top highlight.
+            Positioned(
+              left: radius * 0.4,
+              right: radius * 0.4,
+              top: radius * 0.3,
+              height: widget.size * 0.30,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(radius),
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.white.withValues(alpha: 0.28),
+                      Colors.white.withValues(alpha: 0),
+                    ],
+                  ),
+                ),
               ),
             ),
-          ),
+            Center(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Padding(
+                  padding: const EdgeInsets.all(6),
+                  child: Text(
+                    '${widget.value}',
+                    style: TextStyle(
+                      color: style.text,
+                      fontWeight: FontWeight.w900,
+                      fontSize: widget.size * 0.42,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
