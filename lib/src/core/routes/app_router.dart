@@ -42,6 +42,8 @@ import 'package:lms_mobile_app/src/features/notifications/presentation/cubit/not
 import 'package:lms_mobile_app/src/features/notifications/presentation/screens/notifications_screen.dart';
 import 'package:lms_mobile_app/src/features/discussions/presentation/screens/discussion_hub_screen.dart';
 import 'package:lms_mobile_app/src/features/discussions/presentation/screens/discussion_thread_screen.dart';
+import 'package:lms_mobile_app/src/features/achievements/presentation/screens/achievements_screen.dart';
+import 'package:lms_mobile_app/src/features/home/domain/entities/home_stats.entity.dart';
 import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_participants_screen.dart';
 import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_grading_queue_screen.dart';
 import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_participant_detail_screen.dart';
@@ -138,6 +140,11 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.discussionHub,
         builder: (context, state) => const DiscussionHubScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.achievements,
+        builder: (context, state) =>
+            AchievementsScreen(stats: state.extra as HomeStatsEntity),
       ),
       GoRoute(
         path: AppRoutes.discussionThread,

@@ -23,6 +23,7 @@ class AppRoutes {
   static const String notifications = '/notifications-center';
   static const String discussionHub = '/discussions';
   static const String discussionThread = '/discussion-thread';
+  static const String achievements = '/achievements';
 
   // Course Details
   static const String courseDetail = '/course-detail';

@@ -16,6 +16,9 @@ import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_skele
 import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_summary_card.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/widgets/home_welcome_banner.dart';
 import 'package:lms_mobile_app/src/core/di/injector.dart';
+import 'package:lms_mobile_app/src/features/achievements/data/achievement_store.dart';
+import 'package:lms_mobile_app/src/features/achievements/domain/achievement_catalog.dart';
+import 'package:lms_mobile_app/src/features/achievements/presentation/widgets/achievement_celebration.dart';
 import 'package:lms_mobile_app/src/features/notifications/presentation/cubit/notifications_cubit.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
@@ -38,6 +41,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final _searchController = TextEditingController();
   final _notifCubit = ServiceLocator().locator<NotificationsCubit>();
+  final _achievementStore = ServiceLocator().locator<AchievementStore>();
+
+  /// Guards the once-per-screen-mount achievement celebration check.
+  bool _celebrationChecked = false;
 
   @override
   void initState() {
@@ -165,6 +172,20 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  /// Once stats are available, celebrate any achievement tier the learner has
+  /// reached since they last saw it. Runs once per mount; the store seeds
+  /// silently on first ever run so pre-existing progress isn't celebrated.
+  void _maybeCelebrate(HomeStatsEntity stats) {
+    if (_celebrationChecked) return;
+    _celebrationChecked = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final unlocked =
+          await _achievementStore.detectNewlyUnlocked(buildAchievements(stats));
+      if (!mounted) return;
+      await showAchievementCelebrations(context, unlocked);
+    });
+  }
+
   Future<void> _openNotifications() async {
     await context.push(AppRoutes.notifications);
     // Marking items read on the notification screen updates the shared singleton;
@@ -242,6 +263,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         final ownedCourses = state.courses.where((c) => c.isOwned).toList();
         final stats = HomeStatsEntity.fromCourses(ownedCourses);
+        _maybeCelebrate(stats);
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
