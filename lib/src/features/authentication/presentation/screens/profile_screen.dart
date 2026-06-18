@@ -202,12 +202,16 @@ class ProfileScreen extends StatelessWidget {
                 label: 'Verifikasi AVPN',
                 value: _avpnLabel(user.avpnVerificationStatus!),
               ),
-            _InfoRow(
-              icon: Icons.calendar_today_rounded,
-              accent: AppColors.violet,
-              label: 'Bergabung Sejak',
-              value: _formatJoined(user.joinedAt),
-            ),
+            // Sembunyikan baris ini bila tanggal bergabung tak tersedia
+            // (mis. sesi lama ter-cache) agar tidak menampilkan "-" yang janggal.
+            if (user.joinedAt != null &&
+                DateTime.tryParse(user.joinedAt!) != null)
+              _InfoRow(
+                icon: Icons.calendar_today_rounded,
+                accent: AppColors.violet,
+                label: 'Bergabung Sejak',
+                value: _formatJoined(user.joinedAt),
+              ),
           ],
         ),
       ],

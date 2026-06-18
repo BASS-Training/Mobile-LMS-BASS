@@ -5,6 +5,17 @@ import '../../domain/entities/course_entity.dart';
 import '../bloc/course/course_bloc.dart';
 import '../bloc/course/course_event.dart';
 
+/// Apakah string durasi layak ditampilkan. Mengembalikan `false` untuk durasi
+/// kosong, "-", atau yang seluruh angkanya nol (mis. "0 min") agar chip durasi
+/// tidak menampilkan "0 min" yang janggal.
+bool _hasMeaningfulDuration(String duration) {
+  final s = duration.trim().toLowerCase();
+  if (s.isEmpty || s == '-') return false;
+  final numbers = RegExp(r'\d+').allMatches(s).map((m) => int.parse(m[0]!));
+  if (numbers.isEmpty) return s != '0';
+  return numbers.any((n) => n > 0);
+}
+
 /// Hero header for the course detail screen: a brand-gradient panel with the
 /// course emoji, title and a compact meta row (lessons · duration), plus back
 /// and save actions.
@@ -123,11 +134,14 @@ class _CourseDetailHeaderState extends State<CourseDetailHeader> {
                     icon: Icons.play_lesson_rounded,
                     label: '${course.totalLessons} lesson',
                   ),
-                  const SizedBox(width: 10),
-                  _MetaChip(
-                    icon: Icons.schedule_rounded,
-                    label: course.duration,
-                  ),
+                  // Tampilkan chip durasi hanya bila bermakna (sembunyikan "0 min").
+                  if (_hasMeaningfulDuration(course.duration)) ...[
+                    const SizedBox(width: 10),
+                    _MetaChip(
+                      icon: Icons.schedule_rounded,
+                      label: course.duration,
+                    ),
+                  ],
                 ],
               ),
             ],

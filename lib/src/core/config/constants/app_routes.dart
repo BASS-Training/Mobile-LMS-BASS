@@ -24,6 +24,7 @@ class AppRoutes {
   static const String discussionHub = '/discussions';
   static const String discussionThread = '/discussion-thread';
   static const String achievements = '/achievements';
+  static const String agenda = '/agenda';
 
   // Course Details
   static const String courseDetail = '/course-detail';
