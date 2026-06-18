@@ -1,5 +1,9 @@
 import '../entities/course_entity.dart';
 
+/// Kontrak (Domain) untuk data kursus: ambil/cari/refresh, simpan-kursus, dan
+/// `watchCourses()` (stream untuk sinkronisasi berkelanjutan). Implementasi di
+/// lapisan Data memakai remote (dio) + cache. Contoh kontrak kanonik —
+/// lihat ARCHITECTURE.md §3 & §11.
 abstract class CourseRepository {
   Future<List<CourseEntity>> getCourses();
   Stream<List<CourseEntity>> watchCourses();

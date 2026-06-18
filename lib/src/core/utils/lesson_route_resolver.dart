@@ -1,5 +1,10 @@
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 
+/// Memetakan tipe konten/materi (text/video/quiz/essay/document/image/zoom/
+/// case_study/feedback) ke nama rute layar detail yang sesuai.
+///
+/// Dengan ini pemanggil cukup tahu `type`-nya; logika routing per-tipe
+/// terpusat di sini (default → layar teks).
 class LessonRouteResolver {
   const LessonRouteResolver._();
 

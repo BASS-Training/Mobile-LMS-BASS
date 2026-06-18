@@ -19,6 +19,12 @@ import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/cou
 import 'package:lms_mobile_app/src/features/home/presentation/bloc/home_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
 
+/// Entry point aplikasi.
+///
+/// Urutannya: kunci orientasi ke potret → pilih flavor (development saat debug,
+/// production saat release via [kReleaseMode]) → rangkai seluruh dependency lewat
+/// [ServiceLocator] → jalankan [MainApp] yang menyetir navigasi dengan go_router.
+/// Lihat ARCHITECTURE.md §5 (Alur Startup).
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 

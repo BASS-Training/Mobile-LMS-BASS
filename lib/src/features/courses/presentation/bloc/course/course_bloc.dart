@@ -10,6 +10,10 @@ import 'package:lms_mobile_app/src/features/courses/domain/usecases/toggle_save_
 import 'course_event.dart';
 import 'course_state.dart';
 
+/// Bloc utama daftar kursus. Contoh kanonik alur Presentation→Domain:
+/// memetakan event (get/search/refresh/toggle-save/watch/add) ke usecase, lalu
+/// emit state. Catatan pola: `WatchCoursesEvent` memakai stream (emit.forEach)
+/// dan `ToggleSaveCourseEvent` memakai optimistic update. Lihat ARCHITECTURE.md §11.
 class CourseBloc extends Bloc<CourseEvent, CourseState> {
   final GetCoursesUseCase getCoursesUseCase;
   final SearchCoursesUseCase searchCoursesUseCase;

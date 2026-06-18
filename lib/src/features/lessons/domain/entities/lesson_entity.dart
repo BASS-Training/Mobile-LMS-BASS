@@ -1,6 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/text_section_entity.dart';
 
+/// Objek bisnis murni untuk sebuah lesson/konten (Domain). Catatan penting:
+/// `id` di sini setara `content.id` di backend (lihat memory discussion-feature).
+/// Pemetaan dari JSON ada di lapisan Data. Lihat ARCHITECTURE.md §3.
 class LessonEntity extends Equatable {
   final String id;
   final String courseId;

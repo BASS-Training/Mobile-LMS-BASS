@@ -9,6 +9,8 @@ import 'package:lms_mobile_app/src/features/games/domain/usecases/manage_board_s
 import 'package:lms_mobile_app/src/features/games/domain/usecases/submit_game_result.dart';
 import 'package:lms_mobile_app/src/features/games/presentation/hub/bloc/games_hub_bloc.dart';
 
+/// Modul DI fitur Game: mendaftarkan datasource skor (Hive), repository, dan
+/// GamesHubBloc untuk mini-games. Dipanggil oleh [ServiceLocator]. Lihat ARCHITECTURE.md §6.
 class GameModule {
   static void register(GetIt getIt) {
     if (getIt.isRegistered<GameScoreRepository>()) {

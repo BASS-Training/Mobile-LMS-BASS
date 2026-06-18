@@ -7,6 +7,8 @@ import 'package:lms_mobile_app/src/features/instructor/presentation/cubit/case_s
 import 'package:lms_mobile_app/src/features/instructor/presentation/cubit/essay_grading_cubit.dart';
 import 'package:lms_mobile_app/src/features/instructor/presentation/cubit/instructor_overview_cubit.dart';
 
+/// Modul DI mode Instruktur: mendaftarkan repository dan cubit untuk memantau
+/// progres peserta serta menilai esai & studi kasus. Lihat ARCHITECTURE.md §6.
 class InstructorModule {
   static void register(GetIt getIt) {
     if (getIt.isRegistered<InstructorRepository>()) {

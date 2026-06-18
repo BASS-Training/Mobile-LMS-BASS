@@ -2,6 +2,12 @@ import 'dart:convert';
 
 import 'package:hive_flutter/hive_flutter.dart';
 
+/// Penyimpanan lokal berbasis Hive (box utama `mini_lms_box`).
+///
+/// Satu-satunya sumber untuk data ringan di perangkat: token & user sesi,
+/// status "intro dilihat", preferensi tema, progres lesson lokal, draft esai,
+/// dan riwayat attempt. Di-`init` sekali di [CoreModule]. Fitur lain (game,
+/// achievement) memakai box-nya sendiri. Lihat ARCHITECTURE.md §8.
 class LocalStorage {
   static const String _boxName = 'mini_lms_box';
   static const String _completedLessonsKey = 'completed_lessons';

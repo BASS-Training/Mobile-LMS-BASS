@@ -1,5 +1,9 @@
 import 'local_storage.dart';
 
+/// Deteksi "mode uji offline": aktif bila sesi memakai token/email tester khusus.
+///
+/// Dipakai agar build demo/QA bisa berjalan tanpa backend hidup. Jangan dipakai
+/// untuk logika produksi — hanya untuk men-toggle perilaku saat pengujian.
 class OfflineTestMode {
   static const String offlineToken = 'DUMMY_OFFLINE_TOKEN_892374982374';
   static const String offlineEmail = 'tester@bass.com';

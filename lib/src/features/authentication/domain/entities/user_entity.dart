@@ -1,5 +1,8 @@
 import 'package:equatable/equatable.dart';
 
+/// Objek bisnis murni untuk pengguna (Domain). Tanpa logika JSON/Flutter —
+/// pemetaan dari respons API dilakukan di lapisan Data (`User` model +
+/// `user_mapper`). Contoh entity kanonik. Lihat ARCHITECTURE.md §3.
 class UserEntity extends Equatable {
   final String id;
   final String name;

@@ -4,6 +4,9 @@ import '../../domain/usecases/join_class_usecase.dart';
 import 'home_event.dart';
 import 'home_state.dart';
 
+/// Bloc untuk aksi Home (mis. gabung kelas via token). Statistik dashboard
+/// sendiri diturunkan dari CourseBloc → HomeStatsEntity, bukan dari sini.
+/// Lihat ARCHITECTURE.md §10–11.
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final JoinClassUseCase joinClassUseCase;
 
