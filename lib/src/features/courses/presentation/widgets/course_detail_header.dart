@@ -69,16 +69,65 @@ class _CourseDetailHeaderState extends State<CourseDetailHeader> {
     // Match the course's own colour identity (same as its card) so navigating
     // from a card into the detail screen feels visually continuous.
     final accent = CourseAccent.of(course.id);
-    return Container(
+    final thumb = course.thumbnailUrl;
+    final hasThumb = thumb != null && thumb.isNotEmpty;
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)),
+      child: Stack(
+        children: [
+          // Background: the uploaded cover image, or the brand-accent gradient.
+          Positioned.fill(
+            child: hasThumb
+                ? Image.network(
+                    thumb,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (context, child, progress) =>
+                        progress == null ? child : _gradientBg(accent),
+                    errorBuilder: (_, _, _) => _gradientBg(accent),
+                  )
+                : _gradientBg(accent),
+          ),
+          // Dark scrim over photos so the white title/actions stay legible.
+          if (hasThumb)
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withValues(alpha: 0.35),
+                      Colors.black.withValues(alpha: 0.55),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          _buildContent(context, course, accent, hasThumb),
+        ],
+      ),
+    );
+  }
+
+  Widget _gradientBg(CourseAccent accent) {
+    return DecoratedBox(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: accent.gradient,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)),
       ),
-      child: SafeArea(
+    );
+  }
+
+  Widget _buildContent(
+    BuildContext context,
+    CourseEntity course,
+    CourseAccent accent,
+    bool hasThumb,
+  ) {
+    return SafeArea(
         bottom: false,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
@@ -99,22 +148,28 @@ class _CourseDetailHeaderState extends State<CourseDetailHeader> {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
-              Container(
-                width: 88,
-                height: 88,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.16),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.25),
-                    width: 1.5,
+              // Emoji medallion only on the default cover; over a real photo it
+              // would just clutter the image.
+              if (!hasThumb) ...[
+                const SizedBox(height: 12),
+                Container(
+                  width: 88,
+                  height: 88,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.16),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.25),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Center(
+                    child:
+                        Text(course.icon, style: const TextStyle(fontSize: 46)),
                   ),
                 ),
-                child: Center(
-                  child: Text(course.icon, style: const TextStyle(fontSize: 46)),
-                ),
-              ),
+              ] else
+                const SizedBox(height: 56),
               const SizedBox(height: 18),
               Text(
                 course.title,
@@ -147,8 +202,7 @@ class _CourseDetailHeaderState extends State<CourseDetailHeader> {
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 }
 

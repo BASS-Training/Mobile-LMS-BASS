@@ -53,31 +53,57 @@ class CourseCard extends StatelessWidget {
   }
 
   Widget _buildCover(CourseAccent accent) {
-    return Stack(
+    final thumb = course.thumbnailUrl;
+    final hasThumb = thumb != null && thumb.isNotEmpty;
+
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
+      child: Stack(
+      fit: StackFit.expand,
       children: [
-        Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: accent.gradient,
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
-          ),
-        ),
-        Positioned(
-          right: -16,
-          top: -14,
-          child: Container(
-            width: 96,
-            height: 96,
+        // Base layer: the uploaded thumbnail when available, otherwise the
+        // brand-accent gradient with its decorative emoji.
+        if (hasThumb)
+          Image.network(
+            thumb,
+            fit: BoxFit.cover,
+            // While loading or on error, fall back to the gradient cover so the
+            // card never shows a broken-image box.
+            loadingBuilder: (context, child, progress) =>
+                progress == null ? child : _gradientCover(accent),
+            errorBuilder: (_, _, _) => _gradientCover(accent),
+          )
+        else
+          _gradientCover(accent),
+        // Scrim so the white pills/badges stay legible on bright photos.
+        if (hasThumb)
+          Container(
             decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withValues(alpha: 0.12),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black.withValues(alpha: 0.28),
+                  Colors.transparent,
+                  Colors.black.withValues(alpha: 0.18),
+                ],
+                stops: const [0.0, 0.5, 1.0],
+              ),
             ),
           ),
-        ),
+        if (!hasThumb)
+          Positioned(
+            right: -16,
+            top: -14,
+            child: Container(
+              width: 96,
+              height: 96,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white.withValues(alpha: 0.12),
+              ),
+            ),
+          ),
         // Lesson count badge
         Positioned(
           left: 12,
@@ -111,12 +137,13 @@ class CourseCard extends StatelessWidget {
               ),
             ),
           ),
-        // Course emoji
-        Positioned(
-          left: 14,
-          bottom: 12,
-          child: Text(course.icon, style: const TextStyle(fontSize: 38)),
-        ),
+        // Course emoji — only on the default cover; redundant over a real photo.
+        if (!hasThumb)
+          Positioned(
+            left: 14,
+            bottom: 12,
+            child: Text(course.icon, style: const TextStyle(fontSize: 38)),
+          ),
         // Locked / catalog badge for courses the user does not own yet.
         if (!course.isOwned)
           Positioned(
@@ -146,6 +173,21 @@ class CourseCard extends StatelessWidget {
             ),
           ),
       ],
+      ),
+    );
+  }
+
+  /// The default cover: a brand-accent gradient. Also used as the loading/error
+  /// fallback when a course has an uploaded thumbnail.
+  Widget _gradientCover(CourseAccent accent) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: accent.gradient,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
     );
   }
 

@@ -25,11 +25,12 @@ class HomeAchievements extends StatelessWidget {
 
     // Surface the most impressive badges first: highest tier, then closest to
     // the next tier. Show the top four as a preview.
-    final preview = [...achievements]..sort((a, b) {
-      final byTier = b.tier.index.compareTo(a.tier.index);
-      if (byTier != 0) return byTier;
-      return b.progress.compareTo(a.progress);
-    });
+    final preview = [...achievements]
+      ..sort((a, b) {
+        final byTier = b.tier.index.compareTo(a.tier.index);
+        if (byTier != 0) return byTier;
+        return b.progress.compareTo(a.progress);
+      });
     final shown = preview.take(4).toList();
 
     return Padding(
