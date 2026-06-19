@@ -1,0 +1,28 @@
+<svg viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <!-- ground shadow -->
+  <ellipse cx="160" cy="198" rx="106" ry="14" fill="#3F3D56" opacity="0.10"/>
+
+  <!-- bottom book (navy) -->
+  <rect x="82" y="162" width="156" height="26" rx="6" fill="#3F3D56"/>
+  <rect x="82" y="162" width="156" height="7" rx="3.5" fill="#2E2C42"/>
+  <rect x="92" y="173" width="120" height="3" rx="1.5" fill="#FFFFFF" opacity="0.45"/>
+
+  <!-- middle book (red), shifted right -->
+  <rect x="98" y="136" width="142" height="26" rx="6" fill="#DC0000"/>
+  <rect x="98" y="136" width="142" height="7" rx="3.5" fill="#A10000"/>
+  <rect x="108" y="147" width="106" height="3" rx="1.5" fill="#FFFFFF" opacity="0.55"/>
+
+  <!-- top book (pink), shifted left -->
+  <rect x="78" y="110" width="146" height="26" rx="6" fill="#ED9DA0"/>
+  <rect x="78" y="110" width="146" height="7" rx="3.5" fill="#D98086"/>
+  <rect x="88" y="121" width="112" height="3" rx="1.5" fill="#FFFFFF" opacity="0.6"/>
+
+  <!-- bookmark ribbon hanging from the top book -->
+  <path d="M188 110 h18 v36 l-9 -9 -9 9 z" fill="#DC0000"/>
+
+  <!-- decorative accents -->
+  <path d="M250 74 l4 9 9 4 -9 4 -4 9 -4 -9 -9 -4 9 -4 z" fill="#DC0000" opacity="0.85"/>
+  <circle cx="64" cy="96" r="5.5" fill="#ED9DA0"/>
+  <circle cx="258" cy="150" r="4.5" fill="#3F3D56" opacity="0.55"/>
+  <path d="M70 64 l2.6 6 6 2.6 -6 2.6 -2.6 6 -2.6 -6 -6 -2.6 6 -2.6 z" fill="#3F3D56" opacity="0.4"/>
+</svg>

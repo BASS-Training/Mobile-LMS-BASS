@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_accent.dart';
+import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_illustration_cover.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 
 /// Course card used in both the horizontal "recommended" rail and the grid.
 ///
-/// Layout: a compact brand-gradient cover with the course emoji, a save
-/// toggle and a lesson badge, followed by the title, instructor and a small
-/// progress bar so learners can see where they left off at a glance.
+/// Layout: a cover (the uploaded thumbnail, or a brand-recolored illustration
+/// on a soft warm wash) topped with a lesson chip and save toggle, followed by
+/// the title, instructor and a small progress bar so learners can see where
+/// they left off at a glance.
 class CourseCard extends StatelessWidget {
   final CourseEntity course;
   final VoidCallback onTap;
@@ -59,137 +61,105 @@ class CourseCard extends StatelessWidget {
     return ClipRRect(
       borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
       child: Stack(
-      fit: StackFit.expand,
-      children: [
-        // Base layer: the uploaded thumbnail when available, otherwise the
-        // brand-accent gradient with its decorative emoji.
-        if (hasThumb)
-          Image.network(
-            thumb,
-            fit: BoxFit.cover,
-            // While loading or on error, fall back to the gradient cover so the
-            // card never shows a broken-image box.
-            loadingBuilder: (context, child, progress) =>
-                progress == null ? child : _gradientCover(accent),
-            errorBuilder: (_, _, _) => _gradientCover(accent),
-          )
-        else
-          _gradientCover(accent),
-        // Scrim so the white pills/badges stay legible on bright photos.
-        if (hasThumb)
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.black.withValues(alpha: 0.28),
-                  Colors.transparent,
-                  Colors.black.withValues(alpha: 0.18),
-                ],
-                stops: const [0.0, 0.5, 1.0],
-              ),
-            ),
-          ),
-        if (!hasThumb)
-          Positioned(
-            right: -16,
-            top: -14,
-            child: Container(
-              width: 96,
-              height: 96,
+        fit: StackFit.expand,
+        children: [
+          // Base: the uploaded thumbnail when available, otherwise a default
+          // illustration cover.
+          if (hasThumb)
+            Image.network(
+              thumb,
+              fit: BoxFit.cover,
+              // While loading or on error, fall back to the illustration cover
+              // so the card never shows a broken-image box.
+              loadingBuilder: (context, child, progress) =>
+                  progress == null ? child : _defaultCover(),
+              errorBuilder: (_, _, _) => _defaultCover(),
+            )
+          else
+            _defaultCover(),
+          // A soft top scrim only over photos, for depth + chip legibility.
+          if (hasThumb)
+            const DecoratedBox(
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withValues(alpha: 0.12),
-              ),
-            ),
-          ),
-        // Lesson count badge
-        Positioned(
-          left: 12,
-          top: 12,
-          child: _Pill(
-            label: course.totalLessons > 0
-                ? '${course.totalLessons} lesson'
-                : 'Course',
-          ),
-        ),
-        // Save toggle
-        if (onSavePressed != null)
-          Positioned(
-            right: 10,
-            top: 10,
-            child: GestureDetector(
-              onTap: onSavePressed,
-              child: Container(
-                padding: const EdgeInsets.all(7),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  isSaved
-                      ? Icons.bookmark_rounded
-                      : Icons.bookmark_outline_rounded,
-                  color: accent.solid,
-                  size: 18,
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0x33000000), Colors.transparent],
                 ),
               ),
             ),
-          ),
-        // Course emoji — only on the default cover; redundant over a real photo.
-        if (!hasThumb)
+          // Lesson count chip (white so it reads on both the wash and photos).
           Positioned(
-            left: 14,
-            bottom: 12,
-            child: Text(course.icon, style: const TextStyle(fontSize: 38)),
+            left: 12,
+            top: 12,
+            child: _Pill(
+              label: course.totalLessons > 0
+                  ? '${course.totalLessons} lesson'
+                  : 'Course',
+            ),
           ),
-        // Locked / catalog badge for courses the user does not own yet.
-        if (!course.isOwned)
-          Positioned(
-            right: 12,
-            bottom: 12,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(999),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.lock_rounded, size: 12, color: accent.solid),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Beli',
-                    style: TextStyle(
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w800,
-                      color: accent.solid,
-                    ),
+          // Save toggle
+          if (onSavePressed != null)
+            Positioned(
+              right: 10,
+              top: 10,
+              child: GestureDetector(
+                onTap: onSavePressed,
+                child: Container(
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: AppShadows.xs,
                   ),
-                ],
+                  child: Icon(
+                    isSaved
+                        ? Icons.bookmark_rounded
+                        : Icons.bookmark_outline_rounded,
+                    color: accent.solid,
+                    size: 18,
+                  ),
+                ),
               ),
             ),
-          ),
-      ],
+          // Locked / catalog badge for courses the user does not own yet.
+          if (!course.isOwned)
+            Positioned(
+              right: 12,
+              bottom: 12,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(999),
+                  boxShadow: AppShadows.xs,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.lock_rounded, size: 12, color: accent.solid),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Beli',
+                      style: TextStyle(
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w800,
+                        color: accent.solid,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
 
-  /// The default cover: a brand-accent gradient. Also used as the loading/error
-  /// fallback when a course has an uploaded thumbnail.
-  Widget _gradientCover(CourseAccent accent) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: accent.gradient,
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-    );
-  }
+  /// Default cover when no thumbnail is set: a brand-recolored illustration on
+  /// a soft warm wash (onboarding style). Also the loading/error fallback for
+  /// real thumbnails.
+  Widget _defaultCover() => CourseIllustrationCover(seed: course.id);
 
   /// Returns a human-friendly duration, or null when the data is empty/zero
   /// (so we never render an ugly "0 min").
@@ -312,16 +282,16 @@ class _Pill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.22),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
+        boxShadow: AppShadows.xs,
       ),
       child: Text(
         label,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 10,
-          fontWeight: FontWeight.w700,
-          color: Colors.white,
+          fontWeight: FontWeight.w800,
+          color: AppColors.textPrimary,
         ),
       ),
     );

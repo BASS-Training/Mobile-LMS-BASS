@@ -1,0 +1,22 @@
+<svg viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <!-- ground shadow -->
+  <ellipse cx="160" cy="202" rx="108" ry="13" fill="#3F3D56" opacity="0.10"/>
+
+  <!-- laptop screen -->
+  <rect x="92" y="82" width="136" height="94" rx="10" fill="#3F3D56"/>
+  <rect x="101" y="91" width="118" height="76" rx="4" fill="#F2F2F2"/>
+
+  <!-- play button -->
+  <circle cx="160" cy="129" r="23" fill="#DC0000"/>
+  <path d="M153 117 L175 129 L153 141 Z" fill="#FFFFFF"/>
+
+  <!-- laptop base -->
+  <path d="M78 176 h164 l11 14 q2 5 -5 5 H72 q-7 0 -5 -5 z" fill="#E6E6E6"/>
+  <rect x="140" y="176" width="40" height="4" rx="2" fill="#D6D6E3"/>
+
+  <!-- decorative accents -->
+  <circle cx="252" cy="96" r="6" fill="#ED9DA0"/>
+  <path d="M66 70 l3.6 8 8 3.6 -8 3.6 -3.6 8 -3.6 -8 -8 -3.6 8 -3.6 z" fill="#DC0000" opacity="0.85"/>
+  <circle cx="58" cy="150" r="4.5" fill="#3F3D56" opacity="0.5"/>
+  <path d="M246 150 l2.6 6 6 2.6 -6 2.6 -2.6 6 -2.6 -6 -6 -2.6 6 -2.6 z" fill="#3F3D56" opacity="0.4"/>
+</svg>

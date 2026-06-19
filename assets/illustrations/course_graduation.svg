@@ -1,0 +1,26 @@
+<svg viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <!-- ground shadow -->
+  <ellipse cx="160" cy="202" rx="100" ry="13" fill="#3F3D56" opacity="0.10"/>
+
+  <!-- diploma scroll -->
+  <rect x="106" y="160" width="108" height="22" rx="11" fill="#F2F2F2"/>
+  <rect x="150" y="158" width="20" height="26" rx="3" fill="#DC0000"/>
+  <circle cx="106" cy="171" r="13" fill="#FFFFFF" stroke="#E6E6E6" stroke-width="3"/>
+  <circle cx="214" cy="171" r="13" fill="#FFFFFF" stroke="#E6E6E6" stroke-width="3"/>
+
+  <!-- mortarboard base (head cover) -->
+  <path d="M134 118 v15 q0 11 26 11 q26 0 26 -11 v-15 z" fill="#2E2C42"/>
+
+  <!-- mortarboard top -->
+  <path d="M160 80 L228 106 L160 132 L92 106 Z" fill="#3F3D56"/>
+  <circle cx="160" cy="106" r="6" fill="#DC0000"/>
+
+  <!-- tassel -->
+  <path d="M160 106 L208 106 L208 134" stroke="#DC0000" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <rect x="203" y="134" width="10" height="16" rx="5" fill="#DC0000"/>
+
+  <!-- decorative accents -->
+  <path d="M84 74 l3.4 8 8 3.4 -8 3.4 -3.4 8 -3.4 -8 -8 -3.4 8 -3.4 z" fill="#ED9DA0"/>
+  <circle cx="244" cy="82" r="5" fill="#DC0000" opacity="0.8"/>
+  <circle cx="70" cy="150" r="4.5" fill="#3F3D56" opacity="0.5"/>
+</svg>
