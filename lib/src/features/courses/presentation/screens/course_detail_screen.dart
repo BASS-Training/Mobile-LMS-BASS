@@ -292,10 +292,10 @@ class _InstructorPanel extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.workspace_premium_rounded,
                 size: 18,
-                color: AppColors.brandPrimary,
+                color: AppColors.brandText,
               ),
               SizedBox(width: 8),
               Text(

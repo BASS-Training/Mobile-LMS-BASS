@@ -324,7 +324,7 @@ class _AuthorRow extends StatelessWidget {
             style: TextStyle(
               fontSize: small ? 11 : 13,
               fontWeight: FontWeight.w800,
-              color: AppColors.brandPrimary,
+              color: AppColors.brandText,
             ),
           ),
         ),
@@ -409,7 +409,7 @@ class _InlineComposer extends StatelessWidget {
             : IconButton(
                 onPressed: onSend,
                 icon: const Icon(Icons.send_rounded, size: 20),
-                color: AppColors.brandPrimary,
+                color: AppColors.brandText,
               ),
       ],
     );

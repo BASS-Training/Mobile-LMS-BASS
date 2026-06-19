@@ -29,10 +29,10 @@ class CourseSectionHeader extends StatelessWidget {
           ),
           child: Text(
             trailing!,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w700,
-              color: AppColors.brandPrimary
+              color: AppColors.brandText
             )
           )
         )

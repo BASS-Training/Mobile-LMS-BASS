@@ -47,10 +47,10 @@ class DiscussionThreadScreen extends StatelessWidget {
                   color: AppColors.surface,
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.menu_book_rounded,
                         size: 16,
-                        color: AppColors.brandPrimary,
+                        color: AppColors.brandText,
                       ),
                       const SizedBox(width: 8),
                       Expanded(

@@ -95,14 +95,14 @@ class HomeAchievements extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12.5,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.brandPrimary,
+                        color: AppColors.brandText,
                       ),
                     ),
                     const SizedBox(width: 2),
                     Icon(
                       Icons.arrow_forward_rounded,
                       size: 15,
-                      color: AppColors.brandPrimary,
+                      color: AppColors.brandText,
                     ),
                   ],
                 ),
@@ -132,18 +132,18 @@ class _LevelChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
+          Icon(
             Icons.workspace_premium_rounded,
             size: 14,
-            color: AppColors.brandPrimary,
+            color: AppColors.brandText,
           ),
           const SizedBox(width: 4),
           Text(
             'Lv ${summary.level}',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w800,
-              color: AppColors.brandPrimary,
+              color: AppColors.brandText,
             ),
           ),
         ],

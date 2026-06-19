@@ -202,18 +202,18 @@ class HomeContinueLearning extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
+          Icon(
             Icons.play_arrow_rounded,
-            color: AppColors.brandPrimary,
+            color: AppColors.brandText,
             size: 20,
           ),
           const SizedBox(width: 6),
           Text(
             started ? 'Lanjutkan' : 'Mulai Sekarang',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w800,
-              color: AppColors.brandPrimary,
+              color: AppColors.brandText,
             ),
           ),
         ],

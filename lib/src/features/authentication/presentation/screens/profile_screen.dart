@@ -392,7 +392,7 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
             trailing: selected
-                ? const Icon(Icons.check_rounded, color: AppColors.brandPrimary)
+                ? Icon(Icons.check_rounded, color: AppColors.brandText)
                 : null,
             onTap: () {
               Navigator.pop(sheetContext);
@@ -473,7 +473,7 @@ class ProfileScreen extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
         title: Row(
           children: [
-            Icon(icon, color: AppColors.brandPrimary, size: 22),
+            Icon(icon, color: AppColors.brandText, size: 22),
             const SizedBox(width: 10),
             Expanded(
               child: Text(

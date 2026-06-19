@@ -116,8 +116,8 @@ class _ParticipantTile extends StatelessWidget {
                 backgroundColor: AppColors.brandPrimary.withValues(alpha: 0.12),
                 child: Text(
                   initial,
-                  style: const TextStyle(
-                    color: AppColors.brandPrimary,
+                  style: TextStyle(
+                    color: AppColors.brandText,
                     fontWeight: FontWeight.w800,
                   ),
                 ),

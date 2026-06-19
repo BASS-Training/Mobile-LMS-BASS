@@ -140,9 +140,9 @@ class _OverallStatsHeader extends StatelessWidget {
                   color: AppColors.brandSurface,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.sports_esports_rounded,
-                  color: AppColors.brandPrimary,
+                  color: AppColors.brandText,
                   size: 22,
                 ),
               ),
@@ -209,8 +209,8 @@ class _StatPill extends StatelessWidget {
           children: [
             AnimatedCount(
               value: value,
-              style: const TextStyle(
-                color: AppColors.brandPrimary,
+              style: TextStyle(
+                color: AppColors.brandText,
                 fontSize: 18,
                 fontWeight: FontWeight.w900,
               ),

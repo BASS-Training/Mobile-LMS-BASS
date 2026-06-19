@@ -289,7 +289,7 @@ class _ActionButtons extends StatelessWidget {
               icon: const Icon(Icons.share_rounded, size: 18),
               label: const Text('Bagikan'),
               style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.brandPrimary,
+                foregroundColor: AppColors.brandText,
                 side: const BorderSide(color: AppColors.brandPrimary, width: 1.5),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
@@ -386,7 +386,7 @@ class _DetailRow extends StatelessWidget {
             color: AppColors.brandPrimary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(detail.icon, size: 17, color: AppColors.brandPrimary),
+          child: Icon(detail.icon, size: 17, color: AppColors.brandText),
         ),
         const SizedBox(width: 12),
         Expanded(

@@ -72,9 +72,9 @@ class _InstructorCard extends StatelessWidget {
                   color: AppColors.brandPrimary.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.person_rounded,
-                  color: AppColors.brandPrimary,
+                  color: AppColors.brandText,
                   size: 20,
                 ),
               ),
@@ -99,10 +99,10 @@ class _InstructorCard extends StatelessWidget {
                   ),
                   child: Text(
                     '${instructors.length}',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
-                      color: AppColors.brandPrimary,
+                      color: AppColors.brandText,
                     ),
                   ),
                 ),
