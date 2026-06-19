@@ -19,4 +19,15 @@ abstract class AuthRepository {
   Future<void> logout();
   Future<UserEntity?> getCurrentUser();
   Stream<UserEntity?> watchCurrentUser();
+
+  /// Update the current user's profile (data dasar + optional avatar photo).
+  /// Returns the updated user, with the local session refreshed.
+  Future<UserEntity?> updateProfile({
+    required String name,
+    required String dateOfBirth,
+    required String gender,
+    required String institutionName,
+    required String occupation,
+    String? avatarFilePath,
+  });
 }

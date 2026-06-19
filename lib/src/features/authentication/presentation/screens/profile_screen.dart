@@ -50,28 +50,43 @@ class ProfileScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildPersonalSection(user),
-                        _buildAccountSection(user),
-                        _sectionLabel('Pembelajaran'),
+                        _sectionLabel('Akun'),
                         _SectionCard(
                           children: [
                             _NavRow(
-                              icon: Icons.workspace_premium_rounded,
-                              accent: AppColors.warning,
-                              title: 'Sertifikat Saya',
-                              subtitle: 'Lihat sertifikat yang sudah diraih',
-                              onTap: () =>
-                                  context.push(AppRoutes.certificateList),
-                            ),
-                            _NavRow(
-                              icon: Icons.bookmark_rounded,
+                              icon: Icons.edit_rounded,
                               accent: AppColors.brandPrimary,
-                              title: 'Kursus Tersimpan',
-                              subtitle: 'Koleksi kursus yang kamu simpan',
-                              onTap: () => context.push(AppRoutes.savedCourses),
+                              title: 'Edit Profil',
+                              subtitle: 'Ubah foto & data diri',
+                              onTap: () => context.push(
+                                AppRoutes.editProfile,
+                                extra: user,
+                              ),
                             ),
                           ],
                         ),
+                        _buildPersonalSection(user),
+                        _buildAccountSection(user),
+                        // _sectionLabel('Pembelajaran'),
+                        // _SectionCard(
+                        //   children: [
+                        //     _NavRow(
+                        //       icon: Icons.workspace_premium_rounded,
+                        //       accent: AppColors.warning,
+                        //       title: 'Sertifikat Saya',
+                        //       subtitle: 'Lihat sertifikat yang sudah diraih',
+                        //       onTap: () =>
+                        //           context.push(AppRoutes.certificateList),
+                        //     ),
+                        //     _NavRow(
+                        //       icon: Icons.bookmark_rounded,
+                        //       accent: AppColors.brandPrimary,
+                        //       title: 'Kursus Tersimpan',
+                        //       subtitle: 'Koleksi kursus yang kamu simpan',
+                        //       onTap: () => context.push(AppRoutes.savedCourses),
+                        //     ),
+                        //   ],
+                        // ),
                         _sectionLabel('Pengaturan Aplikasi'),
                         _SectionCard(
                           children: [
@@ -542,6 +557,19 @@ class _ProfileHeader extends StatelessWidget {
 
   const _ProfileHeader({required this.user, required this.roleLabel});
 
+  Widget _avatarInitial(String initial) {
+    return Center(
+      child: Text(
+        initial,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 40,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final initial = user.name.trim().isNotEmpty
@@ -583,15 +611,16 @@ class _ProfileHeader extends StatelessWidget {
                   width: 2,
                 ),
               ),
-              child: Center(
-                child: Text(
-                  initial,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 40,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
+              child: ClipOval(
+                child: (user.avatarUrl != null && user.avatarUrl!.isNotEmpty)
+                    ? Image.network(
+                        user.avatarUrl!,
+                        width: 96,
+                        height: 96,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) => _avatarInitial(initial),
+                      )
+                    : _avatarInitial(initial),
               ),
             ),
             const SizedBox(height: 16),

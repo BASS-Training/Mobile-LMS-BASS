@@ -13,6 +13,9 @@ import 'package:lms_mobile_app/src/features/authentication/presentation/screens/
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/intro_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/login_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/register_screen.dart';
+import 'package:lms_mobile_app/src/features/authentication/presentation/edit_profile/edit_profile_cubit.dart';
+import 'package:lms_mobile_app/src/features/authentication/presentation/screens/edit_profile_screen.dart';
+import 'package:lms_mobile_app/src/features/authentication/domain/entities/user_entity.dart';
 import 'package:lms_mobile_app/src/features/main/presentation/screens/main_screen.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/screens/course_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/screens/saved_courses_screen.dart';
@@ -141,6 +144,13 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.discussionHub,
         builder: (context, state) => const DiscussionHubScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.editProfile,
+        builder: (context, state) => BlocProvider<EditProfileCubit>(
+          create: (_) => _sl<EditProfileCubit>(),
+          child: EditProfileScreen(user: state.extra as UserEntity),
+        ),
       ),
       GoRoute(
         path: AppRoutes.achievements,

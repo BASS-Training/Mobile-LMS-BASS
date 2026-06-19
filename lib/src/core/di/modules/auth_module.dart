@@ -8,7 +8,9 @@ import 'package:lms_mobile_app/src/features/authentication/domain/usecases/get_c
 import 'package:lms_mobile_app/src/features/authentication/domain/usecases/login_usecase.dart';
 import 'package:lms_mobile_app/src/features/authentication/domain/usecases/logout_usecase.dart';
 import 'package:lms_mobile_app/src/features/authentication/domain/usecases/register.usecase.dart';
+import 'package:lms_mobile_app/src/features/authentication/domain/usecases/update_profile_usecase.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_bloc.dart';
+import 'package:lms_mobile_app/src/features/authentication/presentation/edit_profile/edit_profile_cubit.dart';
 
 class AuthModule {
   /// Register semua auth dependencies
@@ -25,9 +27,15 @@ class AuthModule {
     final registerUseCase = RegisterUseCase(authRepository);
     final logoutUseCase = LogoutUseCase(authRepository);
     final getCurrentUserUseCase = GetCurrentUserUseCase(authRepository);
+    final updateProfileUseCase = UpdateProfileUseCase(authRepository);
 
     getIt.registerLazySingleton<GetCurrentUserUseCase>(
       () => getCurrentUserUseCase,
+    );
+
+    // A fresh cubit per edit-profile screen.
+    getIt.registerFactory<EditProfileCubit>(
+      () => EditProfileCubit(updateProfileUseCase),
     );
 
     // Presentation Layer

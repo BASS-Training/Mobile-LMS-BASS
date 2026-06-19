@@ -19,6 +19,7 @@ class AppRoutes {
   static const String savedCourses = '/saved-courses';
   static const String certificates = '/certificates';
   static const String profile = '/profile';
+  static const String editProfile = '/edit-profile';
   static const String joinClass = '/join-class';
   static const String notifications = '/notifications-center';
   static const String discussionHub = '/discussions';

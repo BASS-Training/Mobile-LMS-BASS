@@ -16,6 +16,7 @@ class UserMapper {
       registrationProgram: model.registrationProgram,
       avpnVerificationStatus: model.avpnVerificationStatus,
       joinedAt: model.joinedAt,
+      avatarUrl: model.avatarUrl,
     );
   }
 
@@ -33,6 +34,7 @@ class UserMapper {
       registrationProgram: entity.registrationProgram,
       avpnVerificationStatus: entity.avpnVerificationStatus,
       joinedAt: entity.joinedAt,
+      avatarUrl: entity.avatarUrl,
     );
   }
 }

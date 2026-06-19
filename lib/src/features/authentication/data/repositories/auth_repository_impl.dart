@@ -154,6 +154,54 @@ class AuthRepositoryImpl implements AuthRepository {
     yield await getCurrentUser();
   }
 
+  @override
+  Future<UserEntity?> updateProfile({
+    required String name,
+    required String dateOfBirth,
+    required String gender,
+    required String institutionName,
+    required String occupation,
+    String? avatarFilePath,
+  }) async {
+    final token = LocalStorage.getAuthToken();
+    if (token == null) {
+      throw Exception('Sesi berakhir. Silakan masuk kembali.');
+    }
+
+    try {
+      final fields = <String, dynamic>{
+        'name': name.trim(),
+        'date_of_birth': dateOfBirth,
+        'gender': gender,
+        'institution_name': institutionName.trim(),
+        'occupation': occupation.trim(),
+      };
+      if (avatarFilePath != null && avatarFilePath.isNotEmpty) {
+        fields['avatar'] = await MultipartFile.fromFile(
+          avatarFilePath,
+          filename: avatarFilePath.split(RegExp(r'[\\/]')).last,
+        );
+      }
+
+      final response = await _dio.post(
+        ApiEndpoints.updateProfile,
+        data: FormData.fromMap(fields),
+      );
+
+      final payload = _decodeResponse(response.data);
+      final data = payload['data'];
+      if (data is Map<String, dynamic> &&
+          data['user'] is Map<String, dynamic>) {
+        final user = _normalizeUser(data['user'] as Map<String, dynamic>);
+        await LocalStorage.saveAuthSession(token: token, user: user.toJson());
+        return UserMapper.toDomain(user);
+      }
+      throw Exception('Respons profil tidak valid.');
+    } on DioException catch (error) {
+      throw Exception(friendlyDioMessage(error, 'Gagal memperbarui profil.'));
+    }
+  }
+
   Future<UserEntity?> _persistSessionFromPayload(
     Map<String, dynamic> payload,
   ) async {
@@ -173,26 +221,10 @@ class AuthRepositoryImpl implements AuthRepository {
     return UserMapper.toDomain(user);
   }
 
-  User _normalizeUser(Map<String, dynamic> json) {
-    final rawRoles = json['roles'];
-    final roles = rawRoles is List
-        ? rawRoles
-              .map((value) => value.toString())
-              .where((value) => value.isNotEmpty)
-              .toList()
-        : <String>[];
-
-    return User(
-      id: json['id']?.toString() ?? '',
-      name: json['name']?.toString() ?? '',
-      email: json['email']?.toString() ?? '',
-      role:
-          json['primary_role']?.toString() ??
-          json['role']?.toString() ??
-          'participant',
-      roles: roles,
-    );
-  }
+  // Delegate to User.fromJson so ALL profile fields (date_of_birth, gender,
+  // institution_name, occupation, avatar_url, created_at, …) survive the
+  // session round-trip — not just id/name/email/role.
+  User _normalizeUser(Map<String, dynamic> json) => User.fromJson(json);
 
   Map<String, dynamic> _decodeResponse(dynamic body) {
     if (body is Map<String, dynamic>) {
