@@ -2,13 +2,15 @@
 <resources>
     <!-- Theme applied to the Android Window while the process is starting when the OS's Dark Mode setting is off -->
     <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <!-- windowBackground added explicitly: some OEMs (MIUI/HyperOS) ignore
+             windowSplashScreenBackground in dark mode and paint this instead. -->
+        <item name="android:windowBackground">#ffffff</item>
         <item name="android:forceDarkAllowed">false</item>
         <item name="android:windowFullscreen">false</item>
         <item name="android:windowDrawsSystemBarBackgrounds">false</item>
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
         <item name="android:windowSplashScreenBackground">#ffffff</item>
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/android12splash</item>
-        <item name="android:windowSplashScreenIconBackgroundColor">#ffffff</item>
     </style>
     <!-- Theme applied to the Android Window as soon as the process has started.
          This theme determines the color of the Android Window while your
@@ -17,6 +19,9 @@
          
          This Theme is only used starting with V2 of Flutter's Android embedding. -->
     <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
-        <item name="android:windowBackground">?android:colorBackground</item>
+        <!-- Force white explicitly: on MIUI/dark mode ?android:colorBackground
+             resolves to a dark color, causing a black flash (white logo box on
+             black) during the native splash -> Flutter handoff. -->
+        <item name="android:windowBackground">#ffffff</item>
     </style>
 </resources>

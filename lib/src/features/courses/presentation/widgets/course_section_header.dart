@@ -18,25 +18,25 @@ class CourseSectionHeader extends StatelessWidget {
             fontSize: 16,
             fontWeight: FontWeight.w800,
             color: AppColors.textPrimary,
-          )
+          ),
         ),
         if (trailing != null)
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-          decoration: BoxDecoration(
-            color: AppColors.brandPrimary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppColors.brandPrimary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              trailing!,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: AppColors.brandText,
+              ),
+            ),
           ),
-          child: Text(
-            trailing!,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: AppColors.brandText
-            )
-          )
-        )
-      ]
+      ],
     );
   }
 }

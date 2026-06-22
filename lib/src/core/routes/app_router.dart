@@ -147,10 +147,24 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.editProfile,
-        builder: (context, state) => BlocProvider<EditProfileCubit>(
-          create: (_) => _sl<EditProfileCubit>(),
-          child: EditProfileScreen(user: state.extra as UserEntity),
-        ),
+        builder: (context, state) {
+          // `extra` is not part of the URL, so a router refresh (e.g. when the
+          // AuthBloc emits after a successful save) drops it. Fall back to the
+          // current authenticated user so the rebuild never casts a null.
+          final authState = _authBloc.state;
+          final user =
+              (state.extra as UserEntity?) ??
+              (authState is AuthSuccess ? authState.user : null);
+          if (user == null) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+          return BlocProvider<EditProfileCubit>(
+            create: (_) => _sl<EditProfileCubit>(),
+            child: EditProfileScreen(user: user),
+          );
+        },
       ),
       GoRoute(
         path: AppRoutes.achievements,
