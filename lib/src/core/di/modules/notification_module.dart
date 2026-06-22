@@ -6,6 +6,8 @@ import 'package:get_it/get_it.dart';
 import 'package:lms_mobile_app/src/features/notifications/data/notification_repository.dart';
 import 'package:lms_mobile_app/src/features/notifications/presentation/cubit/notifications_cubit.dart';
 
+/// Modul DI fitur Notifikasi: mendaftarkan repository dan NotificationsCubit
+/// (singleton global, dibagi Home & layar notifikasi). Lihat ARCHITECTURE.md §6.
 class NotificationModule {
   static void register(GetIt getIt) {
     if (getIt.isRegistered<NotificationRepository>()) {

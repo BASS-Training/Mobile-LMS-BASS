@@ -92,20 +92,20 @@ class _HomeScreenState extends State<HomeScreen> {
               onTap: onSeeAll,
               behavior: HitTestBehavior.opaque,
               child: Row(
-                children: const [
+                children: [
                   Text(
                     'Lihat semua',
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
-                      color: AppColors.brandPrimary,
+                      color: AppColors.brandText,
                     ),
                   ),
-                  SizedBox(width: 2),
+                  const SizedBox(width: 2),
                   Icon(
                     Icons.chevron_right_rounded,
                     size: 18,
-                    color: AppColors.brandPrimary,
+                    color: AppColors.brandText,
                   ),
                 ],
               ),
@@ -250,8 +250,8 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Center(
               child: Text(
                 state.message,
-                style: const TextStyle(
-                  color: AppColors.brandPrimary,
+                style: TextStyle(
+                  color: AppColors.brandText,
                   fontSize: 14,
                 ),
               ),

@@ -2,6 +2,12 @@ import 'dart:convert';
 
 import 'package:hive_flutter/hive_flutter.dart';
 
+/// Penyimpanan lokal berbasis Hive (box utama `mini_lms_box`).
+///
+/// Satu-satunya sumber untuk data ringan di perangkat: token & user sesi,
+/// status "intro dilihat", preferensi tema, progres lesson lokal, draft esai,
+/// dan riwayat attempt. Di-`init` sekali di [CoreModule]. Fitur lain (game,
+/// achievement) memakai box-nya sendiri. Lihat ARCHITECTURE.md §8.
 class LocalStorage {
   static const String _boxName = 'mini_lms_box';
   static const String _completedLessonsKey = 'completed_lessons';
@@ -14,6 +20,7 @@ class LocalStorage {
   static const String _introSeenKey = 'intro_seen';
   static const String _gameSoundMutedKey = 'game_sound_muted';
   static const String _themeModeKey = 'theme_mode';
+  static const String _coursesCacheKey = 'courses_cache';
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -107,6 +114,31 @@ class LocalStorage {
   static Future<void> clearAuthSession() async {
     await _box.delete(_authTokenKey);
     await _box.delete(_authUserKey);
+    // Buang cache course agar data akun sebelumnya tidak bocor ke akun lain.
+    await _box.delete(_coursesCacheKey);
+  }
+
+  // ===== Cache daftar course (untuk tampilan cache-first yang instan) =====
+  // Menyimpan payload `data` mentah dari API courses sebagai string JSON, lalu
+  // dibaca kembali saat startup untuk menampilkan data terakhir tanpa menunggu
+  // jaringan. Direfresh diam-diam di belakang setiap kali fetch berhasil.
+  static Future<void> saveCoursesCache(String coursesJson) async {
+    await _box.put(_coursesCacheKey, coursesJson);
+  }
+
+  static List<Map<String, dynamic>>? getCoursesCache() {
+    final raw = _box.get(_coursesCacheKey);
+    if (raw is! String || raw.isEmpty) return null;
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is List) {
+        return decoded
+            .whereType<Map>()
+            .map((e) => e.map((k, v) => MapEntry(k.toString(), v)))
+            .toList();
+      }
+    } catch (_) {}
+    return null;
   }
 
   static bool hasSeenIntro() {

@@ -7,6 +7,8 @@ import 'package:lms_mobile_app/src/features/home/data/repositories/home_reposito
 import 'package:lms_mobile_app/src/features/home/domain/usecases/join_class_usecase.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/bloc/home_bloc.dart';
 
+/// Modul DI fitur Home: mendaftarkan datasource, repository, usecase, dan
+/// HomeBloc untuk dashboard. Dipanggil oleh [ServiceLocator]. Lihat ARCHITECTURE.md §6.
 class HomeModule {
   static void register(GetIt getIt) {
     if (getIt.isRegistered<HomeBloc>()) {

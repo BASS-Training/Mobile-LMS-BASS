@@ -59,6 +59,9 @@ class ApiEndpoints {
   static const String getProfile = '/profile';
   static const String updateProfile = '/profile';
 
+  // Agenda (sesi terjadwal/Zoom mendatang lintas course)
+  static const String agenda = '/agenda';
+
   // Notifications (gabungan: notifikasi DB + pengumuman web)
   static const String notifications = '/notifications';
   static const String notificationsUnreadCount = '/notifications/unread-count';

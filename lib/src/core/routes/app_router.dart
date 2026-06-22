@@ -13,6 +13,9 @@ import 'package:lms_mobile_app/src/features/authentication/presentation/screens/
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/intro_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/login_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/register_screen.dart';
+import 'package:lms_mobile_app/src/features/authentication/presentation/edit_profile/edit_profile_cubit.dart';
+import 'package:lms_mobile_app/src/features/authentication/presentation/screens/edit_profile_screen.dart';
+import 'package:lms_mobile_app/src/features/authentication/domain/entities/user_entity.dart';
 import 'package:lms_mobile_app/src/features/main/presentation/screens/main_screen.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/screens/course_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/screens/saved_courses_screen.dart';
@@ -43,6 +46,7 @@ import 'package:lms_mobile_app/src/features/notifications/presentation/screens/n
 import 'package:lms_mobile_app/src/features/discussions/presentation/screens/discussion_hub_screen.dart';
 import 'package:lms_mobile_app/src/features/discussions/presentation/screens/discussion_thread_screen.dart';
 import 'package:lms_mobile_app/src/features/achievements/presentation/screens/achievements_screen.dart';
+import 'package:lms_mobile_app/src/features/agenda/presentation/screens/agenda_screen.dart';
 import 'package:lms_mobile_app/src/features/home/domain/entities/home_stats.entity.dart';
 import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_participants_screen.dart';
 import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_grading_queue_screen.dart';
@@ -142,9 +146,34 @@ class AppRouter {
         builder: (context, state) => const DiscussionHubScreen(),
       ),
       GoRoute(
+        path: AppRoutes.editProfile,
+        builder: (context, state) {
+          // `extra` is not part of the URL, so a router refresh (e.g. when the
+          // AuthBloc emits after a successful save) drops it. Fall back to the
+          // current authenticated user so the rebuild never casts a null.
+          final authState = _authBloc.state;
+          final user =
+              (state.extra as UserEntity?) ??
+              (authState is AuthSuccess ? authState.user : null);
+          if (user == null) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+          return BlocProvider<EditProfileCubit>(
+            create: (_) => _sl<EditProfileCubit>(),
+            child: EditProfileScreen(user: user),
+          );
+        },
+      ),
+      GoRoute(
         path: AppRoutes.achievements,
         builder: (context, state) =>
             AchievementsScreen(stats: state.extra as HomeStatsEntity),
+      ),
+      GoRoute(
+        path: AppRoutes.agenda,
+        builder: (context, state) => const AgendaScreen(),
       ),
       GoRoute(
         path: AppRoutes.discussionThread,

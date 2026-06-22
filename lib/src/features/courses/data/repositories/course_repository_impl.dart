@@ -49,6 +49,25 @@ class CourseRepositoryImpl implements CourseRepository {
   }
 
   @override
+  Future<List<CourseEntity>> getCachedCourses() async {
+    if (_isOfflineTestSession()) return [];
+
+    final raw = LocalStorage.getCoursesCache();
+    if (raw == null || raw.isEmpty) return [];
+
+    try {
+      final courses = raw
+          .map((j) => Course.fromJson(Map<String, dynamic>.from(j)))
+          .toList();
+      await _reconcileCompletionStatus(courses);
+      return _mapCoursesToEntities(courses);
+    } catch (e) {
+      logDebug('[COURSE][CACHE] gagal membaca cache course: $e');
+      return [];
+    }
+  }
+
+  @override
   Stream<List<CourseEntity>> watchCourses() async* {
     if (_isOfflineTestSession()) {
       logDebug(
@@ -58,6 +77,13 @@ class CourseRepositoryImpl implements CourseRepository {
       await _reconcileCompletionStatus(localCourses);
       yield _mapCoursesToEntities(localCourses);
       return;
+    }
+
+    // Cache-first: pancarkan cache disk lebih dulu (instan) bila ada, lalu
+    // lanjut dengan data segar dari jaringan.
+    final cached = await getCachedCourses();
+    if (cached.isNotEmpty) {
+      yield cached;
     }
 
     logDebug(

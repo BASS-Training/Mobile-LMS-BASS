@@ -13,6 +13,7 @@ class User {
   final String? registrationProgram; // 'regular' | 'avpn_ai'
   final String? avpnVerificationStatus; // pending | verified | not_required
   final String? joinedAt; // ISO 8601 (created_at)
+  final String? avatarUrl; // absolute URL foto profil, atau null
 
   User({
     required this.id,
@@ -27,6 +28,7 @@ class User {
     this.registrationProgram,
     this.avpnVerificationStatus,
     this.joinedAt,
+    this.avatarUrl,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -57,6 +59,7 @@ class User {
       registrationProgram: str(json['registration_program']),
       avpnVerificationStatus: str(json['avpn_verification_status']),
       joinedAt: str(json['created_at'] ?? json['joined_at']),
+      avatarUrl: str(json['avatar_url'] ?? json['avatarUrl']),
     );
   }
 
@@ -75,6 +78,7 @@ class User {
       'registration_program': registrationProgram,
       'avpn_verification_status': avpnVerificationStatus,
       'created_at': joinedAt,
+      'avatar_url': avatarUrl,
     };
   }
 }

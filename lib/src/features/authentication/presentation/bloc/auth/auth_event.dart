@@ -1,7 +1,20 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../domain/entities/user_entity.dart';
+
 abstract class AuthEvent extends Equatable {
   const AuthEvent();
+}
+
+/// Replace the currently-authenticated user in global state (e.g. after the
+/// user edits their profile). Keeps the session signed in.
+class AuthUserUpdatedEvent extends AuthEvent {
+  final UserEntity user;
+
+  const AuthUserUpdatedEvent(this.user);
+
+  @override
+  List<Object?> get props => [user];
 }
 
 class AuthLoginEvent extends AuthEvent {

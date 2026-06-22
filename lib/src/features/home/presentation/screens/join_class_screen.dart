@@ -75,10 +75,10 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
                     color: AppColors.brandPrimary.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.vpn_key_rounded,
                     size: 42,
-                    color: AppColors.brandPrimary,
+                    color: AppColors.brandText,
                   ),
                 ),
               ),
@@ -131,7 +131,7 @@ class _JoinClassScreenState extends State<JoinClassScreen> {
                     hintStyle: TextStyle(color: AppColors.textTertiary),
                     prefixIcon: Icon(
                       Icons.confirmation_number_rounded,
-                      color: AppColors.brandPrimary,
+                      color: AppColors.brandText,
                     ),
                     filled: false,
                     border: InputBorder.none,

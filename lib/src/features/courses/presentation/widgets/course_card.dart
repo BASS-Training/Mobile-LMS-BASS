@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_accent.dart';
+import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_illustration_cover.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 
 /// Course card used in both the horizontal "recommended" rail and the grid.
 ///
-/// Layout: a compact brand-gradient cover with the course emoji, a save
-/// toggle and a lesson badge, followed by the title, instructor and a small
-/// progress bar so learners can see where they left off at a glance.
+/// Layout: a cover (the uploaded thumbnail, or a brand-recolored illustration
+/// on a soft warm wash) topped with a lesson chip and save toggle, followed by
+/// the title, instructor and a small progress bar so learners can see where
+/// they left off at a glance.
 class CourseCard extends StatelessWidget {
   final CourseEntity course;
   final VoidCallback onTap;
@@ -53,101 +55,111 @@ class CourseCard extends StatelessWidget {
   }
 
   Widget _buildCover(CourseAccent accent) {
-    return Stack(
-      children: [
-        Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: accent.gradient,
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
-          ),
-        ),
-        Positioned(
-          right: -16,
-          top: -14,
-          child: Container(
-            width: 96,
-            height: 96,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withValues(alpha: 0.12),
-            ),
-          ),
-        ),
-        // Lesson count badge
-        Positioned(
-          left: 12,
-          top: 12,
-          child: _Pill(
-            label: course.totalLessons > 0
-                ? '${course.totalLessons} lesson'
-                : 'Course',
-          ),
-        ),
-        // Save toggle
-        if (onSavePressed != null)
-          Positioned(
-            right: 10,
-            top: 10,
-            child: GestureDetector(
-              onTap: onSavePressed,
-              child: Container(
-                padding: const EdgeInsets.all(7),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  isSaved
-                      ? Icons.bookmark_rounded
-                      : Icons.bookmark_outline_rounded,
-                  color: accent.solid,
-                  size: 18,
-                ),
-              ),
-            ),
-          ),
-        // Course emoji
-        Positioned(
-          left: 14,
-          bottom: 12,
-          child: Text(course.icon, style: const TextStyle(fontSize: 38)),
-        ),
-        // Locked / catalog badge for courses the user does not own yet.
-        if (!course.isOwned)
-          Positioned(
-            right: 12,
-            bottom: 12,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+    final thumb = course.thumbnailUrl;
+    final hasThumb = thumb != null && thumb.isNotEmpty;
+
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Base: the uploaded thumbnail when available, otherwise a default
+          // illustration cover.
+          if (hasThumb)
+            Image.network(
+              thumb,
+              fit: BoxFit.cover,
+              // While loading or on error, fall back to the illustration cover
+              // so the card never shows a broken-image box.
+              loadingBuilder: (context, child, progress) =>
+                  progress == null ? child : _defaultCover(),
+              errorBuilder: (_, _, _) => _defaultCover(),
+            )
+          else
+            _defaultCover(),
+          // A soft top scrim only over photos, for depth + chip legibility.
+          if (hasThumb)
+            const DecoratedBox(
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(999),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.lock_rounded, size: 12, color: accent.solid),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Beli',
-                    style: TextStyle(
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w800,
-                      color: accent.solid,
-                    ),
-                  ),
-                ],
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0x33000000), Colors.transparent],
+                ),
               ),
             ),
+          // Lesson count chip (white so it reads on both the wash and photos).
+          Positioned(
+            left: 12,
+            top: 12,
+            child: _Pill(
+              label: course.totalLessons > 0
+                  ? '${course.totalLessons} lesson'
+                  : 'Course',
+            ),
           ),
-      ],
+          // Save toggle
+          if (onSavePressed != null)
+            Positioned(
+              right: 10,
+              top: 10,
+              child: GestureDetector(
+                onTap: onSavePressed,
+                child: Container(
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: AppShadows.xs,
+                  ),
+                  child: Icon(
+                    isSaved
+                        ? Icons.bookmark_rounded
+                        : Icons.bookmark_outline_rounded,
+                    color: accent.solid,
+                    size: 18,
+                  ),
+                ),
+              ),
+            ),
+          // Locked / catalog badge for courses the user does not own yet.
+          if (!course.isOwned)
+            Positioned(
+              right: 12,
+              bottom: 12,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(999),
+                  boxShadow: AppShadows.xs,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.lock_rounded, size: 12, color: accent.solid),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Beli',
+                      style: TextStyle(
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w800,
+                        color: accent.solid,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
+
+  /// Default cover when no thumbnail is set: a brand-recolored illustration on
+  /// a soft warm wash (onboarding style). Also the loading/error fallback for
+  /// real thumbnails.
+  Widget _defaultCover() => CourseIllustrationCover(seed: course.id);
 
   /// Returns a human-friendly duration, or null when the data is empty/zero
   /// (so we never render an ugly "0 min").
@@ -270,16 +282,16 @@ class _Pill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.22),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
+        boxShadow: AppShadows.xs,
       ),
       child: Text(
         label,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 10,
-          fontWeight: FontWeight.w700,
-          color: Colors.white,
+          fontWeight: FontWeight.w800,
+          color: AppColors.textPrimary,
         ),
       ),
     );

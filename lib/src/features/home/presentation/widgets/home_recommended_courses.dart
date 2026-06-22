@@ -57,9 +57,7 @@ class _HomeRecommendedCoursesState extends State<HomeRecommendedCourses> {
     final recentCourses = recentCourseIds
         .map((courseId) {
           try {
-            return widget.courses.firstWhere(
-              (course) => course.id == courseId,
-            );
+            return widget.courses.firstWhere((course) => course.id == courseId);
           } catch (_) {
             return null;
           }
@@ -76,81 +74,76 @@ class _HomeRecommendedCoursesState extends State<HomeRecommendedCourses> {
     return SizedBox(
       height: 250,
       child: NotificationListener<ScrollNotification>(
-              onNotification: (notification) {
-                if (_didNavigateFromEdgeSwipe) return false;
-                if (notification.metrics.axis != Axis.horizontal) return false;
+        onNotification: (notification) {
+          if (_didNavigateFromEdgeSwipe) return false;
+          if (notification.metrics.axis != Axis.horizontal) return false;
 
-                if (notification is OverscrollNotification) {
-                  final atRightEdge =
-                      notification.metrics.pixels >=
-                      notification.metrics.maxScrollExtent;
-                  final pushingBeyondRight = notification.overscroll > 0;
+          if (notification is OverscrollNotification) {
+            final atRightEdge =
+                notification.metrics.pixels >=
+                notification.metrics.maxScrollExtent;
+            final pushingBeyondRight = notification.overscroll > 0;
 
-                  if (atRightEdge && pushingBeyondRight) {
-                    _edgeOverscrollAccumulator += notification.overscroll;
+            if (atRightEdge && pushingBeyondRight) {
+              _edgeOverscrollAccumulator += notification.overscroll;
 
-                    if (_edgeOverscrollAccumulator >= _edgeSwipeThreshold) {
-                      _handleEdgeSwipeNavigation();
-                      return true;
-                    }
-                  } else {
-                    _edgeOverscrollAccumulator = 0;
-                  }
-                }
+              if (_edgeOverscrollAccumulator >= _edgeSwipeThreshold) {
+                _handleEdgeSwipeNavigation();
+                return true;
+              }
+            } else {
+              _edgeOverscrollAccumulator = 0;
+            }
+          }
 
-                if (notification is ScrollEndNotification) {
-                  _edgeOverscrollAccumulator = 0;
-                }
+          if (notification is ScrollEndNotification) {
+            _edgeOverscrollAccumulator = 0;
+          }
 
-                return false;
-              },
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                physics: const BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics(),
-                ),
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppMeasures.paddingLarge,
-                ),
-                itemCount: visibleRecentCourses.length,
-                itemBuilder: (context, index) {
-                  final courseEntity = visibleRecentCourses[index];
-                  return Container(
-                    width: 200,
-                    margin: const EdgeInsets.only(right: 12),
-                    child: CourseCard(
-                      course: courseEntity,
-                      isSaved: courseEntity.isSaved,
-                      onTap: () {
-                        context.push(
-                          AppRoutes.courseDetail,
-                          extra: courseEntity,
-                        );
-                      },
-                      onSavePressed: () {
-                        final willSave = !courseEntity.isSaved;
-                        context.read<CourseBloc>().add(
-                          ToggleSaveCourseEvent(courseId: courseEntity.id),
-                        );
-                        ScaffoldMessenger.of(context)
-                          ..hideCurrentSnackBar()
-                          ..showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                willSave
-                                    ? 'Kursus disimpan ke koleksi'
-                                    : 'Kursus dihapus dari koleksi',
-                              ),
-                              duration: const Duration(seconds: 2),
-                              behavior: SnackBarBehavior.floating,
-                            ),
-                          );
-                      },
-                    ),
+          return false;
+        },
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics(),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: AppMeasures.paddingLarge),
+          itemCount: visibleRecentCourses.length,
+          itemBuilder: (context, index) {
+            final courseEntity = visibleRecentCourses[index];
+            return Container(
+              width: 200,
+              margin: const EdgeInsets.only(right: 12),
+              child: CourseCard(
+                course: courseEntity,
+                isSaved: courseEntity.isSaved,
+                onTap: () {
+                  context.push(AppRoutes.courseDetail, extra: courseEntity);
+                },
+                onSavePressed: () {
+                  final willSave = !courseEntity.isSaved;
+                  context.read<CourseBloc>().add(
+                    ToggleSaveCourseEvent(courseId: courseEntity.id),
                   );
+                  ScaffoldMessenger.of(context)
+                    ..hideCurrentSnackBar()
+                    ..showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          willSave
+                              ? 'Kursus disimpan ke koleksi'
+                              : 'Kursus dihapus dari koleksi',
+                        ),
+                        duration: const Duration(seconds: 2),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
                 },
               ),
-            ),
+            );
+          },
+        ),
+      ),
     );
   }
 

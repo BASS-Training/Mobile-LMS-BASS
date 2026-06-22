@@ -56,8 +56,8 @@ class CourseSectionAccordion extends StatelessWidget {
                 child: Center(
                   child: Text(
                     '${section.sectionNumber}',
-                    style: const TextStyle(
-                      color: AppColors.brandPrimary,
+                    style: TextStyle(
+                      color: AppColors.brandText,
                       fontWeight: FontWeight.w800,
                       fontSize: 15,
                     ),

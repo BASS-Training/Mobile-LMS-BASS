@@ -450,7 +450,7 @@ class _CourseCard extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
           child: Row(
             children: [
-              Icon(icon, size: 20, color: AppColors.brandPrimary),
+              Icon(icon, size: 20, color: AppColors.brandText),
               const SizedBox(width: 12),
               Text(
                 label,

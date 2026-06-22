@@ -365,9 +365,9 @@ class _QuestionCard extends StatelessWidget {
               children: [
                 TextSpan(text: '$index. ${question.question}'),
                 if (question.isRequired)
-                  const TextSpan(
+                  TextSpan(
                     text: ' *',
-                    style: TextStyle(color: AppColors.brandPrimary),
+                    style: TextStyle(color: AppColors.brandText),
                   ),
               ],
             ),

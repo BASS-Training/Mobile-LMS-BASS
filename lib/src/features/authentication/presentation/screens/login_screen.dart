@@ -134,12 +134,12 @@ class _LoginCard extends StatelessWidget {
                 'assets/images/bass_logo2.png',
                 height: 44,
                 fit: BoxFit.contain,
-                errorBuilder: (_, _, _) => const Text(
+                errorBuilder: (_, _, _) => Text(
                   'BASS',
                   style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.w900,
-                    color: AppColors.brandPrimary,
+                    color: AppColors.brandText,
                   ),
                 ),
               ),
@@ -218,10 +218,10 @@ class _LoginCard extends StatelessWidget {
                   minimumSize: Size.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
-                child: const Text(
+                child: Text(
                   'Lupa password?',
                   style: TextStyle(
-                    color: AppColors.brandPrimary,
+                    color: AppColors.brandText,
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
                   ),
@@ -277,10 +277,10 @@ class _LoginCard extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () => context.go(AppRoutes.register),
-                  child: const Text(
+                  child: Text(
                     'Daftar',
                     style: TextStyle(
-                      color: AppColors.brandPrimary,
+                      color: AppColors.brandText,
                       fontWeight: FontWeight.w800,
                       fontSize: 13.5,
                     ),

@@ -34,10 +34,10 @@ class CourseProgressIndicator extends StatelessWidget {
             if (showPercentage)
               Text(
                 '${progress.toStringAsFixed(0)}%',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.brandPrimary,
+                  color: AppColors.brandText,
                 ),
               ),
           ],

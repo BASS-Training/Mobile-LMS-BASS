@@ -17,6 +17,9 @@
 
          This Theme is only used starting with V2 of Flutter's Android embedding. -->
     <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
-        <item name="android:windowBackground">?android:colorBackground</item>
+        <!-- Force white explicitly: on MIUI/dark mode ?android:colorBackground
+             resolves to a dark color, causing a black flash (white logo box on
+             black) during the native splash -> Flutter handoff. -->
+        <item name="android:windowBackground">#ffffff</item>
     </style>
 </resources>

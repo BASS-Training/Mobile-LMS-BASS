@@ -184,10 +184,10 @@ class _CaseStudyLessonDetailScreenState
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.error_outline_rounded,
                         size: 48,
-                        color: AppColors.brandPrimary,
+                        color: AppColors.brandText,
                       ),
                       const SizedBox(height: 12),
                       Text(
@@ -268,9 +268,9 @@ class _CaseStudyLessonDetailScreenState
               color: AppColors.brandSurface,
               borderRadius: BorderRadius.circular(14),
             ),
-            child: const Icon(
+            child: Icon(
               Icons.assignment_rounded,
-              color: AppColors.brandPrimary,
+              color: AppColors.brandText,
               size: 26,
             ),
           ),
@@ -279,13 +279,13 @@ class _CaseStudyLessonDetailScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   'STUDI KASUS',
                   style: TextStyle(
                     fontSize: 10.5,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 1.2,
-                    color: AppColors.brandPrimary,
+                    color: AppColors.brandText,
                   ),
                 ),
                 const SizedBox(height: 4),

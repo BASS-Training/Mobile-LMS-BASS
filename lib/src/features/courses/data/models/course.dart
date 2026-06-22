@@ -11,6 +11,10 @@ class Course {
   final String instructor;
   final String color;
   final String icon;
+
+  /// Optional cover image uploaded on the web. When present, the card and
+  /// detail header show it instead of the default gradient + emoji cover.
+  final String? thumbnailUrl;
   final int chaptersCount;
   final String duration;
   final List<CourseSection> sections;
@@ -26,6 +30,7 @@ class Course {
     required this.instructor,
     required this.color,
     required this.icon,
+    this.thumbnailUrl,
     required this.chaptersCount,
     required this.duration,
     required this.sections,
@@ -51,6 +56,13 @@ class Course {
       instructor: json['instructor'] ?? '',
       color: json['color'] ?? '#6C5CE7',
       icon: json['icon'] ?? '📚',
+      // API kirim camelCase `thumbnailUrl`; snake_case dijaga untuk kompatibilitas.
+      // String kosong diperlakukan sebagai null agar tidak mencoba memuat URL kosong.
+      thumbnailUrl: () {
+        final raw = json['thumbnailUrl'] ?? json['thumbnail_url'] ?? json['thumbnail'];
+        if (raw is String && raw.trim().isNotEmpty) return raw;
+        return null;
+      }(),
       chaptersCount: json['chaptersCount'] ?? 1,
       duration: json['duration'] ?? '0 hours',
       sections: sections,
@@ -70,6 +82,7 @@ class Course {
       'instructor': instructor,
       'color': color,
       'icon': icon,
+      'thumbnailUrl': thumbnailUrl,
       'chaptersCount': chaptersCount,
       'duration': duration,
       'sections': sections.map((s) => s.toJson()).toList(),
@@ -85,6 +98,7 @@ class Course {
     String? instructor,
     String? color,
     String? icon,
+    String? thumbnailUrl,
     int? chaptersCount,
     String? duration,
     List<CourseSection>? sections,
@@ -98,6 +112,7 @@ class Course {
       instructor: instructor ?? this.instructor,
       color: color ?? this.color,
       icon: icon ?? this.icon,
+      thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
       chaptersCount: chaptersCount ?? this.chaptersCount,
       duration: duration ?? this.duration,
       sections: sections ?? this.sections,

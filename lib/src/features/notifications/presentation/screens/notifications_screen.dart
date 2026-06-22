@@ -140,7 +140,7 @@ class _NotificationTile extends StatelessWidget {
       case 'grade':
         return (icon: Icons.workspace_premium_rounded, color: AppColors.success);
       case 'new_content':
-        return (icon: Icons.menu_book_rounded, color: AppColors.brandPrimary);
+        return (icon: Icons.menu_book_rounded, color: AppColors.brandText);
       case 'announcement':
         return (icon: Icons.campaign_rounded, color: AppColors.warning);
       default:

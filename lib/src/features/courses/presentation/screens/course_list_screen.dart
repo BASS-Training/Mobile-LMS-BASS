@@ -80,9 +80,9 @@ class _CourseListScreenState extends State<CourseListScreen> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.workspace_premium_rounded,
-                            color: AppColors.brandPrimary,
+                            color: AppColors.brandText,
                             size: 20,
                           ),
                           SizedBox(width: 10),
@@ -145,9 +145,9 @@ class _CourseListScreenState extends State<CourseListScreen> {
             decoration: InputDecoration(
               hintText: AppStrings.searchCourses,
               hintStyle: TextStyle(color: AppColors.textTertiary),
-              prefixIcon: const Icon(
+              prefixIcon: Icon(
                 Icons.search_rounded,
-                color: AppColors.brandPrimary,
+                color: AppColors.brandText,
               ),
               suffixIcon: value.text.isNotEmpty
                   ? IconButton(
@@ -329,7 +329,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
               shape: BoxShape.circle,
               color: AppColors.brandPrimary.withValues(alpha: 0.1),
             ),
-            child: Icon(icon, size: 44, color: AppColors.brandPrimary),
+            child: Icon(icon, size: 44, color: AppColors.brandText),
           ),
           const SizedBox(height: 16),
           Padding(

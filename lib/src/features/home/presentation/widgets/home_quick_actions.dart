@@ -35,6 +35,13 @@ class HomeQuickActions extends StatelessWidget {
         color: const Color(0xFF3B82F6),
         onTap: () => context.push(AppRoutes.discussionHub),
       ),
+      // Upcoming scheduled (Zoom) sessions across enrolled courses.
+      _QuickAction(
+        icon: Icons.event_rounded,
+        label: 'Jadwal',
+        color: const Color(0xFF0EA5E9),
+        onTap: () => context.push(AppRoutes.agenda),
+      ),
       // Replaces "Tersimpan" (already reachable from the bottom nav) with an
       // entry point into the Games Hub for a refreshing break.
       _QuickAction(

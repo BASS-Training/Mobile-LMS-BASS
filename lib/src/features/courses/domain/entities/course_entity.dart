@@ -10,6 +10,10 @@ class CourseEntity extends Equatable {
   final String instructor;
   final String color;
   final String icon;
+
+  /// Optional cover image uploaded on the web (absolute URL), or `null` to use
+  /// the default gradient + emoji cover.
+  final String? thumbnailUrl;
   final int chaptersCount;
   final String duration;
   final List<CourseSectionEntity> sections;
@@ -31,6 +35,7 @@ class CourseEntity extends Equatable {
     required this.instructor,
     required this.color,
     required this.icon,
+    this.thumbnailUrl,
     required this.chaptersCount,
     required this.duration,
     required this.sections,
@@ -80,6 +85,7 @@ class CourseEntity extends Equatable {
       instructor: instructor,
       color: color,
       icon: icon,
+      thumbnailUrl: thumbnailUrl,
       chaptersCount: chaptersCount,
       duration: duration,
       sections: sections,
@@ -97,6 +103,7 @@ class CourseEntity extends Equatable {
     instructor,
     color,
     icon,
+    thumbnailUrl,
     chaptersCount,
     duration,
     sections,

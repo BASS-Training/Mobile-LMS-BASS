@@ -58,7 +58,7 @@ class DiscussionSheet extends StatelessWidget {
           const SizedBox(height: 12),
           Row(
             children: [
-              const Icon(Icons.forum_rounded, color: AppColors.brandPrimary),
+              Icon(Icons.forum_rounded, color: AppColors.brandText),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(

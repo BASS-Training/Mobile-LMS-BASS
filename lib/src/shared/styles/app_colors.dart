@@ -310,6 +310,14 @@ class AppColors {
 
   static Color _pick(Color light, Color dark) => isDark ? dark : light;
 
+  /// Brand red tuned for *text & icons sitting on a surface*, adapting per theme.
+  /// The base [brandPrimary] (#DC0000) is too dark to read on dark surfaces, so
+  /// dark mode uses a brighter red. Use this for red labels/numbers/dots; keep
+  /// [brandPrimary] for solid fills (buttons, selected chips) where text sits on
+  /// top of it.
+  static Color get brandText =>
+      _pick(brandPrimary, const Color(0xFFFF5A4F));
+
   /// Soft red-tinted surface for chips, badges and highlighted cards.
   static Color get brandSurface =>
       _pick(const Color(0xFFFFF1EF), const Color(0xFF36211F));

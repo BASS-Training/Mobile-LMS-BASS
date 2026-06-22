@@ -127,7 +127,7 @@ class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.brandPrimary,
+          foregroundColor: AppColors.brandText,
           side: const BorderSide(color: AppColors.brandPrimary),
           padding: const EdgeInsets.symmetric(
             horizontal: AppMeasures.paddingXLarge,

@@ -26,6 +26,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthSessionRequestedEvent>(_onSessionRequested);
     on<AuthLogoutEvent>(_onLogout);
     on<AuthClearErrorEvent>(_onClearError);
+    on<AuthUserUpdatedEvent>(_onUserUpdated);
 
     Future.microtask(() => add(const AuthSessionRequestedEvent()));
   }
@@ -128,6 +129,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } catch (error) {
       emit(AuthFailure(message: 'Logout error: $error'));
     }
+  }
+
+  void _onUserUpdated(AuthUserUpdatedEvent event, Emitter<AuthState> emit) {
+    emit(AuthSuccess(user: event.user));
   }
 
   Future<void> _onClearError(
