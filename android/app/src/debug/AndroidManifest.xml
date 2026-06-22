@@ -4,4 +4,8 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Debug-only: izinkan HTTP/cleartext supaya build dev bisa konek ke
+         server lokal (mis. http://192.168.x.x:8000). Build release TIDAK
+         memakai ini, jadi produksi tetap HTTPS-only (aman). -->
+    <application android:usesCleartextTraffic="true" />
 </manifest>
