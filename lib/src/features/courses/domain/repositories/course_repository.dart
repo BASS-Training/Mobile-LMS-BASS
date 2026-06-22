@@ -6,6 +6,12 @@ import '../entities/course_entity.dart';
 /// lihat ARCHITECTURE.md §3 & §11.
 abstract class CourseRepository {
   Future<List<CourseEntity>> getCourses();
+
+  /// Baca daftar course dari cache lokal (disk) saja, tanpa jaringan.
+  /// Mengembalikan list kosong bila belum ada cache. Dipakai untuk tampilan
+  /// cache-first yang instan sebelum refresh dari jaringan.
+  Future<List<CourseEntity>> getCachedCourses();
+
   Stream<List<CourseEntity>> watchCourses();
   Future<void> addCourse(CourseEntity course);
   Future<CourseEntity?> getCourseById(String id);

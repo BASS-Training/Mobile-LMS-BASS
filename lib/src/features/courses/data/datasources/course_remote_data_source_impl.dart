@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:lms_mobile_app/src/core/network/dio_error.dart';
 import 'package:lms_mobile_app/src/core/config/constants/api_endpoints.dart';
+import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 import '../models/course.dart';
 import 'course_remote_data_source.dart';
 
@@ -16,11 +19,16 @@ class CourseRemoteDataSourceImpl implements CourseRemoteDataSource {
       final data = response.data as Map<String, dynamic>;
       final List<dynamic> courseList = data['data'] as List<dynamic>? ?? [];
 
-      return courseList.map((courseJson) {
+      final normalized = courseList.map((courseJson) {
         final json = Map<String, dynamic>.from(courseJson as Map);
         json['id'] = json['id'].toString();
-        return Course.fromJson(json);
+        return json;
       }).toList();
+
+      // Persist payload mentah agar pemuatan berikutnya bisa cache-first/instan.
+      await LocalStorage.saveCoursesCache(jsonEncode(normalized));
+
+      return normalized.map((json) => Course.fromJson(json)).toList();
     } on DioException catch (error) {
       throw Exception(dioErrorMessage(error, 'Terjadi kesalahan jaringan'));
     } catch (e) {

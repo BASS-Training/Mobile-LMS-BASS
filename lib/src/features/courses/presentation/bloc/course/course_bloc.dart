@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/add_course_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/get_courses_usecase.dart';
+import 'package:lms_mobile_app/src/features/courses/domain/usecases/get_cached_courses_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/get_saved_courses_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/refresh_courses_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/search_courses_usecase.dart';
@@ -16,6 +17,7 @@ import 'course_state.dart';
 /// dan `ToggleSaveCourseEvent` memakai optimistic update. Lihat ARCHITECTURE.md §11.
 class CourseBloc extends Bloc<CourseEvent, CourseState> {
   final GetCoursesUseCase getCoursesUseCase;
+  final GetCachedCoursesUseCase getCachedCoursesUseCase;
   final SearchCoursesUseCase searchCoursesUseCase;
   final ToggleSaveCourseUseCase toggleSaveCourseUseCase;
   final GetSavedCoursesUseCase getSavedCoursesUseCase;
@@ -25,6 +27,7 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
 
   CourseBloc({
     required this.getCoursesUseCase,
+    required this.getCachedCoursesUseCase,
     required this.searchCoursesUseCase,
     required this.toggleSaveCourseUseCase,
     required this.getSavedCoursesUseCase,
@@ -47,13 +50,24 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
     GetCoursesEvent event,
     Emitter<CourseState> emit,
   ) async {
-    emit(const CourseLoading());
+    // Cache-first: tampilkan data cache (disk) secara INSTAN tanpa skeleton bila
+    // ada, lalu refresh diam-diam dari jaringan. Hanya tampilkan skeleton bila
+    // benar-benar belum ada cache (mis. pertama kali login).
+    final cached = await getCachedCoursesUseCase();
+    if (cached.isNotEmpty) {
+      emit(CourseLoaded(courses: cached));
+    } else {
+      emit(const CourseLoading());
+    }
 
     try {
       final courses = await getCoursesUseCase();
       emit(CourseLoaded(courses: courses));
     } catch (e) {
-      emit(CourseFailure(message: 'Failed to load courses'));
+      // Bila ada cache, biarkan cache tetap tampil (refresh gagal diam-diam).
+      if (cached.isEmpty) {
+        emit(CourseFailure(message: 'Failed to load courses'));
+      }
     }
   }
 
@@ -143,15 +157,18 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
     RefreshCoursesEvent event,
     Emitter<CourseState> emit,
   ) async {
+    // Pull-to-refresh: jangan tampilkan skeleton — pertahankan data yang sedang
+    // tampil sambil mengambil yang terbaru, lalu update di tempat.
     try {
-      emit(const CourseLoading());
-
       // getCourses already fetches from remote, saves to cache,
       // and reconciles completion status — no need to call refresh separately.
       final courses = await getCoursesUseCase();
       emit(CourseLoaded(courses: courses));
     } catch (e) {
-      emit(CourseFailure(message: 'Failed to refresh courses'));
+      // Jika belum ada data tampil, baru tampilkan error; selain itu diam.
+      if (state is! CourseLoaded) {
+        emit(CourseFailure(message: 'Failed to refresh courses'));
+      }
     }
   }
 
