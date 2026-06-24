@@ -39,14 +39,15 @@ class _RegisterView extends StatelessWidget {
 
   void _onAuthState(BuildContext context, AuthState state) {
     final messenger = ScaffoldMessenger.of(context);
-    if (state is AuthRegisterSuccess) {
+    if (state is AuthSuccess) {
+      // Daftar berhasil & langsung login. Router akan mengarahkan ke layar
+      // verifikasi OTP (akun baru wajib verifikasi). Tidak perlu navigasi manual.
       messenger.showSnackBar(
         const SnackBar(
           content: Text(RegisterStrings.registerSuccess),
           backgroundColor: AppColors.success,
         ),
       );
-      context.go(AppRoutes.main);
     } else if (state is AuthFailure) {
       messenger.showSnackBar(
         SnackBar(
