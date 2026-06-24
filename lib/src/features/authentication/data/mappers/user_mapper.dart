@@ -17,6 +17,8 @@ class UserMapper {
       avpnVerificationStatus: model.avpnVerificationStatus,
       joinedAt: model.joinedAt,
       avatarUrl: model.avatarUrl,
+      emailVerified: model.emailVerified,
+      mustVerifyEmail: model.mustVerifyEmail,
     );
   }
 
@@ -35,6 +37,8 @@ class UserMapper {
       avpnVerificationStatus: entity.avpnVerificationStatus,
       joinedAt: entity.joinedAt,
       avatarUrl: entity.avatarUrl,
+      emailVerified: entity.emailVerified,
+      mustVerifyEmail: entity.mustVerifyEmail,
     );
   }
 }

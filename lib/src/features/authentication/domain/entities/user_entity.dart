@@ -20,6 +20,10 @@ class UserEntity extends Equatable {
   final String? joinedAt; // ISO 8601
   final String? avatarUrl; // absolute URL foto profil, atau null
 
+  // Verifikasi email (soft enforcement).
+  final bool emailVerified;
+  final bool mustVerifyEmail; // akun baru wajib verifikasi sebelum pakai app
+
   const UserEntity({
     required this.id,
     required this.name,
@@ -34,9 +38,14 @@ class UserEntity extends Equatable {
     this.avpnVerificationStatus,
     this.joinedAt,
     this.avatarUrl,
+    this.emailVerified = false,
+    this.mustVerifyEmail = false,
   });
 
   bool get isAvpn => registrationProgram == 'avpn_ai';
+
+  /// Saran (nudge) verifikasi untuk akun mana pun yang belum verified.
+  bool get shouldNudgeVerifyEmail => !emailVerified;
 
   bool hasRole(String value) => roles.contains(value) || role == value;
 
@@ -55,5 +64,7 @@ class UserEntity extends Equatable {
     avpnVerificationStatus,
     joinedAt,
     avatarUrl,
+    emailVerified,
+    mustVerifyEmail,
   ];
 }

@@ -30,4 +30,28 @@ abstract class AuthRepository {
     required String occupation,
     String? avatarFilePath,
   });
+
+  // ── Verifikasi email (butuh login) ──────────────────────────────────────
+  /// Kirim/kirim ulang OTP verifikasi ke email user saat ini.
+  Future<void> sendEmailOtp();
+
+  /// Verifikasi OTP email; mengembalikan user terbaru (email_verified=true).
+  Future<UserEntity> verifyEmailOtp(String code);
+
+  // ── Lupa & ganti password ───────────────────────────────────────────────
+  /// Kirim OTP reset password (publik). Selalu sukses (tidak bocorkan email).
+  Future<void> sendPasswordOtp(String email);
+
+  /// Reset password memakai OTP (publik).
+  Future<void> resetPassword({
+    required String email,
+    required String code,
+    required String password,
+  });
+
+  /// Ganti password saat sudah login (butuh password lama).
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  });
 }

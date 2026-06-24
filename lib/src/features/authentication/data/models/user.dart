@@ -15,6 +15,10 @@ class User {
   final String? joinedAt; // ISO 8601 (created_at)
   final String? avatarUrl; // absolute URL foto profil, atau null
 
+  // Verifikasi email (soft enforcement). Backend mengirim ketiganya.
+  final bool emailVerified;
+  final bool mustVerifyEmail; // akun baru wajib verifikasi sebelum pakai app
+
   User({
     required this.id,
     required this.name,
@@ -29,6 +33,8 @@ class User {
     this.avpnVerificationStatus,
     this.joinedAt,
     this.avatarUrl,
+    this.emailVerified = false,
+    this.mustVerifyEmail = false,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -46,6 +52,12 @@ class User {
       return s.isEmpty ? null : s;
     }
 
+    bool boolOf(dynamic v) {
+      if (v is bool) return v;
+      final s = v?.toString().toLowerCase().trim();
+      return s == 'true' || s == '1';
+    }
+
     return User(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
@@ -60,6 +72,8 @@ class User {
       avpnVerificationStatus: str(json['avpn_verification_status']),
       joinedAt: str(json['created_at'] ?? json['joined_at']),
       avatarUrl: str(json['avatar_url'] ?? json['avatarUrl']),
+      emailVerified: boolOf(json['email_verified']),
+      mustVerifyEmail: boolOf(json['must_verify_email']),
     );
   }
 
@@ -79,6 +93,8 @@ class User {
       'avpn_verification_status': avpnVerificationStatus,
       'created_at': joinedAt,
       'avatar_url': avatarUrl,
+      'email_verified': emailVerified,
+      'must_verify_email': mustVerifyEmail,
     };
   }
 }

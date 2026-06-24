@@ -8,6 +8,15 @@ class ApiEndpoints {
   static const String getCurrentUser = '/auth/me';
   static const String refreshToken = '/auth/refresh-token';
 
+  // Verifikasi email (OTP) — butuh login
+  static const String sendEmailOtp = '/auth/email/send-otp';
+  static const String verifyEmailOtp = '/auth/email/verify-otp';
+
+  // Password (OTP reset publik + ganti saat login)
+  static const String sendPasswordOtp = '/auth/password/send-otp';
+  static const String resetPassword = '/auth/password/reset';
+  static const String changePassword = '/auth/password/change';
+
   // Courses
   static const String getCourses = '/courses';
   static const String getCourseById = '/courses/{id}';

@@ -50,7 +50,6 @@ class ProfileScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _sectionLabel('Akun'),
                         _SectionCard(
                           children: [
                             _NavRow(
@@ -65,6 +64,7 @@ class ProfileScreen extends StatelessWidget {
                             ),
                           ],
                         ),
+                        _buildSecuritySection(context, user),
                         _buildPersonalSection(user),
                         _buildAccountSection(user),
                         // _sectionLabel('Pembelajaran'),
@@ -143,6 +143,41 @@ class ProfileScreen extends StatelessWidget {
   }
 
   // ── Sections ───────────────────────────────────────────────────────────────
+  Widget _buildSecuritySection(BuildContext context, UserEntity user) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _sectionLabel('Keamanan Akun'),
+        _SectionCard(
+          children: [
+            if (user.emailVerified)
+              _InfoRow(
+                icon: Icons.verified_rounded,
+                accent: AppColors.success,
+                label: 'Email',
+                value: 'Terverifikasi',
+              )
+            else
+              _NavRow(
+                icon: Icons.mark_email_unread_rounded,
+                accent: AppColors.warning,
+                title: 'Verifikasi Email',
+                subtitle: 'Email belum terverifikasi — opsional',
+                onTap: () => context.push(AppRoutes.verifyEmail),
+              ),
+            _NavRow(
+              icon: Icons.lock_reset_rounded,
+              accent: AppColors.info,
+              title: 'Ganti Password',
+              subtitle: 'Ubah password akunmu',
+              onTap: () => context.push(AppRoutes.changePassword),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget _buildPersonalSection(UserEntity user) {
     final rows = <Widget>[
       if (user.dateOfBirth != null)
