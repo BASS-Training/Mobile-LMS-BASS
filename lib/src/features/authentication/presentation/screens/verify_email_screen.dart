@@ -37,6 +37,13 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
     return state is AuthSuccess ? state.user.email : '';
   }
 
+  /// true = akun baru yang DIPAKSA verifikasi (tak ada halaman sebelumnya, jadi
+  /// keluar = logout). false = verifikasi sukarela dari Profil (cukup kembali).
+  bool get _mustVerify {
+    final state = context.read<AuthBloc>().state;
+    return state is AuthSuccess ? state.user.mustVerifyEmail : false;
+  }
+
   void _verify(BuildContext context) {
     final code = _codeController.text.trim();
     if (code.length < 4) {
@@ -196,16 +203,27 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                 ),
               ),
               const SizedBox(height: 6),
-              TextButton(
-                onPressed: () {
-                  context.read<AuthBloc>().add(const AuthLogoutEvent());
-                  context.go(AppRoutes.login);
-                },
-                child: Text(
-                  'Keluar',
-                  style: TextStyle(color: AppColors.textSecondary),
+              if (_mustVerify)
+                TextButton(
+                  onPressed: () {
+                    context.read<AuthBloc>().add(const AuthLogoutEvent());
+                    context.go(AppRoutes.login);
+                  },
+                  child: Text(
+                    'Keluar',
+                    style: TextStyle(color: AppColors.textSecondary),
+                  ),
+                )
+              else
+                TextButton(
+                  onPressed: () => context.canPop()
+                      ? context.pop()
+                      : context.go(AppRoutes.main),
+                  child: Text(
+                    'Kembali',
+                    style: TextStyle(color: AppColors.textSecondary),
+                  ),
                 ),
-              ),
             ],
           );
         },
