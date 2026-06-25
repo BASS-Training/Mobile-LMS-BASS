@@ -39,8 +39,12 @@ class ProfileScreen extends StatelessWidget {
         final user = state.user;
         return Scaffold(
           backgroundColor: AppColors.background,
-          body: SingleChildScrollView(
-            child: Column(
+          body: RefreshIndicator(
+            color: AppColors.brandPrimary,
+            onRefresh: () => _refreshUser(context),
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
               children: [
                 _ProfileHeader(user: user, roleLabel: _roleLabel(user.role)),
                 Transform.translate(
@@ -135,11 +139,23 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ),
               ],
+              ),
             ),
           ),
         );
       },
     );
+  }
+
+  /// Tarik-untuk-refresh: ambil ulang /auth/me agar perubahan dari perangkat
+  /// lain (mis. email diganti di web) ikut tersinkron ke sesi mobile ini.
+  Future<void> _refreshUser(BuildContext context) async {
+    final bloc = context.read<AuthBloc>();
+    bloc.add(const AuthSessionRequestedEvent());
+    // Tunggu state baru (atau timeout) supaya indikator berhenti berputar.
+    await bloc.stream
+        .firstWhere((s) => s is AuthSuccess || s is AuthFailure)
+        .timeout(const Duration(seconds: 8), onTimeout: () => bloc.state);
   }
 
   // ── Sections ───────────────────────────────────────────────────────────────
