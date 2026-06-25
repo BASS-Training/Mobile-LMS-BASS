@@ -78,6 +78,40 @@ class AuthActionCubit extends Cubit<AuthActionState> {
     }
   }
 
+  Future<void> sendChangeEmailOtp(String newEmail) async {
+    emit(state.copyWith(status: AuthActionStatus.loading));
+    try {
+      await _repository.sendChangeEmailOtp(newEmail);
+      emit(
+        state.copyWith(
+          status: AuthActionStatus.success,
+          message: 'Kode konfirmasi sudah dikirim ke email baru kamu.',
+        ),
+      );
+    } catch (e) {
+      emit(state.copyWith(status: AuthActionStatus.failure, message: _clean(e)));
+    }
+  }
+
+  Future<void> changeEmail({
+    required String newEmail,
+    required String code,
+  }) async {
+    emit(state.copyWith(status: AuthActionStatus.loading));
+    try {
+      final user = await _repository.changeEmail(newEmail: newEmail, code: code);
+      emit(
+        state.copyWith(
+          status: AuthActionStatus.success,
+          message: 'Email berhasil diubah dan diverifikasi.',
+          user: user,
+        ),
+      );
+    } catch (e) {
+      emit(state.copyWith(status: AuthActionStatus.failure, message: _clean(e)));
+    }
+  }
+
   Future<void> sendPasswordOtp(String email) async {
     emit(state.copyWith(status: AuthActionStatus.loading));
     try {

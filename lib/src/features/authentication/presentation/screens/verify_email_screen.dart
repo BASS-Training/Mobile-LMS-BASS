@@ -184,7 +184,18 @@ class _VerifyEmailScreenState extends State<VerifyEmailScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 4),
+              TextButton(
+                onPressed: () => context.push(AppRoutes.changeEmail),
+                child: Text(
+                  'Salah memasukkan email? Ubah email',
+                  style: TextStyle(
+                    color: AppColors.brandText,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 6),
               TextButton(
                 onPressed: () {
                   context.read<AuthBloc>().add(const AuthLogoutEvent());

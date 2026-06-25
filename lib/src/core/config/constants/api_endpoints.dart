@@ -12,6 +12,10 @@ class ApiEndpoints {
   static const String sendEmailOtp = '/auth/email/send-otp';
   static const String verifyEmailOtp = '/auth/email/verify-otp';
 
+  // Ubah email (pola verifikasi-dulu) — butuh login. OTP dikirim ke email baru.
+  static const String sendChangeEmailOtp = '/auth/email/change/send-otp';
+  static const String changeEmail = '/auth/email/change';
+
   // Password (OTP reset publik + ganti saat login)
   static const String sendPasswordOtp = '/auth/password/send-otp';
   static const String resetPassword = '/auth/password/reset';

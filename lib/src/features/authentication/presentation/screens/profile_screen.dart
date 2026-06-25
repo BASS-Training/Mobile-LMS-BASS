@@ -166,6 +166,13 @@ class ProfileScreen extends StatelessWidget {
                 onTap: () => context.push(AppRoutes.verifyEmail),
               ),
             _NavRow(
+              icon: Icons.alternate_email_rounded,
+              accent: AppColors.brandPrimary,
+              title: 'Ubah Email',
+              subtitle: 'Ganti email — dikonfirmasi lewat kode',
+              onTap: () => context.push(AppRoutes.changeEmail),
+            ),
+            _NavRow(
               icon: Icons.lock_reset_rounded,
               accent: AppColors.info,
               title: 'Ganti Password',

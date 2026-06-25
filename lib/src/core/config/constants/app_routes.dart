@@ -14,6 +14,7 @@ class AppRoutes {
   static const String verifyEmail = '/verify-email-otp';
   static const String forgotPassword = '/forgot-password';
   static const String changePassword = '/change-password';
+  static const String changeEmail = '/change-email';
 
   // Main
   static const String main = '/main';

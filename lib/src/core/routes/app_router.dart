@@ -17,6 +17,7 @@ import 'package:lms_mobile_app/src/features/authentication/presentation/auth_act
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/verify_email_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/forgot_password_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/change_password_screen.dart';
+import 'package:lms_mobile_app/src/features/authentication/presentation/screens/change_email_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/edit_profile/edit_profile_cubit.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/edit_profile_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/domain/entities/user_entity.dart';
@@ -106,8 +107,12 @@ class AppRouter {
       }
 
       // Login tapi WAJIB verifikasi email (akun baru): paksa ke layar OTP.
+      // Kecuali layar "Ubah Email" — jalan keluar yang sah bila email salah
+      // ketik saat daftar (ganti ke email valid sekaligus memverifikasinya).
       if (mustVerify) {
-        return isOnVerify ? null : AppRoutes.verifyEmail;
+        final allowedWhileVerifying =
+            isOnVerify || loc == AppRoutes.changeEmail;
+        return allowedWhileVerifying ? null : AppRoutes.verifyEmail;
       }
 
       // Login: jauhkan dari layar auth.
@@ -159,6 +164,13 @@ class AppRouter {
         builder: (context, state) => BlocProvider<AuthActionCubit>(
           create: (_) => _sl<AuthActionCubit>(),
           child: const ChangePasswordScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.changeEmail,
+        builder: (context, state) => BlocProvider<AuthActionCubit>(
+          create: (_) => _sl<AuthActionCubit>(),
+          child: const ChangeEmailScreen(),
         ),
       ),
       GoRoute(

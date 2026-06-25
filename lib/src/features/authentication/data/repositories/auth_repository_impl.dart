@@ -236,6 +236,45 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<void> sendChangeEmailOtp(String newEmail) async {
+    try {
+      await _dio.post(
+        ApiEndpoints.sendChangeEmailOtp,
+        data: {'new_email': newEmail.trim().toLowerCase()},
+      );
+    } on DioException catch (error) {
+      throw Exception(friendlyDioMessage(error, 'Gagal mengirim kode.'));
+    }
+  }
+
+  @override
+  Future<UserEntity> changeEmail({
+    required String newEmail,
+    required String code,
+  }) async {
+    try {
+      final response = await _dio.post(
+        ApiEndpoints.changeEmail,
+        data: {'new_email': newEmail.trim().toLowerCase(), 'code': code.trim()},
+      );
+
+      final payload = _decodeResponse(response.data);
+      final data = payload['data'];
+      final token = LocalStorage.getAuthToken();
+      if (data is Map<String, dynamic> &&
+          data['user'] is Map<String, dynamic> &&
+          token != null) {
+        final user = _normalizeUser(data['user'] as Map<String, dynamic>);
+        await LocalStorage.saveAuthSession(token: token, user: user.toJson());
+        return UserMapper.toDomain(user);
+      }
+      throw Exception('Respons ubah email tidak valid.');
+    } on DioException catch (error) {
+      throw Exception(friendlyDioMessage(error, 'Gagal mengubah email.'));
+    }
+  }
+
+  @override
   Future<void> sendPasswordOtp(String email) async {
     try {
       await _dio.post(

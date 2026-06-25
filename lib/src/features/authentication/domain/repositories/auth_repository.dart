@@ -38,6 +38,16 @@ abstract class AuthRepository {
   /// Verifikasi OTP email; mengembalikan user terbaru (email_verified=true).
   Future<UserEntity> verifyEmailOtp(String code);
 
+  /// Kirim OTP konfirmasi ke EMAIL BARU (email akun belum berubah di sini).
+  Future<void> sendChangeEmailOtp(String newEmail);
+
+  /// Verifikasi OTP email baru; memindahkan email akun & mengembalikan user
+  /// terbaru (email baru, email_verified=true). Sesi lokal ikut diperbarui.
+  Future<UserEntity> changeEmail({
+    required String newEmail,
+    required String code,
+  });
+
   // ── Lupa & ganti password ───────────────────────────────────────────────
   /// Kirim OTP reset password (publik). Selalu sukses (tidak bocorkan email).
   Future<void> sendPasswordOtp(String email);
