@@ -1,4 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 import 'package:lms_mobile_app/src/features/achievements/domain/achievement.dart';
 
 /// Local (Hive) memory of which achievement tiers we have already celebrated,
@@ -6,10 +7,17 @@ import 'package:lms_mobile_app/src/features/achievements/domain/achievement.dart
 ///
 /// Hive itself is initialised by core DI; we just open a dedicated box lazily,
 /// mirroring [GameLocalDataSource].
+///
+/// Baseline perayaan di-scope per user ([LocalStorage.scopedKey]) supaya tidak
+/// tercampur antar-akun di perangkat yang sama. Akun baru mulai tanpa baseline
+/// sehingga tier yang sudah ada tidak dirayakan ulang secara retroaktif.
 class AchievementStore {
   static const String _boxName = 'bass_achievements_box';
-  static const String _seenKey = 'seen_tiers';
-  static const String _initKey = 'initialized';
+  static const String _seenKeyBase = 'seen_tiers';
+  static const String _initKeyBase = 'initialized';
+
+  String get _seenKey => LocalStorage.scopedKey(_seenKeyBase);
+  String get _initKey => LocalStorage.scopedKey(_initKeyBase);
 
   Box? _cachedBox;
 

@@ -43,10 +43,24 @@ class LocalStorage {
   /// Bungkus sebuah key dasar menjadi key yang ter-scope ke user aktif.
   static String _scoped(String baseKey) => '${baseKey}__u_${_userScope()}';
 
+  /// Versi publik dari [_scoped] agar store lokal lain (achievement, agenda,
+  /// game, dst.) bisa memakai suffix per-user yang sama dan tidak bocor
+  /// antar-akun di perangkat yang sama.
+  static String scopedKey(String baseKey) => _scoped(baseKey);
+
+  /// Suffix mentah yang ditempelkan [scopedKey] ke setiap key, mis. `__u_42`.
+  /// Berguna untuk store yang memindai keys (lihat game scores) agar bisa
+  /// memfilter hanya milik user aktif.
+  static String userScopeSuffix() => '__u_${_userScope()}';
+
   /// Hapus key progres global versi lama (sebelum namespacing per-user) supaya
   /// tidak ada lagi data yang bocor lintas akun. Dijalankan sekali saat init.
   static Future<void> _migrateLegacyGlobalProgress() async {
-    const legacyKeys = [_completedLessonsKey, _recentCoursesKey];
+    const legacyKeys = [
+      _completedLessonsKey,
+      _recentCoursesKey,
+      _coursesCacheKey,
+    ];
     for (final key in legacyKeys) {
       if (_box.containsKey(key)) {
         await _box.delete(key);
@@ -137,10 +151,11 @@ class LocalStorage {
   }
 
   static Future<void> clearAuthSession() async {
+    // Buang cache course (ter-scope ke user aktif) SEBELUM menghapus sesi,
+    // selagi id user masih bisa di-resolve, agar tidak bocor ke akun lain.
+    await _box.delete(_scoped(_coursesCacheKey));
     await _box.delete(_authTokenKey);
     await _box.delete(_authUserKey);
-    // Buang cache course agar data akun sebelumnya tidak bocor ke akun lain.
-    await _box.delete(_coursesCacheKey);
   }
 
   // ===== Cache daftar course (untuk tampilan cache-first yang instan) =====
@@ -148,11 +163,11 @@ class LocalStorage {
   // dibaca kembali saat startup untuk menampilkan data terakhir tanpa menunggu
   // jaringan. Direfresh diam-diam di belakang setiap kali fetch berhasil.
   static Future<void> saveCoursesCache(String coursesJson) async {
-    await _box.put(_coursesCacheKey, coursesJson);
+    await _box.put(_scoped(_coursesCacheKey), coursesJson);
   }
 
   static List<Map<String, dynamic>>? getCoursesCache() {
-    final raw = _box.get(_coursesCacheKey);
+    final raw = _box.get(_scoped(_coursesCacheKey));
     if (raw is! String || raw.isEmpty) return null;
     try {
       final decoded = jsonDecode(raw);

@@ -1,12 +1,18 @@
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 import 'package:lms_mobile_app/src/features/agenda/domain/entities/personal_agenda_item.dart';
 
 /// Penyimpanan lokal (Hive) untuk agenda pribadi peserta. Box `bass_calendar_box`
 /// dipakai bersama cache hari libur (kunci berbeda). Hive di-init oleh core DI;
 /// box dibuka lazy. Mirip pola [GameLocalDataSource].
+///
+/// Key agenda di-scope per user ([LocalStorage.scopedKey]) supaya agenda akun
+/// satu tidak bocor ke akun lain di perangkat yang sama.
 class PersonalAgendaStore {
   static const String _boxName = 'bass_calendar_box';
-  static const String _eventsKey = 'personal_events';
+  static const String _eventsKeyBase = 'personal_events';
+
+  String get _eventsKey => LocalStorage.scopedKey(_eventsKeyBase);
 
   Box? _cachedBox;
 
@@ -17,7 +23,18 @@ class PersonalAgendaStore {
         ? Hive.box(_boxName)
         : await Hive.openBox(_boxName);
     _cachedBox = box;
+    await _migrateLegacy(box);
     return box;
+  }
+
+  /// Pindahkan data agenda global versi lama ke scope user aktif (kasus umum:
+  /// satu akun di device), lalu hapus key global agar tidak terbaca akun lain.
+  Future<void> _migrateLegacy(Box box) async {
+    if (!box.containsKey(_eventsKeyBase)) return;
+    if (!box.containsKey(_eventsKey)) {
+      await box.put(_eventsKey, box.get(_eventsKeyBase));
+    }
+    await box.delete(_eventsKeyBase);
   }
 
   Future<List<PersonalAgendaItem>> getAll() async {
