@@ -205,7 +205,6 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
             currentLessonIndex: widget.lessonIndex,
             onSelectLesson: (lesson, index) {
               navigateToLesson(lesson, index);
-              
             },
           ),
           backgroundColor: AppColors.background,
@@ -398,7 +397,9 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
         Expanded(
           child: PressScale(
             child: ElevatedButton.icon(
-              onPressed: canProceed ? () => markAndNavigate(goNext: canGoNext) : null,
+              onPressed: canProceed
+                  ? () => markAndNavigate(goNext: canGoNext)
+                  : null,
               icon: Icon(
                 canGoNext ? Icons.arrow_forward_rounded : Icons.check_rounded,
               ),
@@ -415,11 +416,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Colors.white, Color(0xFFF8FAFF)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
         boxShadow: [
@@ -444,11 +441,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
           const SizedBox(height: 8),
           Text(
             lessonTitle,
-            style: TextStyle(
-              fontSize: 14,
-              height: 1.6,
-              color: AppColors.slate,
-            ),
+            style: TextStyle(fontSize: 14, height: 1.6, color: AppColors.slate),
           ),
           const SizedBox(height: 12),
           Row(
@@ -466,12 +459,12 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
                   color: AppColors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(999),
                 ),
-                child: const Text(
+                child: Text(
                   'VIDEO',
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.red,
+                    color: AppColors.brandText,
                   ),
                 ),
               ),

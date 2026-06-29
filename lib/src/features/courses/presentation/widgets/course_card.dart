@@ -291,7 +291,7 @@ class _Pill extends StatelessWidget {
         style: TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.w800,
-          color: AppColors.textPrimary,
+          color: AppColors.textTertiary,
         ),
       ),
     );

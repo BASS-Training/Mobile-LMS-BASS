@@ -179,8 +179,9 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_celebrationChecked) return;
     _celebrationChecked = true;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final unlocked =
-          await _achievementStore.detectNewlyUnlocked(buildAchievements(stats));
+      final unlocked = await _achievementStore.detectNewlyUnlocked(
+        buildAchievements(stats),
+      );
       if (!mounted) return;
       await showAchievementCelebrations(context, unlocked);
     });
@@ -250,10 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Center(
               child: Text(
                 state.message,
-                style: TextStyle(
-                  color: AppColors.brandText,
-                  fontSize: 14,
-                ),
+                style: TextStyle(color: AppColors.brandText, fontSize: 14),
               ),
             ),
           );
