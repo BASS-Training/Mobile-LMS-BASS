@@ -34,9 +34,6 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
   /// menampilkan LinearProgressIndicator di bagian atas.
   bool _isRefreshing = false;
 
-  /// Digunakan oleh RefreshIndicator agar tahu kapan refresh selesai.
-  Completer<void>? _refreshCompleter;
-
   @override
   void initState() {
     super.initState();
@@ -46,55 +43,37 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _triggerRefresh());
   }
 
-  @override
-  void dispose() {
-    _refreshCompleter
-        ?.complete(); // pastikan tidak ada completer yang tergantung
-    super.dispose();
-  }
-
-  /// Dispatch refresh event dan tandai sedang loading.
-  void _triggerRefresh() {
+  /// Memicu refresh dan mematikan indikator saat proses BENAR-BENAR selesai
+  /// (lewat Completer di event), bukan saat state berubah. Penting karena bila
+  /// data hasil refresh sama dengan cache, BLoC menekan emit state identik
+  /// sehingga listener tak akan terpanggil — dulu membuat indikator jalan terus.
+  Future<void> _triggerRefresh() async {
     if (!mounted) return;
     setState(() => _isRefreshing = true);
-    context.read<CourseBloc>().add(const RefreshCoursesEvent());
+
+    final completer = Completer<void>();
+    context.read<CourseBloc>().add(RefreshCoursesEvent(onComplete: completer));
+
+    // Timeout sebagai jaring pengaman bila proses macet.
+    await completer.future.timeout(
+      const Duration(seconds: 12),
+      onTimeout: () {},
+    );
+
+    if (mounted) setState(() => _isRefreshing = false);
   }
 
   /// Callback untuk RefreshIndicator (pull-to-refresh).
-  /// Mengembalikan Future yang selesai saat BLoC emit CourseLoaded/Failure.
-  Future<void> _onPullRefresh() {
-    _refreshCompleter?.complete();
-    _refreshCompleter = Completer<void>();
-    _triggerRefresh();
-    return _refreshCompleter!.future.timeout(
-      const Duration(seconds: 10),
-      onTimeout: () {
-        // Selesaikan paksa jika timeout, agar RefreshIndicator tidak tergantung.
-      },
-    );
-  }
-
-  /// Dipanggil oleh BlocConsumer listener saat BLoC selesai memproses refresh.
-  void _onRefreshComplete() {
-    if (!mounted) return;
-    setState(() => _isRefreshing = false);
-    _refreshCompleter?.complete();
-    _refreshCompleter = null;
-  }
+  Future<void> _onPullRefresh() => _triggerRefresh();
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<CourseBloc, CourseState>(
+    return BlocBuilder<CourseBloc, CourseState>(
       // Hanya update UI saat state berubah secara signifikan
       buildWhen: (prev, curr) =>
           curr is CourseLoaded ||
           curr is CourseLoading ||
           curr is CourseFailure,
-      listenWhen: (prev, curr) => curr is CourseLoaded || curr is CourseFailure,
-      listener: (context, state) {
-        // Refresh selesai — sembunyikan loading indicator.
-        _onRefreshComplete();
-      },
       builder: (context, state) {
         // Gunakan data terbaru dari BLoC; fallback ke widget.course
         // jika BLoC belum punya data atau course tidak ditemukan.
