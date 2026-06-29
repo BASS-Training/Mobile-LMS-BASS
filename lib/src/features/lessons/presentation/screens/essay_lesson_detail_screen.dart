@@ -3,7 +3,6 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_ac
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
-import 'package:lms_mobile_app/src/core/utils/lesson_route_resolver.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
@@ -46,6 +45,10 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
     with LessonNavigationMixin {
   late final TextEditingController _answerController;
   late final GlobalKey<ScaffoldState> _scaffoldKey;
+
+  /// Cegah listener sukses-submit menavigasi lebih dari sekali (isSuccess tetap
+  /// true di state, listener bisa terpicu ulang pada rebuild berikutnya).
+  bool _submitHandled = false;
 
   @override
   void initState() {
@@ -125,7 +128,8 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
               ).showSnackBar(SnackBar(content: Text(state.snackbarMessage!)));
               context.read<EssayBloc>().add(ClearSnackbarMessage());
             }
-            if (state.isSuccess) {
+            if (state.isSuccess && !_submitHandled) {
+              _submitHandled = true;
               context.read<LessonBloc>().add(
                 MarkLessonCompleteEvent(lessonId: widget.lesson.id),
               );
@@ -137,24 +141,16 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
                 ),
               );
 
+              // pushReplacement: ganti layar essay (bukan pop lalu push) agar
+              // halaman course di bawahnya tidak ikut terbuang. Stack tetap
+              // [course, layarTujuan] sehingga back selalu kembali ke course.
               if (state.lastAttempt != null) {
-                Navigator.pop(context);
-                Future.delayed(const Duration(milliseconds: 200), () {
-                  if (!context.mounted) return;
-                  context.push(
-                    AppRoutes.essayResultDetail,
-                    extra: state.lastAttempt,
-                  );
-                });
-                return;
-              }
-
-              if (canGoNext && nextLesson != null) {
-                Navigator.pop(context);
-                Future.delayed(
-                  const Duration(milliseconds: 200),
-                  () => navigateToLesson(nextLesson!, widget.lessonIndex + 1),
+                context.pushReplacement(
+                  AppRoutes.essayResultDetail,
+                  extra: state.lastAttempt,
                 );
+              } else if (canGoNext && nextLesson != null) {
+                navigateToLesson(nextLesson!, widget.lessonIndex + 1);
               }
             }
           },
@@ -245,16 +241,8 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
       course: widget.course,
       currentLessonIndex: widget.lessonIndex,
       onSelectLesson: (lesson, index) {
-        final route = LessonRouteResolver.routeForType(lesson.type);
-        Navigator.pop(context);
-        context.push(
-          route,
-          extra: {
-            'lesson': lesson,
-            'course': widget.course,
-            'lessonIndex': index,
-          },
-        );
+        Navigator.pop(context); // tutup drawer
+        navigateToLesson(lesson, index);
       },
     );
   }
@@ -370,6 +358,13 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
   }
 
   Widget _buildBottomActionBar(EssayState state) {
+    // Saat data essay masih dimuat, jangan tampilkan bar aksi sama sekali.
+    // Mencegah tombol hijau "Kirim Semua Jawaban" sempat berkedip pada essay
+    // yang ternyata sudah dikumpulkan (status submit baru diketahui usai load).
+    if (state.isLoading) {
+      return const SizedBox.shrink();
+    }
+
     final canGoBackAction =
         state.currentQuestionIndex > 0 || previousLesson != null;
 
@@ -379,11 +374,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
           ChangeQuestion(state.currentQuestionIndex - 1),
         );
       } else if (previousLesson != null) {
-        Navigator.pop(context);
-        Future.delayed(
-          const Duration(milliseconds: 200),
-          () => navigateToLesson(previousLesson!, widget.lessonIndex - 1),
-        );
+        navigateToLesson(previousLesson!, widget.lessonIndex - 1);
       }
     }
 
@@ -398,11 +389,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
 
     void handleContinueAfterSubmit() {
       if (canGoNext && nextLesson != null) {
-        Navigator.pop(context);
-        Future.delayed(
-          const Duration(milliseconds: 200),
-          () => navigateToLesson(nextLesson!, widget.lessonIndex + 1),
-        );
+        navigateToLesson(nextLesson!, widget.lessonIndex + 1);
       } else {
         _backToCourse();
       }
@@ -430,10 +417,21 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
           child: Row(
             children: [
               Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: _backToCourse,
-                  icon: const Icon(Icons.arrow_back),
-                  label: const Text('Kembali'),
+                child: PressScale(
+                  enabled: canGoPrevious,
+                  child: OutlinedButton.icon(
+                    // Konsisten dgn lesson lain: "Sebelumnya" pindah ke lesson
+                    // sebelumnya, BUKAN kembali ke detail course (itu tugas panah
+                    // di kiri-atas). Nonaktif bila ini lesson pertama.
+                    onPressed: canGoPrevious
+                        ? () => navigateToLesson(
+                            previousLesson!,
+                            widget.lessonIndex - 1,
+                          )
+                        : null,
+                    icon: const Icon(Icons.arrow_back),
+                    label: const Text('Sebelumnya'),
+                  ),
                 ),
               ),
               const SizedBox(width: 10),

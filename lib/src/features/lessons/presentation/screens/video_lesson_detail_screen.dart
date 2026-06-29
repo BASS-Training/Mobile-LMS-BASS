@@ -205,6 +205,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
             course: widget.course,
             currentLessonIndex: widget.lessonIndex,
             onSelectLesson: (lesson, index) {
+              Navigator.pop(context); // tutup drawer
               navigateToLesson(lesson, index);
             },
           ),
@@ -368,11 +369,11 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
         );
         context.read<CourseBloc>().add(const RefreshCoursesEvent());
       }
-      Navigator.pop(context);
+      // pushReplacement (di navigateToLesson) sudah mengganti layar ini.
       if (goNext && nextLesson != null) {
-        Future.delayed(const Duration(milliseconds: 200), () {
-          navigateToLesson(nextLesson!, widget.lessonIndex + 1);
-        });
+        navigateToLesson(nextLesson!, widget.lessonIndex + 1);
+      } else {
+        popToCourse(context);
       }
     }
 
@@ -382,12 +383,8 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
           Expanded(
             child: PressScale(
               child: OutlinedButton.icon(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Future.delayed(const Duration(milliseconds: 200), () {
-                    navigateToLesson(previousLesson!, widget.lessonIndex - 1);
-                  });
-                },
+                onPressed: () =>
+                    navigateToLesson(previousLesson!, widget.lessonIndex - 1),
                 icon: const Icon(Icons.arrow_back_rounded),
                 label: const Text('Sebelumnya'),
               ),

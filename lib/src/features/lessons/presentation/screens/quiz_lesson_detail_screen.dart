@@ -17,6 +17,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/qu
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/quiz_result_widget.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
+import 'package:lms_mobile_app/src/shared/widgets/lesson_navigation_bar.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion/discussion_button.dart';
 import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
@@ -233,6 +234,29 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
             Navigator.pop(context);
             navigateToLesson(lesson, index);
           },
+        ),
+        bottomNavigationBar: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+            child: LessonNavigationBar(
+              canGoPrevious: canGoPrevious,
+              canGoNext: canGoNext,
+              primaryColor: AppColors.red,
+              onPrevious: canGoPrevious
+                  ? () => navigateToLesson(
+                      previousLesson!,
+                      widget.lessonIndex - 1,
+                    )
+                  : null,
+              onForward: () {
+                if (canGoNext && nextLesson != null) {
+                  navigateToLesson(nextLesson!, widget.lessonIndex + 1);
+                } else {
+                  _backToCourse();
+                }
+              },
+            ),
+          ),
         ),
         body: Stack(
           children: [

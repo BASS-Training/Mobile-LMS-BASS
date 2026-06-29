@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_actions.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:lms_mobile_app/src/core/utils/lesson_route_resolver.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
@@ -160,15 +158,12 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
     if (!mounted) return;
 
     if (goToNext && nextLesson != null) {
-      context.pop();
-      Future.delayed(const Duration(milliseconds: 180), () {
-        if (!mounted) return;
-        navigateToLesson(nextLesson!, widget.lessonIndex + 1);
-      });
+      // pushReplacement (di navigateToLesson) sudah mengganti layar lesson ini.
+      navigateToLesson(nextLesson!, widget.lessonIndex + 1);
       return;
     }
 
-    context.pop();
+    popToCourse(context);
   }
 
   // ── Build ────────────────────────────────────────────────────────────────────
@@ -182,15 +177,8 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
         course: widget.course,
         currentLessonIndex: widget.lessonIndex,
         onSelectLesson: (lesson, index) {
-          final route = LessonRouteResolver.routeForType(lesson.type);
-          context.push(
-            route,
-            extra: {
-              'lesson': lesson,
-              'course': widget.course,
-              'lessonIndex': index,
-            },
-          );
+          Navigator.pop(context); // tutup drawer
+          navigateToLesson(lesson, index);
         },
       ),
       appBar: LessonAppBar(
@@ -214,16 +202,10 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
             canGoNext: canGoNext,
             primaryColor: _accent,
             onPrevious: canGoPrevious
-                ? () {
-                    Navigator.pop(context);
-                    Future.delayed(
-                      const Duration(milliseconds: 200),
-                      () => navigateToLesson(
-                        previousLesson!,
-                        widget.lessonIndex - 1,
-                      ),
-                    );
-                  }
+                ? () => navigateToLesson(
+                    previousLesson!,
+                    widget.lessonIndex - 1,
+                  )
                 : null,
             onForward: () => _markComplete(goToNext: canGoNext),
           ),

@@ -35,9 +35,12 @@ class EssayRemoteDataSourceImpl implements EssayRemoteDataSource {
       final questions = (data['questions'] as List<dynamic>? ?? const []);
 
       // if user already has a submitted submission, mark lesson complete locally
+      // Jika user SUDAH punya submission di server (status apa pun:
+      // 'submitted', 'graded', dst.), kunci essay secara lokal agar tidak bisa
+      // diedit/dikirim ulang. Backend memakai updateOrCreate sehingga tidak
+      // memblokir submit ulang — penguncian dilakukan di sisi klien.
       final submission = data['submission'];
-      if (submission is Map<String, dynamic> &&
-          submission['status'] == 'submitted') {
+      if (submission is Map<String, dynamic>) {
         try {
           await LocalStorage.markEssaySubmitted(lessonId);
           await LocalStorage.markLessonComplete(lessonId);

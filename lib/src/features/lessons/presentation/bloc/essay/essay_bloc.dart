@@ -44,6 +44,7 @@ class EssayBloc extends Bloc<EssayEvent, EssayState> {
           workingAnswers: Map.from(drafts),
           savedDraftAnswers: Map.from(drafts),
           currentQuestionIndex: 0,
+          isLoading: false,
           isSubmitted: LocalStorage.isEssaySubmitted(event.lessonId),
         ),
       );
