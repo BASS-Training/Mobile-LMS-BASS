@@ -42,8 +42,13 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
     on<GetSavedCoursesEvent>(_onGetSavedCourses);
     on<RefreshCoursesEvent>(_onRefreshCourses);
     on<AddCourseEvent>(_onAddCourse);
+    on<ResetCoursesEvent>(_onResetCourses);
 
     Future.microtask(() => add(const WatchCoursesEvent()));
+  }
+
+  void _onResetCourses(ResetCoursesEvent event, Emitter<CourseState> emit) {
+    emit(const CourseInitial());
   }
 
   Future<void> _onGetCourses(
