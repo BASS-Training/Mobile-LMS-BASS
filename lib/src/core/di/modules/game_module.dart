@@ -1,6 +1,8 @@
 // Game module - dependency injection untuk games feature
+import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lms_mobile_app/src/features/games/data/datasources/game_local_data_source.dart';
+import 'package:lms_mobile_app/src/features/games/data/datasources/game_remote_data_source.dart';
 import 'package:lms_mobile_app/src/features/games/data/repositories/game_score_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/games/domain/repositories/game_score_repository.dart';
 import 'package:lms_mobile_app/src/features/games/domain/usecases/get_all_game_scores.dart';
@@ -19,10 +21,15 @@ class GameModule {
 
     // Data Source
     final GameLocalDataSource localDataSource = GameLocalDataSourceImpl();
+    final GameRemoteDataSource remoteDataSource =
+        GameRemoteDataSourceImpl(dio: getIt<Dio>());
 
     // Repository
     getIt.registerLazySingleton<GameScoreRepository>(
-      () => GameScoreRepositoryImpl(localDataSource: localDataSource),
+      () => GameScoreRepositoryImpl(
+        localDataSource: localDataSource,
+        remote: remoteDataSource,
+      ),
     );
 
     // Use Cases — registered so both the hub bloc and the (setState-driven)

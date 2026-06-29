@@ -75,6 +75,18 @@ class ApiEndpoints {
   // Agenda (sesi terjadwal/Zoom mendatang lintas course)
   static const String agenda = '/agenda';
 
+  // Agenda pribadi peserta (per-user, sinkron lintas device)
+  static const String personalAgenda = '/agenda/personal';
+  static const String personalAgendaItem = '/agenda/personal/{id}';
+
+  // Best score mini-game (per-user)
+  static const String gameScores = '/games/scores';
+  static const String gameScoresMerge = '/games/scores/merge';
+
+  // Baseline perayaan achievement (per-user)
+  static const String achievementTiers = '/achievements/tiers';
+  static const String achievementTiersSync = '/achievements/tiers/sync';
+
   // Notifications (gabungan: notifikasi DB + pengumuman web)
   static const String notifications = '/notifications';
   static const String notificationsUnreadCount = '/notifications/unread-count';

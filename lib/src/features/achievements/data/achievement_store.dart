@@ -1,5 +1,8 @@
+import 'dart:math' as math;
+
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
+import 'package:lms_mobile_app/src/features/achievements/data/achievement_remote_data_source.dart';
 import 'package:lms_mobile_app/src/features/achievements/domain/achievement.dart';
 
 /// Local (Hive) memory of which achievement tiers we have already celebrated,
@@ -15,6 +18,10 @@ class AchievementStore {
   static const String _boxName = 'bass_achievements_box';
   static const String _seenKeyBase = 'seen_tiers';
   static const String _initKeyBase = 'initialized';
+
+  final AchievementRemoteDataSource? remote;
+
+  AchievementStore({this.remote});
 
   String get _seenKey => LocalStorage.scopedKey(_seenKeyBase);
   String get _initKey => LocalStorage.scopedKey(_initKeyBase);
@@ -39,7 +46,7 @@ class AchievementStore {
     List<AchievementProgress> current,
   ) async {
     final box = await _box();
-    final initialized = box.get(_initKey) == true;
+    var initialized = box.get(_initKey) == true;
 
     final raw = box.get(_seenKey);
     final seen = <String, int>{};
@@ -47,6 +54,21 @@ class AchievementStore {
       raw.forEach((k, v) {
         if (k is String && v is int) seen[k] = v;
       });
+    }
+
+    // Gabungkan baseline dari server agar perayaan tidak muncul ulang di device
+    // baru. Jika server sudah punya baseline, anggap sudah ter-inisialisasi.
+    final r = remote;
+    if (r != null) {
+      try {
+        final serverTiers = await r.fetchTiers();
+        if (serverTiers.isNotEmpty) initialized = true;
+        serverTiers.forEach((k, v) {
+          seen[k] = math.max(seen[k] ?? 0, v);
+        });
+      } catch (_) {
+        // offline → pakai baseline lokal saja
+      }
     }
 
     final newlyUnlocked = <AchievementProgress>[];
@@ -60,6 +82,13 @@ class AchievementStore {
 
     await box.put(_seenKey, updated);
     await box.put(_initKey, true);
+
+    // Dorong baseline terbaru ke server (best-effort) agar tersinkron.
+    if (r != null) {
+      try {
+        await r.syncTiers(updated);
+      } catch (_) {}
+    }
 
     return initialized ? newlyUnlocked : const [];
   }

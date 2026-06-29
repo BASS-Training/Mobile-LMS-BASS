@@ -1,16 +1,24 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
+import 'package:lms_mobile_app/src/features/agenda/data/personal_agenda_remote_data_source.dart';
 import 'package:lms_mobile_app/src/features/agenda/domain/entities/personal_agenda_item.dart';
 
-/// Penyimpanan lokal (Hive) untuk agenda pribadi peserta. Box `bass_calendar_box`
-/// dipakai bersama cache hari libur (kunci berbeda). Hive di-init oleh core DI;
-/// box dibuka lazy. Mirip pola [GameLocalDataSource].
+/// Penyimpanan agenda pribadi peserta.
 ///
-/// Key agenda di-scope per user ([LocalStorage.scopedKey]) supaya agenda akun
-/// satu tidak bocor ke akun lain di perangkat yang sama.
+/// Server (`/mobile/agenda/personal`) adalah sumber kebenaran agar agenda
+/// tersinkron lintas device & web; box Hive `bass_calendar_box` dipakai sebagai
+/// cache offline. Key Hive di-scope per user ([LocalStorage.scopedKey]) supaya
+/// tidak bocor antar-akun di perangkat yang sama.
+///
+/// Saat [remote] null (mis. mode tes/offline), store jatuh ke perilaku
+/// lokal-saja seperti sebelumnya.
 class PersonalAgendaStore {
   static const String _boxName = 'bass_calendar_box';
   static const String _eventsKeyBase = 'personal_events';
+
+  final PersonalAgendaRemoteDataSource? remote;
+
+  PersonalAgendaStore({this.remote});
 
   String get _eventsKey => LocalStorage.scopedKey(_eventsKeyBase);
 
@@ -37,7 +45,7 @@ class PersonalAgendaStore {
     await box.delete(_eventsKeyBase);
   }
 
-  Future<List<PersonalAgendaItem>> getAll() async {
+  Future<List<PersonalAgendaItem>> _readLocal() async {
     final box = await _box();
     final raw = box.get(_eventsKey);
     if (raw is! List) return [];
@@ -47,17 +55,73 @@ class PersonalAgendaStore {
         .toList();
   }
 
-  Future<void> add(PersonalAgendaItem item) async {
+  Future<void> _writeLocal(List<PersonalAgendaItem> items) async {
     final box = await _box();
-    final current = await getAll();
-    current.add(item);
-    await box.put(_eventsKey, current.map((e) => e.toMap()).toList());
+    await box.put(_eventsKey, items.map((e) => e.toMap()).toList());
+  }
+
+  /// Daftar agenda. Online: tarik dari server, push item lokal yang belum
+  /// tersinkron (migrasi data lama / dibuat saat offline), lalu cerminkan ke
+  /// cache. Offline: kembalikan cache lokal.
+  Future<List<PersonalAgendaItem>> getAll() async {
+    final local = await _readLocal();
+    final r = remote;
+    if (r == null) return local;
+
+    try {
+      final server = await r.fetchAll();
+      final serverIds = server.map((e) => e.id).toSet();
+
+      // Item yang belum ada di server: legacy lokal-saja atau dibuat offline.
+      final pending = local.where((e) => !serverIds.contains(e.id)).toList();
+      final failed = <PersonalAgendaItem>[];
+      for (final item in pending) {
+        try {
+          await r.create(item);
+        } catch (_) {
+          failed.add(item);
+        }
+      }
+
+      // Jika ada yang berhasil di-push, ambil ulang daftar otoritatif.
+      final fresh = pending.length > failed.length ? await r.fetchAll() : server;
+
+      // Item yang gagal di-push tetap dipertahankan agar tidak hilang.
+      final merged = [...fresh, ...failed];
+      await _writeLocal(merged);
+      return merged;
+    } catch (_) {
+      // Offline / server tak terjangkau → pakai cache.
+      return local;
+    }
+  }
+
+  Future<void> add(PersonalAgendaItem item) async {
+    final r = remote;
+    if (r != null) {
+      try {
+        final created = await r.create(item);
+        final local = await _readLocal()..add(created);
+        await _writeLocal(local);
+        return;
+      } catch (_) {
+        // Offline → simpan lokal; akan di-push saat getAll() berikutnya online.
+      }
+    }
+    final local = await _readLocal()..add(item);
+    await _writeLocal(local);
   }
 
   Future<void> remove(String id) async {
-    final box = await _box();
-    final current = await getAll();
-    current.removeWhere((e) => e.id == id);
-    await box.put(_eventsKey, current.map((e) => e.toMap()).toList());
+    final r = remote;
+    if (r != null) {
+      try {
+        await r.delete(id);
+      } catch (_) {
+        // Offline → tetap hapus dari cache lokal.
+      }
+    }
+    final local = await _readLocal()..removeWhere((e) => e.id == id);
+    await _writeLocal(local);
   }
 }

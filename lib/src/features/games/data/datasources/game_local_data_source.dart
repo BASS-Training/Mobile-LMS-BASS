@@ -14,6 +14,10 @@ abstract class GameLocalDataSource {
   Future<GameScore> getScore(String gameId);
   Future<List<GameScore>> getAllScores();
   Future<GameScore> submitResult({required String gameId, required int score});
+
+  /// Tulis langsung sebuah skor (tanpa menambah jumlah main). Dipakai untuk
+  /// mencerminkan hasil merge dari server ke cache lokal.
+  Future<void> saveScore(GameScore score);
   Future<List<int>?> getSavedBoard(String gameId);
   Future<void> saveBoard({
     required String gameId,
@@ -113,6 +117,12 @@ class GameLocalDataSourceImpl implements GameLocalDataSource {
     final updated = current.registerResult(score);
     await box.put(_scoreKey(gameId), GameScoreModel.toMap(updated));
     return updated;
+  }
+
+  @override
+  Future<void> saveScore(GameScore score) async {
+    final box = await _box();
+    await box.put(_scoreKey(score.gameId), GameScoreModel.toMap(score));
   }
 
   @override

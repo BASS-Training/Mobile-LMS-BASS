@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lms_mobile_app/src/features/agenda/data/agenda_repository.dart';
 import 'package:lms_mobile_app/src/features/agenda/data/holiday_repository.dart';
+import 'package:lms_mobile_app/src/features/agenda/data/personal_agenda_remote_data_source.dart';
 import 'package:lms_mobile_app/src/features/agenda/data/personal_agenda_store.dart';
 import 'package:lms_mobile_app/src/features/agenda/presentation/cubit/agenda_cubit.dart';
 
@@ -21,8 +22,13 @@ class AgendaModule {
       () => AgendaRepository(dio: getIt<Dio>()),
     );
     getIt.registerLazySingleton<HolidayRepository>(() => HolidayRepository());
+    getIt.registerLazySingleton<PersonalAgendaRemoteDataSource>(
+      () => PersonalAgendaRemoteDataSourceImpl(dio: getIt<Dio>()),
+    );
     getIt.registerLazySingleton<PersonalAgendaStore>(
-      () => PersonalAgendaStore(),
+      () => PersonalAgendaStore(
+        remote: getIt<PersonalAgendaRemoteDataSource>(),
+      ),
     );
 
     getIt.registerLazySingleton<AgendaCubit>(
