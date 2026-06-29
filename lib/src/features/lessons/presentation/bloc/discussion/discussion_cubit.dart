@@ -28,10 +28,7 @@ class DiscussionCubit extends Cubit<DiscussionState> {
       final list = await getDiscussions(lessonId);
       emit(state.copyWith(status: DiscussionStatus.loaded, discussions: list));
     } catch (e) {
-      emit(state.copyWith(
-        status: DiscussionStatus.error,
-        error: _message(e),
-      ));
+      emit(state.copyWith(status: DiscussionStatus.error, error: _message(e)));
     }
   }
 
@@ -40,13 +37,18 @@ class DiscussionCubit extends Cubit<DiscussionState> {
     if (state.submitting) return false;
     emit(state.copyWith(submitting: true, error: null));
     try {
-      final created =
-          await createDiscussion(lessonId, title: title, body: body);
-      emit(state.copyWith(
-        status: DiscussionStatus.loaded,
-        discussions: [created, ...state.discussions],
-        submitting: false,
-      ));
+      final created = await createDiscussion(
+        lessonId,
+        title: title,
+        body: body,
+      );
+      emit(
+        state.copyWith(
+          status: DiscussionStatus.loaded,
+          discussions: [created, ...state.discussions],
+          submitting: false,
+        ),
+      );
       return true;
     } catch (e) {
       emit(state.copyWith(submitting: false, error: _message(e)));
@@ -64,16 +66,20 @@ class DiscussionCubit extends Cubit<DiscussionState> {
         if (d.id != discussionId) return d;
         return d.copyWith(replies: [...d.replies, reply]);
       }).toList();
-      emit(state.copyWith(
-        discussions: updated,
-        replyingIds: {...state.replyingIds}..remove(discussionId),
-      ));
+      emit(
+        state.copyWith(
+          discussions: updated,
+          replyingIds: {...state.replyingIds}..remove(discussionId),
+        ),
+      );
       return true;
     } catch (e) {
-      emit(state.copyWith(
-        replyingIds: {...state.replyingIds}..remove(discussionId),
-        error: _message(e),
-      ));
+      emit(
+        state.copyWith(
+          replyingIds: {...state.replyingIds}..remove(discussionId),
+          error: _message(e),
+        ),
+      );
       return false;
     }
   }

@@ -19,8 +19,11 @@ class DiscussionRepositoryImpl implements DiscussionRepository {
     required String title,
     required String body,
   }) async {
-    final model =
-        await remoteDataSource.create(lessonId, title: title, body: body);
+    final model = await remoteDataSource.create(
+      lessonId,
+      title: title,
+      body: body,
+    );
     return model.toEntity();
   }
 

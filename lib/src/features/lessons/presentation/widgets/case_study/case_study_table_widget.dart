@@ -244,7 +244,8 @@ class _CaseStudyTableWidgetState extends State<CaseStudyTableWidget> {
       for (final cell in row) {
         if (cell.covered) continue;
         final left = colOffsets[cell.col];
-        final width = colOffsets[math.min(cell.col + cell.colSpan, cols)] - left;
+        final width =
+            colOffsets[math.min(cell.col + cell.colSpan, cols)] - left;
         final top = rowOffsets[cell.row];
         final height =
             rowOffsets[math.min(cell.row + cell.rowSpan, rows)] - top;

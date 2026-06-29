@@ -26,15 +26,15 @@ class CaseStudyPdfViewerScreen extends StatelessWidget {
       await file.writeAsBytes(bytes, flush: true);
       final result = await OpenFilex.open(path);
       if (context.mounted && result.type != ResultType.done) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Tersimpan di: $path')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Tersimpan di: $path')));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menyimpan PDF: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Gagal menyimpan PDF: $e')));
       }
     }
   }

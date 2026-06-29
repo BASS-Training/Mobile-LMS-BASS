@@ -30,8 +30,18 @@ class CaseStudyCellEntity extends Equatable {
   String get key => '$row-$col';
 
   @override
-  List<Object?> get props =>
-      [row, col, rowSpan, colSpan, covered, role, text, bg, align, bold];
+  List<Object?> get props => [
+    row,
+    col,
+    rowSpan,
+    colSpan,
+    covered,
+    role,
+    text,
+    bg,
+    align,
+    bold,
+  ];
 }
 
 /// Tabel = matriks sel.

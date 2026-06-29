@@ -202,10 +202,7 @@ class _EssayResultDetailScreenState extends State<EssayResultDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: TextStyle(fontSize: 11, color: AppColors.slate),
-          ),
+          Text(label, style: TextStyle(fontSize: 11, color: AppColors.slate)),
           const SizedBox(height: 8),
           Text(
             value,

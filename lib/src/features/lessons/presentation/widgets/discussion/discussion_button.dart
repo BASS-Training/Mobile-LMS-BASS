@@ -77,7 +77,9 @@ class _DiscussionIconButtonState extends State<DiscussionIconButton> {
                     top: -6,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 5, vertical: 1),
+                        horizontal: 5,
+                        vertical: 1,
+                      ),
                       constraints: const BoxConstraints(minWidth: 16),
                       decoration: BoxDecoration(
                         color: Colors.white,

@@ -6,5 +6,6 @@ class GetDiscussionUseCase {
 
   const GetDiscussionUseCase(this.repository);
 
-  Future<List<DiscussionEntity>> call(String lessonId) => repository.getDiscussions(lessonId);
+  Future<List<DiscussionEntity>> call(String lessonId) =>
+      repository.getDiscussions(lessonId);
 }

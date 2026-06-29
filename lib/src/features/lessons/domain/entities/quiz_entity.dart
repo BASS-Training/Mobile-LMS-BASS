@@ -65,4 +65,11 @@ class Quiz {
     this.userAttempt,
     this.completed = false,
   });
+
+  /// Apakah peserta sudah LULUS kuis ini. Sekali lulus, kuis terkunci dan tidak
+  /// bisa dikerjakan lagi; jika belum lulus (termasuk pernah gagal), masih bisa
+  /// dikerjakan ulang. Memakai flag `completed` (konten ditandai selesai hanya
+  /// saat lulus) ATAU hasil attempt terakhir yang lulus.
+  bool get isPassed =>
+      completed || (userAttempt != null && userAttempt!['passed'] == true);
 }

@@ -7,6 +7,7 @@ import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/cou
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_event.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_actions.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion/discussion_button.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
@@ -133,7 +134,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
         appBar: LessonAppBar(
           courseTitle: widget.course.title,
           subtitle: 'VIDEO PLAYER',
-          onBack: () => Navigator.pop(context),
+          onBack: () => popToCourse(context),
         ),
         body: Container(
           decoration: BoxDecoration(
@@ -211,7 +212,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
           appBar: LessonAppBar(
             courseTitle: widget.course.title,
             subtitle: 'VIDEO PLAYER',
-            onBack: () => Navigator.pop(context),
+            onBack: () => popToCourse(context),
             onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
             action: DiscussionIconButton(
               lessonId: widget.lesson.id,

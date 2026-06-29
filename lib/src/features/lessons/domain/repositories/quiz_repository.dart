@@ -14,4 +14,11 @@ abstract class QuizRepository {
 
   /// Submit quiz answers. Returns a [QuizResult] computed either by server or locally.
   Future<QuizResult> submitQuiz(Quiz quiz, Map<int, int> answers);
+
+  /// Buang cache quiz untuk satu lesson (mis. setelah submit, agar status
+  /// `completed`/lulus yang baru terbaca ulang dari server saat dibuka lagi).
+  void invalidateCachedQuiz(String lessonId);
+
+  /// Buang seluruh cache quiz (mis. saat logout, agar tidak bocor antar-akun).
+  void clearQuizCache();
 }

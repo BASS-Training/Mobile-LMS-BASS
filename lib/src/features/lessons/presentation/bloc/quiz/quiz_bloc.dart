@@ -179,6 +179,10 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
           currentState.answers,
         );
 
+        // Buang cache quiz lesson ini agar saat dibuka kembali statusnya ditarik
+        // ulang dari server (quiz yang lulus akan terkunci, tidak bisa diulang).
+        getQuizUseCase.invalidate(_lessonId);
+
         emit(
           QuizSubmitted(
             quiz: currentState.quiz,

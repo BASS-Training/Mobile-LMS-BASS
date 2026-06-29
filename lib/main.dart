@@ -19,6 +19,7 @@ import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/aut
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/bloc/home_bloc.dart';
+import 'package:lms_mobile_app/src/features/lessons/data/repositories/quiz_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
 
 /// Entry point aplikasi.
@@ -98,13 +99,16 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         BlocProvider<HomeBloc>(create: (context) => sl<HomeBloc>()),
         BlocProvider<LessonBloc>(create: (context) => sl<LessonBloc>()),
       ],
-      // Saat logout, kosongkan state course di memori agar data akun sebelumnya
-      // tidak terbawa ke akun berikutnya pada perangkat yang sama (mencegah
-      // perayaan achievement palsu & kebocoran course lintas akun).
+      // Saat logout, kosongkan state course di memori + cache quiz statis agar
+      // data akun sebelumnya tidak terbawa ke akun berikutnya pada perangkat yang
+      // sama (mencegah perayaan achievement palsu, kebocoran course, dan status
+      // lulus quiz lintas akun).
       child: BlocListener<AuthBloc, AuthState>(
         listenWhen: (prev, curr) => curr is AuthLoggedOut,
-        listener: (context, _) =>
-            context.read<CourseBloc>().add(const ResetCoursesEvent()),
+        listener: (context, _) {
+          context.read<CourseBloc>().add(const ResetCoursesEvent());
+          QuizRepositoryImpl.clearStaticCache();
+        },
         child: ListenableBuilder(
           listenable: ThemeController.instance,
           builder: (context, _) {

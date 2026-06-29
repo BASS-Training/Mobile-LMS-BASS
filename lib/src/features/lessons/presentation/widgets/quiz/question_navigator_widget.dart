@@ -181,10 +181,7 @@ class _QuestionNavigatorState extends State<QuestionNavigatorWidget> {
           ),
         ),
         const SizedBox(width: 6),
-        Text(
-          label,
-          style: TextStyle(fontSize: 11, color: AppColors.slate),
-        ),
+        Text(label, style: TextStyle(fontSize: 11, color: AppColors.slate)),
       ],
     );
   }

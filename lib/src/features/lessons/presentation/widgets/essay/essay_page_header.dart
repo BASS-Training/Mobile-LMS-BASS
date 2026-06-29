@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 
 class EssayPageHeader extends StatelessWidget {
-
   const EssayPageHeader({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -34,7 +33,6 @@ class EssayPageHeader extends StatelessWidget {
               color: Colors.white.withValues(alpha: 0.18),
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
-
             ),
             child: const Icon(
               Icons.edit_note_rounded,

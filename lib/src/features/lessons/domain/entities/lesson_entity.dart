@@ -21,7 +21,7 @@ class LessonEntity extends Equatable {
   final String? zoomMeetingId;
   final String? zoomPassword;
   final String? scheduledStart; // ISO 8601
-  final String? scheduledEnd;   // ISO 8601
+  final String? scheduledEnd; // ISO 8601
 
   const LessonEntity({
     required this.id,

@@ -31,6 +31,23 @@ class QuizRepositoryImpl implements QuizRepository {
   }
 
   @override
+  void invalidateCachedQuiz(String lessonId) {
+    _quizCache.remove(lessonId);
+  }
+
+  @override
+  void clearQuizCache() {
+    _quizCache.clear();
+  }
+
+  /// Versi statis dari [clearQuizCache]. Cache quiz bersifat statis (dibagi semua
+  /// instance), jadi perlu dibersihkan saat logout agar status lulus/jawaban satu
+  /// akun tidak bocor ke akun lain di perangkat yang sama.
+  static void clearStaticCache() {
+    _quizCache.clear();
+  }
+
+  @override
   Future<Quiz> getQuizByLessonId(String lessonId) async {
     try {
       final cachedQuiz = _quizCache[lessonId];
@@ -85,9 +102,7 @@ class QuizRepositoryImpl implements QuizRepository {
       }
 
       if (questionItems.isEmpty) {
-        _log(
-          '[QUIZ][FETCH] local fallback still empty for lessonId=$lessonId',
-        );
+        _log('[QUIZ][FETCH] local fallback still empty for lessonId=$lessonId');
         final localQuiz = await localDataSource.getQuizByLessonId(lessonId);
         if (localQuiz['questions'] is List) {
           questionItems.addAll(

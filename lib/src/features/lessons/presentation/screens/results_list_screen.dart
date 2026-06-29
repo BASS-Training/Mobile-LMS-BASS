@@ -194,7 +194,9 @@ class ResultsListScreen extends StatelessWidget {
                         if (!isQuiz)
                           _buildStatusChip(
                             attempt.graded ? 'Dinilai' : 'Menunggu Nilai',
-                            attempt.graded ? AppColors.success : AppColors.brandPrimary,
+                            attempt.graded
+                                ? AppColors.success
+                                : AppColors.brandPrimary,
                           ),
                         if (isCaseStudy &&
                             attempt.graded &&

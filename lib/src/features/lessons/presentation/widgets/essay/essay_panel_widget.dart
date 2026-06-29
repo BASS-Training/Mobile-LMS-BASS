@@ -10,8 +10,11 @@ class EssayPanelWidget extends StatelessWidget {
   final EssayState state;
   final TextEditingController _answerController;
 
-  const EssayPanelWidget({super.key, required this.state, required TextEditingController answerController})
-    : _answerController = answerController;
+  const EssayPanelWidget({
+    super.key,
+    required this.state,
+    required TextEditingController answerController,
+  }) : _answerController = answerController;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +32,7 @@ class EssayPanelWidget extends StatelessWidget {
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 18,
-            offset: const Offset(0,6),
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -84,25 +87,25 @@ class EssayPanelWidget extends StatelessWidget {
               color: AppColors.surfaceMuted,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: AppColors.borderSubtle),
+            ),
+            child: Text(
+              state.currentQuestion,
+              style: TextStyle(
+                fontSize: 15,
+                height: 1.6,
+                color: AppColors.charcoal,
               ),
-              child: Text(
-                state.currentQuestion,
-                style: TextStyle(
-                  fontSize: 15,
-                  height: 1.6,
-                  color: AppColors.charcoal,
-                ),
             ),
           ),
           const SizedBox(height: 16),
-          if(state.isSubmitted) ...[
+          if (state.isSubmitted) ...[
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.green.shade50,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.green.shade200)
+                border: Border.all(color: Colors.green.shade200),
               ),
               child: const Row(
                 children: [
@@ -111,9 +114,7 @@ class EssayPanelWidget extends StatelessWidget {
                   Expanded(
                     child: Text(
                       'Jawaban sudah dikumpulkan, Kamu tidak bisa mengirim ulang.',
-                      style: TextStyle(
-                        fontSize: 12.5, height: 1.4
-                      ),
+                      style: TextStyle(fontSize: 12.5, height: 1.4),
                     ),
                   ),
                 ],
@@ -134,20 +135,25 @@ class EssayPanelWidget extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             decoration: BoxDecoration(
-              color: state.isCurrentQuestionValid ? Colors.green.shade50 : Colors.orange.shade50,
+              color: state.isCurrentQuestionValid
+                  ? Colors.green.shade50
+                  : Colors.orange.shade50,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: state.isCurrentQuestionValid ? Colors.green.shade200 : Colors.orange.shade200
+                color: state.isCurrentQuestionValid
+                    ? Colors.green.shade200
+                    : Colors.orange.shade200,
               ),
             ),
             child: Text(
-              state.isCurrentQuestionValid ? 'Jawaban nomor ini valid (>= 10 kata).'
-              : 'Minimal 10 kata untuk menandai nomor ini selesai.',
-              style : TextStyle(
+              state.isCurrentQuestionValid
+                  ? 'Jawaban nomor ini valid (>= 10 kata).'
+                  : 'Minimal 10 kata untuk menandai nomor ini selesai.',
+              style: TextStyle(
                 fontSize: 12,
                 color: state.isCurrentQuestionValid
-                ? Colors.green.shade200
-                : Colors.orange.shade200,
+                    ? Colors.green.shade200
+                    : Colors.orange.shade200,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -159,7 +165,7 @@ class EssayPanelWidget extends StatelessWidget {
             minLines: 10,
             maxLines: 14,
             onChanged: (value) =>
-            context.read<EssayBloc>().add(AnswerChanged(value)),
+                context.read<EssayBloc>().add(AnswerChanged(value)),
             decoration: InputDecoration(
               hintText: 'Tulis jawaban essay Anda di sini...',
               alignLabelWithHint: true,
@@ -175,7 +181,6 @@ class EssayPanelWidget extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(color: AppColors.blue),
               ),
-              
             ),
           ),
           const SizedBox(height: 8),
@@ -183,32 +188,32 @@ class EssayPanelWidget extends StatelessWidget {
             children: [
               Text(
                 '${state.currentWordCount} kata (min 10) | ${state.currentAnswer.length} karakter',
-                style: TextStyle(
-                  fontSize: 11,
-                  color: AppColors.slate,
-                ),
+                style: TextStyle(fontSize: 11, color: AppColors.slate),
               ),
               const Spacer(),
               Text(
                 state.isDraftSaved ? 'Draft tersimpan' : 'Belum disimpan',
                 style: TextStyle(
                   fontSize: 11,
-                  color: state.isDraftSaved ? AppColors.emerald : AppColors.silver,
+                  color: state.isDraftSaved
+                      ? AppColors.emerald
+                      : AppColors.silver,
                 ),
               ),
-            ]
+            ],
           ),
           const SizedBox(height: 12),
           QuestionNavigatorWidget(
             totalQuestions: state.totalQuestions,
             currentQuestionIndex: state.currentQuestionIndex,
             completedQuestionIndexes: state.savedQuestionIndexes,
-            onQuestionSelected: (index) => context.read<EssayBloc>().add(ChangeQuestion(index)),
+            onQuestionSelected: (index) =>
+                context.read<EssayBloc>().add(ChangeQuestion(index)),
             completedLabel: 'Sudah Disimpan',
-            pendingLabel: 'Belum Disimpan'
-          )
-        ]
-      )
+            pendingLabel: 'Belum Disimpan',
+          ),
+        ],
+      ),
     );
   }
 }

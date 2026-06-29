@@ -376,10 +376,7 @@ class _QuestionCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               question.helpText!,
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.textTertiary,
-              ),
+              style: TextStyle(fontSize: 12, color: AppColors.textTertiary),
             ),
           ],
           const SizedBox(height: 12),

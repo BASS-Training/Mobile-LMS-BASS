@@ -69,9 +69,9 @@ class DiscussionModel {
       createdAt: json['createdAt']?.toString(),
       replies: rawReplies is List
           ? rawReplies
-              .whereType<Map<String, dynamic>>()
-              .map(DiscussionReplyModel.fromJson)
-              .toList()
+                .whereType<Map<String, dynamic>>()
+                .map(DiscussionReplyModel.fromJson)
+                .toList()
           : const [],
     );
   }

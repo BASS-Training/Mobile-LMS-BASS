@@ -16,8 +16,8 @@ class VideoBloc extends Bloc<VideoEvent, VideoState> {
     on<VideoProgressUpdated>((event, emit) {
       if (state.canProceed) return;
 
-      final reachedThreshold = event.currentPositionSeconds >=
-          (event.totalDurationSeconds - 10);
+      final reachedThreshold =
+          event.currentPositionSeconds >= (event.totalDurationSeconds - 10);
       if (reachedThreshold) {
         emit(state.copyWith(canProceed: true));
       }

@@ -29,7 +29,9 @@ class LessonBloc extends Bloc<LessonEvent, LessonState> {
   }
 
   Future<void> _onCheckLessonCompletion(
-      CheckLessonCompletionEvent event, Emitter<LessonState> emit) async {
+    CheckLessonCompletionEvent event,
+    Emitter<LessonState> emit,
+  ) async {
     emit(const LessonLoading());
 
     try {
@@ -41,7 +43,9 @@ class LessonBloc extends Bloc<LessonEvent, LessonState> {
   }
 
   Future<void> _onToggleLessonCompletion(
-      ToggleLessonCompletionEvent event, Emitter<LessonState> emit) async {
+    ToggleLessonCompletionEvent event,
+    Emitter<LessonState> emit,
+  ) async {
     try {
       await toggleLessonCompletionUseCase(event.lessonId);
       emit(LessonCompletionToggled(lessonId: event.lessonId));
@@ -51,7 +55,9 @@ class LessonBloc extends Bloc<LessonEvent, LessonState> {
   }
 
   Future<void> _onMarkLessonComplete(
-      MarkLessonCompleteEvent event, Emitter<LessonState> emit) async {
+    MarkLessonCompleteEvent event,
+    Emitter<LessonState> emit,
+  ) async {
     try {
       await markLessonCompleteUseCase(event.lessonId);
       emit(LessonMarkedComplete(lessonId: event.lessonId));
@@ -61,7 +67,9 @@ class LessonBloc extends Bloc<LessonEvent, LessonState> {
   }
 
   Future<void> _onMarkLessonIncomplete(
-      MarkLessonIncompleteEvent event, Emitter<LessonState> emit) async {
+    MarkLessonIncompleteEvent event,
+    Emitter<LessonState> emit,
+  ) async {
     try {
       await markLessonIncompleteUseCase(event.lessonId);
       emit(LessonMarkedIncomplete(lessonId: event.lessonId));
@@ -71,7 +79,9 @@ class LessonBloc extends Bloc<LessonEvent, LessonState> {
   }
 
   Future<void> _onRefreshLessonCompletion(
-      RefreshLessonCompletionEvent event, Emitter<LessonState> emit) async {
+    RefreshLessonCompletionEvent event,
+    Emitter<LessonState> emit,
+  ) async {
     try {
       await refreshLessonCompletionUseCase();
       emit(const LessonInitial());

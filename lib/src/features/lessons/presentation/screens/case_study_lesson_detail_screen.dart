@@ -516,15 +516,11 @@ class _CaseStudyLessonDetailScreenState
                   fillColor: AppColors.surface,
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: AppColors.borderDefault,
-                    ),
+                    borderSide: BorderSide(color: AppColors.borderDefault),
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(
-                      color: AppColors.borderDefault,
-                    ),
+                    borderSide: BorderSide(color: AppColors.borderDefault),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),

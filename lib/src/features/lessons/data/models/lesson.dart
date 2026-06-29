@@ -4,7 +4,8 @@ class Lesson {
   final String title;
   final String content;
   final String duration;
-  final String type; // 'video', 'text', 'document', 'quiz', 'essay', 'image', 'zoom'
+  final String
+  type; // 'video', 'text', 'document', 'quiz', 'essay', 'image', 'zoom'
   final String? youtubeVideoId;
   final String? documentUrl;
   final List<String> imageUrls;
@@ -13,7 +14,7 @@ class Lesson {
   final String? zoomMeetingId;
   final String? zoomPassword;
   final String? scheduledStart; // ISO 8601
-  final String? scheduledEnd;   // ISO 8601
+  final String? scheduledEnd; // ISO 8601
   bool isCompleted;
 
   Lesson({
@@ -53,7 +54,8 @@ class Lesson {
       youtubeVideoId: videoSource,
       documentUrl: documentUrl,
       isCompleted: json['isCompleted'] ?? false,
-      imageUrls: (json['imageUrls'] as List<dynamic>?)
+      imageUrls:
+          (json['imageUrls'] as List<dynamic>?)
               ?.whereType<String>()
               .where((s) => s.isNotEmpty)
               .toList() ??
