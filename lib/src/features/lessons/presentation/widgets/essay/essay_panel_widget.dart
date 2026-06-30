@@ -108,17 +108,34 @@ class EssayPanelWidget extends StatelessWidget {
                 border: Border.all(color: AppColors.successBorder),
               ),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(Icons.verified_rounded, color: AppColors.successText),
                   const SizedBox(width: 10),
                   Expanded(
-                    child: Text(
-                      'Jawaban sudah dikumpulkan, Kamu tidak bisa mengirim ulang.',
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        height: 1.4,
-                        color: AppColors.successText,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Jawaban berhasil dikumpulkan',
+                          style: TextStyle(
+                            fontSize: 13,
+                            height: 1.35,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.successText,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Tidak bisa dikirim ulang. Menunggu penilaian — nilai '
+                          'bisa kamu lihat nanti di menu "Nilai & Hasil".',
+                          style: TextStyle(
+                            fontSize: 12,
+                            height: 1.4,
+                            color: AppColors.successText.withValues(alpha: 0.9),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -183,7 +200,7 @@ class EssayPanelWidget extends StatelessWidget {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: AppColors.blue),
+                borderSide: const BorderSide(color: AppColors.brandPrimary),
               ),
             ),
           ),

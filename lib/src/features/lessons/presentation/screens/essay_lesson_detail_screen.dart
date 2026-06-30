@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_actions.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
@@ -135,23 +133,18 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
               );
               context.read<CourseBloc>().add(const RefreshCoursesEvent());
 
+              // Sengaja TIDAK pindah otomatis ke halaman nilai/hasil. Peserta
+              // tetap di layar essay (kini read-only) agar bisa langsung lanjut
+              // ke lesson berikutnya lewat tombol "Lanjut" di bawah — bukan
+              // terlempar ke halaman hasil lalu harus kembali manual. Nilai bisa
+              // dilihat kapan saja via menu "Nilai & Hasil" pada detail course.
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Jawaban essay berhasil dikirim.'),
+                  content: Text(
+                    'Jawaban essay berhasil dikumpulkan. Menunggu penilaian.',
+                  ),
                 ),
               );
-
-              // pushReplacement: ganti layar essay (bukan pop lalu push) agar
-              // halaman course di bawahnya tidak ikut terbuang. Stack tetap
-              // [course, layarTujuan] sehingga back selalu kembali ke course.
-              if (state.lastAttempt != null) {
-                context.pushReplacement(
-                  AppRoutes.essayResultDetail,
-                  extra: state.lastAttempt,
-                );
-              } else if (canGoNext && nextLesson != null) {
-                navigateToLesson(nextLesson!, widget.lessonIndex + 1);
-              }
             }
           },
           builder: (context, state) {
