@@ -16,6 +16,14 @@ import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion/discussion_button.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_navigation_bar.dart';
 import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+
+/// Jenis dokumen yang dideteksi dari ekstensi URL. Penting: viewer Syncfusion
+/// hanya bisa PDF, jadi dokumen Office (Word/Excel/PPT) HARUS dirender lewat
+/// Office online viewer di WebView — kalau tidak, area-nya kosong (bug lama:
+/// .docx disuapkan ke SfPdfViewer sehingga blank tanpa error).
+enum _DocKind { pdf, office, other }
 
 class DocumentLessonDetailScreen extends StatefulWidget {
   final LessonEntity lesson;
@@ -40,6 +48,14 @@ class _DocumentLessonDetailScreenState extends State<DocumentLessonDetailScreen>
   PdfViewerController? _pdfViewerController;
   double _zoomLevel = 1.0;
 
+  late final String? _docUrl;
+  late final _DocKind _docKind;
+
+  // WebView state (hanya dipakai untuk dokumen Office).
+  WebViewController? _webController;
+  bool _webLoading = true;
+  bool _webError = false;
+
   @override
   void initState() {
     super.initState();
@@ -49,6 +65,31 @@ class _DocumentLessonDetailScreenState extends State<DocumentLessonDetailScreen>
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+
+    _docUrl = _resolveDocumentUrl();
+    _docKind = _docUrl == null ? _DocKind.other : _detectKind(_docUrl);
+
+    if (_docKind == _DocKind.office && _docUrl != null) {
+      _webController = WebViewController()
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..setBackgroundColor(Colors.white)
+        ..setNavigationDelegate(
+          NavigationDelegate(
+            onPageFinished: (_) {
+              if (mounted) setState(() => _webLoading = false);
+            },
+            onWebResourceError: (_) {
+              if (mounted) {
+                setState(() {
+                  _webLoading = false;
+                  _webError = true;
+                });
+              }
+            },
+          ),
+        )
+        ..loadRequest(Uri.parse(_officeViewerUrl(_docUrl)));
+    }
   }
 
   @override
@@ -57,7 +98,8 @@ class _DocumentLessonDetailScreenState extends State<DocumentLessonDetailScreen>
     super.dispose();
   }
 
-  String? get _documentUrl {
+  /// Ambil URL dokumen dari `documentUrl`, atau dari `content` jika berupa URL.
+  String? _resolveDocumentUrl() {
     final candidate = widget.lesson.documentUrl?.trim();
     if (candidate != null && candidate.isNotEmpty) {
       return candidate;
@@ -74,6 +116,39 @@ class _DocumentLessonDetailScreenState extends State<DocumentLessonDetailScreen>
     }
 
     return null;
+  }
+
+  /// Deteksi jenis dokumen dari ekstensi path (abaikan query string).
+  _DocKind _detectKind(String url) {
+    final path = (Uri.tryParse(url)?.path ?? url).toLowerCase();
+    if (path.endsWith('.pdf')) return _DocKind.pdf;
+    if (path.endsWith('.doc') ||
+        path.endsWith('.docx') ||
+        path.endsWith('.ppt') ||
+        path.endsWith('.pptx') ||
+        path.endsWith('.xls') ||
+        path.endsWith('.xlsx')) {
+      return _DocKind.office;
+    }
+    return _DocKind.other;
+  }
+
+  /// Office Online viewer — me-render Word/Excel/PPT inline (sama seperti web).
+  /// Syaratnya file harus ber-URL publik (backend sudah mengirim URL publik).
+  String _officeViewerUrl(String fileUrl) =>
+      'https://view.officeapps.live.com/op/embed.aspx?src=${Uri.encodeComponent(fileUrl)}';
+
+  Future<void> _openExternally() async {
+    final url = _docUrl;
+    if (url == null) return;
+    final uri = Uri.tryParse(url);
+    if (uri == null) return;
+    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!ok && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tidak dapat membuka dokumen.')),
+      );
+    }
   }
 
   @override
@@ -105,8 +180,6 @@ class _DocumentLessonDetailScreenState extends State<DocumentLessonDetailScreen>
 
   @override
   Widget build(BuildContext context) {
-    final documentUrl = _documentUrl;
-
     return Scaffold(
       key: _scaffoldKey,
       drawer: LessonDrawer(
@@ -150,12 +223,12 @@ class _DocumentLessonDetailScreenState extends State<DocumentLessonDetailScreen>
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: _buildDocumentToolbar(documentUrl),
+              child: _buildDocumentToolbar(),
             ),
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: _buildDocumentCard(documentUrl),
+                child: _buildDocumentCard(),
               ),
             ),
             const SizedBox(height: 16),
@@ -165,7 +238,7 @@ class _DocumentLessonDetailScreenState extends State<DocumentLessonDetailScreen>
     );
   }
 
-  Widget _buildDocumentToolbar(String? documentUrl) {
+  Widget _buildDocumentToolbar() {
     return Row(
       children: [
         Expanded(
@@ -182,8 +255,8 @@ class _DocumentLessonDetailScreenState extends State<DocumentLessonDetailScreen>
               ),
               const SizedBox(height: 4),
               Text(
-                documentUrl == null
-                    ? 'PDF belum tersedia untuk lesson ini.'
+                _docUrl == null
+                    ? 'Dokumen belum tersedia untuk lesson ini.'
                     : '',
                 style: TextStyle(fontSize: 11.5, color: AppColors.slate),
               ),
@@ -191,51 +264,66 @@ class _DocumentLessonDetailScreenState extends State<DocumentLessonDetailScreen>
           ),
         ),
         const SizedBox(width: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: const Color(0xFFF3F6FF),
-            borderRadius: BorderRadius.circular(12),
+        // PDF: tombol zoom (dikontrol Syncfusion). Selain itu: tombol buka di
+        // aplikasi/peramban eksternal supaya pengguna bisa unduh/baca penuh.
+        if (_docUrl != null)
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.surfaceMuted,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: _docKind == _DocKind.pdf
+                ? PopupMenuButton<String>(
+                    icon: const Icon(
+                      Icons.zoom_in_rounded,
+                      color: AppColors.red,
+                    ),
+                    onSelected: (value) {
+                      switch (value) {
+                        case 'zoom_in':
+                          setState(() {
+                            _zoomLevel = (_zoomLevel + 0.25).clamp(1.0, 3.5);
+                            _pdfViewerController?.zoomLevel = _zoomLevel;
+                          });
+                          break;
+                        case 'zoom_out':
+                          setState(() {
+                            _zoomLevel = (_zoomLevel - 0.25).clamp(1.0, 3.5);
+                            _pdfViewerController?.zoomLevel = _zoomLevel;
+                          });
+                          break;
+                        case 'reset':
+                          setState(() {
+                            _zoomLevel = 1.0;
+                            _pdfViewerController?.zoomLevel = _zoomLevel;
+                          });
+                          break;
+                      }
+                    },
+                    itemBuilder: (context) => const [
+                      PopupMenuItem(value: 'zoom_in', child: Text('Zoom in')),
+                      PopupMenuItem(value: 'zoom_out', child: Text('Zoom out')),
+                      PopupMenuItem(value: 'reset', child: Text('Reset zoom')),
+                    ],
+                  )
+                : IconButton(
+                    icon: const Icon(
+                      Icons.open_in_new_rounded,
+                      color: AppColors.red,
+                    ),
+                    tooltip: 'Buka / unduh dokumen',
+                    onPressed: _openExternally,
+                  ),
           ),
-          child: PopupMenuButton<String>(
-            icon: const Icon(Icons.zoom_in_rounded, color: AppColors.red),
-            onSelected: (value) {
-              switch (value) {
-                case 'zoom_in':
-                  setState(() {
-                    _zoomLevel = (_zoomLevel + 0.25).clamp(1.0, 3.5);
-                    _pdfViewerController?.zoomLevel = _zoomLevel;
-                  });
-                  break;
-                case 'zoom_out':
-                  setState(() {
-                    _zoomLevel = (_zoomLevel - 0.25).clamp(1.0, 3.5);
-                    _pdfViewerController?.zoomLevel = _zoomLevel;
-                  });
-                  break;
-                case 'reset':
-                  setState(() {
-                    _zoomLevel = 1.0;
-                    _pdfViewerController?.zoomLevel = _zoomLevel;
-                  });
-                  break;
-              }
-            },
-            itemBuilder: (context) => const [
-              PopupMenuItem(value: 'zoom_in', child: Text('Zoom in')),
-              PopupMenuItem(value: 'zoom_out', child: Text('Zoom out')),
-              PopupMenuItem(value: 'reset', child: Text('Reset zoom')),
-            ],
-          ),
-        ),
       ],
     );
   }
 
-  Widget _buildDocumentCard(String? documentUrl) {
+  Widget _buildDocumentCard() {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(color: AppColors.pearl.withValues(alpha: 0.9)),
         boxShadow: [
@@ -249,22 +337,105 @@ class _DocumentLessonDetailScreenState extends State<DocumentLessonDetailScreen>
       child: ClipRRect(
         borderRadius: BorderRadius.circular(22),
         child: Container(
-          color: Colors.white,
-          child: documentUrl == null
-              ? _buildMissingDocumentState()
-              : SfPdfViewer.network(
-                  documentUrl,
-                  controller: _pdfViewerController,
-                  canShowScrollHead: false,
-                  canShowPaginationDialog: false,
-                  enableDoubleTapZooming: true,
-                  scrollDirection: PdfScrollDirection.vertical,
-                  pageLayoutMode: PdfPageLayoutMode.continuous,
-                  interactionMode: PdfInteractionMode.pan,
-                  onDocumentLoaded: (details) {
-                    _pdfViewerController?.zoomLevel = _zoomLevel;
-                  },
+          color: AppColors.surface,
+          child: _buildViewerForKind(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildViewerForKind() {
+    if (_docUrl == null) return _buildMissingDocumentState();
+
+    switch (_docKind) {
+      case _DocKind.pdf:
+        return SfPdfViewer.network(
+          _docUrl,
+          controller: _pdfViewerController,
+          canShowScrollHead: false,
+          canShowPaginationDialog: false,
+          enableDoubleTapZooming: true,
+          scrollDirection: PdfScrollDirection.vertical,
+          pageLayoutMode: PdfPageLayoutMode.continuous,
+          interactionMode: PdfInteractionMode.pan,
+          onDocumentLoaded: (details) {
+            _pdfViewerController?.zoomLevel = _zoomLevel;
+          },
+        );
+      case _DocKind.office:
+        return _buildOfficeViewer();
+      case _DocKind.other:
+        return _buildUnsupportedState();
+    }
+  }
+
+  Widget _buildOfficeViewer() {
+    if (_webError || _webController == null) {
+      return _buildOpenExternallyState(
+        title: 'Pratinjau dokumen gagal dimuat',
+        message:
+            'Periksa koneksi internet, lalu coba lagi atau buka dokumen di '
+            'aplikasi lain.',
+      );
+    }
+
+    return Stack(
+      children: [
+        WebViewWidget(controller: _webController!),
+        if (_webLoading)
+          const Center(
+            child: CircularProgressIndicator(color: AppColors.red),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildUnsupportedState() {
+    return _buildOpenExternallyState(
+      title: 'Format dokumen ini belum bisa dipratinjau',
+      message: 'Buka dokumen di aplikasi lain untuk membacanya.',
+    );
+  }
+
+  Widget _buildOpenExternallyState({
+    required String title,
+    required String message,
+  }) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.description_rounded,
+              size: 56,
+              color: AppColors.slate,
+            ),
+            const SizedBox(height: 12),
+            Text(title, style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppColors.slate),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: _openExternally,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.red,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 12,
                 ),
+              ),
+              icon: const Icon(Icons.open_in_new_rounded),
+              label: const Text('Buka / Unduh Dokumen'),
+            ),
+          ],
         ),
       ),
     );
@@ -284,12 +455,12 @@ class _DocumentLessonDetailScreenState extends State<DocumentLessonDetailScreen>
             ),
             const SizedBox(height: 12),
             Text(
-              'File PDF belum tersedia',
+              'Dokumen belum tersedia',
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
             Text(
-              'Backend perlu mengirim URL PDF untuk lesson document ini.',
+              'Backend perlu mengirim URL dokumen untuk lesson ini.',
               textAlign: TextAlign.center,
               style: Theme.of(
                 context,
