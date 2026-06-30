@@ -282,9 +282,15 @@ class _CaseStudyTableWidgetState extends State<CaseStudyTableWidget> {
         maxLines: null,
         textAlign: _textAlign(cell.align),
         style: style,
+        cursorColor: const Color(0xFF1F2937),
         decoration: InputDecoration(
           isDense: true,
+          // Penting: matikan fill agar tidak mewarisi inputDecorationTheme gelap
+          // dari tema dark (dulu membuat sel input tampak "pil hitam").
+          filled: false,
           border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
           hintText: cell.text.isEmpty ? null : cell.text,
           hintStyle: const TextStyle(fontSize: 11, color: Color(0xFF9CA3AF)),
           contentPadding: EdgeInsets.zero,

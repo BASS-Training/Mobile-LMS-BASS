@@ -36,6 +36,19 @@ class _CaseStudyLessonDetailScreenState
     extends State<CaseStudyLessonDetailScreen> {
   final Map<String, TextEditingController> _controllers = {};
 
+  // ── Warna "kertas" dokumen ──────────────────────────────────────────────
+  // Template studi kasus dirender server (DomPDF) sebagai dokumen kertas putih
+  // dengan warna penyusun (header tabel dsb). Agar pratinjau di HP SAMA dengan
+  // PDF yang akan diunduh dan tetap terbaca, area dokumen selalu memakai kanvas
+  // putih + tinta gelap, bahkan saat dark mode (pola umum: Word/Docs/PDF viewer
+  // menjaga halaman tetap terang). Chrome (appbar, tombol) tetap ikut tema.
+  static const Color _paper = Color(0xFFFFFFFF);
+  static const Color _paperMuted = Color(0xFFF4F6F8);
+  static const Color _paperBorder = Color(0xFFE1E4E9);
+  static const Color _ink = Color(0xFF1A1C1E);
+  static const Color _inkSoft = Color(0xFF5C636E);
+  static const Color _inkFaint = Color(0xFF9AA0A6);
+
   @override
   void initState() {
     super.initState();
@@ -131,6 +144,29 @@ class _CaseStudyLessonDetailScreenState
 
   bool _isReadOnly(CaseStudyEntity data) =>
       data.submission?.isSubmitted ?? false;
+
+  /// Seperti essay: semua slot jawaban (teks & sel input tabel) wajib terisi
+  /// sebelum boleh dikumpulkan — tanpa minimal kata, cukup tidak kosong.
+  bool _allSlotsFilled(CaseStudyEntity data) {
+    for (final section in data.sections) {
+      for (final block in section.blocks) {
+        if (block.isText) {
+          final ctrl = _controllers['T::${section.id}::${block.id}'];
+          if ((ctrl?.text ?? '').trim().isEmpty) return false;
+        } else if (block.isTable && block.table != null) {
+          for (final row in block.table!.cells) {
+            for (final cell in row) {
+              if (cell.covered || !cell.isInput) continue;
+              final ctrl =
+                  _controllers['C::${section.id}::${block.id}::${cell.key}'];
+              if ((ctrl?.text ?? '').trim().isEmpty) return false;
+            }
+          }
+        }
+      }
+    }
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -229,13 +265,59 @@ class _CaseStudyLessonDetailScreenState
           const SizedBox(height: 12),
           _statusCard(data),
         ],
-        const SizedBox(height: 16),
+        const SizedBox(height: 14),
 
-        // Sections
-        if (data.sections.isEmpty)
-          const Text('Template studi kasus belum disusun.')
-        else
-          ...data.sections.map((s) => _buildSection(data, s, readOnly)),
+        // Catatan kecil: jelaskan kenapa area dokumen tetap putih di dark mode.
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 6),
+          child: Row(
+            children: [
+              Icon(
+                Icons.description_outlined,
+                size: 14,
+                color: AppColors.textTertiary,
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  'Tampil seperti dokumen yang akan diunduh (PDF).',
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    color: AppColors.textTertiary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        // Kanvas "kertas" — selalu putih agar konsisten dengan PDF & terbaca.
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+          decoration: BoxDecoration(
+            color: _paper,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: _paperBorder),
+            boxShadow: AppShadows.sm,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: data.sections.isEmpty
+                ? const [
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: 12),
+                      child: Text(
+                        'Template studi kasus belum disusun.',
+                        style: TextStyle(color: _inkSoft),
+                      ),
+                    ),
+                  ]
+                : data.sections
+                      .map((s) => _buildSection(data, s, readOnly))
+                      .toList(),
+          ),
+        ),
 
         const SizedBox(height: 24),
 
@@ -404,10 +486,10 @@ class _CaseStudyLessonDetailScreenState
           if (isSub)
             Text(
               title,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
+                color: _ink,
               ),
             )
           else
@@ -426,10 +508,10 @@ class _CaseStudyLessonDetailScreenState
                 Expanded(
                   child: Text(
                     title,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w800,
-                      color: AppColors.textPrimary,
+                      color: _ink,
                     ),
                   ),
                 ),
@@ -440,9 +522,9 @@ class _CaseStudyLessonDetailScreenState
               padding: const EdgeInsets.only(top: 6),
               child: Text(
                 section.instruction,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 13,
-                  color: AppColors.textSecondary,
+                  color: _inkSoft,
                   height: 1.45,
                 ),
               ),
@@ -474,10 +556,10 @@ class _CaseStudyLessonDetailScreenState
                 padding: const EdgeInsets.only(bottom: 6),
                 child: Text(
                   block.label,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 13.5,
-                    color: AppColors.textPrimary,
+                    color: _ink,
                   ),
                 ),
               ),
@@ -489,9 +571,9 @@ class _CaseStudyLessonDetailScreenState
                   vertical: 12,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceMuted,
+                  color: _paperMuted,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.borderSubtle),
+                  border: Border.all(color: _paperBorder),
                 ),
                 child: Html(data: _textAnswer(data, sid, bid)),
               )
@@ -503,24 +585,25 @@ class _CaseStudyLessonDetailScreenState
                 ),
                 maxLines: null,
                 minLines: 3,
-                style: TextStyle(
+                cursorColor: AppColors.brandPrimary,
+                style: const TextStyle(
                   fontSize: 14,
-                  color: AppColors.textPrimary,
+                  color: _ink,
                   height: 1.45,
                 ),
                 decoration: InputDecoration(
                   hintText: 'Tuliskan jawaban Anda...',
-                  hintStyle: TextStyle(color: AppColors.textTertiary),
+                  hintStyle: const TextStyle(color: _inkFaint),
                   contentPadding: const EdgeInsets.all(14),
                   filled: true,
-                  fillColor: AppColors.surface,
+                  fillColor: _paper,
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: AppColors.borderDefault),
+                    borderSide: const BorderSide(color: _paperBorder),
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: AppColors.borderDefault),
+                    borderSide: const BorderSide(color: _paperBorder),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -600,7 +683,19 @@ class _CaseStudyLessonDetailScreenState
           child: ElevatedButton.icon(
             onPressed: state.submitting
                 ? null
-                : () => _confirmSubmit(context, data),
+                : () {
+                    if (!_allSlotsFilled(data)) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Lengkapi semua slot jawaban dulu sebelum mengumpulkan.',
+                          ),
+                        ),
+                      );
+                      return;
+                    }
+                    _confirmSubmit(context, data);
+                  },
             icon: state.submitting
                 ? const SizedBox(
                     width: 16,
