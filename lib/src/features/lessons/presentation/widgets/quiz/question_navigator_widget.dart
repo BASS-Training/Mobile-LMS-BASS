@@ -117,14 +117,14 @@ class _QuestionNavigatorState extends State<QuestionNavigatorWidget> {
                       color: isCurrentQuestion
                           ? AppColors.red
                           : (isAnswered
-                                ? Colors.green.shade100
+                                ? AppColors.successSurface
                                 : AppColors.mist),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                         color: isCurrentQuestion
                             ? AppColors.red
                             : (isAnswered
-                                  ? Colors.green.shade300
+                                  ? AppColors.successBorder
                                   : AppColors.pearl),
                         width: isCurrentQuestion ? 2 : 1,
                       ),
@@ -138,7 +138,7 @@ class _QuestionNavigatorState extends State<QuestionNavigatorWidget> {
                           color: isCurrentQuestion
                               ? Colors.white
                               : (isAnswered
-                                    ? Colors.green.shade800
+                                    ? AppColors.successText
                                     : AppColors.slate),
                         ),
                       ),
@@ -160,7 +160,7 @@ class _QuestionNavigatorState extends State<QuestionNavigatorWidget> {
         _buildLegendItem(color: AppColors.red, label: 'Aktif'),
         const SizedBox(width: 16),
         _buildLegendItem(
-          color: Colors.green[100]!,
+          color: AppColors.successBorder,
           label: widget.completedLabel,
         ),
         const SizedBox(width: 16),

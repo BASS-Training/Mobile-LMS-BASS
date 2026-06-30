@@ -353,6 +353,27 @@ class AppColors {
   static const Color warning = Color(0xFFF59E0B);
   static const Color info = Color(0xFF3B82F6);
 
+  // ==========================================
+  // THEME-AWARE STATUS TINTS (light / dark)
+  // ------------------------------------------
+  // Soft surfaces/borders/text for banners, validation boxes and status chips.
+  // Replace raw `Colors.green.shade50/200` etc. with these so green/orange
+  // chrome reads correctly on dark backgrounds too.
+  // ==========================================
+  static Color get successSurface =>
+      _pick(const Color(0xFFEAF7F0), const Color(0xFF153A2C));
+  static Color get successBorder =>
+      _pick(const Color(0xFFB6E3CD), const Color(0xFF2C6B50));
+  static Color get successText =>
+      _pick(const Color(0xFF12805A), const Color(0xFF4FD6A0));
+
+  static Color get warningSurface =>
+      _pick(const Color(0xFFFDF3E5), const Color(0xFF3A2C12));
+  static Color get warningBorder =>
+      _pick(const Color(0xFFF6D6A4), const Color(0xFF6E5421));
+  static Color get warningText =>
+      _pick(const Color(0xFFB45309), const Color(0xFFE3A33B));
+
   /// Canonical brand gradient (top-left → bottom-right) for headers & hero cards.
   static const List<Color> brandGradient = [
     Color(0xFFE7140C),

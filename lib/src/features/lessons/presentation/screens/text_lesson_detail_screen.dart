@@ -272,14 +272,7 @@ class _TextLessonDetailScreenState extends State<TextLessonDetailScreen>
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.white.withValues(alpha: 0.94),
-            const Color(0xFFF8FAFF).withValues(alpha: 0.96),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(color: AppColors.pearl.withValues(alpha: 0.65)),
         boxShadow: [

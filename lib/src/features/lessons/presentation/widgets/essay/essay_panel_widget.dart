@@ -103,18 +103,22 @@ class EssayPanelWidget extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.green.shade50,
+                color: AppColors.successSurface,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.green.shade200),
+                border: Border.all(color: AppColors.successBorder),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.verified_rounded, color: Colors.green),
-                  SizedBox(width: 10),
+                  Icon(Icons.verified_rounded, color: AppColors.successText),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       'Jawaban sudah dikumpulkan, Kamu tidak bisa mengirim ulang.',
-                      style: TextStyle(fontSize: 12.5, height: 1.4),
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        height: 1.4,
+                        color: AppColors.successText,
+                      ),
                     ),
                   ),
                 ],
@@ -136,13 +140,13 @@ class EssayPanelWidget extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
             decoration: BoxDecoration(
               color: state.isCurrentQuestionValid
-                  ? Colors.green.shade50
-                  : Colors.orange.shade50,
+                  ? AppColors.successSurface
+                  : AppColors.warningSurface,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: state.isCurrentQuestionValid
-                    ? Colors.green.shade200
-                    : Colors.orange.shade200,
+                    ? AppColors.successBorder
+                    : AppColors.warningBorder,
               ),
             ),
             child: Text(
@@ -152,8 +156,8 @@ class EssayPanelWidget extends StatelessWidget {
               style: TextStyle(
                 fontSize: 12,
                 color: state.isCurrentQuestionValid
-                    ? Colors.green.shade200
-                    : Colors.orange.shade200,
+                    ? AppColors.successText
+                    : AppColors.warningText,
                 fontWeight: FontWeight.w500,
               ),
             ),

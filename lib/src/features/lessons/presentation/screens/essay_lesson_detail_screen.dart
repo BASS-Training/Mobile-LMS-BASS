@@ -401,7 +401,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
         child: Container(
           padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.surface,
             border: Border(
               top: BorderSide(color: AppColors.pearl.withValues(alpha: 0.9)),
             ),
@@ -496,7 +496,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
                           color: AppColors.pearl.withValues(alpha: 0.9),
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 14),
-                        backgroundColor: Colors.white,
+                        backgroundColor: AppColors.surface,
                         foregroundColor: AppColors.charcoal,
                       ),
                     ),
