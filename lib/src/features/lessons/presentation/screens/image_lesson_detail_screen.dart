@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_actions.dart';
 import 'package:flutter/services.dart';
@@ -186,7 +187,7 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: AppColors.borderDefault.withValues(alpha: 0.8),
@@ -230,7 +231,7 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
   Widget _buildImageCarousel(List<String> images) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
           color: AppColors.borderDefault.withValues(alpha: 0.9),
@@ -320,26 +321,25 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
   }
 
   Widget _buildZoomableImage(String url) {
+    // Decode pada resolusi layar saja (bukan resolusi penuh gambar) supaya
+    // decode jauh lebih cepat & hemat memori untuk gambar besar.
+    final dpr = MediaQuery.of(context).devicePixelRatio;
+    final memWidth = (MediaQuery.of(context).size.width * dpr).round();
+
     return InteractiveViewer(
       minScale: 0.8,
       maxScale: 4.0,
-      child: Image.network(
-        url,
+      child: CachedNetworkImage(
+        imageUrl: url,
         fit: BoxFit.contain,
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) return child;
-          return Center(
-            child: CircularProgressIndicator(
-              value: loadingProgress.expectedTotalBytes != null
-                  ? loadingProgress.cumulativeBytesLoaded /
-                        loadingProgress.expectedTotalBytes!
-                  : null,
-              color: _accent,
-              strokeWidth: 2.5,
-            ),
-          );
-        },
-        errorBuilder: (context, error, stackTrace) => Center(
+        width: double.infinity,
+        // Cache disk (instan saat dibuka ulang) + downscale decode.
+        memCacheWidth: memWidth,
+        fadeInDuration: const Duration(milliseconds: 200),
+        placeholder: (context, _) => Center(
+          child: CircularProgressIndicator(color: _accent, strokeWidth: 2.5),
+        ),
+        errorWidget: (context, _, _) => Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -400,7 +400,7 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
   Widget _buildEmptyState() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
           color: AppColors.borderDefault.withValues(alpha: 0.9),
