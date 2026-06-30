@@ -122,15 +122,15 @@ class _QuizResultDetailScreenState extends State<QuizResultDetailScreen> {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.red.withValues(alpha: 0.1),
+                    color: AppColors.brandText.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: Text(
                     '${selectedAttempt.questions.length} soal',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
-                      color: AppColors.red,
+                      color: AppColors.brandText,
                     ),
                   ),
                 ),

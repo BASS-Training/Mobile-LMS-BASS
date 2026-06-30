@@ -130,7 +130,7 @@ class QuizPerformanceOverview extends StatelessWidget {
       width: width,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
         boxShadow: [

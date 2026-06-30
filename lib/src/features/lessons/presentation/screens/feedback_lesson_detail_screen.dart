@@ -7,7 +7,9 @@ import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_entit
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/feedback/feedback_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/feedback/feedback_event.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/feedback/feedback_state.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
 
 /// Konten tipe `feedback`: form survei ala Google Form, tanpa penilaian.
@@ -29,8 +31,15 @@ class FeedbackLessonDetailScreen extends StatefulWidget {
 }
 
 class _FeedbackLessonDetailScreenState
-    extends State<FeedbackLessonDetailScreen> {
+    extends State<FeedbackLessonDetailScreen>
+    with LessonNavigationMixin {
   static const Color _accent = Color(0xFF4AA8FF);
+
+  @override
+  CourseEntity get currentCourse => widget.course;
+
+  @override
+  int get currentLessonIndex => widget.lessonIndex;
 
   final Map<String, int> _ratings = {};
   final Map<String, TextEditingController> _texts = {};
@@ -127,6 +136,78 @@ class _FeedbackLessonDetailScreenState
         courseTitle: widget.course.title,
         subtitle: 'FEEDBACK',
         onBack: _backToCourse,
+      ),
+      bottomNavigationBar: BlocBuilder<FeedbackBloc, FeedbackState>(
+        builder: (context, state) {
+          final submitted = state.data?.submission?.isSubmitted ?? false;
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+              child: Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(color: AppColors.borderSubtle),
+                  boxShadow: AppShadows.sm,
+                ),
+                child: Row(
+                  children: [
+                    if (canGoPrevious) ...[
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () => navigateToLesson(
+                            previousLesson!,
+                            widget.lessonIndex - 1,
+                          ),
+                          icon: const Icon(Icons.arrow_back_rounded),
+                          label: const Text('Sebelumnya'),
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: AppColors.borderDefault),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            foregroundColor: AppColors.textPrimary,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                    ],
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        // Next baru aktif setelah feedback dikirim. Sebelum itu
+                        // peserta hanya bisa "Sebelumnya".
+                        onPressed: submitted
+                            ? () {
+                                if (canGoNext && nextLesson != null) {
+                                  navigateToLesson(
+                                    nextLesson!,
+                                    widget.lessonIndex + 1,
+                                  );
+                                } else {
+                                  _backToCourse();
+                                }
+                              }
+                            : null,
+                        icon: Icon(
+                          canGoNext
+                              ? Icons.arrow_forward_rounded
+                              : Icons.check_rounded,
+                        ),
+                        label: Text(canGoNext ? 'Lanjut' : 'Selesai'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.brandPrimary,
+                          foregroundColor: Colors.white,
+                          disabledBackgroundColor: AppColors.surfaceMuted,
+                          disabledForegroundColor: AppColors.textTertiary,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
       body: BlocConsumer<FeedbackBloc, FeedbackState>(
         listenWhen: (prev, curr) =>
