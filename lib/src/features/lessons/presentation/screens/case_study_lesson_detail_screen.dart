@@ -9,10 +9,12 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/case_study
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/case_study/case_study_event.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/case_study/case_study_state.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/case_study_pdf_viewer_screen.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/case_study/case_study_table_widget.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
+import 'package:lms_mobile_app/src/shared/widgets/lesson_navigation_bar.dart';
 import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
 class CaseStudyLessonDetailScreen extends StatefulWidget {
@@ -33,8 +35,15 @@ class CaseStudyLessonDetailScreen extends StatefulWidget {
 }
 
 class _CaseStudyLessonDetailScreenState
-    extends State<CaseStudyLessonDetailScreen> {
+    extends State<CaseStudyLessonDetailScreen>
+    with LessonNavigationMixin {
   final Map<String, TextEditingController> _controllers = {};
+
+  @override
+  CourseEntity get currentCourse => widget.course;
+
+  @override
+  int get currentLessonIndex => widget.lessonIndex;
 
   // ── Warna "kertas" dokumen ──────────────────────────────────────────────
   // Template studi kasus dirender server (DomPDF) sebagai dokumen kertas putih
@@ -181,6 +190,36 @@ class _CaseStudyLessonDetailScreenState
           courseTitle: widget.course.title,
           subtitle: 'STUDI KASUS',
           onBack: _backToCourse,
+        ),
+        // Setelah dikumpulkan (read-only), tampilkan navigasi antar-lesson
+        // seperti lesson lain agar peserta bisa langsung lanjut/sebelumnya.
+        bottomNavigationBar: BlocBuilder<CaseStudyBloc, CaseStudyState>(
+          builder: (context, state) {
+            final submitted = state.data?.submission?.isSubmitted ?? false;
+            if (!submitted) return const SizedBox.shrink();
+            return SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                child: LessonNavigationBar(
+                  canGoPrevious: canGoPrevious,
+                  canGoNext: canGoNext,
+                  onPrevious: canGoPrevious
+                      ? () => navigateToLesson(
+                          previousLesson!,
+                          widget.lessonIndex - 1,
+                        )
+                      : null,
+                  onForward: () {
+                    if (canGoNext && nextLesson != null) {
+                      navigateToLesson(nextLesson!, widget.lessonIndex + 1);
+                    } else {
+                      _backToCourse();
+                    }
+                  },
+                ),
+              ),
+            );
+          },
         ),
         body: BlocConsumer<CaseStudyBloc, CaseStudyState>(
           listener: (context, state) {
