@@ -24,6 +24,29 @@ class LessonNavigationBar extends StatelessWidget {
     this.primaryColor = AppColors.brandPrimary,
   });
 
+  /// Gaya tombol "Sebelumnya" yang seragam untuk SEMUA layar lesson:
+  /// outline + teks merah (brandText, agar terbaca di dark mode). Dipakai juga
+  /// oleh bar kustom (quiz/essay/feedback) supaya tampilannya konsisten.
+  static ButtonStyle previousButtonStyle() => OutlinedButton.styleFrom(
+    side: BorderSide(color: AppColors.brandText, width: 1.5),
+    foregroundColor: AppColors.brandText,
+    backgroundColor: AppColors.surface,
+    padding: const EdgeInsets.symmetric(vertical: 14),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+  );
+
+  /// Gaya tombol maju "Lanjut/Selesai" yang seragam: solid merah, teks putih.
+  static ButtonStyle forwardButtonStyle([
+    Color color = AppColors.brandPrimary,
+  ]) => ElevatedButton.styleFrom(
+    backgroundColor: color,
+    foregroundColor: Colors.white,
+    shadowColor: color.withValues(alpha: 0.45),
+    elevation: 8,
+    padding: const EdgeInsets.symmetric(vertical: 14),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+  );
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -44,12 +67,7 @@ class LessonNavigationBar extends StatelessWidget {
                   onPressed: onPrevious,
                   icon: const Icon(Icons.arrow_back_rounded),
                   label: const Text('Sebelumnya'),
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: AppColors.borderDefault),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    backgroundColor: AppColors.surface,
-                    foregroundColor: AppColors.textPrimary,
-                  ),
+                  style: previousButtonStyle(),
                 ),
               ),
             ),
@@ -59,12 +77,7 @@ class LessonNavigationBar extends StatelessWidget {
             child: PressScale(
               child: ElevatedButton.icon(
                 onPressed: onForward,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryColor,
-                  shadowColor: primaryColor.withValues(alpha: 0.45),
-                  elevation: 8,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
+                style: forwardButtonStyle(primaryColor),
                 icon: Icon(
                   canGoNext
                       ? Icons.arrow_forward_rounded

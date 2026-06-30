@@ -14,6 +14,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/essay/e
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
+import 'package:lms_mobile_app/src/shared/widgets/lesson_navigation_bar.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion/discussion_button.dart';
 import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
 import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
@@ -424,6 +425,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
                         : null,
                     icon: const Icon(Icons.arrow_back),
                     label: const Text('Sebelumnya'),
+                    style: LessonNavigationBar.previousButtonStyle(),
                   ),
                 ),
               ),
@@ -431,10 +433,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: handleContinueAfterSubmit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.red,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
+                  style: LessonNavigationBar.forwardButtonStyle(),
                   icon: const Icon(Icons.arrow_forward_rounded),
                   label: Text(canGoNext ? 'Lanjut' : 'Selesai'),
                 ),
@@ -484,14 +483,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
                       onPressed: canGoBackAction ? handlePreviousAction : null,
                       icon: const Icon(Icons.arrow_back),
                       label: const Text('Sebelumnya'),
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(
-                          color: AppColors.pearl.withValues(alpha: 0.9),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        backgroundColor: AppColors.surface,
-                        foregroundColor: AppColors.charcoal,
-                      ),
+                      style: LessonNavigationBar.previousButtonStyle(),
                     ),
                   ),
                 ),

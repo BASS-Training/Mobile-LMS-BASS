@@ -11,6 +11,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_na
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
+import 'package:lms_mobile_app/src/shared/widgets/lesson_navigation_bar.dart';
 
 /// Konten tipe `feedback`: form survei ala Google Form, tanpa penilaian.
 class FeedbackLessonDetailScreen extends StatefulWidget {
@@ -162,11 +163,7 @@ class _FeedbackLessonDetailScreenState
                           ),
                           icon: const Icon(Icons.arrow_back_rounded),
                           label: const Text('Sebelumnya'),
-                          style: OutlinedButton.styleFrom(
-                            side: BorderSide(color: AppColors.borderDefault),
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            foregroundColor: AppColors.textPrimary,
-                          ),
+                          style: LessonNavigationBar.previousButtonStyle(),
                         ),
                       ),
                       const SizedBox(width: 10),
@@ -199,6 +196,9 @@ class _FeedbackLessonDetailScreenState
                           disabledBackgroundColor: AppColors.surfaceMuted,
                           disabledForegroundColor: AppColors.textTertiary,
                           padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
                         ),
                       ),
                     ),

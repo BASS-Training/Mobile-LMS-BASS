@@ -519,14 +519,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
                       : null,
                   icon: const Icon(Icons.arrow_back),
                   label: const Text('Sebelumnya'),
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(
-                      color: AppColors.pearl.withValues(alpha: 0.9),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    backgroundColor: AppColors.surface,
-                    foregroundColor: AppColors.charcoal,
-                  ),
+                  style: LessonNavigationBar.previousButtonStyle(),
                 ),
               ),
             ),
@@ -550,12 +543,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
                             const NextQuestionEvent(),
                           );
                         },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.red,
-                    shadowColor: AppColors.red.withValues(alpha: 0.45),
-                    elevation: 8,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
+                  style: LessonNavigationBar.forwardButtonStyle(),
                   icon: Icon(
                     isLastQuestion
                         ? Icons.check_circle_outline
