@@ -11,6 +11,7 @@ import 'package:lms_mobile_app/src/features/authentication/presentation/widgets/
 import 'package:lms_mobile_app/src/features/authentication/presentation/widgets/auth_scaffold.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
+import 'package:lms_mobile_app/src/shared/styles/app_theme.dart';
 import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -51,7 +52,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    // Layar pra-login dikunci ke tampilan light/brand walau device dark mode
+    // (best practice: konsistensi brand & first impression). Dark mode berlaku
+    // penuh setelah masuk aplikasi.
+    return Theme(
+      data: AppTheme.lightLockedTheme,
+      child: Scaffold(
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthSuccess) {
@@ -93,6 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ],
         ),
       ),
+      ),
     );
   }
 }
@@ -119,7 +126,7 @@ class _LoginCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(22, 24, 22, 22),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: AppColors.paper,
         borderRadius: BorderRadius.circular(28),
         boxShadow: AppShadows.md,
       ),
@@ -139,20 +146,20 @@ class _LoginCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.w900,
-                    color: AppColors.brandText,
+                    color: AppColors.brandPrimary,
                   ),
                 ),
               ),
             ),
             const SizedBox(height: 20),
-            Divider(height: 1, color: AppColors.borderSubtle),
+            Divider(height: 1, color: AppColors.paperBorder),
             const SizedBox(height: 18),
             Text(
               'Masuk',
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.w900,
-                color: AppColors.textPrimary,
+                color: AppColors.ink,
               ),
             ),
             const SizedBox(height: 4),
@@ -161,7 +168,7 @@ class _LoginCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 height: 1.45,
-                color: AppColors.textSecondary,
+                color: AppColors.inkSoft,
               ),
             ),
             const SizedBox(height: 18),
@@ -171,7 +178,7 @@ class _LoginCard extends StatelessWidget {
               decoration: InputDecoration(
                 hintText: AppStrings.email,
                 prefixIcon: Icon(Icons.mail_outline_rounded),
-                fillColor: AppColors.surfaceMuted,
+                fillColor: AppColors.paperMuted,
               ),
               validator: Validators.validateEmail,
               onChanged: (_) =>
@@ -184,7 +191,7 @@ class _LoginCard extends StatelessWidget {
               decoration: InputDecoration(
                 hintText: AppStrings.password,
                 prefixIcon: const Icon(Icons.lock_outline_rounded),
-                fillColor: AppColors.surfaceMuted,
+                fillColor: AppColors.paperMuted,
                 suffixIcon: IconButton(
                   onPressed: onTogglePasswordVisibility,
                   icon: Icon(
@@ -214,7 +221,7 @@ class _LoginCard extends StatelessWidget {
                 child: Text(
                   'Lupa password?',
                   style: TextStyle(
-                    color: AppColors.brandText,
+                    color: AppColors.brandPrimary,
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
                   ),
@@ -264,7 +271,7 @@ class _LoginCard extends StatelessWidget {
                 Text(
                   'Belum punya akun? ',
                   style: TextStyle(
-                    color: AppColors.textSecondary,
+                    color: AppColors.inkSoft,
                     fontSize: 13.5,
                   ),
                 ),
@@ -273,7 +280,7 @@ class _LoginCard extends StatelessWidget {
                   child: Text(
                     'Daftar',
                     style: TextStyle(
-                      color: AppColors.brandText,
+                      color: AppColors.brandPrimary,
                       fontWeight: FontWeight.w800,
                       fontSize: 13.5,
                     ),

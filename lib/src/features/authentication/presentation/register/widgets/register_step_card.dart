@@ -26,7 +26,7 @@ class RegisterStepCard extends StatelessWidget {
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w800,
-            color: AppColors.textSecondary,
+            color: AppColors.ink,
           ),
         ),
         const SizedBox(height: 8),
@@ -34,7 +34,7 @@ class RegisterStepCard extends StatelessWidget {
           subtitle,
           style: TextStyle(
             fontSize: 14,
-            color: AppColors.textTertiary,
+            color: AppColors.inkFaint,
             height: 1.4,
           ),
         ),
@@ -58,7 +58,7 @@ class RegisterSectionLabel extends StatelessWidget {
       style: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w700,
-        color: AppColors.textSecondary,
+        color: AppColors.ink,
       ),
     );
   }

@@ -127,7 +127,7 @@ class _DateOfBirthField extends StatelessWidget {
             child: Text(
               isEmpty ? RegisterStrings.dateOfBirthHint : text,
               style: TextStyle(
-                color: isEmpty ? AppColors.textTertiary : AppColors.textPrimary,
+                color: isEmpty ? AppColors.inkFaint : AppColors.ink,
                 fontSize: 16,
               ),
             ),

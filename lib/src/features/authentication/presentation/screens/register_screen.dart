@@ -15,6 +15,7 @@ import 'package:lms_mobile_app/src/features/authentication/presentation/widgets/
 import 'package:lms_mobile_app/src/features/authentication/presentation/widgets/auth_scaffold.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
+import 'package:lms_mobile_app/src/shared/styles/app_theme.dart';
 import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
 
 /// Multi-step registration screen. This widget only *orchestrates*: it provides
@@ -61,7 +62,10 @@ class _RegisterView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    // Layar pra-login dikunci ke tampilan light/brand walau device dark mode.
+    return Theme(
+      data: AppTheme.lightLockedTheme,
+      child: Scaffold(
       body: BlocListener<AuthBloc, AuthState>(
         listener: _onAuthState,
         child: AuthScaffold(
@@ -85,6 +89,7 @@ class _RegisterView extends StatelessWidget {
             _SignInLink(),
           ],
         ),
+      ),
       ),
     );
   }
@@ -124,7 +129,7 @@ class _FormCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: AppColors.paper,
         borderRadius: BorderRadius.circular(28),
         boxShadow: AppShadows.md,
       ),
@@ -191,8 +196,8 @@ class _Navigation extends StatelessWidget {
             icon: const Icon(Icons.arrow_back_outlined),
             label: const Text(RegisterStrings.back),
             style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.textSecondary,
-              side: BorderSide(color: AppColors.borderDefault),
+              foregroundColor: AppColors.inkSoft,
+              side: BorderSide(color: AppColors.paperBorder),
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
             ),
           ),
