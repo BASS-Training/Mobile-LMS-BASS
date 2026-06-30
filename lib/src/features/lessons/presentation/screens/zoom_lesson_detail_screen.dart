@@ -459,7 +459,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: AppColors.borderDefault.withValues(alpha: 0.8),
@@ -655,7 +655,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: AppColors.borderDefault.withValues(alpha: 0.7),

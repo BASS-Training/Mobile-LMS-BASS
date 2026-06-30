@@ -374,6 +374,21 @@ class AppColors {
   static Color get warningText =>
       _pick(const Color(0xFFB45309), const Color(0xFFE3A33B));
 
+  // ==========================================
+  // DOCUMENT / "PAPER" TOKENS (always light, NOT theme-aware)
+  // ------------------------------------------
+  // For printable document canvases (e.g. the case-study template) that must
+  // stay a white page with dark ink even in dark mode — so the on-screen
+  // preview matches the server-rendered PDF (DomPDF) and the author's cell
+  // colors stay accurate. Deliberately fixed; do NOT route through [_pick].
+  // ==========================================
+  static const Color paper = Color(0xFFFFFFFF);
+  static const Color paperMuted = Color(0xFFF4F6F8);
+  static const Color paperBorder = Color(0xFFE1E4E9);
+  static const Color ink = Color(0xFF1A1C1E);
+  static const Color inkSoft = Color(0xFF5C636E);
+  static const Color inkFaint = Color(0xFF9AA0A6);
+
   /// Canonical brand gradient (top-left → bottom-right) for headers & hero cards.
   static const List<Color> brandGradient = [
     Color(0xFFE7140C),

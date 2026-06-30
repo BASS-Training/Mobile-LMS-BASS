@@ -149,7 +149,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
               margin: const EdgeInsets.all(24),
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.surface,
                 borderRadius: BorderRadius.circular(18),
                 border: Border.all(
                   color: AppColors.pearl.withValues(alpha: 0.8),

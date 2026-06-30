@@ -45,19 +45,6 @@ class _CaseStudyLessonDetailScreenState
   @override
   int get currentLessonIndex => widget.lessonIndex;
 
-  // ── Warna "kertas" dokumen ──────────────────────────────────────────────
-  // Template studi kasus dirender server (DomPDF) sebagai dokumen kertas putih
-  // dengan warna penyusun (header tabel dsb). Agar pratinjau di HP SAMA dengan
-  // PDF yang akan diunduh dan tetap terbaca, area dokumen selalu memakai kanvas
-  // putih + tinta gelap, bahkan saat dark mode (pola umum: Word/Docs/PDF viewer
-  // menjaga halaman tetap terang). Chrome (appbar, tombol) tetap ikut tema.
-  static const Color _paper = Color(0xFFFFFFFF);
-  static const Color _paperMuted = Color(0xFFF4F6F8);
-  static const Color _paperBorder = Color(0xFFE1E4E9);
-  static const Color _ink = Color(0xFF1A1C1E);
-  static const Color _inkSoft = Color(0xFF5C636E);
-  static const Color _inkFaint = Color(0xFF9AA0A6);
-
   @override
   void initState() {
     super.initState();
@@ -335,9 +322,9 @@ class _CaseStudyLessonDetailScreenState
           width: double.infinity,
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
           decoration: BoxDecoration(
-            color: _paper,
+            color: AppColors.paper,
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: _paperBorder),
+            border: Border.all(color: AppColors.paperBorder),
             boxShadow: AppShadows.sm,
           ),
           child: Column(
@@ -348,7 +335,7 @@ class _CaseStudyLessonDetailScreenState
                       padding: EdgeInsets.symmetric(vertical: 12),
                       child: Text(
                         'Template studi kasus belum disusun.',
-                        style: TextStyle(color: _inkSoft),
+                        style: TextStyle(color: AppColors.inkSoft),
                       ),
                     ),
                   ]
@@ -528,7 +515,7 @@ class _CaseStudyLessonDetailScreenState
               style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w700,
-                color: _ink,
+                color: AppColors.ink,
               ),
             )
           else
@@ -550,7 +537,7 @@ class _CaseStudyLessonDetailScreenState
                     style: const TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w800,
-                      color: _ink,
+                      color: AppColors.ink,
                     ),
                   ),
                 ),
@@ -563,7 +550,7 @@ class _CaseStudyLessonDetailScreenState
                 section.instruction,
                 style: const TextStyle(
                   fontSize: 13,
-                  color: _inkSoft,
+                  color: AppColors.inkSoft,
                   height: 1.45,
                 ),
               ),
@@ -598,7 +585,7 @@ class _CaseStudyLessonDetailScreenState
                   style: const TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 13.5,
-                    color: _ink,
+                    color: AppColors.ink,
                   ),
                 ),
               ),
@@ -610,9 +597,9 @@ class _CaseStudyLessonDetailScreenState
                   vertical: 12,
                 ),
                 decoration: BoxDecoration(
-                  color: _paperMuted,
+                  color: AppColors.paperMuted,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: _paperBorder),
+                  border: Border.all(color: AppColors.paperBorder),
                 ),
                 child: Html(data: _textAnswer(data, sid, bid)),
               )
@@ -627,22 +614,22 @@ class _CaseStudyLessonDetailScreenState
                 cursorColor: AppColors.brandPrimary,
                 style: const TextStyle(
                   fontSize: 14,
-                  color: _ink,
+                  color: AppColors.ink,
                   height: 1.45,
                 ),
                 decoration: InputDecoration(
                   hintText: 'Tuliskan jawaban Anda...',
-                  hintStyle: const TextStyle(color: _inkFaint),
+                  hintStyle: const TextStyle(color: AppColors.inkFaint),
                   contentPadding: const EdgeInsets.all(14),
                   filled: true,
-                  fillColor: _paper,
+                  fillColor: AppColors.paper,
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: _paperBorder),
+                    borderSide: const BorderSide(color: AppColors.paperBorder),
                   ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: _paperBorder),
+                    borderSide: const BorderSide(color: AppColors.paperBorder),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),

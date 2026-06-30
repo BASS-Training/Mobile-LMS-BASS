@@ -119,7 +119,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
                     margin: const EdgeInsets.all(24),
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.surface,
                       borderRadius: BorderRadius.circular(18),
                       border: Border.all(
                         color: AppColors.pearl.withValues(alpha: 0.8),
@@ -491,7 +491,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
       child: Container(
         padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.surface,
           border: Border(
             top: BorderSide(color: AppColors.pearl.withValues(alpha: 0.9)),
           ),
@@ -524,7 +524,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
                       color: AppColors.pearl.withValues(alpha: 0.9),
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    backgroundColor: Colors.white,
+                    backgroundColor: AppColors.surface,
                     foregroundColor: AppColors.charcoal,
                   ),
                 ),

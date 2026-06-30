@@ -99,7 +99,23 @@ class _CaseStudyResultDetailScreenState
                   ),
                 ),
                 const SizedBox(height: 8),
-                ...data.sections.map((s) => _buildSection(data, s)),
+                // Kanvas "kertas": dokumen jawaban selalu putih + tinta gelap
+                // agar konsisten dengan PDF & terbaca di dark mode.
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+                  decoration: BoxDecoration(
+                    color: AppColors.paper,
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: AppColors.paperBorder),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: data.sections
+                        .map((s) => _buildSection(data, s))
+                        .toList(),
+                  ),
+                ),
               ],
             ],
           );
@@ -126,7 +142,7 @@ class _CaseStudyResultDetailScreenState
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
         boxShadow: [
@@ -157,7 +173,7 @@ class _CaseStudyResultDetailScreenState
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
-              color: (graded ? Colors.green : AppColors.red).withValues(
+              color: (graded ? AppColors.success : AppColors.red).withValues(
                 alpha: 0.12,
               ),
               borderRadius: BorderRadius.circular(999),
@@ -165,7 +181,7 @@ class _CaseStudyResultDetailScreenState
             child: Text(
               graded ? 'Sudah Dinilai' : 'Menunggu Penilaian',
               style: TextStyle(
-                color: graded ? Colors.green : AppColors.red,
+                color: graded ? AppColors.success : AppColors.red,
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
               ),
@@ -265,7 +281,7 @@ class _CaseStudyResultDetailScreenState
             style: TextStyle(
               fontSize: isSub ? 14 : 16,
               fontWeight: FontWeight.bold,
-              color: const Color(0xFF111827),
+              color: AppColors.ink,
             ),
           ),
           if (section.instruction.isNotEmpty)
@@ -273,7 +289,7 @@ class _CaseStudyResultDetailScreenState
               padding: const EdgeInsets.only(top: 4),
               child: Text(
                 section.instruction,
-                style: const TextStyle(fontSize: 13, color: Color(0xFF6B7280)),
+                style: const TextStyle(fontSize: 13, color: AppColors.inkSoft),
               ),
             ),
           const SizedBox(height: 8),
@@ -302,16 +318,19 @@ class _CaseStudyResultDetailScreenState
                 padding: const EdgeInsets.only(bottom: 4),
                 child: Text(
                   block.label,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.ink,
+                  ),
                 ),
               ),
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: const Color(0xFFF9FAFB),
+                color: AppColors.paperMuted,
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: const Color(0xFFE5E7EB)),
+                border: Border.all(color: AppColors.paperBorder),
               ),
               child: Html(data: _textAnswer(data, sid, bid)),
             ),

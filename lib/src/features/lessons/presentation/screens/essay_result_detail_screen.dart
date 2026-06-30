@@ -195,7 +195,7 @@ class _EssayResultDetailScreenState extends State<EssayResultDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
       ),
@@ -224,19 +224,19 @@ class _EssayResultDetailScreenState extends State<EssayResultDetailScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.green[50],
+        color: AppColors.successSurface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.green[200]!),
+        border: Border.all(color: AppColors.successBorder),
       ),
       child: Row(
         children: [
-          Icon(Icons.check_circle, color: Colors.green[600]),
+          Icon(Icons.check_circle, color: AppColors.successText),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               'Essay ini sudah dikerjakan pada ${formatAppDateTime(attempt.submittedAt)} dan menunggu penilaian manual.',
               style: TextStyle(
-                color: Colors.green[800],
+                color: AppColors.successText,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),
@@ -252,7 +252,7 @@ class _EssayResultDetailScreenState extends State<EssayResultDetailScreen> {
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
       ),
@@ -282,7 +282,7 @@ class _EssayResultDetailScreenState extends State<EssayResultDetailScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: const Color(0xFFF9FAFF),
+              color: AppColors.surfaceMuted,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: AppColors.pearl),
             ),
