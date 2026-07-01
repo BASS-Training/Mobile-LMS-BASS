@@ -11,6 +11,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_ac
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion/discussion_button.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/attendance/attendance_status_banner.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
@@ -261,6 +262,10 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
                                 delayMs: 40,
                                 child: _buildInfoCard(widget.lesson.title),
                               ),
+                              if (widget.lesson.attendanceRequired) ...[
+                                const SizedBox(height: 16),
+                                AttendanceStatusBanner(lesson: widget.lesson),
+                              ],
                               const SizedBox(height: 16),
                               const SizedBox(height: 24),
                               _buildBottomButtons(state),
@@ -363,6 +368,17 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
     final canProceed = state.canProceed || widget.lesson.isCompleted;
 
     void markAndNavigate({required bool goNext}) {
+      // Kehadiran belum di-ACC instruktur → jangan lanjut ke materi berikutnya.
+      if (goNext && widget.lesson.attendancePending) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(AttendanceInfo.blockedReason(widget.lesson)),
+            ),
+          );
+        return;
+      }
       if (!widget.lesson.isCompleted) {
         context.read<LessonBloc>().add(
           MarkLessonCompleteEvent(lessonId: widget.lesson.id),

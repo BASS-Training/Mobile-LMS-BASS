@@ -582,6 +582,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
               key: const ValueKey('quiz_result'),
               courseTitle: widget.course.title,
               result: quizState.result,
+              leaderboard: quizState.leaderboard,
               canGoNext: canProceed,
               onNextLesson: () {
                 navigateToLesson(nextLesson!, widget.lessonIndex + 1);

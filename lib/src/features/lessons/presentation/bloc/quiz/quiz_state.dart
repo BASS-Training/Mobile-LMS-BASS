@@ -70,15 +70,20 @@ class QuizSubmitted extends QuizState {
   final Map<int, int> answers;
   final dynamic attempt; // LessonAttempt? kept dynamic to avoid import cycle
 
+  /// Papan peringkat, hanya terisi bila kuis mengaktifkan leaderboard dan
+  /// pengambilannya berhasil. Null bila leaderboard nonaktif / gagal dimuat.
+  final QuizLeaderboard? leaderboard;
+
   const QuizSubmitted({
     required this.quiz,
     required this.result,
     required this.answers,
     this.attempt,
+    this.leaderboard,
   });
 
   @override
-  List<Object?> get props => [quiz, result, answers, attempt];
+  List<Object?> get props => [quiz, result, answers, attempt, leaderboard];
 }
 
 /// Error state

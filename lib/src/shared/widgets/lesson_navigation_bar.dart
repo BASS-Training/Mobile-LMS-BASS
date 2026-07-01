@@ -15,6 +15,11 @@ class LessonNavigationBar extends StatelessWidget {
   final VoidCallback onForward;
   final Color primaryColor;
 
+  /// Bila true, tombol maju terkunci (mis. menunggu ACC kehadiran instruktur).
+  /// Menekannya menampilkan [blockedReason] alih-alih memanggil [onForward].
+  final bool forwardBlocked;
+  final String? blockedReason;
+
   const LessonNavigationBar({
     super.key,
     required this.canGoPrevious,
@@ -22,6 +27,8 @@ class LessonNavigationBar extends StatelessWidget {
     this.onPrevious,
     required this.onForward,
     this.primaryColor = AppColors.brandPrimary,
+    this.forwardBlocked = false,
+    this.blockedReason,
   });
 
   /// Gaya tombol "Sebelumnya" yang seragam untuk SEMUA layar lesson:
@@ -46,6 +53,19 @@ class LessonNavigationBar extends StatelessWidget {
     padding: const EdgeInsets.symmetric(vertical: 14),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
   );
+
+  void _showBlocked(BuildContext context) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(
+            blockedReason ??
+                'Menunggu konfirmasi kehadiran dari instruktur sebelum Anda bisa melanjutkan.',
+          ),
+        ),
+      );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,14 +96,24 @@ class LessonNavigationBar extends StatelessWidget {
           Expanded(
             child: PressScale(
               child: ElevatedButton.icon(
-                onPressed: onForward,
-                style: forwardButtonStyle(primaryColor),
-                icon: Icon(
-                  canGoNext
-                      ? Icons.arrow_forward_rounded
-                      : Icons.check_rounded,
+                onPressed: forwardBlocked
+                    ? () => _showBlocked(context)
+                    : onForward,
+                style: forwardButtonStyle(
+                  forwardBlocked ? AppColors.slate : primaryColor,
                 ),
-                label: Text(canGoNext ? 'Lanjut' : 'Selesai'),
+                icon: Icon(
+                  forwardBlocked
+                      ? Icons.lock_outline_rounded
+                      : (canGoNext
+                            ? Icons.arrow_forward_rounded
+                            : Icons.check_rounded),
+                ),
+                label: Text(
+                  forwardBlocked
+                      ? 'Menunggu Kehadiran'
+                      : (canGoNext ? 'Lanjut' : 'Selesai'),
+                ),
               ),
             ),
           ),

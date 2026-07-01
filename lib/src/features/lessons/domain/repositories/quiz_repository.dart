@@ -15,6 +15,9 @@ abstract class QuizRepository {
   /// Submit quiz answers. Returns a [QuizResult] computed either by server or locally.
   Future<QuizResult> submitQuiz(Quiz quiz, Map<int, int> answers);
 
+  /// Ambil papan peringkat kuis (hanya bila leaderboard diaktifkan admin).
+  Future<QuizLeaderboard> getLeaderboard(String quizId);
+
   /// Buang cache quiz untuk satu lesson (mis. setelah submit, agar status
   /// `completed`/lulus yang baru terbaca ulang dari server saat dibuka lagi).
   void invalidateCachedQuiz(String lessonId);

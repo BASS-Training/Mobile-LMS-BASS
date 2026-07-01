@@ -21,6 +21,7 @@ import 'package:lms_mobile_app/src/features/lessons/data/repositories/quiz_repos
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_repository.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_result_repository.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/get_quiz_usecase.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/usecases/get_quiz_leaderboard_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/submit_quiz_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/is_lesson_completed_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/mark_lesson_complete_usecase.dart';
@@ -101,6 +102,9 @@ class LessonModule {
       return QuizBloc(
         getQuizUseCase: GetQuizUseCase(repository: quizRepository),
         submitQuizUseCase: submitUseCase,
+        getQuizLeaderboardUseCase: GetQuizLeaderboardUseCase(
+          repository: quizRepository,
+        ),
       );
     });
 

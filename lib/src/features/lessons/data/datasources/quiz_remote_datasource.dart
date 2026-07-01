@@ -11,4 +11,8 @@ abstract class QuizRemoteDataSource {
     String attemptId,
     List<Map<String, dynamic>> answers,
   );
+
+  /// Fetch the leaderboard for a quiz. Returns the raw `data` map from the API
+  /// (quizTitle, totalParticipants, currentUserRank, entries).
+  Future<Map<String, dynamic>> fetchLeaderboard(String quizId);
 }

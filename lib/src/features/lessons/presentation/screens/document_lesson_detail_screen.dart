@@ -11,6 +11,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/les
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_event.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/attendance/attendance_status_banner.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion/discussion_button.dart';
@@ -209,6 +210,8 @@ class _DocumentLessonDetailScreenState extends State<DocumentLessonDetailScreen>
           child: LessonNavigationBar(
             canGoPrevious: canGoPrevious,
             canGoNext: canGoNext,
+            forwardBlocked: canGoNext && widget.lesson.attendancePending,
+            blockedReason: AttendanceInfo.blockedReason(widget.lesson),
             onPrevious: canGoPrevious
                 ? () =>
                       navigateToLesson(previousLesson!, widget.lessonIndex - 1)
@@ -221,6 +224,11 @@ class _DocumentLessonDetailScreenState extends State<DocumentLessonDetailScreen>
         bottom: false,
         child: Column(
           children: [
+            if (widget.lesson.attendanceRequired)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                child: AttendanceStatusBanner(lesson: widget.lesson),
+              ),
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: _buildDocumentToolbar(),

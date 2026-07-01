@@ -15,6 +15,14 @@ class Lesson {
   final String? zoomPassword;
   final String? scheduledStart; // ISO 8601
   final String? scheduledEnd; // ISO 8601
+  // Kehadiran (attendance): bila diaktifkan admin, konten berikutnya terkunci
+  // sampai instruktur menandai kehadiran peserta di web.
+  final bool attendanceRequired;
+  final int? minAttendanceMinutes;
+  final String? attendanceNotes;
+  // Status kehadiran user: 'present'|'absent'|'late'|'excused', atau null bila
+  // belum ditandai instruktur (menunggu ACC).
+  final String? attendanceStatus;
   bool isCompleted;
 
   Lesson({
@@ -32,6 +40,10 @@ class Lesson {
     this.zoomPassword,
     this.scheduledStart,
     this.scheduledEnd,
+    this.attendanceRequired = false,
+    this.minAttendanceMinutes,
+    this.attendanceNotes,
+    this.attendanceStatus,
     this.isCompleted = false,
   });
 
@@ -65,6 +77,10 @@ class Lesson {
       zoomPassword: json['zoomPassword'] as String?,
       scheduledStart: json['scheduledStart'] as String?,
       scheduledEnd: json['scheduledEnd'] as String?,
+      attendanceRequired: json['attendanceRequired'] == true,
+      minAttendanceMinutes: (json['minAttendanceMinutes'] as num?)?.toInt(),
+      attendanceNotes: json['attendanceNotes'] as String?,
+      attendanceStatus: json['attendanceStatus'] as String?,
     );
   }
 
@@ -84,6 +100,10 @@ class Lesson {
       'zoomPassword': zoomPassword,
       'scheduledStart': scheduledStart,
       'scheduledEnd': scheduledEnd,
+      'attendanceRequired': attendanceRequired,
+      'minAttendanceMinutes': minAttendanceMinutes,
+      'attendanceNotes': attendanceNotes,
+      'attendanceStatus': attendanceStatus,
       'isCompleted': isCompleted,
     };
   }
@@ -99,6 +119,10 @@ class Lesson {
     String? zoomPassword,
     String? scheduledStart,
     String? scheduledEnd,
+    bool? attendanceRequired,
+    int? minAttendanceMinutes,
+    String? attendanceNotes,
+    String? attendanceStatus,
   }) {
     return Lesson(
       id: id,
@@ -115,6 +139,10 @@ class Lesson {
       zoomPassword: zoomPassword ?? this.zoomPassword,
       scheduledStart: scheduledStart ?? this.scheduledStart,
       scheduledEnd: scheduledEnd ?? this.scheduledEnd,
+      attendanceRequired: attendanceRequired ?? this.attendanceRequired,
+      minAttendanceMinutes: minAttendanceMinutes ?? this.minAttendanceMinutes,
+      attendanceNotes: attendanceNotes ?? this.attendanceNotes,
+      attendanceStatus: attendanceStatus ?? this.attendanceStatus,
       isCompleted: isCompleted ?? this.isCompleted,
     );
   }

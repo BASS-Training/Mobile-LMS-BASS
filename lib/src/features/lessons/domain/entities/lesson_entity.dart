@@ -22,6 +22,13 @@ class LessonEntity extends Equatable {
   final String? zoomPassword;
   final String? scheduledStart; // ISO 8601
   final String? scheduledEnd; // ISO 8601
+  // Kehadiran (attendance): bila diaktifkan admin, lesson berikutnya terkunci
+  // sampai instruktur menandai kehadiran peserta di web.
+  final bool attendanceRequired;
+  final int? minAttendanceMinutes;
+  final String? attendanceNotes;
+  // 'present'|'absent'|'late'|'excused', atau null bila belum ditandai (pending).
+  final String? attendanceStatus;
 
   const LessonEntity({
     required this.id,
@@ -40,9 +47,20 @@ class LessonEntity extends Equatable {
     this.zoomPassword,
     this.scheduledStart,
     this.scheduledEnd,
+    this.attendanceRequired = false,
+    this.minAttendanceMinutes,
+    this.attendanceNotes,
+    this.attendanceStatus,
   });
 
   bool get hasVideo => type == 'video' && (youtubeVideoId?.isNotEmpty ?? false);
+
+  /// Kehadiran diperlukan tetapi belum di-ACC instruktur sebagai hadir/izin.
+  /// Selama true, peserta tidak boleh lanjut ke lesson berikutnya.
+  bool get attendancePending =>
+      attendanceRequired &&
+      attendanceStatus != 'present' &&
+      attendanceStatus != 'excused';
 
   LessonEntity copyWith({
     bool? isCompleted,
@@ -56,6 +74,10 @@ class LessonEntity extends Equatable {
     String? zoomPassword,
     String? scheduledStart,
     String? scheduledEnd,
+    bool? attendanceRequired,
+    int? minAttendanceMinutes,
+    String? attendanceNotes,
+    String? attendanceStatus,
   }) {
     return LessonEntity(
       id: id,
@@ -74,6 +96,10 @@ class LessonEntity extends Equatable {
       zoomPassword: zoomPassword ?? this.zoomPassword,
       scheduledStart: scheduledStart ?? this.scheduledStart,
       scheduledEnd: scheduledEnd ?? this.scheduledEnd,
+      attendanceRequired: attendanceRequired ?? this.attendanceRequired,
+      minAttendanceMinutes: minAttendanceMinutes ?? this.minAttendanceMinutes,
+      attendanceNotes: attendanceNotes ?? this.attendanceNotes,
+      attendanceStatus: attendanceStatus ?? this.attendanceStatus,
     );
   }
 
@@ -95,5 +121,9 @@ class LessonEntity extends Equatable {
     zoomPassword,
     scheduledStart,
     scheduledEnd,
+    attendanceRequired,
+    minAttendanceMinutes,
+    attendanceNotes,
+    attendanceStatus,
   ];
 }

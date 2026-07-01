@@ -11,6 +11,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/les
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_event.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/attendance/attendance_status_banner.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion/discussion_button.dart';
@@ -201,6 +202,8 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
             canGoPrevious: canGoPrevious,
             canGoNext: canGoNext,
             primaryColor: _accent,
+            forwardBlocked: canGoNext && widget.lesson.attendancePending,
+            blockedReason: AttendanceInfo.blockedReason(widget.lesson),
             onPrevious: canGoPrevious
                 ? () => navigateToLesson(
                     previousLesson!,
@@ -218,6 +221,10 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (widget.lesson.attendanceRequired) ...[
+                AttendanceStatusBanner(lesson: widget.lesson),
+                const SizedBox(height: 16),
+              ],
               _buildHeroCard(),
               const SizedBox(height: 16),
               if (widget.lesson.scheduledStart != null) ...[

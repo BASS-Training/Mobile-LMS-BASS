@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/quiz_entity.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/quiz_leaderboard_card.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/score_item_widget.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
@@ -13,6 +14,9 @@ class QuizResultWidget extends StatelessWidget {
   final VoidCallback onNextLesson;
   final VoidCallback onBackToCourse;
 
+  /// Papan peringkat (opsional) — hanya bila admin mengaktifkan leaderboard.
+  final QuizLeaderboard? leaderboard;
+
   const QuizResultWidget({
     super.key,
     required this.courseTitle,
@@ -20,6 +24,7 @@ class QuizResultWidget extends StatelessWidget {
     required this.canGoNext,
     required this.onNextLesson,
     required this.onBackToCourse,
+    this.leaderboard,
   });
 
   @override
@@ -141,6 +146,15 @@ class QuizResultWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 24),
+
+          // Papan peringkat (bila leaderboard diaktifkan admin)
+          if (leaderboard != null && leaderboard!.entries.isNotEmpty) ...[
+            FadeSlideIn(
+              delayMs: 90,
+              child: QuizLeaderboardCard(leaderboard: leaderboard!),
+            ),
+            const SizedBox(height: 24),
+          ],
 
           // Navigation buttons
           if (result.passed)
