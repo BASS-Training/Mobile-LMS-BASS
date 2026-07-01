@@ -6,6 +6,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz_re
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz_result/quiz_hero_card.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz_result/quiz_performance_overview.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz_result/quiz_question_review_item.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/quiz_leaderboard_section.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/widgets/brand_app_bar.dart';
 
@@ -102,6 +103,9 @@ class _QuizResultDetailScreenState extends State<QuizResultDetailScreen> {
             child: QuizPerformanceOverview(attempt: selectedAttempt),
           ),
           const SizedBox(height: 16),
+          // Papan peringkat (bila admin mengaktifkan leaderboard untuk kuis ini).
+          if (selectedAttempt.lessonType == 'quiz')
+            QuizLeaderboardSection(lessonId: selectedAttempt.lessonId),
           _animatedSection(
             keyLabel: 'review-header-${selectedAttempt.id}',
             delayMs: 180,

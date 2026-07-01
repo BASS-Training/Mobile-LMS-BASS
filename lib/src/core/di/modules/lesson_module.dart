@@ -18,6 +18,7 @@ import 'package:lms_mobile_app/src/features/lessons/data/repositories/essay_repo
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/lesson_result_remote_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/lesson_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/data/repositories/quiz_repository_impl.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/repositories/quiz_repository.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_repository.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/lesson_result_repository.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/get_quiz_usecase.dart';
@@ -86,13 +87,18 @@ class LessonModule {
       ),
     );
 
+    // QuizRepository sebagai singleton agar bisa dipakai ulang di luar QuizBloc
+    // (mis. QuizLeaderboardSection di halaman "Nilai & Hasil"). Cache-nya statis
+    // sehingga singleton/factory tak berpengaruh ke perilaku cache.
+    getIt.registerLazySingleton<QuizRepository>(
+      () => QuizRepositoryImpl(
+        localDataSource: QuizLocalDataSourceImpl(),
+        remoteDataSource: QuizRemoteDataSourceImpl(dio: getIt<Dio>()),
+      ),
+    );
+
     getIt.registerFactory<QuizBloc>(() {
-      final quizDataSource = QuizLocalDataSourceImpl();
-      final quizRemote = QuizRemoteDataSourceImpl(dio: getIt<Dio>());
-      final quizRepository = QuizRepositoryImpl(
-        localDataSource: quizDataSource,
-        remoteDataSource: quizRemote,
-      );
+      final quizRepository = getIt<QuizRepository>();
 
       final submitUseCase = SubmitQuizUseCase(
         repository: quizRepository,
