@@ -16,7 +16,10 @@ class CaseStudyBloc extends Bloc<CaseStudyEvent, CaseStudyState> {
     on<ClearCaseStudyMessage>(_onClearMessage);
   }
 
-  Future<void> _onLoad(LoadCaseStudy event, Emitter<CaseStudyState> emit) async {
+  Future<void> _onLoad(
+    LoadCaseStudy event,
+    Emitter<CaseStudyState> emit,
+  ) async {
     emit(state.copyWith(status: CaseStudyStatus.loading, clearMessages: true));
     try {
       final data = await repository.getByLesson(event.lessonId);
@@ -91,7 +94,9 @@ class CaseStudyBloc extends Bloc<CaseStudyEvent, CaseStudyState> {
     DownloadCaseStudyPdf event,
     Emitter<CaseStudyState> emit,
   ) async {
-    emit(state.copyWith(downloading: true, clearMessages: true, clearPdf: true));
+    emit(
+      state.copyWith(downloading: true, clearMessages: true, clearPdf: true),
+    );
     try {
       final bytes = await repository.downloadPdf(event.lessonId);
       emit(state.copyWith(downloading: false, pdfBytes: bytes));

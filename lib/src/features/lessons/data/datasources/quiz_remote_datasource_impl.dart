@@ -72,6 +72,7 @@ class QuizRemoteDataSourceImpl implements QuizRemoteDataSource {
         'totalQuestions': data['totalQuestions'] ?? 0,
         'timeLimit': data['timeLimit'] ?? 0,
         'passingScore': data['passingScore'] ?? 0,
+        'enableLeaderboard': data['enableLeaderboard'] == true,
         'questions': questions.whereType<Map<String, dynamic>>().map((q) {
           final rawOptions = q['options'];
           final options = rawOptions is List ? rawOptions : const [];
@@ -126,6 +127,27 @@ class QuizRemoteDataSourceImpl implements QuizRemoteDataSource {
       return jsonResponse['data'] as Map<String, dynamic>;
     } on DioException catch (error) {
       throw Exception(dioErrorMessage(error, 'Submit failed'));
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> fetchLeaderboard(String quizId) async {
+    logDebug(
+      '[QUIZ][REMOTE][LEADERBOARD] quizId=$quizId tester=${OfflineTestMode.describeContext()}',
+    );
+    if (OfflineTestMode.isActive()) {
+      logDebug('[QUIZ][REMOTE][LEADERBOARD] blocked by tester mode');
+      return const {'entries': []};
+    }
+
+    final endpoint = ApiEndpoints.quizLeaderboard.replaceFirst('{quiz}', quizId);
+    try {
+      final response = await dio.get(endpoint);
+      final jsonResp = response.data as Map<String, dynamic>;
+      final data = jsonResp['data'];
+      return data is Map<String, dynamic> ? data : const {'entries': []};
+    } on DioException catch (error) {
+      throw Exception(dioErrorMessage(error, 'Gagal memuat leaderboard'));
     }
   }
 }

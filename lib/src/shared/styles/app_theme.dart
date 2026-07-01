@@ -4,6 +4,19 @@ import 'app_typography.dart';
 import 'app_measures.dart';
 
 class AppTheme {
+  /// Theme forced to the LIGHT palette regardless of the active brightness.
+  /// Used to lock pre-auth/brand screens (onboarding, login, register) to their
+  /// designed light look even when the device is in dark mode — see the auth
+  /// screens. Flips [AppColors.brightness] only momentarily & synchronously to
+  /// build a concrete light [ThemeData], then restores it.
+  static ThemeData get lightLockedTheme {
+    final saved = AppColors.brightness;
+    AppColors.brightness = Brightness.light;
+    final built = theme;
+    AppColors.brightness = saved;
+    return built;
+  }
+
   /// The active theme. Reads theme-aware [AppColors] (driven by
   /// `AppColors.brightness`), so it reflects light or dark automatically. The
   /// root sets `AppColors.brightness` and remounts before building MaterialApp.

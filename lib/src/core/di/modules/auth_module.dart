@@ -9,6 +9,7 @@ import 'package:lms_mobile_app/src/features/authentication/domain/usecases/login
 import 'package:lms_mobile_app/src/features/authentication/domain/usecases/logout_usecase.dart';
 import 'package:lms_mobile_app/src/features/authentication/domain/usecases/register.usecase.dart';
 import 'package:lms_mobile_app/src/features/authentication/domain/usecases/update_profile_usecase.dart';
+import 'package:lms_mobile_app/src/features/authentication/presentation/auth_actions/auth_action_cubit.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_bloc.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/edit_profile/edit_profile_cubit.dart';
 
@@ -21,6 +22,7 @@ class AuthModule {
 
     // Data Layer
     final AuthRepository authRepository = AuthRepositoryImpl(dio: getIt<Dio>());
+    getIt.registerLazySingleton<AuthRepository>(() => authRepository);
 
     // Use Cases
     final loginUseCase = LoginUseCase(authRepository);
@@ -36,6 +38,11 @@ class AuthModule {
     // A fresh cubit per edit-profile screen.
     getIt.registerFactory<EditProfileCubit>(
       () => EditProfileCubit(updateProfileUseCase),
+    );
+
+    // Aksi auth sekunder (verifikasi email, lupa/ganti password) — fresh per layar.
+    getIt.registerFactory<AuthActionCubit>(
+      () => AuthActionCubit(authRepository),
     );
 
     // Presentation Layer

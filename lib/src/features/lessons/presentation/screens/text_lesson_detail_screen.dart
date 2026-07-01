@@ -4,8 +4,6 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_ac
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:lms_mobile_app/src/core/utils/lesson_route_resolver.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
@@ -14,6 +12,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/les
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_event.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/attendance/attendance_status_banner.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion/discussion_button.dart';
@@ -80,15 +79,8 @@ class _TextLessonDetailScreenState extends State<TextLessonDetailScreen>
         course: widget.course,
         currentLessonIndex: widget.lessonIndex,
         onSelectLesson: (selectedLesson, index) {
-          final route = LessonRouteResolver.routeForType(selectedLesson.type);
-          context.push(
-            route,
-            extra: {
-              'lesson': selectedLesson,
-              'course': widget.course,
-              'lessonIndex': index,
-            },
-          );
+          Navigator.pop(context); // tutup drawer
+          navigateToLesson(selectedLesson, index);
         },
       ),
       backgroundColor: Colors.transparent,
@@ -113,6 +105,10 @@ class _TextLessonDetailScreenState extends State<TextLessonDetailScreen>
               children: [
                 _buildAnimatedEntry(index: 0, child: _buildHeader(lesson)),
                 const SizedBox(height: 16),
+                if (lesson.attendanceRequired) ...[
+                  AttendanceStatusBanner(lesson: lesson),
+                  const SizedBox(height: 16),
+                ],
                 _buildAnimatedEntry(index: 1, child: _buildMetaCard(lesson)),
                 const SizedBox(height: 20),
                 _buildAnimatedEntry(
@@ -120,31 +116,23 @@ class _TextLessonDetailScreenState extends State<TextLessonDetailScreen>
                   child: LessonNavigationBar(
                     canGoPrevious: canGoPrevious,
                     canGoNext: canGoNext,
+                    forwardBlocked: canGoNext && lesson.attendancePending,
+                    blockedReason: AttendanceInfo.blockedReason(lesson),
                     onPrevious: canGoPrevious
-                        ? () {
-                            Navigator.pop(context);
-                            Future.delayed(
-                              const Duration(milliseconds: 200),
-                              () => navigateToLesson(
-                                previousLesson!,
-                                widget.lessonIndex - 1,
-                              ),
-                            );
-                          }
+                        ? () => navigateToLesson(
+                            previousLesson!,
+                            widget.lessonIndex - 1,
+                          )
                         : null,
                     onForward: () async {
                       _markComplete();
                       await Future.delayed(const Duration(milliseconds: 100));
                       if (!context.mounted) return;
-                      Navigator.pop(context);
+                      // pushReplacement mengganti layar ini; tidak perlu pop dulu.
                       if (canGoNext && nextLesson != null) {
-                        Future.delayed(
-                          const Duration(milliseconds: 200),
-                          () => navigateToLesson(
-                            nextLesson!,
-                            widget.lessonIndex + 1,
-                          ),
-                        );
+                        navigateToLesson(nextLesson!, widget.lessonIndex + 1);
+                      } else {
+                        popToCourse(context);
                       }
                     },
                   ),
@@ -291,14 +279,7 @@ class _TextLessonDetailScreenState extends State<TextLessonDetailScreen>
       width: double.infinity,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Colors.white.withValues(alpha: 0.94),
-            const Color(0xFFF8FAFF).withValues(alpha: 0.96),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(color: AppColors.pearl.withValues(alpha: 0.65)),
         boxShadow: [

@@ -98,8 +98,10 @@ class _IntroScreenState extends State<IntroScreen>
     // 0..1 scroll fraction → how far the gradient window has travelled.
     final frac = maxIndex > 0 ? (_page / maxIndex).clamp(0.0, 1.0) : 0.0;
 
+    // Onboarding dikunci ke tampilan light/brand (best practice layar pra-login)
+    // walau device dalam dark mode — header pastel + kanvas putih + tinta gelap.
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: AppColors.paper,
       body: Stack(
         children: [
           // Continuous gradient header, windowed + translated by scroll so the
@@ -191,7 +193,7 @@ class _IntroScreenState extends State<IntroScreen>
                 style: TextStyle(
                   fontFamily: _kFont,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
+                  color: AppColors.ink,
                   fontSize: 15,
                 ),
               ),
@@ -207,7 +209,7 @@ class _IntroScreenState extends State<IntroScreen>
                 'Lewati',
                 style: TextStyle(
                   fontFamily: _kFont,
-                  color: AppColors.textSecondary,
+                  color: AppColors.inkSoft,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -236,7 +238,7 @@ class _IntroScreenState extends State<IntroScreen>
                 decoration: BoxDecoration(
                   color: active
                       ? AppColors.brandPrimary
-                      : AppColors.borderDefault,
+                      : AppColors.paperBorder,
                   borderRadius: BorderRadius.circular(20),
                 ),
               );
@@ -406,7 +408,7 @@ class _IntroText extends StatelessWidget {
             height: 1.18,
             fontWeight: FontWeight.w800,
             letterSpacing: -0.3,
-            color: AppColors.textPrimary,
+            color: AppColors.ink,
           ),
         ),
         const SizedBox(height: 14),
@@ -418,7 +420,7 @@ class _IntroText extends StatelessWidget {
             fontSize: 14,
             height: 1.6,
             fontWeight: FontWeight.w500,
-            color: AppColors.textSecondary,
+            color: AppColors.inkSoft,
           ),
         ),
       ],

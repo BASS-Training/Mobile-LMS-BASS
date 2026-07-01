@@ -1,9 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_actions.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:lms_mobile_app/src/core/utils/lesson_route_resolver.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
@@ -12,6 +11,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/les
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_event.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/attendance/attendance_status_banner.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion/discussion_button.dart';
@@ -83,15 +83,12 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
     if (!mounted) return;
 
     if (goToNext && nextLesson != null) {
-      context.pop();
-      Future.delayed(const Duration(milliseconds: 180), () {
-        if (!mounted) return;
-        navigateToLesson(nextLesson!, widget.lessonIndex + 1);
-      });
+      // pushReplacement (di navigateToLesson) sudah mengganti layar lesson ini.
+      navigateToLesson(nextLesson!, widget.lessonIndex + 1);
       return;
     }
 
-    context.pop();
+    popToCourse(context);
   }
 
   List<String> get _imageUrls {
@@ -124,15 +121,8 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
         course: widget.course,
         currentLessonIndex: widget.lessonIndex,
         onSelectLesson: (selectedLesson, index) {
-          final route = LessonRouteResolver.routeForType(selectedLesson.type);
-          context.push(
-            route,
-            extra: {
-              'lesson': selectedLesson,
-              'course': widget.course,
-              'lessonIndex': index,
-            },
-          );
+          Navigator.pop(context); // tutup drawer
+          navigateToLesson(selectedLesson, index);
         },
       ),
       appBar: LessonAppBar(
@@ -155,17 +145,13 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
             canGoPrevious: canGoPrevious,
             canGoNext: canGoNext,
             primaryColor: _accent,
+            forwardBlocked: canGoNext && widget.lesson.attendancePending,
+            blockedReason: AttendanceInfo.blockedReason(widget.lesson),
             onPrevious: canGoPrevious
-                ? () {
-                    Navigator.pop(context);
-                    Future.delayed(
-                      const Duration(milliseconds: 200),
-                      () => navigateToLesson(
-                        previousLesson!,
-                        widget.lessonIndex - 1,
-                      ),
-                    );
-                  }
+                ? () => navigateToLesson(
+                    previousLesson!,
+                    widget.lessonIndex - 1,
+                  )
                 : null,
             onForward: () => _markComplete(goToNext: canGoNext),
           ),
@@ -175,6 +161,11 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
         bottom: false,
         child: Column(
           children: [
+            if (widget.lesson.attendanceRequired)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                child: AttendanceStatusBanner(lesson: widget.lesson),
+              ),
             if (widget.lesson.content.trim().isNotEmpty)
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
@@ -204,7 +195,7 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: AppColors.borderDefault.withValues(alpha: 0.8),
@@ -248,7 +239,7 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
   Widget _buildImageCarousel(List<String> images) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
           color: AppColors.borderDefault.withValues(alpha: 0.9),
@@ -338,26 +329,25 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
   }
 
   Widget _buildZoomableImage(String url) {
+    // Decode pada resolusi layar saja (bukan resolusi penuh gambar) supaya
+    // decode jauh lebih cepat & hemat memori untuk gambar besar.
+    final dpr = MediaQuery.of(context).devicePixelRatio;
+    final memWidth = (MediaQuery.of(context).size.width * dpr).round();
+
     return InteractiveViewer(
       minScale: 0.8,
       maxScale: 4.0,
-      child: Image.network(
-        url,
+      child: CachedNetworkImage(
+        imageUrl: url,
         fit: BoxFit.contain,
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) return child;
-          return Center(
-            child: CircularProgressIndicator(
-              value: loadingProgress.expectedTotalBytes != null
-                  ? loadingProgress.cumulativeBytesLoaded /
-                        loadingProgress.expectedTotalBytes!
-                  : null,
-              color: _accent,
-              strokeWidth: 2.5,
-            ),
-          );
-        },
-        errorBuilder: (context, error, stackTrace) => Center(
+        width: double.infinity,
+        // Cache disk (instan saat dibuka ulang) + downscale decode.
+        memCacheWidth: memWidth,
+        fadeInDuration: const Duration(milliseconds: 200),
+        placeholder: (context, _) => Center(
+          child: CircularProgressIndicator(color: _accent, strokeWidth: 2.5),
+        ),
+        errorWidget: (context, _, _) => Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -418,7 +408,7 @@ class _ImageLessonDetailScreenState extends State<ImageLessonDetailScreen>
   Widget _buildEmptyState() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
           color: AppColors.borderDefault.withValues(alpha: 0.9),

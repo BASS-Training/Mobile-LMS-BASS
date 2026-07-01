@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/case_study_entity.dart';
+import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 
 /// Merender tabel studi kasus dengan menghormati merge (rowSpan/colSpan).
 /// Lebar kolom menyesuaikan isi (kata tidak dipotong) dan tinggi baris
@@ -92,11 +93,13 @@ class _CaseStudyTableWidgetState extends State<CaseStudyTableWidget> {
     return value == null ? fallback : Color(value);
   }
 
+  // Tabel adalah bagian dari "kertas" dokumen → selalu tinta gelap di atas
+  // latar putih/warna sel, sama seperti PDF (lihat AppColors paper/ink).
   TextStyle _styleFor(CaseStudyCellEntity cell) => TextStyle(
     fontSize: 12,
     height: 1.3,
     fontWeight: cell.bold ? FontWeight.bold : FontWeight.normal,
-    color: const Color(0xFF1F2937),
+    color: AppColors.ink,
   );
 
   TextAlign _textAlign(String align) {
@@ -244,7 +247,8 @@ class _CaseStudyTableWidgetState extends State<CaseStudyTableWidget> {
       for (final cell in row) {
         if (cell.covered) continue;
         final left = colOffsets[cell.col];
-        final width = colOffsets[math.min(cell.col + cell.colSpan, cols)] - left;
+        final width =
+            colOffsets[math.min(cell.col + cell.colSpan, cols)] - left;
         final top = rowOffsets[cell.row];
         final height =
             rowOffsets[math.min(cell.row + cell.rowSpan, rows)] - top;
@@ -271,7 +275,7 @@ class _CaseStudyTableWidgetState extends State<CaseStudyTableWidget> {
   }
 
   Widget _buildCell(CaseStudyCellEntity cell) {
-    final bg = _hexColor(cell.bg, Colors.white);
+    final bg = _hexColor(cell.bg, AppColors.paper);
     final style = _styleFor(cell);
 
     Widget content;
@@ -281,11 +285,17 @@ class _CaseStudyTableWidgetState extends State<CaseStudyTableWidget> {
         maxLines: null,
         textAlign: _textAlign(cell.align),
         style: style,
+        cursorColor: AppColors.ink,
         decoration: InputDecoration(
           isDense: true,
+          // Penting: matikan fill agar tidak mewarisi inputDecorationTheme gelap
+          // dari tema dark (dulu membuat sel input tampak "pil hitam").
+          filled: false,
           border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: InputBorder.none,
           hintText: cell.text.isEmpty ? null : cell.text,
-          hintStyle: const TextStyle(fontSize: 11, color: Color(0xFF9CA3AF)),
+          hintStyle: const TextStyle(fontSize: 11, color: AppColors.inkFaint),
           contentPadding: EdgeInsets.zero,
         ),
       );

@@ -19,6 +19,10 @@ class LessonMapper {
       zoomPassword: model.zoomPassword,
       scheduledStart: model.scheduledStart,
       scheduledEnd: model.scheduledEnd,
+      attendanceRequired: model.attendanceRequired,
+      minAttendanceMinutes: model.minAttendanceMinutes,
+      attendanceNotes: model.attendanceNotes,
+      attendanceStatus: model.attendanceStatus,
     );
   }
 
@@ -39,6 +43,10 @@ class LessonMapper {
       zoomPassword: entity.zoomPassword,
       scheduledStart: entity.scheduledStart,
       scheduledEnd: entity.scheduledEnd,
+      attendanceRequired: entity.attendanceRequired,
+      minAttendanceMinutes: entity.minAttendanceMinutes,
+      attendanceNotes: entity.attendanceNotes,
+      attendanceStatus: entity.attendanceStatus,
     );
   }
 }

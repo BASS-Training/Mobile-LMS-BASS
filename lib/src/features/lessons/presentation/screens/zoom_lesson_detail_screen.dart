@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_actions.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:lms_mobile_app/src/core/utils/lesson_route_resolver.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
@@ -13,6 +11,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/les
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_event.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/attendance/attendance_status_banner.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion/discussion_button.dart';
@@ -160,15 +159,12 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
     if (!mounted) return;
 
     if (goToNext && nextLesson != null) {
-      context.pop();
-      Future.delayed(const Duration(milliseconds: 180), () {
-        if (!mounted) return;
-        navigateToLesson(nextLesson!, widget.lessonIndex + 1);
-      });
+      // pushReplacement (di navigateToLesson) sudah mengganti layar lesson ini.
+      navigateToLesson(nextLesson!, widget.lessonIndex + 1);
       return;
     }
 
-    context.pop();
+    popToCourse(context);
   }
 
   // ── Build ────────────────────────────────────────────────────────────────────
@@ -182,15 +178,8 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
         course: widget.course,
         currentLessonIndex: widget.lessonIndex,
         onSelectLesson: (lesson, index) {
-          final route = LessonRouteResolver.routeForType(lesson.type);
-          context.push(
-            route,
-            extra: {
-              'lesson': lesson,
-              'course': widget.course,
-              'lessonIndex': index,
-            },
-          );
+          Navigator.pop(context); // tutup drawer
+          navigateToLesson(lesson, index);
         },
       ),
       appBar: LessonAppBar(
@@ -213,17 +202,13 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
             canGoPrevious: canGoPrevious,
             canGoNext: canGoNext,
             primaryColor: _accent,
+            forwardBlocked: canGoNext && widget.lesson.attendancePending,
+            blockedReason: AttendanceInfo.blockedReason(widget.lesson),
             onPrevious: canGoPrevious
-                ? () {
-                    Navigator.pop(context);
-                    Future.delayed(
-                      const Duration(milliseconds: 200),
-                      () => navigateToLesson(
-                        previousLesson!,
-                        widget.lessonIndex - 1,
-                      ),
-                    );
-                  }
+                ? () => navigateToLesson(
+                    previousLesson!,
+                    widget.lessonIndex - 1,
+                  )
                 : null,
             onForward: () => _markComplete(goToNext: canGoNext),
           ),
@@ -236,6 +221,10 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (widget.lesson.attendanceRequired) ...[
+                AttendanceStatusBanner(lesson: widget.lesson),
+                const SizedBox(height: 16),
+              ],
               _buildHeroCard(),
               const SizedBox(height: 16),
               if (widget.lesson.scheduledStart != null) ...[
@@ -477,7 +466,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: AppColors.borderDefault.withValues(alpha: 0.8),
@@ -673,7 +662,7 @@ class _ZoomLessonDetailScreenState extends State<ZoomLessonDetailScreen>
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: AppColors.borderDefault.withValues(alpha: 0.7),

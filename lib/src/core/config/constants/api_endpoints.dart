@@ -8,6 +8,19 @@ class ApiEndpoints {
   static const String getCurrentUser = '/auth/me';
   static const String refreshToken = '/auth/refresh-token';
 
+  // Verifikasi email (OTP) — butuh login
+  static const String sendEmailOtp = '/auth/email/send-otp';
+  static const String verifyEmailOtp = '/auth/email/verify-otp';
+
+  // Ubah email (pola verifikasi-dulu) — butuh login. OTP dikirim ke email baru.
+  static const String sendChangeEmailOtp = '/auth/email/change/send-otp';
+  static const String changeEmail = '/auth/email/change';
+
+  // Password (OTP reset publik + ganti saat login)
+  static const String sendPasswordOtp = '/auth/password/send-otp';
+  static const String resetPassword = '/auth/password/reset';
+  static const String changePassword = '/auth/password/change';
+
   // Courses
   static const String getCourses = '/courses';
   static const String getCourseById = '/courses/{id}';
@@ -28,6 +41,7 @@ class ApiEndpoints {
   static const String startQuizAttempt = '/quizzes/{quiz}/attempts';
   static const String submitQuizAttempt =
       '/quizzes/{quiz}/attempts/{attempt}/submit';
+  static const String quizLeaderboard = '/quizzes/{quiz}/leaderboard';
 
   // Essays
   static const String getEssayByLesson = '/essays/by-lesson/{id}';
@@ -61,6 +75,18 @@ class ApiEndpoints {
 
   // Agenda (sesi terjadwal/Zoom mendatang lintas course)
   static const String agenda = '/agenda';
+
+  // Agenda pribadi peserta (per-user, sinkron lintas device)
+  static const String personalAgenda = '/agenda/personal';
+  static const String personalAgendaItem = '/agenda/personal/{id}';
+
+  // Best score mini-game (per-user)
+  static const String gameScores = '/games/scores';
+  static const String gameScoresMerge = '/games/scores/merge';
+
+  // Baseline perayaan achievement (per-user)
+  static const String achievementTiers = '/achievements/tiers';
+  static const String achievementTiersSync = '/achievements/tiers/sync';
 
   // Notifications (gabungan: notifikasi DB + pengumuman web)
   static const String notifications = '/notifications';

@@ -11,7 +11,10 @@ class DiscussionRemoteDataSourceImpl implements DiscussionRemoteDataSource {
 
   @override
   Future<List<DiscussionModel>> getByLesson(String lessonId) async {
-    final path = ApiEndpoints.getDiscussions.replaceAll('{contentId}', lessonId);
+    final path = ApiEndpoints.getDiscussions.replaceAll(
+      '{contentId}',
+      lessonId,
+    );
     final response = await _dio.get(path);
     final data = _dataList(response.data);
     return data
@@ -26,8 +29,10 @@ class DiscussionRemoteDataSourceImpl implements DiscussionRemoteDataSource {
     required String title,
     required String body,
   }) async {
-    final path =
-        ApiEndpoints.createDiscussion.replaceAll('{contentId}', lessonId);
+    final path = ApiEndpoints.createDiscussion.replaceAll(
+      '{contentId}',
+      lessonId,
+    );
     final response = await _dio.post(
       path,
       data: {'title': title, 'body': body},
@@ -40,8 +45,10 @@ class DiscussionRemoteDataSourceImpl implements DiscussionRemoteDataSource {
     String discussionId, {
     required String body,
   }) async {
-    final path =
-        ApiEndpoints.createReply.replaceAll('{discussionId}', discussionId);
+    final path = ApiEndpoints.createReply.replaceAll(
+      '{discussionId}',
+      discussionId,
+    );
     final response = await _dio.post(path, data: {'body': body});
     return DiscussionReplyModel.fromJson(_dataMap(response.data));
   }

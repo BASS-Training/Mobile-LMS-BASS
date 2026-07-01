@@ -27,12 +27,8 @@ class ScoreItemWidget extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(fontSize: 12, color: AppColors.slate),
-        ),
+        Text(label, style: TextStyle(fontSize: 12, color: AppColors.slate)),
       ],
     );
   }
 }
-

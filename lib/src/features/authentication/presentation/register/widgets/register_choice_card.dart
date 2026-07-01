@@ -39,10 +39,10 @@ class RegisterChoiceCard extends StatelessWidget {
           duration: const Duration(milliseconds: 200),
           padding: padding,
           decoration: BoxDecoration(
-            color: selected ? _selectedTint : AppColors.surfaceMuted,
+            color: selected ? _selectedTint : AppColors.paperMuted,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: selected ? AppColors.brandPrimary : AppColors.borderDefault,
+              color: selected ? AppColors.brandPrimary : AppColors.paperBorder,
               width: 1.5,
             ),
             boxShadow: selected
@@ -69,13 +69,13 @@ class RegisterChoiceCard extends StatelessWidget {
                   border: Border.all(
                     color: selected
                         ? AppColors.brandPrimary
-                        : AppColors.borderDefault,
+                        : AppColors.paperBorder,
                     width: 1.2,
                   ),
                 ),
                 child: Icon(
                   icon,
-                  color: selected ? Colors.white : AppColors.textSecondary,
+                  color: selected ? Colors.white : AppColors.inkSoft,
                   size: 22,
                 ),
               ),
@@ -94,7 +94,7 @@ class RegisterChoiceCard extends StatelessWidget {
                         fontWeight: FontWeight.w800,
                         color: selected
                             ? AppColors.brandPrimary
-                            : AppColors.textSecondary,
+                            : AppColors.inkSoft,
                       ),
                     ),
                     if (!compact && subtitle.isNotEmpty) ...[
@@ -103,7 +103,7 @@ class RegisterChoiceCard extends StatelessWidget {
                         subtitle,
                         style: TextStyle(
                           fontSize: 12,
-                          color: AppColors.textTertiary,
+                          color: AppColors.inkFaint,
                           height: 1.3,
                         ),
                       ),

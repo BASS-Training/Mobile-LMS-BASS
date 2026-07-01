@@ -25,68 +25,76 @@ class OptionCardWidget extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: isSelected
-                    ? [
-                        AppColors.red.withValues(alpha: 0.14),
-                        AppColors.tomato.withValues(alpha: 0.12),
-                      ]
-                    : [AppColors.surface, AppColors.surface],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: isSelected
+                      ? [
+                          AppColors.red.withValues(alpha: 0.14),
+                          AppColors.tomato.withValues(alpha: 0.12),
+                        ]
+                      : [AppColors.surface, AppColors.surface],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isSelected ? AppColors.red : AppColors.borderDefault,
+                  width: isSelected ? 2 : 1,
+                ),
               ),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isSelected ? AppColors.red : AppColors.borderDefault,
-                width: isSelected ? 2 : 1,
-              ),
-            ),
-            child: Row(
-              children: [
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
-                  width: 28,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: isSelected ? AppColors.red : AppColors.surfaceMuted,
-                    border: Border.all(
-                      color: isSelected ? AppColors.red : AppColors.borderDefault,
-                      width: 1.5,
+              child: Row(
+                children: [
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: isSelected
+                          ? AppColors.red
+                          : AppColors.surfaceMuted,
+                      border: Border.all(
+                        color: isSelected
+                            ? AppColors.red
+                            : AppColors.borderDefault,
+                        width: 1.5,
+                      ),
                     ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      String.fromCharCode(65 + index),
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: isSelected ? Colors.white : AppColors.textSecondary,
+                    child: Center(
+                      child: Text(
+                        String.fromCharCode(65 + index),
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: isSelected
+                              ? Colors.white
+                              : AppColors.textSecondary,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    option,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: isSelected ? AppColors.red : AppColors.textPrimary,
-                      fontWeight: isSelected
-                          ? FontWeight.w600
-                          : FontWeight.w500,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      option,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: isSelected
+                            ? AppColors.red
+                            : AppColors.textPrimary,
+                        fontWeight: isSelected
+                            ? FontWeight.w600
+                            : FontWeight.w500,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
           ),
         ),
       ),

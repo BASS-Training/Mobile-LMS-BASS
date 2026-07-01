@@ -118,8 +118,11 @@ class _ErrorView extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.cloud_off_rounded,
-                size: 48, color: AppColors.textTertiary),
+            Icon(
+              Icons.cloud_off_rounded,
+              size: 48,
+              color: AppColors.textTertiary,
+            ),
             const SizedBox(height: 12),
             Text(
               message,
@@ -164,25 +167,27 @@ class _ThreadTileState extends State<_ThreadTile> {
     final text = _replyController.text.trim();
     if (text.isEmpty) return;
     FocusScope.of(context).unfocus();
-    final ok = await context
-        .read<DiscussionCubit>()
-        .postReply(widget.discussion.id, text);
+    final ok = await context.read<DiscussionCubit>().postReply(
+      widget.discussion.id,
+      text,
+    );
     if (!mounted) return;
     if (ok) {
       _replyController.clear();
       setState(() => _replyOpen = false);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Gagal mengirim balasan.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Gagal mengirim balasan.')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final d = widget.discussion;
-    final isReplying = context
-        .select((DiscussionCubit c) => c.state.replyingIds.contains(d.id));
+    final isReplying = context.select(
+      (DiscussionCubit c) => c.state.replyingIds.contains(d.id),
+    );
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -224,13 +229,11 @@ class _ThreadTileState extends State<_ThreadTile> {
             Container(
               padding: const EdgeInsets.only(left: 12),
               decoration: Border(
-                      left: BorderSide(color: AppColors.borderDefault, width: 2))
-                  .toDecoration(),
+                left: BorderSide(color: AppColors.borderDefault, width: 2),
+              ).toDecoration(),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  for (final r in d.replies) _ReplyTile(reply: r),
-                ],
+                children: [for (final r in d.replies) _ReplyTile(reply: r)],
               ),
             ),
           ],
@@ -246,7 +249,8 @@ class _ThreadTileState extends State<_ThreadTile> {
               ),
               icon: const Icon(Icons.reply_rounded, size: 18),
               label: Text(
-                  'Balas${d.repliesCount > 0 ? ' (${d.repliesCount})' : ''}'),
+                'Balas${d.repliesCount > 0 ? ' (${d.repliesCount})' : ''}',
+              ),
             )
           else
             _InlineComposer(
@@ -383,8 +387,10 @@ class _InlineComposer extends StatelessWidget {
               isDense: true,
               filled: true,
               fillColor: AppColors.surfaceMuted,
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 10,
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide.none,
@@ -446,25 +452,27 @@ class _NewTopicComposerState extends State<_NewTopicComposer> {
       return;
     }
     FocusScope.of(context).unfocus();
-    final ok = await context
-        .read<DiscussionCubit>()
-        .postTopic(title: title, body: body);
+    final ok = await context.read<DiscussionCubit>().postTopic(
+      title: title,
+      body: body,
+    );
     if (!mounted) return;
     if (ok) {
       _titleController.clear();
       _bodyController.clear();
       setState(() => _expanded = false);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Gagal memulai diskusi.')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Gagal memulai diskusi.')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final submitting =
-        context.select((DiscussionCubit c) => c.state.submitting);
+    final submitting = context.select(
+      (DiscussionCubit c) => c.state.submitting,
+    );
 
     if (!_expanded) {
       return SafeArea(
@@ -545,8 +553,10 @@ class _NewTopicComposerState extends State<_NewTopicComposer> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.brandPrimary,
                     foregroundColor: Colors.white,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -557,8 +567,9 @@ class _NewTopicComposerState extends State<_NewTopicComposer> {
                           height: 18,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.white),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
                           ),
                         )
                       : const Text('Kirim'),

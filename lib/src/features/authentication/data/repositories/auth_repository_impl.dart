@@ -202,6 +202,130 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  @override
+  Future<void> sendEmailOtp() async {
+    try {
+      await _dio.post(ApiEndpoints.sendEmailOtp);
+    } on DioException catch (error) {
+      throw Exception(friendlyDioMessage(error, 'Gagal mengirim kode.'));
+    }
+  }
+
+  @override
+  Future<UserEntity> verifyEmailOtp(String code) async {
+    try {
+      final response = await _dio.post(
+        ApiEndpoints.verifyEmailOtp,
+        data: {'code': code.trim()},
+      );
+
+      final payload = _decodeResponse(response.data);
+      final data = payload['data'];
+      final token = LocalStorage.getAuthToken();
+      if (data is Map<String, dynamic> &&
+          data['user'] is Map<String, dynamic> &&
+          token != null) {
+        final user = _normalizeUser(data['user'] as Map<String, dynamic>);
+        await LocalStorage.saveAuthSession(token: token, user: user.toJson());
+        return UserMapper.toDomain(user);
+      }
+      throw Exception('Respons verifikasi tidak valid.');
+    } on DioException catch (error) {
+      throw Exception(friendlyDioMessage(error, 'Verifikasi gagal.'));
+    }
+  }
+
+  @override
+  Future<void> sendChangeEmailOtp(String newEmail) async {
+    try {
+      await _dio.post(
+        ApiEndpoints.sendChangeEmailOtp,
+        data: {'new_email': newEmail.trim().toLowerCase()},
+      );
+    } on DioException catch (error) {
+      throw Exception(friendlyDioMessage(error, 'Gagal mengirim kode.'));
+    }
+  }
+
+  @override
+  Future<UserEntity> changeEmail({
+    required String newEmail,
+    required String code,
+  }) async {
+    try {
+      final response = await _dio.post(
+        ApiEndpoints.changeEmail,
+        data: {'new_email': newEmail.trim().toLowerCase(), 'code': code.trim()},
+      );
+
+      final payload = _decodeResponse(response.data);
+      final data = payload['data'];
+      final token = LocalStorage.getAuthToken();
+      if (data is Map<String, dynamic> &&
+          data['user'] is Map<String, dynamic> &&
+          token != null) {
+        final user = _normalizeUser(data['user'] as Map<String, dynamic>);
+        await LocalStorage.saveAuthSession(token: token, user: user.toJson());
+        return UserMapper.toDomain(user);
+      }
+      throw Exception('Respons ubah email tidak valid.');
+    } on DioException catch (error) {
+      throw Exception(friendlyDioMessage(error, 'Gagal mengubah email.'));
+    }
+  }
+
+  @override
+  Future<void> sendPasswordOtp(String email) async {
+    try {
+      await _dio.post(
+        ApiEndpoints.sendPasswordOtp,
+        data: {'email': email.trim().toLowerCase()},
+      );
+    } on DioException catch (error) {
+      throw Exception(friendlyDioMessage(error, 'Gagal mengirim kode.'));
+    }
+  }
+
+  @override
+  Future<void> resetPassword({
+    required String email,
+    required String code,
+    required String password,
+  }) async {
+    try {
+      await _dio.post(
+        ApiEndpoints.resetPassword,
+        data: {
+          'email': email.trim().toLowerCase(),
+          'code': code.trim(),
+          'password': password,
+          'password_confirmation': password,
+        },
+      );
+    } on DioException catch (error) {
+      throw Exception(friendlyDioMessage(error, 'Reset password gagal.'));
+    }
+  }
+
+  @override
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    try {
+      await _dio.post(
+        ApiEndpoints.changePassword,
+        data: {
+          'current_password': currentPassword,
+          'password': newPassword,
+          'password_confirmation': newPassword,
+        },
+      );
+    } on DioException catch (error) {
+      throw Exception(friendlyDioMessage(error, 'Gagal mengubah password.'));
+    }
+  }
+
   Future<UserEntity?> _persistSessionFromPayload(
     Map<String, dynamic> payload,
   ) async {

@@ -15,8 +15,11 @@ import 'package:lms_mobile_app/src/core/routes/app_router.dart';
 // Domain Entities
 // BLoCs
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_bloc.dart';
+import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_state.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
+import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/bloc/home_bloc.dart';
+import 'package:lms_mobile_app/src/features/lessons/data/repositories/quiz_repository_impl.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
 
 /// Entry point aplikasi.
@@ -96,26 +99,38 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         BlocProvider<HomeBloc>(create: (context) => sl<HomeBloc>()),
         BlocProvider<LessonBloc>(create: (context) => sl<LessonBloc>()),
       ],
-      child: ListenableBuilder(
-        listenable: ThemeController.instance,
-        builder: (context, _) {
-          final platform =
-              WidgetsBinding.instance.platformDispatcher.platformBrightness;
-          final brightness =
-              ThemeController.instance.resolveBrightness(platform);
-          // Drive the theme-aware AppColors getters used across the app.
-          AppColors.brightness = brightness;
-
-          return MaterialApp.router(
-            // Keying by brightness forces a clean remount on theme change so
-            // even cached `const` subtrees repaint with the new palette.
-            key: ValueKey(brightness),
-            title: AppStrings.appName,
-            theme: AppTheme.theme,
-            debugShowCheckedModeBanner: false,
-            routerConfig: AppRouter.router,
-          );
+      // Saat logout, kosongkan state course di memori + cache quiz statis agar
+      // data akun sebelumnya tidak terbawa ke akun berikutnya pada perangkat yang
+      // sama (mencegah perayaan achievement palsu, kebocoran course, dan status
+      // lulus quiz lintas akun).
+      child: BlocListener<AuthBloc, AuthState>(
+        listenWhen: (prev, curr) => curr is AuthLoggedOut,
+        listener: (context, _) {
+          context.read<CourseBloc>().add(const ResetCoursesEvent());
+          QuizRepositoryImpl.clearStaticCache();
         },
+        child: ListenableBuilder(
+          listenable: ThemeController.instance,
+          builder: (context, _) {
+            final platform =
+                WidgetsBinding.instance.platformDispatcher.platformBrightness;
+            final brightness = ThemeController.instance.resolveBrightness(
+              platform,
+            );
+            // Drive the theme-aware AppColors getters used across the app.
+            AppColors.brightness = brightness;
+
+            return MaterialApp.router(
+              // Keying by brightness forces a clean remount on theme change so
+              // even cached `const` subtrees repaint with the new palette.
+              key: ValueKey(brightness),
+              title: AppStrings.appName,
+              theme: AppTheme.theme,
+              debugShowCheckedModeBanner: false,
+              routerConfig: AppRouter.router,
+            );
+          },
+        ),
       ),
     );
   }

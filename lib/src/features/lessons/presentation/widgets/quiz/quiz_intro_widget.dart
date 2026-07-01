@@ -130,23 +130,27 @@ class QuizIntroWidget extends StatelessWidget {
           ),
           const SizedBox(height: 32),
 
-          // Tombol Mulai Kuis / Disabled jika sudah selesai
+          // Tombol Mulai Kuis / terkunci jika sudah LULUS (tidak bisa diulang).
+          // Jika pernah gagal (belum lulus), tombol tetap aktif untuk mengulang.
           PressScale(
             child: SizedBox(
               width: double.infinity,
               height: 56,
               child: ElevatedButton.icon(
-                onPressed: quiz.completed ? null : onStartQuiz,
-                icon: const Icon(Icons.play_arrow, size: 24),
+                onPressed: quiz.isPassed ? null : onStartQuiz,
+                icon: Icon(
+                  quiz.isPassed ? Icons.lock_outline : Icons.play_arrow,
+                  size: 24,
+                ),
                 label: Text(
-                  quiz.completed ? 'Kuis Selesai' : 'Mulai Kuis',
+                  quiz.isPassed ? 'Kuis Selesai' : 'Mulai Kuis',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: quiz.completed ? Colors.grey : AppColors.red,
+                  backgroundColor: quiz.isPassed ? Colors.grey : AppColors.red,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -155,10 +159,10 @@ class QuizIntroWidget extends StatelessWidget {
               ),
             ),
           ),
-          if (quiz.completed) const SizedBox(height: 12),
-          if (quiz.completed)
+          if (quiz.isPassed) const SizedBox(height: 12),
+          if (quiz.isPassed)
             Text(
-              'Anda telah menyelesaikan kuis ini. Tidak dapat diulang lagi.',
+              'Anda sudah lulus kuis ini. Tidak dapat dikerjakan lagi.',
               style: TextStyle(color: AppColors.textSecondary),
             ),
           const SizedBox(height: 16),

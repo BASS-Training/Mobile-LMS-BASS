@@ -26,11 +26,16 @@ mixin LessonNavigationMixin<T extends StatefulWidget> on State<T> {
 
   // --- Fungsi Eksekusi Pindah Halaman ---
 
-  /// Membuka lesson tertentu (digunakan untuk Next, Previous, atau dari Drawer)
+  /// Membuka lesson tertentu (digunakan untuk Next, Previous, atau dari Drawer).
+  ///
+  /// Memakai [GoRouter.pushReplacement] (bukan push) agar layar lesson tidak
+  /// menumpuk di stack: hanya ada satu layar lesson di atas halaman course pada
+  /// satu waktu. Dengan begitu tombol "kembali" dari lesson manapun selalu
+  /// mengembalikan ke halaman course, bukan ke lesson yang dibuka sebelumnya.
   void navigateToLesson(LessonEntity lesson, int lessonIndex) {
     final route = LessonRouteResolver.routeForType(lesson.type);
 
-    context.push(
+    context.pushReplacement(
       route,
       extra: {
         'lesson': lesson,

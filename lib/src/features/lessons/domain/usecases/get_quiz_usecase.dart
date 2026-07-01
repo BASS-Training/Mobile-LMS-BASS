@@ -17,4 +17,10 @@ class GetQuizUseCase {
   Quiz? peekCached(String lessonId) {
     return repository.getCachedQuizByLessonId(lessonId);
   }
+
+  /// Buang cache quiz lesson ini agar pemuatan berikutnya menarik status
+  /// terbaru dari server (mis. setelah submit, agar quiz yang lulus terkunci).
+  void invalidate(String lessonId) {
+    repository.invalidateCachedQuiz(lessonId);
+  }
 }

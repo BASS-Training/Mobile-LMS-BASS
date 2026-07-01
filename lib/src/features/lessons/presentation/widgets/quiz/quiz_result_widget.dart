@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/quiz_entity.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/quiz_leaderboard_card.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/score_item_widget.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
@@ -13,6 +14,9 @@ class QuizResultWidget extends StatelessWidget {
   final VoidCallback onNextLesson;
   final VoidCallback onBackToCourse;
 
+  /// Papan peringkat (opsional) — hanya bila admin mengaktifkan leaderboard.
+  final QuizLeaderboard? leaderboard;
+
   const QuizResultWidget({
     super.key,
     required this.courseTitle,
@@ -20,6 +24,7 @@ class QuizResultWidget extends StatelessWidget {
     required this.canGoNext,
     required this.onNextLesson,
     required this.onBackToCourse,
+    this.leaderboard,
   });
 
   @override
@@ -121,7 +126,7 @@ class QuizResultWidget extends StatelessWidget {
                         ScoreItemWidget(
                           label: 'Nilai',
                           value: '${result.percentage.toStringAsFixed(0)}%',
-                          color: AppColors.red,
+                          color: AppColors.brandText,
                         ),
                         ScoreItemWidget(
                           label: 'Benar',
@@ -142,6 +147,15 @@ class QuizResultWidget extends StatelessWidget {
           ),
           const SizedBox(height: 24),
 
+          // Papan peringkat (bila leaderboard diaktifkan admin)
+          if (leaderboard != null && leaderboard!.entries.isNotEmpty) ...[
+            FadeSlideIn(
+              delayMs: 90,
+              child: QuizLeaderboardCard(leaderboard: leaderboard!),
+            ),
+            const SizedBox(height: 24),
+          ],
+
           // Navigation buttons
           if (result.passed)
             Column(
@@ -153,15 +167,15 @@ class QuizResultWidget extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.green[50],
+                      color: AppColors.successSurface,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.green[200]!),
+                      border: Border.all(color: AppColors.successBorder),
                     ),
                     child: Row(
                       children: [
                         Icon(
                           Icons.check_circle,
-                          color: Colors.green[600],
+                          color: AppColors.successText,
                           size: 20,
                         ),
                         const SizedBox(width: 12),
@@ -170,7 +184,7 @@ class QuizResultWidget extends StatelessWidget {
                             'Kuis telah selesai! Lesson ini sudah ditandai sebagai selesai.',
                             style: TextStyle(
                               fontSize: 13,
-                              color: Colors.green[700],
+                              color: AppColors.successText,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -222,20 +236,24 @@ class QuizResultWidget extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.orange[50],
+                      color: AppColors.warningSurface,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.orange[200]!),
+                      border: Border.all(color: AppColors.warningBorder),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.info, color: Colors.orange[600], size: 20),
+                        Icon(
+                          Icons.info,
+                          color: AppColors.warningText,
+                          size: 20,
+                        ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             'Nilai Anda belum mencukupi KKM (70%). Silakan coba lagi.',
                             style: TextStyle(
                               fontSize: 13,
-                              color: Colors.orange[700],
+                              color: AppColors.warningText,
                               fontWeight: FontWeight.w500,
                             ),
                           ),

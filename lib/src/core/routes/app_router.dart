@@ -13,6 +13,11 @@ import 'package:lms_mobile_app/src/features/authentication/presentation/screens/
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/intro_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/login_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/register_screen.dart';
+import 'package:lms_mobile_app/src/features/authentication/presentation/auth_actions/auth_action_cubit.dart';
+import 'package:lms_mobile_app/src/features/authentication/presentation/screens/verify_email_screen.dart';
+import 'package:lms_mobile_app/src/features/authentication/presentation/screens/forgot_password_screen.dart';
+import 'package:lms_mobile_app/src/features/authentication/presentation/screens/change_password_screen.dart';
+import 'package:lms_mobile_app/src/features/authentication/presentation/screens/change_email_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/edit_profile/edit_profile_cubit.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/edit_profile_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/domain/entities/user_entity.dart';
@@ -84,18 +89,40 @@ class AppRouter {
       }
 
       final authState = _authBloc.state;
-      final isOnAuthRoute =
-          state.matchedLocation == AppRoutes.intro ||
-          state.matchedLocation == AppRoutes.login ||
-          state.matchedLocation == AppRoutes.register;
-
       final isAuthenticated = authState is AuthSuccess;
+      final user = isAuthenticated ? authState.user : null;
+      final mustVerify = user?.mustVerifyEmail ?? false;
 
-      if (!isAuthenticated && !isOnAuthRoute) {
-        return AppRoutes.intro;
+      final loc = state.matchedLocation;
+      final isOnAuthRoute =
+          loc == AppRoutes.intro ||
+          loc == AppRoutes.login ||
+          loc == AppRoutes.register ||
+          loc == AppRoutes.forgotPassword;
+      final isOnVerify = loc == AppRoutes.verifyEmail;
+
+      // Belum login: hanya boleh di layar auth/lupa-password.
+      if (!isAuthenticated) {
+        return isOnAuthRoute ? null : AppRoutes.intro;
       }
 
-      if (isAuthenticated && isOnAuthRoute) {
+      // Login tapi WAJIB verifikasi email (akun baru): paksa ke layar OTP.
+      // Kecuali layar "Ubah Email" — jalan keluar yang sah bila email salah
+      // ketik saat daftar (ganti ke email valid sekaligus memverifikasinya).
+      if (mustVerify) {
+        final allowedWhileVerifying =
+            isOnVerify || loc == AppRoutes.changeEmail;
+        return allowedWhileVerifying ? null : AppRoutes.verifyEmail;
+      }
+
+      // Login: jauhkan dari layar auth.
+      if (isOnAuthRoute) {
+        return AppRoutes.main;
+      }
+
+      // Sudah verified tidak perlu layar verifikasi; tapi akun lama yang belum
+      // verified BOLEH membukanya sukarela dari Profil.
+      if (isOnVerify && (user?.emailVerified ?? true)) {
         return AppRoutes.main;
       }
 
@@ -117,6 +144,34 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.register,
         builder: (context, state) => const RegisterScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.verifyEmail,
+        builder: (context, state) => BlocProvider<AuthActionCubit>(
+          create: (_) => _sl<AuthActionCubit>(),
+          child: const VerifyEmailScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.forgotPassword,
+        builder: (context, state) => BlocProvider<AuthActionCubit>(
+          create: (_) => _sl<AuthActionCubit>(),
+          child: const ForgotPasswordScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.changePassword,
+        builder: (context, state) => BlocProvider<AuthActionCubit>(
+          create: (_) => _sl<AuthActionCubit>(),
+          child: const ChangePasswordScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.changeEmail,
+        builder: (context, state) => BlocProvider<AuthActionCubit>(
+          create: (_) => _sl<AuthActionCubit>(),
+          child: const ChangeEmailScreen(),
+        ),
       ),
       GoRoute(
         path: AppRoutes.main,

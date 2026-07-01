@@ -1,4 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 
 import '../../domain/entities/game_score.dart';
 import '../models/game_score_model.dart';
@@ -13,6 +14,10 @@ abstract class GameLocalDataSource {
   Future<GameScore> getScore(String gameId);
   Future<List<GameScore>> getAllScores();
   Future<GameScore> submitResult({required String gameId, required int score});
+
+  /// Tulis langsung sebuah skor (tanpa menambah jumlah main). Dipakai untuk
+  /// mencerminkan hasil merge dari server ke cache lokal.
+  Future<void> saveScore(GameScore score);
   Future<List<int>?> getSavedBoard(String gameId);
   Future<void> saveBoard({
     required String gameId,
@@ -38,12 +43,39 @@ class GameLocalDataSourceImpl implements GameLocalDataSource {
         ? Hive.box(_boxName)
         : await Hive.openBox(_boxName);
     _cachedBox = box;
+    await _migrateLegacy(box);
     return box;
   }
 
-  String _scoreKey(String gameId) => '$_scorePrefix$gameId';
-  String _boardKey(String gameId) => '$_boardPrefix$gameId';
-  String _boardScoreKey(String gameId) => '$_boardScorePrefix$gameId';
+  /// Pindahkan skor/board global versi lama (tanpa marker scope) ke scope user
+  /// aktif, lalu hapus aslinya — agar skor tidak bocor antar-akun di device yang
+  /// sama. Kasus umum: hanya satu akun di perangkat.
+  Future<void> _migrateLegacy(Box box) async {
+    const prefixes = [_scorePrefix, _boardPrefix, _boardScorePrefix];
+    final legacyKeys = box.keys
+        .whereType<String>()
+        .where(
+          (k) =>
+              prefixes.any((p) => k.startsWith(p)) &&
+              !k.contains(LocalStorage.userScopeSuffix()) &&
+              !k.contains('__u_'),
+        )
+        .toList();
+    for (final key in legacyKeys) {
+      final scoped = LocalStorage.scopedKey(key);
+      if (!box.containsKey(scoped)) {
+        await box.put(scoped, box.get(key));
+      }
+      await box.delete(key);
+    }
+  }
+
+  String _scoreKey(String gameId) =>
+      LocalStorage.scopedKey('$_scorePrefix$gameId');
+  String _boardKey(String gameId) =>
+      LocalStorage.scopedKey('$_boardPrefix$gameId');
+  String _boardScoreKey(String gameId) =>
+      LocalStorage.scopedKey('$_boardScorePrefix$gameId');
 
   @override
   Future<GameScore> getScore(String gameId) async {
@@ -58,10 +90,14 @@ class GameLocalDataSourceImpl implements GameLocalDataSource {
   @override
   Future<List<GameScore>> getAllScores() async {
     final box = await _box();
+    final suffix = LocalStorage.userScopeSuffix();
     final scores = <GameScore>[];
     for (final key in box.keys) {
-      if (key is String && key.startsWith(_scorePrefix)) {
-        final gameId = key.substring(_scorePrefix.length);
+      if (key is String && key.startsWith(_scorePrefix) && key.endsWith(suffix)) {
+        final gameId = key.substring(
+          _scorePrefix.length,
+          key.length - suffix.length,
+        );
         final raw = box.get(key);
         if (raw is Map) {
           scores.add(GameScoreModel.fromMap(gameId, raw));
@@ -81,6 +117,12 @@ class GameLocalDataSourceImpl implements GameLocalDataSource {
     final updated = current.registerResult(score);
     await box.put(_scoreKey(gameId), GameScoreModel.toMap(updated));
     return updated;
+  }
+
+  @override
+  Future<void> saveScore(GameScore score) async {
+    final box = await _box();
+    await box.put(_scoreKey(score.gameId), GameScoreModel.toMap(score));
   }
 
   @override

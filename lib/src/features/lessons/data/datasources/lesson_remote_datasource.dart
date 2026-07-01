@@ -1,5 +1,3 @@
-
-
 abstract class LessonRemoteDataSource {
   Future<void> markLessonComplete(String lessonId);
 

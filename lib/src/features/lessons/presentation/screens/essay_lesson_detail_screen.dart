@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_actions.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
-import 'package:lms_mobile_app/src/core/utils/lesson_route_resolver.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
@@ -17,6 +14,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/essay/e
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
+import 'package:lms_mobile_app/src/shared/widgets/lesson_navigation_bar.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion/discussion_button.dart';
 import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
 import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
@@ -46,6 +44,10 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
     with LessonNavigationMixin {
   late final TextEditingController _answerController;
   late final GlobalKey<ScaffoldState> _scaffoldKey;
+
+  /// Cegah listener sukses-submit menavigasi lebih dari sekali (isSuccess tetap
+  /// true di state, listener bisa terpicu ulang pada rebuild berikutnya).
+  bool _submitHandled = false;
 
   @override
   void initState() {
@@ -125,37 +127,25 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
               ).showSnackBar(SnackBar(content: Text(state.snackbarMessage!)));
               context.read<EssayBloc>().add(ClearSnackbarMessage());
             }
-            if (state.isSuccess) {
+            if (state.isSuccess && !_submitHandled) {
+              _submitHandled = true;
               context.read<LessonBloc>().add(
                 MarkLessonCompleteEvent(lessonId: widget.lesson.id),
               );
               context.read<CourseBloc>().add(const RefreshCoursesEvent());
 
+              // Sengaja TIDAK pindah otomatis ke halaman nilai/hasil. Peserta
+              // tetap di layar essay (kini read-only) agar bisa langsung lanjut
+              // ke lesson berikutnya lewat tombol "Lanjut" di bawah — bukan
+              // terlempar ke halaman hasil lalu harus kembali manual. Nilai bisa
+              // dilihat kapan saja via menu "Nilai & Hasil" pada detail course.
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Jawaban essay berhasil dikirim.'),
+                  content: Text(
+                    'Jawaban essay berhasil dikumpulkan. Menunggu penilaian.',
+                  ),
                 ),
               );
-
-              if (state.lastAttempt != null) {
-                Navigator.pop(context);
-                Future.delayed(const Duration(milliseconds: 200), () {
-                  if (!context.mounted) return;
-                  context.push(
-                    AppRoutes.essayResultDetail,
-                    extra: state.lastAttempt,
-                  );
-                });
-                return;
-              }
-
-              if (canGoNext && nextLesson != null) {
-                Navigator.pop(context);
-                Future.delayed(
-                  const Duration(milliseconds: 200),
-                  () => navigateToLesson(nextLesson!, widget.lessonIndex + 1),
-                );
-              }
             }
           },
           builder: (context, state) {
@@ -245,16 +235,8 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
       course: widget.course,
       currentLessonIndex: widget.lessonIndex,
       onSelectLesson: (lesson, index) {
-        final route = LessonRouteResolver.routeForType(lesson.type);
-        Navigator.pop(context);
-        context.push(
-          route,
-          extra: {
-            'lesson': lesson,
-            'course': widget.course,
-            'lessonIndex': index,
-          },
-        );
+        Navigator.pop(context); // tutup drawer
+        navigateToLesson(lesson, index);
       },
     );
   }
@@ -370,6 +352,13 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
   }
 
   Widget _buildBottomActionBar(EssayState state) {
+    // Saat data essay masih dimuat, jangan tampilkan bar aksi sama sekali.
+    // Mencegah tombol hijau "Kirim Semua Jawaban" sempat berkedip pada essay
+    // yang ternyata sudah dikumpulkan (status submit baru diketahui usai load).
+    if (state.isLoading) {
+      return const SizedBox.shrink();
+    }
+
     final canGoBackAction =
         state.currentQuestionIndex > 0 || previousLesson != null;
 
@@ -379,11 +368,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
           ChangeQuestion(state.currentQuestionIndex - 1),
         );
       } else if (previousLesson != null) {
-        Navigator.pop(context);
-        Future.delayed(
-          const Duration(milliseconds: 200),
-          () => navigateToLesson(previousLesson!, widget.lessonIndex - 1),
-        );
+        navigateToLesson(previousLesson!, widget.lessonIndex - 1);
       }
     }
 
@@ -398,11 +383,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
 
     void handleContinueAfterSubmit() {
       if (canGoNext && nextLesson != null) {
-        Navigator.pop(context);
-        Future.delayed(
-          const Duration(milliseconds: 200),
-          () => navigateToLesson(nextLesson!, widget.lessonIndex + 1),
-        );
+        navigateToLesson(nextLesson!, widget.lessonIndex + 1);
       } else {
         _backToCourse();
       }
@@ -414,7 +395,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
         child: Container(
           padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.surface,
             border: Border(
               top: BorderSide(color: AppColors.pearl.withValues(alpha: 0.9)),
             ),
@@ -430,20 +411,29 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
           child: Row(
             children: [
               Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: _backToCourse,
-                  icon: const Icon(Icons.arrow_back),
-                  label: const Text('Kembali'),
+                child: PressScale(
+                  enabled: canGoPrevious,
+                  child: OutlinedButton.icon(
+                    // Konsisten dgn lesson lain: "Sebelumnya" pindah ke lesson
+                    // sebelumnya, BUKAN kembali ke detail course (itu tugas panah
+                    // di kiri-atas). Nonaktif bila ini lesson pertama.
+                    onPressed: canGoPrevious
+                        ? () => navigateToLesson(
+                            previousLesson!,
+                            widget.lessonIndex - 1,
+                          )
+                        : null,
+                    icon: const Icon(Icons.arrow_back),
+                    label: const Text('Sebelumnya'),
+                    style: LessonNavigationBar.previousButtonStyle(),
+                  ),
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: handleContinueAfterSubmit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.red,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
+                  style: LessonNavigationBar.forwardButtonStyle(),
                   icon: const Icon(Icons.arrow_forward_rounded),
                   label: Text(canGoNext ? 'Lanjut' : 'Selesai'),
                 ),
@@ -459,7 +449,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
       child: Container(
         padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.surface,
           border: Border(
             top: BorderSide(color: AppColors.pearl.withValues(alpha: 0.9)),
           ),
@@ -493,14 +483,7 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
                       onPressed: canGoBackAction ? handlePreviousAction : null,
                       icon: const Icon(Icons.arrow_back),
                       label: const Text('Sebelumnya'),
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(
-                          color: AppColors.pearl.withValues(alpha: 0.9),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        backgroundColor: Colors.white,
-                        foregroundColor: AppColors.charcoal,
-                      ),
+                      style: LessonNavigationBar.previousButtonStyle(),
                     ),
                   ),
                 ),

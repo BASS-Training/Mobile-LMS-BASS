@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/quiz_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/submit_quiz_usecase.dart';
 import 'package:lms_mobile_app/src/features/lessons/domain/usecases/get_quiz_usecase.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/usecases/get_quiz_leaderboard_usecase.dart';
 
 part 'quiz_event.dart';
 part 'quiz_state.dart';
@@ -14,14 +15,18 @@ part 'quiz_state.dart';
 class QuizBloc extends Bloc<QuizEvent, QuizState> {
   final GetQuizUseCase getQuizUseCase;
   final SubmitQuizUseCase submitQuizUseCase;
+  final GetQuizLeaderboardUseCase getQuizLeaderboardUseCase;
   String _lessonId = '';
   String _courseId = '';
   String _courseTitle = '';
   String _lessonTitle = '';
   Timer? _timer;
 
-  QuizBloc({required this.getQuizUseCase, required this.submitQuizUseCase})
-    : super(const QuizInitial()) {
+  QuizBloc({
+    required this.getQuizUseCase,
+    required this.submitQuizUseCase,
+    required this.getQuizLeaderboardUseCase,
+  }) : super(const QuizInitial()) {
     on<FetchQuizEvent>(_onFetchQuiz);
     on<StartQuizEvent>(_onStartQuiz);
     on<SelectAnswerEvent>(_onSelectAnswer);
@@ -179,12 +184,31 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
           currentState.answers,
         );
 
+        // Buang cache quiz lesson ini agar saat dibuka kembali statusnya ditarik
+        // ulang dari server (quiz yang lulus akan terkunci, tidak bisa diulang).
+        getQuizUseCase.invalidate(_lessonId);
+
+        // Ambil papan peringkat bila admin mengaktifkannya. Kegagalan di sini
+        // tidak boleh menggagalkan tampilan hasil — cukup tampil tanpa papan.
+        QuizLeaderboard? leaderboard;
+        if (currentState.quiz.enableLeaderboard &&
+            currentState.quiz.id != null) {
+          try {
+            leaderboard = await getQuizLeaderboardUseCase.call(
+              currentState.quiz.id!,
+            );
+          } catch (_) {
+            leaderboard = null;
+          }
+        }
+
         emit(
           QuizSubmitted(
             quiz: currentState.quiz,
             result: result,
             answers: currentState.answers,
             attempt: null,
+            leaderboard: leaderboard,
           ),
         );
       } catch (e) {

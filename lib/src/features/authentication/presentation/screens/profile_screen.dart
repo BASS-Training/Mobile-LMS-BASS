@@ -39,8 +39,12 @@ class ProfileScreen extends StatelessWidget {
         final user = state.user;
         return Scaffold(
           backgroundColor: AppColors.background,
-          body: SingleChildScrollView(
-            child: Column(
+          body: RefreshIndicator(
+            color: AppColors.brandPrimary,
+            onRefresh: () => _refreshUser(context),
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
               children: [
                 _ProfileHeader(user: user, roleLabel: _roleLabel(user.role)),
                 Transform.translate(
@@ -50,7 +54,6 @@ class ProfileScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _sectionLabel('Akun'),
                         _SectionCard(
                           children: [
                             _NavRow(
@@ -65,6 +68,7 @@ class ProfileScreen extends StatelessWidget {
                             ),
                           ],
                         ),
+                        _buildSecuritySection(context, user),
                         _buildPersonalSection(user),
                         _buildAccountSection(user),
                         // _sectionLabel('Pembelajaran'),
@@ -135,6 +139,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                 ),
               ],
+              ),
             ),
           ),
         );
@@ -142,7 +147,60 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
+  /// Tarik-untuk-refresh: ambil ulang /auth/me agar perubahan dari perangkat
+  /// lain (mis. email diganti di web) ikut tersinkron ke sesi mobile ini.
+  Future<void> _refreshUser(BuildContext context) async {
+    final bloc = context.read<AuthBloc>();
+    bloc.add(const AuthSessionRequestedEvent());
+    // Tunggu state baru (atau timeout) supaya indikator berhenti berputar.
+    await bloc.stream
+        .firstWhere((s) => s is AuthSuccess || s is AuthFailure)
+        .timeout(const Duration(seconds: 8), onTimeout: () => bloc.state);
+  }
+
   // ── Sections ───────────────────────────────────────────────────────────────
+  Widget _buildSecuritySection(BuildContext context, UserEntity user) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _sectionLabel('Keamanan Akun'),
+        _SectionCard(
+          children: [
+            if (user.emailVerified)
+              _InfoRow(
+                icon: Icons.verified_rounded,
+                accent: AppColors.success,
+                label: 'Email',
+                value: 'Terverifikasi',
+              )
+            else
+              _NavRow(
+                icon: Icons.mark_email_unread_rounded,
+                accent: AppColors.warning,
+                title: 'Verifikasi Email',
+                subtitle: 'Email belum terverifikasi — opsional',
+                onTap: () => context.push(AppRoutes.verifyEmail),
+              ),
+            _NavRow(
+              icon: Icons.alternate_email_rounded,
+              accent: AppColors.brandPrimary,
+              title: 'Ubah Email',
+              subtitle: 'Ganti email — dikonfirmasi lewat kode',
+              onTap: () => context.push(AppRoutes.changeEmail),
+            ),
+            _NavRow(
+              icon: Icons.lock_reset_rounded,
+              accent: AppColors.info,
+              title: 'Ganti Password',
+              subtitle: 'Ubah password akunmu',
+              onTap: () => context.push(AppRoutes.changePassword),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget _buildPersonalSection(UserEntity user) {
     final rows = <Widget>[
       if (user.dateOfBirth != null)

@@ -17,6 +17,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/qu
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/quiz_result_widget.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
+import 'package:lms_mobile_app/src/shared/widgets/lesson_navigation_bar.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion/discussion_button.dart';
 import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
@@ -118,7 +119,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
                     margin: const EdgeInsets.all(24),
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.surface,
                       borderRadius: BorderRadius.circular(18),
                       border: Border.all(
                         color: AppColors.pearl.withValues(alpha: 0.8),
@@ -233,6 +234,29 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
             Navigator.pop(context);
             navigateToLesson(lesson, index);
           },
+        ),
+        bottomNavigationBar: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+            child: LessonNavigationBar(
+              canGoPrevious: canGoPrevious,
+              canGoNext: canGoNext,
+              primaryColor: AppColors.red,
+              onPrevious: canGoPrevious
+                  ? () => navigateToLesson(
+                      previousLesson!,
+                      widget.lessonIndex - 1,
+                    )
+                  : null,
+              onForward: () {
+                if (canGoNext && nextLesson != null) {
+                  navigateToLesson(nextLesson!, widget.lessonIndex + 1);
+                } else {
+                  _backToCourse();
+                }
+              },
+            ),
+          ),
         ),
         body: Stack(
           children: [
@@ -467,7 +491,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
       child: Container(
         padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.surface,
           border: Border(
             top: BorderSide(color: AppColors.pearl.withValues(alpha: 0.9)),
           ),
@@ -495,14 +519,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
                       : null,
                   icon: const Icon(Icons.arrow_back),
                   label: const Text('Sebelumnya'),
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(
-                      color: AppColors.pearl.withValues(alpha: 0.9),
-                    ),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    backgroundColor: Colors.white,
-                    foregroundColor: AppColors.charcoal,
-                  ),
+                  style: LessonNavigationBar.previousButtonStyle(),
                 ),
               ),
             ),
@@ -526,12 +543,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
                             const NextQuestionEvent(),
                           );
                         },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.red,
-                    shadowColor: AppColors.red.withValues(alpha: 0.45),
-                    elevation: 8,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
+                  style: LessonNavigationBar.forwardButtonStyle(),
                   icon: Icon(
                     isLastQuestion
                         ? Icons.check_circle_outline
@@ -570,6 +582,7 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
               key: const ValueKey('quiz_result'),
               courseTitle: widget.course.title,
               result: quizState.result,
+              leaderboard: quizState.leaderboard,
               canGoNext: canProceed,
               onNextLesson: () {
                 navigateToLesson(nextLesson!, widget.lessonIndex + 1);

@@ -186,7 +186,7 @@ class QuizQuestionsWidget extends StatelessWidget {
                         icon: const Icon(Icons.check_circle),
                         label: const Text('Kirim Jawaban'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
+                          backgroundColor: AppColors.success,
                         ),
                       ),
                   ],

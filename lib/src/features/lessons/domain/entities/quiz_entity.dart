@@ -51,6 +51,10 @@ class Quiz {
   final int passingScore;
   final List<Question> questions;
 
+  /// Apakah admin mengaktifkan leaderboard untuk kuis ini (di web). Bila `true`,
+  /// halaman hasil menampilkan papan peringkat Top-5 + peringkat peserta.
+  final bool enableLeaderboard;
+
   /// Optional user-specific info returned by the API.
   final Map<String, dynamic>? userAttempt;
   final bool completed;
@@ -62,7 +66,55 @@ class Quiz {
     required this.timeLimit,
     required this.passingScore,
     required this.questions,
+    this.enableLeaderboard = false,
     this.userAttempt,
     this.completed = false,
+  });
+
+  /// Apakah peserta sudah LULUS kuis ini. Sekali lulus, kuis terkunci dan tidak
+  /// bisa dikerjakan lagi; jika belum lulus (termasuk pernah gagal), masih bisa
+  /// dikerjakan ulang. Memakai flag `completed` (konten ditandai selesai hanya
+  /// saat lulus) ATAU hasil attempt terakhir yang lulus.
+  bool get isPassed =>
+      completed || (userAttempt != null && userAttempt!['passed'] == true);
+}
+
+/// Satu baris papan peringkat kuis (peserta + skor).
+class QuizLeaderboardEntry {
+  final int rank;
+  final String name;
+  final int score;
+  final int totalMarks;
+  final double percentage;
+  final bool passed;
+
+  /// Menandai baris milik peserta yang sedang login (untuk di-highlight).
+  final bool isCurrentUser;
+
+  QuizLeaderboardEntry({
+    required this.rank,
+    required this.name,
+    required this.score,
+    required this.totalMarks,
+    required this.percentage,
+    required this.passed,
+    required this.isCurrentUser,
+  });
+}
+
+/// Papan peringkat kuis: daftar peringkat + ringkasan posisi peserta.
+class QuizLeaderboard {
+  final String quizTitle;
+  final int totalParticipants;
+
+  /// Peringkat peserta saat ini (1-based), atau null bila belum ada attempt.
+  final int? currentUserRank;
+  final List<QuizLeaderboardEntry> entries;
+
+  QuizLeaderboard({
+    required this.quizTitle,
+    required this.totalParticipants,
+    required this.currentUserRank,
+    required this.entries,
   });
 }

@@ -25,16 +25,55 @@ class LocalStorage {
   static Future<void> init() async {
     await Hive.initFlutter();
     await Hive.openBox(_boxName);
+    await _migrateLegacyGlobalProgress();
   }
 
   static Box get _box => Hive.box(_boxName);
+
+  /// Suffix unik per akun agar progres lokal (lesson selesai, draft esai,
+  /// attempt, dst.) tidak pernah bocor antar-akun di perangkat yang sama.
+  /// Memakai id user pada sesi tersimpan; `guest` saat belum login.
+  static String _userScope() {
+    final user = getAuthUser();
+    final id = user?['id'];
+    final idStr = id?.toString() ?? '';
+    return idStr.isEmpty ? 'guest' : idStr;
+  }
+
+  /// Bungkus sebuah key dasar menjadi key yang ter-scope ke user aktif.
+  static String _scoped(String baseKey) => '${baseKey}__u_${_userScope()}';
+
+  /// Versi publik dari [_scoped] agar store lokal lain (achievement, agenda,
+  /// game, dst.) bisa memakai suffix per-user yang sama dan tidak bocor
+  /// antar-akun di perangkat yang sama.
+  static String scopedKey(String baseKey) => _scoped(baseKey);
+
+  /// Suffix mentah yang ditempelkan [scopedKey] ke setiap key, mis. `__u_42`.
+  /// Berguna untuk store yang memindai keys (lihat game scores) agar bisa
+  /// memfilter hanya milik user aktif.
+  static String userScopeSuffix() => '__u_${_userScope()}';
+
+  /// Hapus key progres global versi lama (sebelum namespacing per-user) supaya
+  /// tidak ada lagi data yang bocor lintas akun. Dijalankan sekali saat init.
+  static Future<void> _migrateLegacyGlobalProgress() async {
+    const legacyKeys = [
+      _completedLessonsKey,
+      _recentCoursesKey,
+      _coursesCacheKey,
+    ];
+    for (final key in legacyKeys) {
+      if (_box.containsKey(key)) {
+        await _box.delete(key);
+      }
+    }
+  }
 
   // Mark lesson as completed
   static Future<void> markLessonComplete(String lessonId) async {
     final completedLessons = getCompletedLessons();
     if (!completedLessons.contains(lessonId)) {
       completedLessons.add(lessonId);
-      await _box.put(_completedLessonsKey, completedLessons);
+      await _box.put(_scoped(_completedLessonsKey), completedLessons);
     }
   }
 
@@ -42,12 +81,12 @@ class LocalStorage {
   static Future<void> unmarkLessonComplete(String lessonId) async {
     final completedLessons = getCompletedLessons();
     completedLessons.remove(lessonId);
-    await _box.put(_completedLessonsKey, completedLessons);
+    await _box.put(_scoped(_completedLessonsKey), completedLessons);
   }
 
   // Get all completed lessons
   static List<String> getCompletedLessons() {
-    final list = _box.get(_completedLessonsKey, defaultValue: <String>[]);
+    final list = _box.get(_scoped(_completedLessonsKey), defaultValue: <String>[]);
     return List<String>.from(list);
   }
 
@@ -58,11 +97,11 @@ class LocalStorage {
 
   // Clear all completed lessons
   static Future<void> clearAllProgress() async {
-    await _box.delete(_completedLessonsKey);
+    await _box.delete(_scoped(_completedLessonsKey));
   }
 
   static List<String> getRecentCourses() {
-    final list = _box.get(_recentCoursesKey, defaultValue: <String>[]);
+    final list = _box.get(_scoped(_recentCoursesKey), defaultValue: <String>[]);
     return List<String>.from(list);
   }
 
@@ -75,11 +114,11 @@ class LocalStorage {
       recentCourses.removeRange(10, recentCourses.length);
     }
 
-    await _box.put(_recentCoursesKey, recentCourses);
+    await _box.put(_scoped(_recentCoursesKey), recentCourses);
   }
 
   static Future<void> clearRecentCourses() async {
-    await _box.delete(_recentCoursesKey);
+    await _box.delete(_scoped(_recentCoursesKey));
   }
 
   static Future<void> saveAuthSession({
@@ -112,10 +151,11 @@ class LocalStorage {
   }
 
   static Future<void> clearAuthSession() async {
+    // Buang cache course (ter-scope ke user aktif) SEBELUM menghapus sesi,
+    // selagi id user masih bisa di-resolve, agar tidak bocor ke akun lain.
+    await _box.delete(_scoped(_coursesCacheKey));
     await _box.delete(_authTokenKey);
     await _box.delete(_authUserKey);
-    // Buang cache course agar data akun sebelumnya tidak bocor ke akun lain.
-    await _box.delete(_coursesCacheKey);
   }
 
   // ===== Cache daftar course (untuk tampilan cache-first yang instan) =====
@@ -123,11 +163,11 @@ class LocalStorage {
   // dibaca kembali saat startup untuk menampilkan data terakhir tanpa menunggu
   // jaringan. Direfresh diam-diam di belakang setiap kali fetch berhasil.
   static Future<void> saveCoursesCache(String coursesJson) async {
-    await _box.put(_coursesCacheKey, coursesJson);
+    await _box.put(_scoped(_coursesCacheKey), coursesJson);
   }
 
   static List<Map<String, dynamic>>? getCoursesCache() {
-    final raw = _box.get(_coursesCacheKey);
+    final raw = _box.get(_scoped(_coursesCacheKey));
     if (raw is! String || raw.isEmpty) return null;
     try {
       final decoded = jsonDecode(raw);
@@ -178,11 +218,11 @@ class LocalStorage {
   }
 
   static String _essayDraftKey(String lessonId) {
-    return '$_essayDraftPrefix$lessonId';
+    return _scoped('$_essayDraftPrefix$lessonId');
   }
 
   static String _essaySubmittedKey(String lessonId) {
-    return '$_essaySubmittedPrefix$lessonId';
+    return _scoped('$_essaySubmittedPrefix$lessonId');
   }
 
   static Future<void> markEssaySubmitted(String lessonId) async {
@@ -244,7 +284,7 @@ class LocalStorage {
   }
 
   static String _lessonAttemptsKey(String courseId) {
-    return '$_lessonAttemptPrefix$courseId';
+    return _scoped('$_lessonAttemptPrefix$courseId');
   }
 
   static List<Map<String, dynamic>> getLessonAttempts(String courseId) {

@@ -31,6 +31,23 @@ class QuizRepositoryImpl implements QuizRepository {
   }
 
   @override
+  void invalidateCachedQuiz(String lessonId) {
+    _quizCache.remove(lessonId);
+  }
+
+  @override
+  void clearQuizCache() {
+    _quizCache.clear();
+  }
+
+  /// Versi statis dari [clearQuizCache]. Cache quiz bersifat statis (dibagi semua
+  /// instance), jadi perlu dibersihkan saat logout agar status lulus/jawaban satu
+  /// akun tidak bocor ke akun lain di perangkat yang sama.
+  static void clearStaticCache() {
+    _quizCache.clear();
+  }
+
+  @override
   Future<Quiz> getQuizByLessonId(String lessonId) async {
     try {
       final cachedQuiz = _quizCache[lessonId];
@@ -85,9 +102,7 @@ class QuizRepositoryImpl implements QuizRepository {
       }
 
       if (questionItems.isEmpty) {
-        _log(
-          '[QUIZ][FETCH] local fallback still empty for lessonId=$lessonId',
-        );
+        _log('[QUIZ][FETCH] local fallback still empty for lessonId=$lessonId');
         final localQuiz = await localDataSource.getQuizByLessonId(lessonId);
         if (localQuiz['questions'] is List) {
           questionItems.addAll(
@@ -140,6 +155,7 @@ class QuizRepositoryImpl implements QuizRepository {
         totalQuestions: questions.length,
         timeLimit: quizData['timeLimit'] as int,
         passingScore: quizData['passingScore'] as int,
+        enableLeaderboard: quizData['enableLeaderboard'] == true,
         questions: questions,
         userAttempt: quizData['userAttempt'] is Map<String, dynamic>
             ? Map<String, dynamic>.from(quizData['userAttempt'] as Map)
@@ -218,6 +234,43 @@ class QuizRepositoryImpl implements QuizRepository {
       score: correctCount,
       total: quiz.totalQuestions,
       passingScore: quiz.passingScore,
+    );
+  }
+
+  @override
+  Future<QuizLeaderboard> getLeaderboard(String quizId) async {
+    if (remoteDataSource == null || _isOfflineTestSession()) {
+      return QuizLeaderboard(
+        quizTitle: '',
+        totalParticipants: 0,
+        currentUserRank: null,
+        entries: const [],
+      );
+    }
+
+    final data = await remoteDataSource!.fetchLeaderboard(quizId);
+    final rawEntries = data['entries'];
+    final entries = (rawEntries is List ? rawEntries : const [])
+        .whereType<Map<String, dynamic>>()
+        .map(
+          (e) => QuizLeaderboardEntry(
+            rank: (e['rank'] as num?)?.toInt() ?? 0,
+            name: (e['name'] ?? '') as String,
+            score: (e['score'] as num?)?.toInt() ?? 0,
+            totalMarks: (e['totalMarks'] as num?)?.toInt() ?? 0,
+            percentage: (e['percentage'] as num?)?.toDouble() ?? 0,
+            passed: e['passed'] == true,
+            isCurrentUser: e['isCurrentUser'] == true,
+          ),
+        )
+        .toList();
+
+    return QuizLeaderboard(
+      quizTitle: (data['quizTitle'] ?? '') as String,
+      totalParticipants:
+          (data['totalParticipants'] as num?)?.toInt() ?? entries.length,
+      currentUserRank: (data['currentUserRank'] as num?)?.toInt(),
+      entries: entries,
     );
   }
 

@@ -113,7 +113,7 @@ class ResultsListScreen extends StatelessWidget {
     final isCaseStudy = attempt.lessonType == 'case_study';
     final statusColor = isQuiz
         ? (attempt.passed == true ? AppColors.success : AppColors.warning)
-        : (attempt.graded ? AppColors.success : AppColors.brandPrimary);
+        : (attempt.graded ? AppColors.success : AppColors.brandText);
     final statusText = isQuiz
         ? (attempt.passed == true ? 'Lulus' : 'Tidak Lulus')
         : (attempt.graded ? 'Sudah Dinilai' : 'Sudah Dikumpulkan');
@@ -189,12 +189,14 @@ class ResultsListScreen extends StatelessWidget {
                         if (isQuiz && attempt.maxScore != null)
                           _buildStatusChip(
                             '${attempt.percentage.toStringAsFixed(0)}%',
-                            AppColors.brandPrimary,
+                            AppColors.brandText,
                           ),
                         if (!isQuiz)
                           _buildStatusChip(
                             attempt.graded ? 'Dinilai' : 'Menunggu Nilai',
-                            attempt.graded ? AppColors.success : AppColors.brandPrimary,
+                            attempt.graded
+                                ? AppColors.success
+                                : AppColors.brandText,
                           ),
                         if (isCaseStudy &&
                             attempt.graded &&
@@ -202,7 +204,7 @@ class ResultsListScreen extends StatelessWidget {
                             attempt.maxScore != null)
                           _buildStatusChip(
                             '${attempt.percentage.toStringAsFixed(0)}%',
-                            AppColors.brandPrimary,
+                            AppColors.brandText,
                           ),
                       ],
                     ),

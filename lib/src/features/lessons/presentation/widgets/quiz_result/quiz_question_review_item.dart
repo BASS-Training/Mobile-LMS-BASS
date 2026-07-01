@@ -40,9 +40,9 @@ class QuizQuestionReviewItem extends StatelessWidget {
                 ),
                 child: Text(
                   'Soal ${question.questionIndex + 1}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 11,
-                    color: AppColors.red,
+                    color: AppColors.brandText,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -213,9 +213,9 @@ class QuizQuestionReviewItem extends StatelessWidget {
     }
 
     return _ReviewOptionStyle(
-      backgroundColor: Color.fromRGBO(245, 245, 245, 1),
+      backgroundColor: AppColors.surfaceMuted,
       borderColor: Colors.transparent,
-      shadowColor: Color.fromRGBO(0, 0, 0, 0.03),
+      shadowColor: const Color.fromRGBO(0, 0, 0, 0.03),
       badgeColor: AppColors.pearl,
       badgeTextColor: AppColors.charcoal,
       labelBackgroundColor: Colors.transparent,

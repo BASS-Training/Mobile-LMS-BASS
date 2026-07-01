@@ -43,6 +43,11 @@ class DiscussionState extends Equatable {
   }
 
   @override
-  List<Object?> get props =>
-      [status, discussions, submitting, replyingIds, error];
+  List<Object?> get props => [
+    status,
+    discussions,
+    submitting,
+    replyingIds,
+    error,
+  ];
 }

@@ -7,9 +7,11 @@ import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/cou
 import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_entity.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_event.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_actions.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion/discussion_button.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/attendance/attendance_status_banner.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/widgets/fade_slide_in.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
@@ -133,7 +135,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
         appBar: LessonAppBar(
           courseTitle: widget.course.title,
           subtitle: 'VIDEO PLAYER',
-          onBack: () => Navigator.pop(context),
+          onBack: () => popToCourse(context),
         ),
         body: Container(
           decoration: BoxDecoration(
@@ -148,7 +150,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
               margin: const EdgeInsets.all(24),
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.surface,
                 borderRadius: BorderRadius.circular(18),
                 border: Border.all(
                   color: AppColors.pearl.withValues(alpha: 0.8),
@@ -204,15 +206,15 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
             course: widget.course,
             currentLessonIndex: widget.lessonIndex,
             onSelectLesson: (lesson, index) {
+              Navigator.pop(context); // tutup drawer
               navigateToLesson(lesson, index);
-              
             },
           ),
           backgroundColor: AppColors.background,
           appBar: LessonAppBar(
             courseTitle: widget.course.title,
             subtitle: 'VIDEO PLAYER',
-            onBack: () => Navigator.pop(context),
+            onBack: () => popToCourse(context),
             onMenuTap: () => _scaffoldKey.currentState?.openDrawer(),
             action: DiscussionIconButton(
               lessonId: widget.lesson.id,
@@ -260,6 +262,10 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
                                 delayMs: 40,
                                 child: _buildInfoCard(widget.lesson.title),
                               ),
+                              if (widget.lesson.attendanceRequired) ...[
+                                const SizedBox(height: 16),
+                                AttendanceStatusBanner(lesson: widget.lesson),
+                              ],
                               const SizedBox(height: 16),
                               const SizedBox(height: 24),
                               _buildBottomButtons(state),
@@ -362,17 +368,28 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
     final canProceed = state.canProceed || widget.lesson.isCompleted;
 
     void markAndNavigate({required bool goNext}) {
+      // Kehadiran belum di-ACC instruktur → jangan lanjut ke materi berikutnya.
+      if (goNext && widget.lesson.attendancePending) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(AttendanceInfo.blockedReason(widget.lesson)),
+            ),
+          );
+        return;
+      }
       if (!widget.lesson.isCompleted) {
         context.read<LessonBloc>().add(
           MarkLessonCompleteEvent(lessonId: widget.lesson.id),
         );
         context.read<CourseBloc>().add(const RefreshCoursesEvent());
       }
-      Navigator.pop(context);
+      // pushReplacement (di navigateToLesson) sudah mengganti layar ini.
       if (goNext && nextLesson != null) {
-        Future.delayed(const Duration(milliseconds: 200), () {
-          navigateToLesson(nextLesson!, widget.lessonIndex + 1);
-        });
+        navigateToLesson(nextLesson!, widget.lessonIndex + 1);
+      } else {
+        popToCourse(context);
       }
     }
 
@@ -382,12 +399,8 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
           Expanded(
             child: PressScale(
               child: OutlinedButton.icon(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Future.delayed(const Duration(milliseconds: 200), () {
-                    navigateToLesson(previousLesson!, widget.lessonIndex - 1);
-                  });
-                },
+                onPressed: () =>
+                    navigateToLesson(previousLesson!, widget.lessonIndex - 1),
                 icon: const Icon(Icons.arrow_back_rounded),
                 label: const Text('Sebelumnya'),
               ),
@@ -398,7 +411,9 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
         Expanded(
           child: PressScale(
             child: ElevatedButton.icon(
-              onPressed: canProceed ? () => markAndNavigate(goNext: canGoNext) : null,
+              onPressed: canProceed
+                  ? () => markAndNavigate(goNext: canGoNext)
+                  : null,
               icon: Icon(
                 canGoNext ? Icons.arrow_forward_rounded : Icons.check_rounded,
               ),
@@ -415,11 +430,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Colors.white, Color(0xFFF8FAFF)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.pearl.withValues(alpha: 0.8)),
         boxShadow: [
@@ -444,11 +455,7 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
           const SizedBox(height: 8),
           Text(
             lessonTitle,
-            style: TextStyle(
-              fontSize: 14,
-              height: 1.6,
-              color: AppColors.slate,
-            ),
+            style: TextStyle(fontSize: 14, height: 1.6, color: AppColors.slate),
           ),
           const SizedBox(height: 12),
           Row(
@@ -466,12 +473,12 @@ class _VideoLessonDetailScreenState extends State<VideoLessonDetailScreen>
                   color: AppColors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(999),
                 ),
-                child: const Text(
+                child: Text(
                   'VIDEO',
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.red,
+                    color: AppColors.brandText,
                   ),
                 ),
               ),

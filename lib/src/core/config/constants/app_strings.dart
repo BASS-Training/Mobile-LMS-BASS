@@ -2,7 +2,7 @@
 /// Prepared untuk i18n integration di masa depan
 class AppStrings {
   // General
-  static const String appName = 'LMS Mobile';
+  static const String appName = 'BASS Academy';
   static const String ok = 'OK';
   static const String cancel = 'Cancel';
   static const String close = 'Close';

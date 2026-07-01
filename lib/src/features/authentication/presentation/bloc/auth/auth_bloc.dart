@@ -82,8 +82,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       ).timeout(const Duration(seconds: 15));
 
       if (user != null) {
-        await logoutUseCase();
-        emit(AuthRegisterSuccess(user: user));
+        // Tetap login setelah daftar → router otomatis mengarahkan ke layar
+        // verifikasi OTP (karena akun baru must_verify_email = true).
+        emit(AuthSuccess(user: user));
       } else {
         emit(
           const AuthFailure(

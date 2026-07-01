@@ -56,6 +56,13 @@ class DiscussionEntity extends Equatable {
   }
 
   @override
-  List<Object?> get props =>
-      [id, title, body, authorId, authorName, createdAtLabel, replies];
+  List<Object?> get props => [
+    id,
+    title,
+    body,
+    authorId,
+    authorName,
+    createdAtLabel,
+    replies,
+  ];
 }

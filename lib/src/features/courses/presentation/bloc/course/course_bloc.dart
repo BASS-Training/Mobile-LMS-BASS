@@ -42,8 +42,13 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
     on<GetSavedCoursesEvent>(_onGetSavedCourses);
     on<RefreshCoursesEvent>(_onRefreshCourses);
     on<AddCourseEvent>(_onAddCourse);
+    on<ResetCoursesEvent>(_onResetCourses);
 
     Future.microtask(() => add(const WatchCoursesEvent()));
+  }
+
+  void _onResetCourses(ResetCoursesEvent event, Emitter<CourseState> emit) {
+    emit(const CourseInitial());
   }
 
   Future<void> _onGetCourses(
@@ -169,6 +174,10 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
       if (state is! CourseLoaded) {
         emit(CourseFailure(message: 'Failed to refresh courses'));
       }
+    } finally {
+      // Selalu beri tahu pemicu bahwa refresh selesai — bahkan saat data tidak
+      // berubah (emit ditekan) atau gagal — agar indikator loading bisa mati.
+      event.onComplete?.complete();
     }
   }
 

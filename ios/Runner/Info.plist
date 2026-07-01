@@ -7,7 +7,7 @@
 		<key>CFBundleDevelopmentRegion</key>
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
 		<key>CFBundleDisplayName</key>
-		<string>Lms Mobile App</string>
+		<string>BASS Academy</string>
 		<key>CFBundleExecutable</key>
 		<string>$(EXECUTABLE_NAME)</string>
 		<key>CFBundleIdentifier</key>
@@ -63,5 +63,9 @@
 		</array>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<key>NSCameraUsageDescription</key>
+		<string>Aplikasi memerlukan akses kamera untuk mengambil foto profil dan mengunggah tugas.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Aplikasi memerlukan akses galeri untuk memilih foto profil dan mengunggah tugas.</string>
 	</dict>
 </plist>

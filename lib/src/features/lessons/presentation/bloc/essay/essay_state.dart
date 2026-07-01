@@ -7,6 +7,7 @@ class EssayState extends Equatable {
   final Map<int, String> workingAnswers;
   final Map<int, String> savedDraftAnswers;
   final int currentQuestionIndex;
+  final bool isLoading;
   final bool isSubmitting;
   final bool isSubmitted;
   final String? errorMessage;
@@ -20,6 +21,7 @@ class EssayState extends Equatable {
     this.workingAnswers = const {},
     this.savedDraftAnswers = const {},
     this.currentQuestionIndex = 0,
+    this.isLoading = true,
     this.isSubmitting = false,
     this.isSubmitted = false,
     this.errorMessage,
@@ -63,6 +65,7 @@ class EssayState extends Equatable {
     Map<int, String>? workingAnswers,
     Map<int, String>? savedDraftAnswers,
     int? currentQuestionIndex,
+    bool? isLoading,
     bool? isSubmitting,
     bool? isSubmitted,
     String? errorMessage,
@@ -76,6 +79,7 @@ class EssayState extends Equatable {
       workingAnswers: workingAnswers ?? this.workingAnswers,
       savedDraftAnswers: savedDraftAnswers ?? this.savedDraftAnswers,
       currentQuestionIndex: currentQuestionIndex ?? this.currentQuestionIndex,
+      isLoading: isLoading ?? this.isLoading,
       isSubmitting: isSubmitting ?? this.isSubmitting,
       isSubmitted: isSubmitted ?? this.isSubmitted,
       errorMessage:
@@ -93,6 +97,7 @@ class EssayState extends Equatable {
     workingAnswers,
     savedDraftAnswers,
     currentQuestionIndex,
+    isLoading,
     isSubmitting,
     isSubmitted,
     errorMessage,
