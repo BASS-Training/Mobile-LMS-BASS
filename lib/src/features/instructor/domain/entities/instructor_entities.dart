@@ -309,6 +309,7 @@ class GradingQueueItem extends Equatable {
   });
 
   bool get isEssay => type == 'essay';
+  bool get isDocument => type == 'document';
   bool get isPending => status == 'pending';
 
   factory GradingQueueItem.fromJson(Map<String, dynamic> json) {

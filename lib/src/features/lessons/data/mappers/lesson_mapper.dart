@@ -23,6 +23,9 @@ class LessonMapper {
       minAttendanceMinutes: model.minAttendanceMinutes,
       attendanceNotes: model.attendanceNotes,
       attendanceStatus: model.attendanceStatus,
+      collectSubmission: model.collectSubmission,
+      requireSubmissionPass: model.requireSubmissionPass,
+      submissionStatus: model.submissionStatus,
     );
   }
 
@@ -47,6 +50,9 @@ class LessonMapper {
       minAttendanceMinutes: entity.minAttendanceMinutes,
       attendanceNotes: entity.attendanceNotes,
       attendanceStatus: entity.attendanceStatus,
+      collectSubmission: entity.collectSubmission,
+      requireSubmissionPass: entity.requireSubmissionPass,
+      submissionStatus: entity.submissionStatus,
     );
   }
 }

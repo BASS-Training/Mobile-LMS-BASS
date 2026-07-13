@@ -48,7 +48,7 @@ class InstructorGradingQueueScreen extends StatelessWidget {
                 icon: Icons.task_alt_rounded,
                 title: 'Belum ada yang perlu dinilai',
                 message:
-                    'Submission essay & studi kasus dari peserta akan muncul di sini.',
+                    'Submission essay, studi kasus & dokumen dari peserta akan muncul di sini.',
               );
             }
             return RefreshIndicator(
@@ -88,12 +88,24 @@ class InstructorGradingQueueScreen extends StatelessWidget {
 
   Future<void> _openGrading(BuildContext context, GradingQueueItem item) async {
     final cubit = context.read<GradingQueueCubit>();
-    await context.push(
-      item.isEssay
-          ? AppRoutes.instructorEssayGrading
-          : AppRoutes.instructorCaseStudyGrading,
-      extra: item.submissionId,
-    );
+    if (item.isDocument) {
+      await context.push(
+        AppRoutes.instructorDocumentGrading,
+        extra: {
+          'submissionId': item.submissionId,
+          'contentId': item.contentId,
+          'contentTitle': item.contentTitle,
+          'participantName': item.participantName,
+        },
+      );
+    } else {
+      await context.push(
+        item.isEssay
+            ? AppRoutes.instructorEssayGrading
+            : AppRoutes.instructorCaseStudyGrading,
+        extra: item.submissionId,
+      );
+    }
     // Kembali dari layar penilaian → segarkan status antrian.
     await cubit.load();
   }
@@ -109,7 +121,9 @@ class _QueueTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final typeColor = item.isEssay
         ? const Color(0xFF8B5CF6)
-        : const Color(0xFFD97706);
+        : (item.isDocument
+              ? const Color(0xFF2563EB)
+              : const Color(0xFFD97706));
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -135,7 +149,9 @@ class _QueueTile extends StatelessWidget {
                 child: Icon(
                   item.isEssay
                       ? Icons.edit_note_rounded
-                      : Icons.assignment_rounded,
+                      : (item.isDocument
+                            ? Icons.upload_file_rounded
+                            : Icons.assignment_rounded),
                   color: typeColor,
                   size: 22,
                 ),

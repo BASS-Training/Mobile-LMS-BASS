@@ -58,6 +58,7 @@ import 'package:lms_mobile_app/src/features/instructor/presentation/screens/inst
 import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_participant_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_essay_grading_screen.dart';
 import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_case_study_grading_screen.dart';
+import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_document_grading_screen.dart';
 import 'package:lms_mobile_app/src/features/games/presentation/hub/bloc/games_hub_bloc.dart';
 import 'package:lms_mobile_app/src/features/games/presentation/hub/screens/games_hub_screen.dart';
 import 'package:lms_mobile_app/src/features/games/presentation/games/game_2048/screens/game_2048_screen.dart';
@@ -671,6 +672,18 @@ class AppRouter {
         builder: (context, state) {
           final submissionId = state.extra as String;
           return InstructorCaseStudyGradingScreen(submissionId: submissionId);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.instructorDocumentGrading,
+        builder: (context, state) {
+          final args = state.extra as Map<String, dynamic>;
+          return InstructorDocumentGradingScreen(
+            submissionId: args['submissionId'] as String,
+            contentId: args['contentId'] as String,
+            contentTitle: (args['contentTitle'] as String?) ?? 'Pengumpulan Dokumen',
+            participantName: (args['participantName'] as String?) ?? 'Peserta',
+          );
         },
       ),
       GoRoute(

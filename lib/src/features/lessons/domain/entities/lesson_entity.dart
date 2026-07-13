@@ -29,6 +29,13 @@ class LessonEntity extends Equatable {
   final String? attendanceNotes;
   // 'present'|'absent'|'late'|'excused', atau null bila belum ditandai (pending).
   final String? attendanceStatus;
+  // Pengumpulan tugas dokumen: bila true, lesson dokumen menampilkan panel
+  // unggah/kumpulkan. Bila requireSubmissionPass true, lesson berikutnya
+  // terkunci sampai submission dinilai LULUS. submissionStatus = status
+  // attempt terbaru ('draft'|'submitted'|'passed'|'failed') atau null.
+  final bool collectSubmission;
+  final bool requireSubmissionPass;
+  final String? submissionStatus;
 
   const LessonEntity({
     required this.id,
@@ -51,6 +58,9 @@ class LessonEntity extends Equatable {
     this.minAttendanceMinutes,
     this.attendanceNotes,
     this.attendanceStatus,
+    this.collectSubmission = false,
+    this.requireSubmissionPass = false,
+    this.submissionStatus,
   });
 
   bool get hasVideo => type == 'video' && (youtubeVideoId?.isNotEmpty ?? false);
@@ -61,6 +71,11 @@ class LessonEntity extends Equatable {
       attendanceRequired &&
       attendanceStatus != 'present' &&
       attendanceStatus != 'excused';
+
+  /// Wajib lulus diaktifkan tetapi submission belum dinilai LULUS.
+  /// Selama true, peserta tidak boleh lanjut ke lesson berikutnya.
+  bool get submissionPending =>
+      requireSubmissionPass && submissionStatus != 'passed';
 
   LessonEntity copyWith({
     bool? isCompleted,
@@ -78,6 +93,9 @@ class LessonEntity extends Equatable {
     int? minAttendanceMinutes,
     String? attendanceNotes,
     String? attendanceStatus,
+    bool? collectSubmission,
+    bool? requireSubmissionPass,
+    String? submissionStatus,
   }) {
     return LessonEntity(
       id: id,
@@ -100,6 +118,10 @@ class LessonEntity extends Equatable {
       minAttendanceMinutes: minAttendanceMinutes ?? this.minAttendanceMinutes,
       attendanceNotes: attendanceNotes ?? this.attendanceNotes,
       attendanceStatus: attendanceStatus ?? this.attendanceStatus,
+      collectSubmission: collectSubmission ?? this.collectSubmission,
+      requireSubmissionPass:
+          requireSubmissionPass ?? this.requireSubmissionPass,
+      submissionStatus: submissionStatus ?? this.submissionStatus,
     );
   }
 
@@ -125,5 +147,8 @@ class LessonEntity extends Equatable {
     minAttendanceMinutes,
     attendanceNotes,
     attendanceStatus,
+    collectSubmission,
+    requireSubmissionPass,
+    submissionStatus,
   ];
 }
