@@ -514,11 +514,16 @@ class _PanelView extends StatelessWidget {
   }
 
   Widget _history(BuildContext context, DocumentSubmissionData data) {
-    return Theme(
-      data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-      child: ExpansionTile(
-        tilePadding: EdgeInsets.zero,
-        childrenPadding: EdgeInsets.zero,
+    // Material transparan agar ListTile milik ExpansionTile punya Material
+    // ancestor untuk melukis ink/latar (menghindari assertion Flutter karena
+    // panel dibungkus Container ber-warna).
+    return Material(
+      color: Colors.transparent,
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          tilePadding: EdgeInsets.zero,
+          childrenPadding: EdgeInsets.zero,
         title: Text(
           'Riwayat Pengumpulan (${data.history.length})',
           style: TextStyle(
@@ -527,7 +532,9 @@ class _PanelView extends StatelessWidget {
             color: AppColors.slate,
           ),
         ),
-        children: data.history.map((s) => _historyRow(context, data, s)).toList(),
+          children:
+              data.history.map((s) => _historyRow(context, data, s)).toList(),
+        ),
       ),
     );
   }

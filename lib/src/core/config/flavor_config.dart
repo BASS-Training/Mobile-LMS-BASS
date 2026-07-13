@@ -45,7 +45,7 @@ class FlavorConfig {
 
 /// Development configuration
 class DevelopmentFlavorConfig {
-  static const String apiBaseUrl = 'http://192.168.31.119:8000/api/mobile';
+  static const String apiBaseUrl = 'http://192.168.31.120:8000/api/mobile';
 
   static const bool enableLogging = true;
   static const bool enableMockData =
