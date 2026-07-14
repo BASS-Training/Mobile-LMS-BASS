@@ -111,7 +111,7 @@ class LessonNavigationBar extends StatelessWidget {
                 ),
                 label: Text(
                   forwardBlocked
-                      ? 'Menunggu Kehadiran'
+                      ? 'Menunggu Dinilai'
                       : (canGoNext ? 'Lanjut' : 'Selesai'),
                 ),
               ),

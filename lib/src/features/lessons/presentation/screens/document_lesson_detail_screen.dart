@@ -12,6 +12,8 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/les
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/attendance/attendance_status_banner.dart';
+import 'package:lms_mobile_app/src/features/lessons/domain/entities/document_submission_entity.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/document_submission/document_submission_panel.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion/discussion_button.dart';
@@ -56,6 +58,45 @@ class _DocumentLessonDetailScreenState extends State<DocumentLessonDetailScreen>
   WebViewController? _webController;
   bool _webLoading = true;
   bool _webError = false;
+
+  // Status pengumpulan (bila lesson dokumen mengaktifkan submission). Dipakai
+  // untuk mengunci tombol "Lanjut" sesuai status, mirror gating web.
+  DocumentSubmissionData? _docSub;
+
+  /// True bila peserta belum boleh lanjut karena syarat submission.
+  bool get _submissionBlocksForward {
+    if (!widget.lesson.collectSubmission) return false;
+    final d = _docSub;
+    if (d == null) return widget.lesson.submissionPending;
+    if (d.requireSubmissionPass) return !d.isPassed;
+    // Non-wajib-lulus: minimal harus sudah mengumpulkan sekali (seperti web).
+    return d.activeStatus == 'none' || d.activeStatus == 'draft';
+  }
+
+  String? get _forwardBlockedReason {
+    if (widget.lesson.collectSubmission && _submissionBlocksForward) {
+      final requirePass =
+          _docSub?.requireSubmissionPass ?? widget.lesson.requireSubmissionPass;
+      return requirePass
+          ? 'Tugas Anda harus dinilai LULUS oleh instruktur sebelum melanjutkan.'
+          : 'Kumpulkan tugas Anda terlebih dahulu sebelum melanjutkan.';
+    }
+    return AttendanceInfo.blockedReason(widget.lesson);
+  }
+
+  /// Maju: untuk dokumen ber-submission penyelesaian dikelola alur submission
+  /// (backend), jadi cukup navigasi tanpa menandai selesai manual.
+  void _forward() {
+    if (widget.lesson.collectSubmission) {
+      if (canGoNext && nextLesson != null) {
+        navigateToLesson(nextLesson!, widget.lessonIndex + 1);
+      } else {
+        popToCourse(context);
+      }
+    } else {
+      _markComplete(goToNext: canGoNext);
+    }
+  }
 
   @override
   void initState() {
@@ -210,38 +251,86 @@ class _DocumentLessonDetailScreenState extends State<DocumentLessonDetailScreen>
           child: LessonNavigationBar(
             canGoPrevious: canGoPrevious,
             canGoNext: canGoNext,
-            forwardBlocked: canGoNext && widget.lesson.attendancePending,
-            blockedReason: AttendanceInfo.blockedReason(widget.lesson),
+            forwardBlocked:
+                canGoNext &&
+                (widget.lesson.attendancePending || _submissionBlocksForward),
+            blockedReason: _forwardBlockedReason,
             onPrevious: canGoPrevious
                 ? () =>
                       navigateToLesson(previousLesson!, widget.lessonIndex - 1)
                 : null,
-            onForward: () => _markComplete(goToNext: canGoNext),
+            onForward: _forward,
           ),
         ),
       ),
       body: SafeArea(
         bottom: false,
-        child: Column(
-          children: [
-            if (widget.lesson.attendanceRequired)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                child: AttendanceStatusBanner(lesson: widget.lesson),
-              ),
+        child: widget.lesson.collectSubmission
+            ? _buildScrollableWithSubmission()
+            : _buildViewerOnlyBody(),
+      ),
+    );
+  }
+
+  /// Layout lama: viewer memenuhi layar (dokumen tanpa pengumpulan).
+  Widget _buildViewerOnlyBody() {
+    return Column(
+      children: [
+        if (widget.lesson.attendanceRequired)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: AttendanceStatusBanner(lesson: widget.lesson),
+          ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+          child: _buildDocumentToolbar(),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _buildDocumentCard(),
+          ),
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  /// Layout dokumen ber-pengumpulan: viewer tinggi tetap + panel di bawahnya,
+  /// keduanya bisa di-scroll (mirror halaman konten di web).
+  Widget _buildScrollableWithSubmission() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.only(bottom: 24),
+      child: Column(
+        children: [
+          if (widget.lesson.attendanceRequired)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: AttendanceStatusBanner(lesson: widget.lesson),
+            ),
+          if (_docUrl != null) ...[
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: _buildDocumentToolbar(),
             ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: _buildDocumentCard(),
-              ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: SizedBox(height: 440, child: _buildDocumentCard()),
             ),
             const SizedBox(height: 16),
           ],
-        ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(16, _docUrl == null ? 16 : 0, 16, 0),
+            child: DocumentSubmissionPanel(
+              lessonId: widget.lesson.id,
+              onData: (d) {
+                if (mounted) setState(() => _docSub = d);
+              },
+              onSubmitted: () =>
+                  context.read<CourseBloc>().add(const RefreshCoursesEvent()),
+            ),
+          ),
+        ],
       ),
     );
   }

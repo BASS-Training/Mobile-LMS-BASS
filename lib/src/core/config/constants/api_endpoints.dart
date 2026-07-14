@@ -54,6 +54,20 @@ class ApiEndpoints {
   static const String autosaveCaseStudy = '/case-studies/{id}/draft';
   static const String downloadCaseStudy = '/case-studies/{id}/download';
 
+  // Pengumpulan tugas dokumen (konten tipe 'document' dgn collect_submission)
+  static const String getDocumentSubmission =
+      '/document-submissions/by-lesson/{id}';
+  static const String uploadDocumentSubmission =
+      '/document-submissions/{id}/upload';
+  static const String removeDocumentSubmissionFile =
+      '/document-submissions/{id}/file';
+  static const String submitDocumentSubmission =
+      '/document-submissions/{id}/submit';
+  static const String manageDocumentSubmissions =
+      '/document-submissions/{id}/manage';
+  static const String gradeDocumentSubmission =
+      '/document-submissions/{id}/grade';
+
   // Feedback (form survei, tanpa penilaian)
   static const String getFeedbackByLesson = '/feedback/by-lesson/{id}';
   static const String submitFeedback = '/feedback/{id}/submit';

@@ -63,6 +63,7 @@ class AppRoutes {
   static const String instructorGradingQueue = '/instructor/grading-queue';
   static const String instructorEssayGrading = '/instructor/grade-essay';
   static const String instructorCaseStudyGrading = '/instructor/grade-case-study';
+  static const String instructorDocumentGrading = '/instructor/grade-document';
 
   // Games
   static const String gamesHub = '/games';

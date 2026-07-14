@@ -23,6 +23,10 @@ class Lesson {
   // Status kehadiran user: 'present'|'absent'|'late'|'excused', atau null bila
   // belum ditandai instruktur (menunggu ACC).
   final String? attendanceStatus;
+  // Pengumpulan tugas dokumen (lihat LessonEntity).
+  final bool collectSubmission;
+  final bool requireSubmissionPass;
+  final String? submissionStatus;
   bool isCompleted;
 
   Lesson({
@@ -44,6 +48,9 @@ class Lesson {
     this.minAttendanceMinutes,
     this.attendanceNotes,
     this.attendanceStatus,
+    this.collectSubmission = false,
+    this.requireSubmissionPass = false,
+    this.submissionStatus,
     this.isCompleted = false,
   });
 
@@ -81,6 +88,9 @@ class Lesson {
       minAttendanceMinutes: (json['minAttendanceMinutes'] as num?)?.toInt(),
       attendanceNotes: json['attendanceNotes'] as String?,
       attendanceStatus: json['attendanceStatus'] as String?,
+      collectSubmission: json['collectSubmission'] == true,
+      requireSubmissionPass: json['requireSubmissionPass'] == true,
+      submissionStatus: json['submissionStatus'] as String?,
     );
   }
 
@@ -104,6 +114,9 @@ class Lesson {
       'minAttendanceMinutes': minAttendanceMinutes,
       'attendanceNotes': attendanceNotes,
       'attendanceStatus': attendanceStatus,
+      'collectSubmission': collectSubmission,
+      'requireSubmissionPass': requireSubmissionPass,
+      'submissionStatus': submissionStatus,
       'isCompleted': isCompleted,
     };
   }
@@ -123,6 +136,9 @@ class Lesson {
     int? minAttendanceMinutes,
     String? attendanceNotes,
     String? attendanceStatus,
+    bool? collectSubmission,
+    bool? requireSubmissionPass,
+    String? submissionStatus,
   }) {
     return Lesson(
       id: id,
@@ -143,6 +159,10 @@ class Lesson {
       minAttendanceMinutes: minAttendanceMinutes ?? this.minAttendanceMinutes,
       attendanceNotes: attendanceNotes ?? this.attendanceNotes,
       attendanceStatus: attendanceStatus ?? this.attendanceStatus,
+      collectSubmission: collectSubmission ?? this.collectSubmission,
+      requireSubmissionPass:
+          requireSubmissionPass ?? this.requireSubmissionPass,
+      submissionStatus: submissionStatus ?? this.submissionStatus,
       isCompleted: isCompleted ?? this.isCompleted,
     );
   }

@@ -58,47 +58,47 @@ class _LoginScreenState extends State<LoginScreen> {
     return Theme(
       data: AppTheme.lightLockedTheme,
       child: Scaffold(
-      body: BlocListener<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if (state is AuthSuccess) {
-            context.go(AppRoutes.main);
-          } else if (state is AuthFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: AppColors.brandPrimaryDark,
-                duration: const Duration(seconds: 3),
+        body: BlocListener<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state is AuthSuccess) {
+              context.go(AppRoutes.main);
+            } else if (state is AuthFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: AppColors.brandPrimaryDark,
+                  duration: const Duration(seconds: 3),
+                ),
+              );
+            }
+          },
+          child: AuthScaffold(
+            children: [
+              const SizedBox(height: 12),
+              const FadeSlideIn(
+                child: AuthHeader(
+                  badge: 'BASS TRAINING LMS',
+                  title: 'Selamat Datang 👋',
+                  subtitle:
+                      'Masuk untuk melanjutkan pembelajaranmu, atau daftar kalau kamu baru di sini.',
+                  glow: true,
+                ),
               ),
-            );
-          }
-        },
-        child: AuthScaffold(
-          children: [
-            const SizedBox(height: 12),
-            const FadeSlideIn(
-              child: AuthHeader(
-                badge: 'BASS TRAINING LMS',
-                title: 'Selamat Datang 👋',
-                subtitle:
-                    'Masuk untuk melanjutkan pembelajaranmu, atau daftar kalau kamu baru di sini.',
-                glow: true,
+              const SizedBox(height: 22),
+              FadeSlideIn(
+                delayMs: 120,
+                child: _LoginCard(
+                  formKey: _formKey,
+                  emailController: _emailController,
+                  passwordController: _passwordController,
+                  obscurePassword: _obscurePassword,
+                  onTogglePasswordVisibility: _togglePasswordVisibility,
+                  onLogin: () => _handleLogin(context),
+                ),
               ),
-            ),
-            const SizedBox(height: 22),
-            FadeSlideIn(
-              delayMs: 120,
-              child: _LoginCard(
-                formKey: _formKey,
-                emailController: _emailController,
-                passwordController: _passwordController,
-                obscurePassword: _obscurePassword,
-                onTogglePasswordVisibility: _togglePasswordVisibility,
-                onLogin: () => _handleLogin(context),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
@@ -160,15 +160,6 @@ class _LoginCard extends StatelessWidget {
                 fontSize: 22,
                 fontWeight: FontWeight.w900,
                 color: AppColors.ink,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Gunakan akun yang sama untuk web dan mobile.',
-              style: TextStyle(
-                fontSize: 13,
-                height: 1.45,
-                color: AppColors.inkSoft,
               ),
             ),
             const SizedBox(height: 18),
@@ -270,10 +261,7 @@ class _LoginCard extends StatelessWidget {
               children: [
                 Text(
                   'Belum punya akun? ',
-                  style: TextStyle(
-                    color: AppColors.inkSoft,
-                    fontSize: 13.5,
-                  ),
+                  style: TextStyle(color: AppColors.inkSoft, fontSize: 13.5),
                 ),
                 GestureDetector(
                   onTap: () => context.go(AppRoutes.register),

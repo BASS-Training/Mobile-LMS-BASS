@@ -1,7 +1,7 @@
 name: lms_mobile_app
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.0+12
+version: 1.0.0+13
 
 environment:
   sdk: ^3.11.5
@@ -29,6 +29,7 @@ dependencies:
   image_picker: ^1.1.2
   webview_flutter: ^4.14.0
   cached_network_image: ^3.4.1
+  file_picker: ^8.1.6
 
 dev_dependencies:
   flutter_test:
