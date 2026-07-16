@@ -20,6 +20,11 @@ class LessonNavigationBar extends StatelessWidget {
   final bool forwardBlocked;
   final String? blockedReason;
 
+  /// Label tombol saat terkunci. Default "Menunggu Dinilai" (kasus pengumpulan
+  /// tugas). Layar lain bisa memberi label lebih tepat, mis. "Menunggu
+  /// Kehadiran" atau "Selesaikan Kuis".
+  final String? blockedLabel;
+
   const LessonNavigationBar({
     super.key,
     required this.canGoPrevious,
@@ -29,6 +34,7 @@ class LessonNavigationBar extends StatelessWidget {
     this.primaryColor = AppColors.brandPrimary,
     this.forwardBlocked = false,
     this.blockedReason,
+    this.blockedLabel,
   });
 
   /// Gaya tombol "Sebelumnya" yang seragam untuk SEMUA layar lesson:
@@ -111,7 +117,7 @@ class LessonNavigationBar extends StatelessWidget {
                 ),
                 label: Text(
                   forwardBlocked
-                      ? 'Menunggu Dinilai'
+                      ? (blockedLabel ?? 'Menunggu Dinilai')
                       : (canGoNext ? 'Lanjut' : 'Selesai'),
                 ),
               ),

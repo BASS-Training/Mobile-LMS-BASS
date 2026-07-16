@@ -196,6 +196,7 @@ class _CaseStudyLessonDetailScreenState
                   forwardBlocked:
                       canGoNext && widget.lesson.attendancePending,
                   blockedReason: AttendanceInfo.blockedReason(widget.lesson),
+                  blockedLabel: 'Menunggu Kehadiran',
                   onPrevious: canGoPrevious
                       ? () => navigateToLesson(
                           previousLesson!,

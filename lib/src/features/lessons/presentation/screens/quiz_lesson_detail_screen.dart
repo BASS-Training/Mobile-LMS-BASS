@@ -243,10 +243,16 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
               canGoPrevious: canGoPrevious,
               canGoNext: canGoNext,
               primaryColor: AppColors.red,
-              // Kehadiran wajib tapi belum di-ACC → kunci "Lanjut" (mirror web:
-              // konten berikutnya terkunci sampai hadir/izin).
-              forwardBlocked: canGoNext && widget.lesson.attendancePending,
-              blockedReason: AttendanceInfo.blockedReason(widget.lesson),
+              // Kunci "Lanjut" sampai kuis diselesaikan (lulus) DAN kehadiran
+              // di-ACC — mirror web: konten berikutnya terkunci sampai konten
+              // ini selesai. Untuk quiz, `isCompleted` = lulus + hadir/izin.
+              forwardBlocked: canGoNext && !widget.lesson.isCompleted,
+              blockedReason: widget.lesson.attendancePending
+                  ? AttendanceInfo.blockedReason(widget.lesson)
+                  : 'Selesaikan dan lulus kuis ini terlebih dahulu sebelum melanjutkan.',
+              blockedLabel: widget.lesson.attendancePending
+                  ? 'Menunggu Kehadiran'
+                  : 'Selesaikan Kuis',
               onPrevious: canGoPrevious
                   ? () => navigateToLesson(
                       previousLesson!,
