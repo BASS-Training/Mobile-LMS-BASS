@@ -12,6 +12,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/les
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/quiz/quiz_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/lesson_drawer.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/attendance/attendance_status_banner.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/quiz_intro_widget.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/quiz_questions_widget.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/quiz/quiz_result_widget.dart';
@@ -242,6 +243,10 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
               canGoPrevious: canGoPrevious,
               canGoNext: canGoNext,
               primaryColor: AppColors.red,
+              // Kehadiran wajib tapi belum di-ACC → kunci "Lanjut" (mirror web:
+              // konten berikutnya terkunci sampai hadir/izin).
+              forwardBlocked: canGoNext && widget.lesson.attendancePending,
+              blockedReason: AttendanceInfo.blockedReason(widget.lesson),
               onPrevious: canGoPrevious
                   ? () => navigateToLesson(
                       previousLesson!,
@@ -561,7 +566,12 @@ class _QuizLessonDetailScreenState extends State<QuizLessonDetailScreen>
 
   /// Build Quiz Result Screen
   Widget _buildResultScreen(QuizSubmitted quizState) {
-    final canProceed = quizState.result.passed && canGoNext;
+    // Lulus saja tidak cukup: bila kehadiran wajib & belum di-ACC, "Lanjut"
+    // tetap terkunci sampai instruktur menandai hadir/izin (mirror web).
+    final canProceed =
+        quizState.result.passed &&
+        canGoNext &&
+        !widget.lesson.attendancePending;
 
     return Scaffold(
       backgroundColor: AppColors.background,

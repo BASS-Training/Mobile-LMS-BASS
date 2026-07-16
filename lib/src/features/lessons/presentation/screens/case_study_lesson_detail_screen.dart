@@ -10,6 +10,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/case_study
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/case_study/case_study_state.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/case_study_pdf_viewer_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/attendance/attendance_status_banner.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/case_study/case_study_table_widget.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
@@ -190,6 +191,11 @@ class _CaseStudyLessonDetailScreenState
                 child: LessonNavigationBar(
                   canGoPrevious: canGoPrevious,
                   canGoNext: canGoNext,
+                  // Kehadiran wajib tapi belum di-ACC → kunci "Lanjut" (sama
+                  // seperti web: konten berikutnya terkunci sampai hadir/izin).
+                  forwardBlocked:
+                      canGoNext && widget.lesson.attendancePending,
+                  blockedReason: AttendanceInfo.blockedReason(widget.lesson),
                   onPrevious: canGoPrevious
                       ? () => navigateToLesson(
                           previousLesson!,
@@ -287,6 +293,10 @@ class _CaseStudyLessonDetailScreenState
       children: [
         // Header hero
         _buildHeader(data),
+        if (widget.lesson.attendanceRequired) ...[
+          const SizedBox(height: 12),
+          AttendanceStatusBanner(lesson: widget.lesson),
+        ],
         if (data.submission != null && data.submission!.isSubmitted) ...[
           const SizedBox(height: 12),
           _statusCard(data),
