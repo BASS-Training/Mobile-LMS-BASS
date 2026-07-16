@@ -8,6 +8,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/feedback/f
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/feedback/feedback_event.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/feedback/feedback_state.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/attendance/attendance_status_banner.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
@@ -141,6 +142,8 @@ class _FeedbackLessonDetailScreenState
       bottomNavigationBar: BlocBuilder<FeedbackBloc, FeedbackState>(
         builder: (context, state) {
           final submitted = state.data?.submission?.isSubmitted ?? false;
+          // Kehadiran wajib tapi belum di-ACC → kunci "Lanjut" (mirror web).
+          final attnBlocked = canGoNext && widget.lesson.attendancePending;
           return SafeArea(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
@@ -171,9 +174,24 @@ class _FeedbackLessonDetailScreenState
                     Expanded(
                       child: ElevatedButton.icon(
                         // Next baru aktif setelah feedback dikirim. Sebelum itu
-                        // peserta hanya bisa "Sebelumnya".
+                        // peserta hanya bisa "Sebelumnya". Bila kehadiran wajib
+                        // dan belum di-ACC, tombol terkunci meski sudah dikirim.
                         onPressed: submitted
                             ? () {
+                                if (attnBlocked) {
+                                  ScaffoldMessenger.of(context)
+                                    ..hideCurrentSnackBar()
+                                    ..showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          AttendanceInfo.blockedReason(
+                                            widget.lesson,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  return;
+                                }
                                 if (canGoNext && nextLesson != null) {
                                   navigateToLesson(
                                     nextLesson!,
@@ -185,13 +203,21 @@ class _FeedbackLessonDetailScreenState
                               }
                             : null,
                         icon: Icon(
-                          canGoNext
-                              ? Icons.arrow_forward_rounded
-                              : Icons.check_rounded,
+                          attnBlocked
+                              ? Icons.lock_outline_rounded
+                              : (canGoNext
+                                    ? Icons.arrow_forward_rounded
+                                    : Icons.check_rounded),
                         ),
-                        label: Text(canGoNext ? 'Lanjut' : 'Selesai'),
+                        label: Text(
+                          attnBlocked
+                              ? 'Menunggu Kehadiran'
+                              : (canGoNext ? 'Lanjut' : 'Selesai'),
+                        ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.brandPrimary,
+                          backgroundColor: attnBlocked
+                              ? AppColors.slate
+                              : AppColors.brandPrimary,
                           foregroundColor: Colors.white,
                           disabledBackgroundColor: AppColors.surfaceMuted,
                           disabledForegroundColor: AppColors.textTertiary,
@@ -260,6 +286,10 @@ class _FeedbackLessonDetailScreenState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (widget.lesson.attendanceRequired) ...[
+            AttendanceStatusBanner(lesson: widget.lesson),
+            const SizedBox(height: 14),
+          ],
           Text(
             data.title,
             style: TextStyle(

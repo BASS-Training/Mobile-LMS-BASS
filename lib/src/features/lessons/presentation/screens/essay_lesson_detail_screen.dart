@@ -8,6 +8,7 @@ import 'package:lms_mobile_app/src/features/lessons/domain/entities/lesson_entit
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_bloc.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/lesson/lesson_event.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/attendance/attendance_status_banner.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/essay/essay_page_header.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/essay/essay_panel_widget.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/essay/essay_side_panel_widget.dart';
@@ -185,6 +186,10 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
                               children: [
                                 header,
                                 const SizedBox(height: 14),
+                                if (widget.lesson.attendanceRequired) ...[
+                                  AttendanceStatusBanner(lesson: widget.lesson),
+                                  const SizedBox(height: 14),
+                                ],
                                 _buildDescriptionCard(),
                                 const SizedBox(height: 14),
                                 sidePanel,
@@ -362,6 +367,10 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
     final canGoBackAction =
         state.currentQuestionIndex > 0 || previousLesson != null;
 
+    // Kehadiran wajib tapi belum di-ACC → kunci "Lanjut" ke lesson berikutnya
+    // (mirror web: konten berikutnya terkunci sampai hadir/izin).
+    final attnBlocked = canGoNext && widget.lesson.attendancePending;
+
     void handlePreviousAction() {
       if (state.currentQuestionIndex > 0) {
         context.read<EssayBloc>().add(
@@ -382,6 +391,16 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
     }
 
     void handleContinueAfterSubmit() {
+      if (attnBlocked) {
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(AttendanceInfo.blockedReason(widget.lesson)),
+            ),
+          );
+        return;
+      }
       if (canGoNext && nextLesson != null) {
         navigateToLesson(nextLesson!, widget.lessonIndex + 1);
       } else {
@@ -433,9 +452,19 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: handleContinueAfterSubmit,
-                  style: LessonNavigationBar.forwardButtonStyle(),
-                  icon: const Icon(Icons.arrow_forward_rounded),
-                  label: Text(canGoNext ? 'Lanjut' : 'Selesai'),
+                  style: LessonNavigationBar.forwardButtonStyle(
+                    attnBlocked ? AppColors.slate : AppColors.brandPrimary,
+                  ),
+                  icon: Icon(
+                    attnBlocked
+                        ? Icons.lock_outline_rounded
+                        : Icons.arrow_forward_rounded,
+                  ),
+                  label: Text(
+                    attnBlocked
+                        ? 'Menunggu Kehadiran'
+                        : (canGoNext ? 'Lanjut' : 'Selesai'),
+                  ),
                 ),
               ),
             ],
