@@ -86,7 +86,10 @@ class LocalStorage {
 
   // Get all completed lessons
   static List<String> getCompletedLessons() {
-    final list = _box.get(_scoped(_completedLessonsKey), defaultValue: <String>[]);
+    final list = _box.get(
+      _scoped(_completedLessonsKey),
+      defaultValue: <String>[],
+    );
     return List<String>.from(list);
   }
 
@@ -153,7 +156,7 @@ class LocalStorage {
   static Future<void> clearAuthSession() async {
     // Buang cache course (ter-scope ke user aktif) SEBELUM menghapus sesi,
     // selagi id user masih bisa di-resolve, agar tidak bocor ke akun lain.
-    await _box.delete(_scoped(_coursesCacheKey));
+    await clearCoursesCache();
     await _box.delete(_authTokenKey);
     await _box.delete(_authUserKey);
   }
@@ -164,6 +167,15 @@ class LocalStorage {
   // jaringan. Direfresh diam-diam di belakang setiap kali fetch berhasil.
   static Future<void> saveCoursesCache(String coursesJson) async {
     await _box.put(_scoped(_coursesCacheKey), coursesJson);
+  }
+
+  /// Buang cache course milik user aktif.
+  ///
+  /// Dipanggil saat daftar kursus user berubah di luar alur normal — mis.
+  /// setelah bergabung ke kursus gratis dari etalase. Tanpa ini, tampilan
+  /// cache-first akan tetap menyajikan daftar lama sampai aplikasi dibuka ulang.
+  static Future<void> clearCoursesCache() async {
+    await _box.delete(_scoped(_coursesCacheKey));
   }
 
   static List<Map<String, dynamic>>? getCoursesCache() {

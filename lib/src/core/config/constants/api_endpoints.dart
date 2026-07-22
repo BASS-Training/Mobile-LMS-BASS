@@ -30,6 +30,12 @@ class ApiEndpoints {
   static const String savedCourses = '/courses/saved';
   static const String toggleSaveCourse = '/courses/{id}/save';
 
+  // Katalog / etalase kursus ("Jelajahi"). Read-only + daftar kursus GRATIS.
+  // Tidak ada endpoint pembelian di mobile — pembelian hanya lewat web.
+  static const String catalog = '/catalog';
+  static const String catalogDetail = '/catalog/{id}';
+  static const String catalogEnrollFree = '/catalog/{id}/daftar-gratis';
+
   // Lessons
   static const String getLessons = '/courses/{courseId}/lessons';
   static const String getLessonById = '/courses/{courseId}/lessons/{id}';
@@ -110,7 +116,8 @@ class ApiEndpoints {
 
   // Instructor / admin (mobile): peserta, progres, dan penilaian.
   static const String instructorDashboard = '/instructor/dashboard';
-  static const String instructorGlobalGradingQueue = '/instructor/grading-queue';
+  static const String instructorGlobalGradingQueue =
+      '/instructor/grading-queue';
   static const String courseParticipants = '/courses/{id}/participants';
   static const String participantProgress =
       '/courses/{courseId}/participants/{userId}/progress';

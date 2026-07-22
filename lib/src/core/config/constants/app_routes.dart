@@ -31,6 +31,10 @@ class AppRoutes {
   static const String achievements = '/achievements';
   static const String agenda = '/agenda';
 
+  // Etalase kursus ("Jelajahi") — preview + daftar kursus gratis.
+  static const String catalog = '/catalog';
+  static const String catalogDetail = '/catalog-detail';
+
   // Course Details
   static const String courseDetail = '/course-detail';
   static const String courseResults = '/course-results';
@@ -62,7 +66,8 @@ class AppRoutes {
       '/instructor/participant-detail';
   static const String instructorGradingQueue = '/instructor/grading-queue';
   static const String instructorEssayGrading = '/instructor/grade-essay';
-  static const String instructorCaseStudyGrading = '/instructor/grade-case-study';
+  static const String instructorCaseStudyGrading =
+      '/instructor/grade-case-study';
   static const String instructorDocumentGrading = '/instructor/grade-document';
 
   // Games

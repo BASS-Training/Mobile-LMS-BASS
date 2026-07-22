@@ -19,7 +19,10 @@ class CustomBottomNavBar extends StatelessWidget {
   static const List<_NavItem> _items = [
     _NavItem(Icons.home_rounded, Icons.home_outlined, 'Home'),
     _NavItem(Icons.menu_book_rounded, Icons.menu_book_outlined, 'Courses'),
-    _NavItem(Icons.bookmark_rounded, Icons.bookmark_outline_rounded, 'Saved'),
+    // "Jelajahi" (etalase) menggantikan tab Tersimpan: menemukan kursus baru
+    // adalah tujuan yang sering, sedangkan koleksi tersimpan lebih jarang
+    // dibuka dan kini hidup sebagai aksi di dalam tab Kursus.
+    _NavItem(Icons.explore_rounded, Icons.explore_outlined, 'Jelajahi'),
     _NavItem(Icons.person_rounded, Icons.person_outline_rounded, 'Profile'),
   ];
 

@@ -52,6 +52,9 @@ import 'package:lms_mobile_app/src/features/discussions/presentation/screens/dis
 import 'package:lms_mobile_app/src/features/discussions/presentation/screens/discussion_thread_screen.dart';
 import 'package:lms_mobile_app/src/features/achievements/presentation/screens/achievements_screen.dart';
 import 'package:lms_mobile_app/src/features/agenda/presentation/screens/agenda_screen.dart';
+import 'package:lms_mobile_app/src/features/catalog/domain/entities/catalog_course_entity.dart';
+import 'package:lms_mobile_app/src/features/catalog/presentation/screens/catalog_course_detail_screen.dart';
+import 'package:lms_mobile_app/src/features/catalog/presentation/screens/catalog_screen.dart';
 import 'package:lms_mobile_app/src/features/home/domain/entities/home_stats.entity.dart';
 import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_participants_screen.dart';
 import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_grading_queue_screen.dart';
@@ -176,7 +179,10 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.main,
-        builder: (context, state) => const MainScreen(initialTab: 0),
+        // `extra` opsional berisi indeks tab awal, dipakai layar lain untuk
+        // mengantar user ke tab tertentu (mis. ke "Kursus" setelah bergabung).
+        builder: (context, state) =>
+            MainScreen(initialTab: state.extra is int ? state.extra as int : 0),
       ),
       GoRoute(
         path: AppRoutes.home,
@@ -230,6 +236,24 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.agenda,
         builder: (context, state) => const AgendaScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.catalog,
+        builder: (context, state) => const CatalogScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.catalogDetail,
+        builder: (context, state) {
+          // `extra` hanya bibit untuk menggambar header seketika; id-nya tetap
+          // dimuat ulang dari server agar detail selalu mutakhir.
+          final seed = state.extra as CatalogCourseEntity?;
+          if (seed == null) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+          return CatalogCourseDetailScreen(courseId: seed.id, seed: seed);
+        },
       ),
       GoRoute(
         path: AppRoutes.discussionThread,
@@ -681,7 +705,8 @@ class AppRouter {
           return InstructorDocumentGradingScreen(
             submissionId: args['submissionId'] as String,
             contentId: args['contentId'] as String,
-            contentTitle: (args['contentTitle'] as String?) ?? 'Pengumpulan Dokumen',
+            contentTitle:
+                (args['contentTitle'] as String?) ?? 'Pengumpulan Dokumen',
             participantName: (args['participantName'] as String?) ?? 'Peserta',
           );
         },

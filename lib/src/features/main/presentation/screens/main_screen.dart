@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/profile_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_bloc.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_state.dart';
+import 'package:lms_mobile_app/src/features/catalog/presentation/screens/catalog_screen.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/screens/course_list_screen.dart';
-import 'package:lms_mobile_app/src/features/courses/presentation/screens/saved_courses_screen.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/screens/home_screen.dart';
 import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_dashboard_screen.dart';
 import 'package:lms_mobile_app/src/shared/widgets/bottom_nav_bar.dart';
@@ -42,7 +42,7 @@ class _MainScreenState extends State<MainScreen> {
               },
             ),
       const CourseListScreen(),
-      const SavedCoursesScreen(),
+      const CatalogScreen(),
       const ProfileScreen(),
     ];
   }

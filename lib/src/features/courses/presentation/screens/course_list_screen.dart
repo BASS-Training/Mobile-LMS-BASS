@@ -55,6 +55,10 @@ class _CourseListScreenState extends State<CourseListScreen> {
           backgroundColor: Colors.transparent,
           appBar: BrandAppBar(
             title: canManage ? 'Kelas Saya' : 'Semua Kursus',
+            // Koleksi tersimpan pindah ke sini setelah tab bawahnya diganti
+            // "Jelajahi". Hanya relevan untuk peserta — instruktur melihat
+            // daftar kelas yang diampu, bukan koleksi pribadi.
+            actions: canManage ? null : [_buildSavedAction()],
           ),
           body: Stack(
             children: [
@@ -104,7 +108,9 @@ class _CourseListScreenState extends State<CourseListScreen> {
                     child: _buildSearchField(),
                   ),
                   Expanded(
-                    child: canManage ? _buildManageList() : _buildParticipantGrid(),
+                    child: canManage
+                        ? _buildManageList()
+                        : _buildParticipantGrid(),
                   ),
                 ],
               ),
@@ -122,6 +128,21 @@ class _CourseListScreenState extends State<CourseListScreen> {
           );
         }
         return scaffold;
+      },
+    );
+  }
+
+  Widget _buildSavedAction() {
+    return IconButton(
+      tooltip: 'Kursus Tersimpan',
+      icon: const Icon(Icons.bookmark_rounded, color: Colors.white),
+      onPressed: () async {
+        await context.push(AppRoutes.savedCourses);
+        if (!mounted) return;
+        // Layar tersimpan memakai CourseBloc yang sama dan meninggalkannya di
+        // state SavedCoursesLoaded. Tanpa memuat ulang di sini, grid ini tidak
+        // punya state yang cocok untuk digambar saat kembali.
+        context.read<CourseBloc>().add(const GetCoursesEvent());
       },
     );
   }
@@ -453,10 +474,7 @@ class _ManageCourseTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: AppColors.textTertiary,
-              ),
+              Icon(Icons.chevron_right_rounded, color: AppColors.textTertiary),
             ],
           ),
         ),
