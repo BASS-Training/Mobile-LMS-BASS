@@ -32,8 +32,7 @@ class FeedbackLessonDetailScreen extends StatefulWidget {
       _FeedbackLessonDetailScreenState();
 }
 
-class _FeedbackLessonDetailScreenState
-    extends State<FeedbackLessonDetailScreen>
+class _FeedbackLessonDetailScreenState extends State<FeedbackLessonDetailScreen>
     with LessonNavigationMixin {
   static const Color _accent = Color(0xFF4AA8FF);
 
@@ -448,13 +447,13 @@ class _QuestionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Kartu ini memuat Radio/CheckboxListTile, yang menggambar ripple-nya di
+    // Material terdekat. Warna kartu karena itu dipegang Material, bukan
+    // BoxDecoration — kalau tidak, kotak berwarna menutupi ripple tersebut.
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderSubtle),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -463,36 +462,47 @@ class _QuestionCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          RichText(
-            text: TextSpan(
-              style: TextStyle(
-                fontSize: 14.5,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
-              ),
-              children: [
-                TextSpan(text: '$index. ${question.question}'),
-                if (question.isRequired)
-                  TextSpan(
-                    text: ' *',
-                    style: TextStyle(color: AppColors.brandText),
+      child: Material(
+        color: AppColors.surface,
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: AppColors.borderSubtle),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              RichText(
+                text: TextSpan(
+                  style: TextStyle(
+                    fontSize: 14.5,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
                   ),
+                  children: [
+                    TextSpan(text: '$index. ${question.question}'),
+                    if (question.isRequired)
+                      TextSpan(
+                        text: ' *',
+                        style: TextStyle(color: AppColors.brandText),
+                      ),
+                  ],
+                ),
+              ),
+              if (question.helpText?.isNotEmpty ?? false) ...[
+                const SizedBox(height: 4),
+                Text(
+                  question.helpText!,
+                  style: TextStyle(fontSize: 12, color: AppColors.textTertiary),
+                ),
               ],
-            ),
+              const SizedBox(height: 12),
+              _buildInput(),
+            ],
           ),
-          if (question.helpText?.isNotEmpty ?? false) ...[
-            const SizedBox(height: 4),
-            Text(
-              question.helpText!,
-              style: TextStyle(fontSize: 12, color: AppColors.textTertiary),
-            ),
-          ],
-          const SizedBox(height: 12),
-          _buildInput(),
-        ],
+        ),
       ),
     );
   }

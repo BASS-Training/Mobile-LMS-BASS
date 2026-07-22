@@ -314,61 +314,67 @@ class _SectionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      // Kartu ini WAJIB Material, bukan Container berwarna: ExpansionTile
+      // menggambar ripple-nya di Material terdekat di atasnya, jadi kotak
+      // berwarna di antaranya akan menutupi ripple itu (framework menegur lewat
+      // assertion "ListTile background color or ink splashes may be invisible").
+      child: Material(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderSubtle),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Theme(
-        // ExpansionTile menggambar garis pemisah default yang bentrok dengan
-        // border kartu.
-        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
-        child: ExpansionTile(
-          tilePadding: const EdgeInsets.symmetric(horizontal: 14),
-          childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
-          title: Text(
-            'Bab ${section.sectionNumber} · ${section.title}',
-            style: TextStyle(
-              fontSize: 13.5,
-              fontWeight: FontWeight.w700,
-              color: AppColors.textPrimary,
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: AppColors.borderSubtle),
+        ),
+        child: Theme(
+          // ExpansionTile menggambar garis pemisah default yang bentrok dengan
+          // border kartu.
+          data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+          child: ExpansionTile(
+            tilePadding: const EdgeInsets.symmetric(horizontal: 14),
+            childrenPadding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
+            title: Text(
+              'Bab ${section.sectionNumber} · ${section.title}',
+              style: TextStyle(
+                fontSize: 13.5,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
             ),
-          ),
-          subtitle: Text(
-            '${section.lessons.length} materi',
-            style: TextStyle(fontSize: 11.5, color: AppColors.textTertiary),
-          ),
-          children: section.lessons
-              .map(
-                (lesson) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 5),
-                  child: Row(
-                    children: [
-                      Icon(
-                        locked
-                            ? Icons.lock_outline_rounded
-                            : Icons.check_circle_outline_rounded,
-                        size: 15,
-                        color: AppColors.textTertiary,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          lesson.title,
-                          style: TextStyle(
-                            fontSize: 12.5,
-                            color: AppColors.textSecondary,
+            subtitle: Text(
+              '${section.lessons.length} materi',
+              style: TextStyle(fontSize: 11.5, color: AppColors.textTertiary),
+            ),
+            children: section.lessons
+                .map(
+                  (lesson) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    child: Row(
+                      children: [
+                        Icon(
+                          locked
+                              ? Icons.lock_outline_rounded
+                              : Icons.check_circle_outline_rounded,
+                          size: 15,
+                          color: AppColors.textTertiary,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            lesson.title,
+                            style: TextStyle(
+                              fontSize: 12.5,
+                              color: AppColors.textSecondary,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              )
-              .toList(),
+                )
+                .toList(),
+          ),
         ),
       ),
     );

@@ -45,7 +45,18 @@ class FlavorConfig {
 
 /// Development configuration
 class DevelopmentFlavorConfig {
-  static const String apiBaseUrl = 'http://192.168.31.120:8000/api/mobile';
+  /// IP LAN laptop tempat `php artisan serve --host=0.0.0.0` berjalan.
+  ///
+  /// Nilainya bisa ditimpa tanpa mengubah kode saat IP berganti (lease DHCP
+  /// baru sering menggeser angka terakhir):
+  ///   flutter run --dart-define=API_BASE_URL=http://192.168.31.55:8000/api/mobile
+  ///
+  /// Jangan pakai `localhost` di sini — di HP/emulator itu menunjuk ke
+  /// perangkat itu sendiri, bukan ke laptop.
+  static const String apiBaseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'http://192.168.31.119:8000/api/mobile',
+  );
 
   static const bool enableLogging = true;
   static const bool enableMockData =
@@ -75,7 +86,8 @@ class StagingFlavorConfig {
 
 /// Production configuration
 class ProductionFlavorConfig {
-  static const String apiBaseUrl = 'https://lms.basstrainingacademy.com/api/mobile';
+  static const String apiBaseUrl =
+      'https://lms.basstrainingacademy.com/api/mobile';
   static const bool enableLogging = false;
   static const bool enableMockData = false;
 
