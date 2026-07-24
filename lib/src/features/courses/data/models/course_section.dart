@@ -8,6 +8,14 @@ class CourseSection {
   final String description;
   final List<Lesson> lessons;
 
+  /// Id section prasyarat (backend: `prerequisite_id`). Section ini tetap
+  /// terkunci sampai section ber-id ini diselesaikan. `null` = tanpa prasyarat.
+  final String? prerequisiteId;
+
+  /// Bila section ini dijadikan prasyarat section lain, `true` berarti boleh
+  /// dilewati (tidak mengunci). Mengikuti `is_optional` di web.
+  final bool isOptional;
+
   CourseSection({
     required this.id,
     required this.courseId,
@@ -15,6 +23,8 @@ class CourseSection {
     required this.title,
     required this.description,
     required this.lessons,
+    this.prerequisiteId,
+    this.isOptional = false,
   });
 
   factory CourseSection.fromJson(Map<String, dynamic> json) {
@@ -24,6 +34,10 @@ class CourseSection {
       sectionNumber: json['sectionNumber'] ?? 0,
       title: json['title'] ?? '',
       description: json['description'] ?? '',
+      // Nullable & default aman agar cache JSON lama (tanpa field ini) tetap
+      // ter-parse tanpa error.
+      prerequisiteId: json['prerequisiteId'] as String?,
+      isOptional: json['isOptional'] as bool? ?? false,
       lessons:
           (json['lessons'] as List<dynamic>?)
               ?.map((l) => Lesson.fromJson(l as Map<String, dynamic>))
@@ -39,6 +53,8 @@ class CourseSection {
       'sectionNumber': sectionNumber,
       'title': title,
       'description': description,
+      'prerequisiteId': prerequisiteId,
+      'isOptional': isOptional,
       'lessons': lessons.map((l) => l.toJson()).toList(),
     };
   }
@@ -50,6 +66,8 @@ class CourseSection {
     String? title,
     String? description,
     List<Lesson>? lessons,
+    String? prerequisiteId,
+    bool? isOptional,
   }) {
     return CourseSection(
       id: id ?? this.id,
@@ -58,6 +76,8 @@ class CourseSection {
       title: title ?? this.title,
       description: description ?? this.description,
       lessons: lessons ?? this.lessons,
+      prerequisiteId: prerequisiteId ?? this.prerequisiteId,
+      isOptional: isOptional ?? this.isOptional,
     );
   }
 }

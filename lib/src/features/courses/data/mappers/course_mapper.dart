@@ -15,6 +15,8 @@ class CourseMapper {
             sectionNumber: section.sectionNumber,
             title: section.title,
             description: section.description,
+            prerequisiteId: section.prerequisiteId,
+            isOptional: section.isOptional,
             lessons: section.lessons
                 .map((lesson) => LessonMapper.toDomain(lesson))
                 .toList(),
@@ -50,6 +52,8 @@ class CourseMapper {
             sectionNumber: section.sectionNumber,
             title: section.title,
             description: section.description,
+            prerequisiteId: section.prerequisiteId,
+            isOptional: section.isOptional,
             lessons: section.lessons
                 .map((lesson) => LessonMapper.fromDomain(lesson))
                 .toList(),

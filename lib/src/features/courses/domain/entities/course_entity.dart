@@ -65,16 +65,73 @@ class CourseEntity extends Equatable {
   int get totalLessons => progress.totalCount;
   double get progressPercentage => progress.percentage;
 
-  /// Logika Bisnis: Menentukan apakah materi terbuka atau terkunci
+  /// Logika Bisnis: Menentukan apakah materi terbuka atau terkunci.
+  ///
+  /// Meniru aturan web (`ContentController::getUnlockedContents`) yang terdiri
+  /// dari dua gerbang berlapis:
+  /// 1. **Berurutan** — sebuah materi terbuka hanya bila materi tepat sebelumnya
+  ///    sudah selesai.
+  /// 2. **Prasyarat antar-section** — bila section pemilik materi ini punya
+  ///    prasyarat (di-set admin di web), section ini terkunci sampai section
+  ///    prasyarat tersebut selesai; kecuali section prasyaratnya opsional.
+  ///
+  /// Dulu mobile hanya menegakkan gerbang (1), sehingga prasyarat non-berurutan
+  /// (mis. lesson 5 wajib lesson 2, bukan 4) diabaikan dan tidak konsisten
+  /// dengan web. Sekarang keduanya ditegakkan.
   bool isLessonUnlocked(LessonEntity lesson) {
     final lessonIndex = allLessons.indexOf(lesson);
 
-    // Lesson pertama selalu terbuka
+    // Materi pertama di seluruh course selalu terbuka (samakan dengan web yang
+    // selalu membuka indeks 0 — mencegah seluruh course terkunci).
     if (lessonIndex <= 0) return true;
 
-    // Cek apakah lesson sebelumnya sudah selesai
+    // Gerbang 1 — berurutan: materi sebelumnya harus selesai.
     final previousLesson = allLessons[lessonIndex - 1];
-    return previousLesson.isCompleted;
+    if (!previousLesson.isCompleted) return false;
+
+    // Gerbang 2 — prasyarat antar-section.
+    return _isSectionPrerequisiteMet(lesson);
+  }
+
+  /// Apakah prasyarat section pemilik [lesson] sudah terpenuhi.
+  ///
+  /// Mengembalikan `true` (tidak mengunci) bila: section tak punya prasyarat,
+  /// section prasyaratnya tak ditemukan (data tak lengkap — jangan mengunci
+  /// karena data), atau prasyaratnya ditandai opsional. Selain itu, terpenuhi
+  /// hanya bila seluruh materi di section prasyarat sudah selesai.
+  bool _isSectionPrerequisiteMet(LessonEntity lesson) {
+    // Struktur flat lama (tanpa sections) tidak mengenal prasyarat.
+    if (sections.isEmpty) return true;
+
+    // Cari section pemilik lesson ini.
+    CourseSectionEntity? owner;
+    for (final section in sections) {
+      if (section.lessons.any((l) => l.id == lesson.id)) {
+        owner = section;
+        break;
+      }
+    }
+
+    final prerequisiteId = owner?.prerequisiteId;
+    if (prerequisiteId == null) return true;
+
+    // Temukan section prasyaratnya.
+    CourseSectionEntity? prerequisite;
+    for (final section in sections) {
+      if (section.id == prerequisiteId) {
+        prerequisite = section;
+        break;
+      }
+    }
+
+    if (prerequisite == null || prerequisite.isOptional) return true;
+
+    // Section prasyarat tanpa materi dianggap terpenuhi (selesai secara vacuous,
+    // sesuai perilaku web) — mencegah kuncian permanen bila admin men-set
+    // prasyarat ke section yang belum diisi.
+    if (prerequisite.lessons.isEmpty) return true;
+
+    return prerequisite.isFullyCompleted;
   }
 
   CourseEntity copyWith({bool? isSaved, bool? isOwned}) {
