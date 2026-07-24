@@ -10,6 +10,14 @@ class CourseSectionEntity extends Equatable {
   final String description;
   final List<LessonEntity> lessons;
 
+  /// Id section yang harus diselesaikan sebelum section ini terbuka. `null`
+  /// berarti tanpa prasyarat. Dipakai [CourseEntity.isLessonUnlocked].
+  final String? prerequisiteId;
+
+  /// Bila section ini dijadikan prasyarat section lain, `true` berarti boleh
+  /// dilewati (tidak menahan section yang menjadikannya prasyarat).
+  final bool isOptional;
+
   const CourseSectionEntity({
     required this.id,
     required this.courseId,
@@ -17,6 +25,8 @@ class CourseSectionEntity extends Equatable {
     required this.title,
     required this.description,
     required this.lessons,
+    this.prerequisiteId,
+    this.isOptional = false,
   });
 
   /// Get progress value object (source of truth untuk progress calculation)
@@ -42,6 +52,8 @@ class CourseSectionEntity extends Equatable {
     String? title,
     String? description,
     List<LessonEntity>? lessons,
+    String? prerequisiteId,
+    bool? isOptional,
   }) {
     return CourseSectionEntity(
       id: id ?? this.id,
@@ -50,6 +62,8 @@ class CourseSectionEntity extends Equatable {
       title: title ?? this.title,
       description: description ?? this.description,
       lessons: lessons ?? this.lessons,
+      prerequisiteId: prerequisiteId ?? this.prerequisiteId,
+      isOptional: isOptional ?? this.isOptional,
     );
   }
 
@@ -61,5 +75,7 @@ class CourseSectionEntity extends Equatable {
     title,
     description,
     lessons,
+    prerequisiteId,
+    isOptional,
   ];
 }
