@@ -30,6 +30,9 @@ class AppRoutes {
   static const String discussionThread = '/discussion-thread';
   static const String achievements = '/achievements';
   static const String agenda = '/agenda';
+  // Penugasan peserta: agregasi tugas (essay/studi kasus/dokumen) yang perlu
+  // dikerjakan / menunggu penilaian, lintas course yang sudah ter-unlock.
+  static const String assignments = '/assignments';
 
   // Course Details
   static const String courseDetail = '/course-detail';

@@ -52,6 +52,7 @@ import 'package:lms_mobile_app/src/features/discussions/presentation/screens/dis
 import 'package:lms_mobile_app/src/features/discussions/presentation/screens/discussion_thread_screen.dart';
 import 'package:lms_mobile_app/src/features/achievements/presentation/screens/achievements_screen.dart';
 import 'package:lms_mobile_app/src/features/agenda/presentation/screens/agenda_screen.dart';
+import 'package:lms_mobile_app/src/features/assignments/presentation/screens/assignments_screen.dart';
 import 'package:lms_mobile_app/src/features/home/domain/entities/home_stats.entity.dart';
 import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_participants_screen.dart';
 import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_grading_queue_screen.dart';
@@ -230,6 +231,10 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.agenda,
         builder: (context, state) => const AgendaScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.assignments,
+        builder: (context, state) => const AssignmentsScreen(),
       ),
       GoRoute(
         path: AppRoutes.discussionThread,

@@ -6,8 +6,9 @@ import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
-/// Row of quick shortcuts to the most useful destinations. Surfaces actions
-/// (certificates, joining a class) that would otherwise be buried.
+/// Grid of quick shortcuts to the most useful destinations. Laid out as a
+/// 2-row, 4-column grid so the (growing) list of shortcuts stays tidy and
+/// fully visible without an overflowing single row or a "more" sheet.
 class HomeQuickActions extends StatelessWidget {
   final VoidCallback onShowCourses;
 
@@ -15,12 +16,13 @@ class HomeQuickActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final actions = [
+    final actions = <_QuickAction>[
+      // Baris 1 — aktivitas belajar inti.
       _QuickAction(
-        icon: Icons.workspace_premium_rounded,
-        label: 'Sertifikat',
-        color: AppColors.warning,
-        onTap: () => context.push(AppRoutes.certificateList),
+        icon: Icons.assignment_turned_in_rounded,
+        label: 'Penugasan',
+        color: const Color(0xFFD97706),
+        onTap: () => context.push(AppRoutes.assignments),
       ),
       _QuickAction(
         icon: Icons.grid_view_rounded,
@@ -28,27 +30,24 @@ class HomeQuickActions extends StatelessWidget {
         color: AppColors.brandPrimary,
         onTap: onShowCourses,
       ),
-      // Central hub for discussions across all enrolled courses.
       _QuickAction(
         icon: Icons.forum_rounded,
         label: 'Diskusi',
         color: const Color(0xFF3B82F6),
         onTap: () => context.push(AppRoutes.discussionHub),
       ),
-      // Upcoming scheduled (Zoom) sessions across enrolled courses.
       _QuickAction(
         icon: Icons.event_rounded,
         label: 'Jadwal',
         color: const Color(0xFF0EA5E9),
         onTap: () => context.push(AppRoutes.agenda),
       ),
-      // Replaces "Tersimpan" (already reachable from the bottom nav) with an
-      // entry point into the Games Hub for a refreshing break.
+      // Baris 2 — pencapaian & pelengkap.
       _QuickAction(
-        icon: Icons.sports_esports_rounded,
-        label: 'Game',
-        color: const Color(0xFF7C4DFF),
-        onTap: () => context.push(AppRoutes.gamesHub),
+        icon: Icons.workspace_premium_rounded,
+        label: 'Sertifikat',
+        color: AppColors.warning,
+        onTap: () => context.push(AppRoutes.certificateList),
       ),
       _QuickAction(
         icon: Icons.vpn_key_rounded,
@@ -56,17 +55,38 @@ class HomeQuickActions extends StatelessWidget {
         color: AppColors.success,
         onTap: () => context.push(AppRoutes.joinClass),
       ),
+      _QuickAction(
+        icon: Icons.sports_esports_rounded,
+        label: 'Game',
+        color: const Color(0xFF7C4DFF),
+        onTap: () => context.push(AppRoutes.gamesHub),
+      ),
+      _QuickAction(
+        icon: Icons.emoji_events_rounded,
+        label: 'Pencapaian',
+        color: const Color(0xFFF59E0B),
+        onTap: () => context.push(AppRoutes.achievements),
+      ),
     ];
+
+    const columns = 4;
+    const gap = 12.0;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppMeasures.paddingLarge),
-      child: Row(
-        children: [
-          for (var i = 0; i < actions.length; i++) ...[
-            if (i > 0) const SizedBox(width: 12),
-            Expanded(child: actions[i]),
-          ],
-        ],
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final itemWidth =
+              (constraints.maxWidth - (columns - 1) * gap) / columns;
+          return Wrap(
+            spacing: gap,
+            runSpacing: gap,
+            children: [
+              for (final action in actions)
+                SizedBox(width: itemWidth, child: action),
+            ],
+          );
+        },
       ),
     );
   }
