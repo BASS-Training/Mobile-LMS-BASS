@@ -32,14 +32,21 @@ class CourseSectionAccordion extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
+      // Lapisan luar ini HANYA membawa bayangan — sengaja tanpa warna. Warna,
+      // border, dan clip kartu dipegang Material di dalamnya, karena
+      // ExpansionTile menggambar ripple-nya di Material terdekat; kotak
+      // berwarna di antaranya akan menutupi ripple itu.
       decoration: BoxDecoration(
-        color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.borderSubtle),
         boxShadow: AppShadows.xs,
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
+      child: Material(
+        color: AppColors.surface,
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: AppColors.borderSubtle),
+        ),
         child: ExpansionTile(
           shape: const Border(),
           collapsedShape: const Border(),
