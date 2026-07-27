@@ -9,6 +9,7 @@ import 'package:lms_mobile_app/src/features/notifications/presentation/cubit/not
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 import 'package:lms_mobile_app/src/shared/widgets/app_empty_state.dart';
+import 'package:lms_mobile_app/src/shared/widgets/brand_app_bar.dart';
 
 /// Home for instructors/admins — an action-oriented dashboard (grading + class
 /// monitoring) instead of the participant's learning home. Metrics mirror the
@@ -47,6 +48,7 @@ class _InstructorDashboardView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
+      appBar: const BrandAppBar(title: 'Kelas & Peserta'),
       body: SafeArea(
         bottom: false,
         child: RefreshIndicator(

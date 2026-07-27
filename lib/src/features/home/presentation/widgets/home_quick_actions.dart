@@ -12,62 +12,110 @@ import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 class HomeQuickActions extends StatelessWidget {
   final VoidCallback onShowCourses;
 
-  const HomeQuickActions({super.key, required this.onShowCourses});
+  /// Instruktur/admin: menambahkan pintasan akses tambahan (Penilaian & Panel
+  /// Instruktur) di akhir grid, tanpa mengubah pintasan peserta.
+  final bool canManage;
+
+  const HomeQuickActions({
+    super.key,
+    required this.onShowCourses,
+    this.canManage = false,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final actions = <_QuickAction>[
-      // Baris 1 — aktivitas belajar inti.
-      _QuickAction(
-        icon: Icons.assignment_turned_in_rounded,
-        label: 'Penugasan',
-        color: const Color(0xFFD97706),
-        onTap: () => context.push(AppRoutes.assignments),
-      ),
-      _QuickAction(
-        icon: Icons.grid_view_rounded,
-        label: 'Kursus',
-        color: AppColors.brandPrimary,
-        onTap: onShowCourses,
-      ),
-      _QuickAction(
-        icon: Icons.forum_rounded,
-        label: 'Diskusi',
-        color: const Color(0xFF3B82F6),
-        onTap: () => context.push(AppRoutes.discussionHub),
-      ),
-      _QuickAction(
-        icon: Icons.event_rounded,
-        label: 'Jadwal',
-        color: const Color(0xFF0EA5E9),
-        onTap: () => context.push(AppRoutes.agenda),
-      ),
-      // Baris 2 — pencapaian & pelengkap.
-      _QuickAction(
-        icon: Icons.workspace_premium_rounded,
-        label: 'Sertifikat',
-        color: AppColors.warning,
-        onTap: () => context.push(AppRoutes.certificateList),
-      ),
-      _QuickAction(
-        icon: Icons.vpn_key_rounded,
-        label: 'Gabung Kelas',
-        color: AppColors.success,
-        onTap: () => context.push(AppRoutes.joinClass),
-      ),
-      _QuickAction(
-        icon: Icons.sports_esports_rounded,
-        label: 'Game',
-        color: const Color(0xFF7C4DFF),
-        onTap: () => context.push(AppRoutes.gamesHub),
-      ),
-      _QuickAction(
-        icon: Icons.emoji_events_rounded,
-        label: 'Pencapaian',
-        color: const Color(0xFFF59E0B),
-        onTap: () => context.push(AppRoutes.achievements),
-      ),
-    ];
+    // Instruktur/admin memakai set berbeda: fitur pengelolaan, bukan aktivitas
+    // belajar peserta (Sertifikat/Gabung Kelas/Game/Pencapaian dibuang karena
+    // tak relevan). "Penilaian" menggantikan "Penugasan" — instruktur menilai,
+    // bukan mengerjakan.
+    final actions = canManage
+        ? <_QuickAction>[
+            _QuickAction(
+              icon: Icons.rate_review_rounded,
+              label: 'Penilaian',
+              color: AppColors.brandPrimary,
+              onTap: () => context.push(
+                AppRoutes.instructorGradingQueue,
+                extra: {'courseId': ''},
+              ),
+            ),
+            _QuickAction(
+              icon: Icons.groups_rounded,
+              label: 'Peserta',
+              color: const Color(0xFF0F766E),
+              onTap: () => context.push(AppRoutes.instructorHub),
+            ),
+            _QuickAction(
+              icon: Icons.forum_rounded,
+              label: 'Diskusi',
+              color: const Color(0xFF3B82F6),
+              onTap: () => context.push(AppRoutes.discussionHub),
+            ),
+            _QuickAction(
+              icon: Icons.event_rounded,
+              label: 'Jadwal',
+              color: const Color(0xFF0EA5E9),
+              onTap: () => context.push(AppRoutes.agenda),
+            ),
+            _QuickAction(
+              icon: Icons.grid_view_rounded,
+              label: 'Kursus',
+              color: AppColors.brandPrimary,
+              onTap: onShowCourses,
+            ),
+          ]
+        : <_QuickAction>[
+            // Baris 1 — aktivitas belajar inti.
+            _QuickAction(
+              icon: Icons.assignment_turned_in_rounded,
+              label: 'Penugasan',
+              color: const Color(0xFFD97706),
+              onTap: () => context.push(AppRoutes.assignments),
+            ),
+            _QuickAction(
+              icon: Icons.grid_view_rounded,
+              label: 'Kursus',
+              color: AppColors.brandPrimary,
+              onTap: onShowCourses,
+            ),
+            _QuickAction(
+              icon: Icons.forum_rounded,
+              label: 'Diskusi',
+              color: const Color(0xFF3B82F6),
+              onTap: () => context.push(AppRoutes.discussionHub),
+            ),
+            _QuickAction(
+              icon: Icons.event_rounded,
+              label: 'Jadwal',
+              color: const Color(0xFF0EA5E9),
+              onTap: () => context.push(AppRoutes.agenda),
+            ),
+            // Baris 2 — pencapaian & pelengkap.
+            _QuickAction(
+              icon: Icons.workspace_premium_rounded,
+              label: 'Sertifikat',
+              color: AppColors.warning,
+              onTap: () => context.push(AppRoutes.certificateList),
+            ),
+            _QuickAction(
+              icon: Icons.vpn_key_rounded,
+              label: 'Gabung Kelas',
+              color: AppColors.success,
+              onTap: () => context.push(AppRoutes.joinClass),
+            ),
+            _QuickAction(
+              icon: Icons.sports_esports_rounded,
+              label: 'Game',
+              color: const Color(0xFF7C4DFF),
+              onTap: () => context.push(AppRoutes.gamesHub),
+            ),
+            _QuickAction(
+              icon: Icons.emoji_events_rounded,
+              label: 'Pencapaian',
+              color: const Color(0xFFF59E0B),
+              onTap: () => context.push(AppRoutes.achievements),
+            ),
+          ];
 
     const columns = 4;
     const gap = 12.0;

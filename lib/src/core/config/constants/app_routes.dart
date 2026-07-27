@@ -60,6 +60,9 @@ class AppRoutes {
   static const String certificateList = '/certificate-list';
 
   // Instructor / admin
+  // Panel instruktur (dashboard pengelolaan) — kini dibuka sebagai halaman
+  // dari Home, bukan lagi menggantikan Home.
+  static const String instructorHub = '/instructor/hub';
   static const String instructorParticipants = '/instructor/participants';
   static const String instructorParticipantDetail =
       '/instructor/participant-detail';

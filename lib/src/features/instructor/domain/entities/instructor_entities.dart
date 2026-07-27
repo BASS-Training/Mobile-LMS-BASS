@@ -291,6 +291,8 @@ class GradingQueueItem extends Equatable {
   final String contentId;
   final String contentTitle;
   final String lessonTitle;
+  final String courseId;
+  final String courseTitle;
   final bool scoringEnabled;
   final String status; // 'pending' | 'graded'
   final String? submittedAt;
@@ -303,6 +305,8 @@ class GradingQueueItem extends Equatable {
     required this.contentId,
     required this.contentTitle,
     required this.lessonTitle,
+    required this.courseId,
+    required this.courseTitle,
     required this.scoringEnabled,
     required this.status,
     this.submittedAt,
@@ -321,6 +325,8 @@ class GradingQueueItem extends Equatable {
       contentId: json['contentId']?.toString() ?? '',
       contentTitle: json['contentTitle']?.toString() ?? '',
       lessonTitle: json['lessonTitle']?.toString() ?? '',
+      courseId: json['courseId']?.toString() ?? '',
+      courseTitle: json['courseTitle']?.toString() ?? '',
       scoringEnabled: json['scoringEnabled'] != false,
       status: json['status']?.toString() ?? 'pending',
       submittedAt: json['submittedAt']?.toString(),
@@ -336,6 +342,8 @@ class GradingQueueItem extends Equatable {
     contentId,
     contentTitle,
     lessonTitle,
+    courseId,
+    courseTitle,
     scoringEnabled,
     status,
     submittedAt,

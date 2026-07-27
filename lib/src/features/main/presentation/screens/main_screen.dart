@@ -6,7 +6,6 @@ import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/aut
 import 'package:lms_mobile_app/src/features/courses/presentation/screens/course_list_screen.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/screens/saved_courses_screen.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/screens/home_screen.dart';
-import 'package:lms_mobile_app/src/features/instructor/presentation/screens/instructor_dashboard_screen.dart';
 import 'package:lms_mobile_app/src/shared/widgets/bottom_nav_bar.dart';
 
 class MainScreen extends StatefulWidget {
@@ -29,18 +28,18 @@ class _MainScreenState extends State<MainScreen> {
 
   List<Widget> _buildScreens(String role, {required bool canManage}) {
     return [
-      // Instructors/admins get an action-oriented dashboard; participants get
-      // the learning home.
-      canManage
-          ? const InstructorDashboardScreen()
-          : HomeScreen(
-              accountRole: role,
-              onShowCourses: () {
-                setState(() {
-                  _selectedIndex = 1;
-                });
-              },
-            ),
+      // Semua role memakai Home belajar yang sama. Instruktur/admin hanya
+      // mendapat AKSES tambahan (pintasan penilaian, panel instruktur, buka
+      // semua lesson) — bukan tampilan home yang berbeda.
+      HomeScreen(
+        accountRole: role,
+        canManage: canManage,
+        onShowCourses: () {
+          setState(() {
+            _selectedIndex = 1;
+          });
+        },
+      ),
       const CourseListScreen(),
       const SavedCoursesScreen(),
       const ProfileScreen(),

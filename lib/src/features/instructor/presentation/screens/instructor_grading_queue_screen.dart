@@ -51,33 +51,35 @@ class InstructorGradingQueueScreen extends StatelessWidget {
                     'Submission essay, studi kasus & dokumen dari peserta akan muncul di sini.',
               );
             }
+            final groups = _groupByCourse(state.items);
             return RefreshIndicator(
               color: AppColors.brandPrimary,
               onRefresh: () => context.read<GradingQueueCubit>().load(),
-              child: ListView.separated(
+              child: ListView(
                 padding: const EdgeInsets.all(16),
-                itemCount: state.items.length + 1,
-                separatorBuilder: (_, _) => const SizedBox(height: 10),
-                itemBuilder: (context, i) {
-                  if (i == 0) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
-                      child: Text(
-                        '${state.pendingCount} menunggu dinilai · ${state.items.length} total',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.textSecondary,
-                        ),
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: Text(
+                      '${state.items.length} perlu dinilai · ${groups.length} kelas',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textSecondary,
                       ),
-                    );
-                  }
-                  final item = state.items[i - 1];
-                  return _QueueTile(
-                    item: item,
-                    onTap: () => _openGrading(context, item),
-                  );
-                },
+                    ),
+                  ),
+                  for (var g = 0; g < groups.length; g++)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: _CourseGroup(
+                        title: groups[g].title,
+                        items: groups[g].items,
+                        initiallyExpanded: groups.length == 1 || g == 0,
+                        onOpen: (item) => _openGrading(context, item),
+                      ),
+                    ),
+                ],
               ),
             );
           },
@@ -108,6 +110,24 @@ class InstructorGradingQueueScreen extends StatelessWidget {
     }
     // Kembali dari layar penilaian → segarkan status antrian.
     await cubit.load();
+  }
+
+  /// Kelompokkan item per kelas, mempertahankan urutan kemunculan (server sudah
+  /// mengirim terbaru dulu), agar tidak berjejer panjang & mudah dipindai.
+  List<({String title, List<GradingQueueItem> items})> _groupByCourse(
+    List<GradingQueueItem> items,
+  ) {
+    final order = <String>[];
+    final map = <String, List<GradingQueueItem>>{};
+    for (final item in items) {
+      final key = item.courseTitle.isEmpty ? 'Lainnya' : item.courseTitle;
+      if (!map.containsKey(key)) {
+        map[key] = <GradingQueueItem>[];
+        order.add(key);
+      }
+      map[key]!.add(item);
+    }
+    return [for (final key in order) (title: key, items: map[key]!)];
   }
 }
 
@@ -215,6 +235,106 @@ class _StatusPill extends StatelessWidget {
           color: color,
         ),
       ),
+    );
+  }
+}
+
+/// Satu kelas sebagai grup yang bisa dilipat — menjaga daftar penilaian ringkas
+/// alih-alih ratusan tile berjejer panjang.
+class _CourseGroup extends StatefulWidget {
+  final String title;
+  final List<GradingQueueItem> items;
+  final bool initiallyExpanded;
+  final void Function(GradingQueueItem item) onOpen;
+
+  const _CourseGroup({
+    required this.title,
+    required this.items,
+    required this.initiallyExpanded,
+    required this.onOpen,
+  });
+
+  @override
+  State<_CourseGroup> createState() => _CourseGroupState();
+}
+
+class _CourseGroupState extends State<_CourseGroup> {
+  late bool _expanded = widget.initiallyExpanded;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Material(
+          color: AppColors.surfaceMuted,
+          borderRadius: BorderRadius.circular(14),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(14),
+            onTap: () => setState(() => _expanded = !_expanded),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.folder_rounded,
+                    size: 20,
+                    color: AppColors.brandText,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      widget.title,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary,
+                        height: 1.2,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 9,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.warning.withValues(alpha: 0.16),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Text(
+                      '${widget.items.length}',
+                      style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.warning,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  AnimatedRotation(
+                    turns: _expanded ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 180),
+                    child: Icon(
+                      Icons.expand_more_rounded,
+                      color: AppColors.textTertiary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        if (_expanded)
+          for (final item in widget.items)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: _QueueTile(item: item, onTap: () => widget.onOpen(item)),
+            ),
+      ],
     );
   }
 }
