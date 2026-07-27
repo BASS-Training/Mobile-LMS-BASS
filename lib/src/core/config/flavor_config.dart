@@ -55,7 +55,7 @@ class DevelopmentFlavorConfig {
   /// perangkat itu sendiri, bukan ke laptop.
   static const String apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://192.168.31.119:8000/api/mobile',
+    defaultValue: 'http://192.168.31.120:8000/api/mobile',
   );
 
   static const bool enableLogging = true;

@@ -28,6 +28,12 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <!-- Matikan Impeller: di sebagian perangkat Android (mis. MIUI/Xiaomi)
+             renderer Impeller menampilkan glyph font ikon (Material Icons) &
+             emoji sebagai kotak "tofu". Skia merender-nya dengan andal. -->
+        <meta-data
+            android:name="io.flutter.embedding.android.EnableImpeller"
+            android:value="false"/>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

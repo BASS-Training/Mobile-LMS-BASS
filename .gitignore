@@ -21,7 +21,11 @@ migrate_working_dir/
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
-#.vscode/
+#
+# Di-ignore DI SINI dengan sengaja: launch.json menyimpan IP LAN server dev
+# (API_BASE_URL) yang berbeda tiap mesin & sering berubah karena DHCP. Dengan
+# tidak men-track-nya, IP tidak akan ke-reset saat merge antar branch.
+.vscode/
 
 # Flutter/Dart/Pub related
 **/doc/api/
