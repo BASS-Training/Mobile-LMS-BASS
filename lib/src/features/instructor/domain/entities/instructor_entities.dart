@@ -23,12 +23,17 @@ class InstructorCourseSummary extends Equatable {
   final int participantCount;
   final int pendingCount;
 
+  /// ISO-8601 tanggal dibuatnya kelas — dipakai untuk urutkan Terbaru/Terlama.
+  /// Bisa null bila backend belum mengirimnya (fallback ke urutan id).
+  final String? createdAt;
+
   const InstructorCourseSummary({
     required this.id,
     required this.title,
     required this.status,
     required this.participantCount,
     required this.pendingCount,
+    this.createdAt,
   });
 
   factory InstructorCourseSummary.fromJson(Map<String, dynamic> json) {
@@ -38,12 +43,13 @@ class InstructorCourseSummary extends Equatable {
       status: json['status']?.toString() ?? '',
       participantCount: _asInt(json['participantCount']) ?? 0,
       pendingCount: _asInt(json['pendingCount']) ?? 0,
+      createdAt: json['createdAt']?.toString(),
     );
   }
 
   @override
   List<Object?> get props =>
-      [id, title, status, participantCount, pendingCount];
+      [id, title, status, participantCount, pendingCount, createdAt];
 }
 
 /// Aggregate dashboard for the instructor/admin home (mirrors web stats).

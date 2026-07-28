@@ -657,6 +657,7 @@ class AppRouter {
           final args = state.extra as Map<String, dynamic>;
           return InstructorGradingQueueScreen(
             courseId: args['courseId'] as String,
+            courseTitle: args['courseTitle'] as String? ?? '',
           );
         },
       ),
