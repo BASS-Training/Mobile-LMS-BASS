@@ -9,6 +9,7 @@ class DiscussionFeedItem extends Equatable {
   final String snippet;
   final String contentId;
   final String lessonTitle;
+  final String courseId;
   final String courseTitle;
   final String authorName;
   final int repliesCount;
@@ -20,6 +21,7 @@ class DiscussionFeedItem extends Equatable {
     required this.snippet,
     required this.contentId,
     required this.lessonTitle,
+    required this.courseId,
     required this.courseTitle,
     required this.authorName,
     required this.repliesCount,
@@ -44,6 +46,7 @@ class DiscussionFeedItem extends Equatable {
       snippet: '${json['snippet'] ?? ''}',
       contentId: '${json['contentId'] ?? ''}',
       lessonTitle: '${json['lessonTitle'] ?? ''}',
+      courseId: '${json['courseId'] ?? ''}',
       courseTitle: '${json['courseTitle'] ?? ''}',
       authorName: '${json['authorName'] ?? 'Pengguna'}',
       repliesCount: asInt(json['repliesCount']),

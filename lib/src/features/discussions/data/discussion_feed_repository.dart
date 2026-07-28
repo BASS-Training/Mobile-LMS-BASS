@@ -12,9 +12,16 @@ class DiscussionFeedRepository {
 
   DiscussionFeedRepository({required Dio dio}) : _dio = dio;
 
-  Future<List<DiscussionFeedItem>> getFeed() async {
+  /// [courseId] non-null → forum satu kelas (semua diskusinya). Null → feed
+  /// global (dibatasi server ke 60 aktivitas terbaru).
+  Future<List<DiscussionFeedItem>> getFeed({String? courseId}) async {
     try {
-      final res = await _dio.get(ApiEndpoints.discussionsFeed);
+      final res = await _dio.get(
+        ApiEndpoints.discussionsFeed,
+        queryParameters: (courseId != null && courseId.isNotEmpty)
+            ? {'course': courseId}
+            : null,
+      );
       final data = res.data;
       final list = (data is Map && data['data'] is List)
           ? data['data'] as List

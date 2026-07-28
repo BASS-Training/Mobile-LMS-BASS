@@ -48,6 +48,8 @@ import 'package:lms_mobile_app/src/features/certificates/presentation/screens/ce
 import 'package:lms_mobile_app/src/features/home/presentation/screens/join_class_screen.dart';
 import 'package:lms_mobile_app/src/features/notifications/presentation/cubit/notifications_cubit.dart';
 import 'package:lms_mobile_app/src/features/notifications/presentation/screens/notifications_screen.dart';
+import 'package:lms_mobile_app/src/features/discussions/domain/entities/discussion_structure.dart';
+import 'package:lms_mobile_app/src/features/discussions/presentation/screens/discussion_course_forum_screen.dart';
 import 'package:lms_mobile_app/src/features/discussions/presentation/screens/discussion_hub_screen.dart';
 import 'package:lms_mobile_app/src/features/discussions/presentation/screens/discussion_thread_screen.dart';
 import 'package:lms_mobile_app/src/features/achievements/presentation/screens/achievements_screen.dart';
@@ -202,6 +204,13 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.discussionHub,
         builder: (context, state) => const DiscussionHubScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.discussionCourse,
+        builder: (context, state) {
+          final group = state.extra as DiscussionCourseGroup;
+          return DiscussionCourseForumScreen(group: group);
+        },
       ),
       GoRoute(
         path: AppRoutes.editProfile,

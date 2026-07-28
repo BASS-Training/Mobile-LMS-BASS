@@ -1,17 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 import 'package:lms_mobile_app/src/core/di/injector.dart';
 import 'package:lms_mobile_app/src/features/discussions/domain/entities/discussion_structure.dart';
 import 'package:lms_mobile_app/src/features/discussions/presentation/cubit/discussion_structure_cubit.dart';
-import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/discussion/discussion_cubit.dart';
-import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion/discussion_panel.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
+import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 import 'package:lms_mobile_app/src/shared/widgets/app_empty_state.dart';
 import 'package:lms_mobile_app/src/shared/widgets/brand_app_bar.dart';
 
-/// Discussion hub: pick a course (dropdown) and a lesson (chip strip) at the
-/// top; the selected lesson's discussion thread fills the rest of the screen.
-/// Mirrors the course→lesson structure so browsing feels contextual.
+/// Cara pengurutan daftar kelas di pemilih diskusi.
+enum _CourseSort { mostDiscussions, newest, oldest }
+
+extension on _CourseSort {
+  String get label => switch (this) {
+    _CourseSort.mostDiscussions => 'Terbanyak',
+    _CourseSort.newest => 'Terbaru',
+    _CourseSort.oldest => 'Terlama',
+  };
+
+  IconData get icon => switch (this) {
+    _CourseSort.mostDiscussions => Icons.forum_rounded,
+    _CourseSort.newest => Icons.schedule_rounded,
+    _CourseSort.oldest => Icons.history_rounded,
+  };
+}
+
+/// Diskusi = pilih kelas dulu (seperti fitur lain), lalu masuk ke forum kelas
+/// itu ([DiscussionCourseForumScreen]) yang menampilkan semua diskusinya dengan
+/// filter modul + urutan. Halaman ini hanya daftar kelas + jumlah diskusinya.
 class DiscussionHubScreen extends StatefulWidget {
   const DiscussionHubScreen({super.key});
 
@@ -21,10 +39,7 @@ class DiscussionHubScreen extends StatefulWidget {
 
 class _DiscussionHubScreenState extends State<DiscussionHubScreen> {
   final _cubit = ServiceLocator().locator<DiscussionStructureCubit>();
-
-  // Current selection (null = fall back to the first available).
-  String? _courseId;
-  String? _contentId;
+  _CourseSort _sort = _CourseSort.mostDiscussions;
 
   @override
   void initState() {
@@ -32,20 +47,39 @@ class _DiscussionHubScreenState extends State<DiscussionHubScreen> {
     _cubit.load();
   }
 
-  DiscussionCourseGroup? _course(List<DiscussionCourseGroup> groups) {
-    if (groups.isEmpty) return null;
-    return groups.firstWhere(
-      (g) => g.courseId == _courseId,
-      orElse: () => groups.first,
-    );
+  @override
+  void dispose() {
+    _cubit.close();
+    super.dispose();
   }
 
-  DiscussionLessonRef? _lesson(DiscussionCourseGroup course) {
-    if (course.lessons.isEmpty) return null;
-    return course.lessons.firstWhere(
-      (l) => l.contentId == _contentId,
-      orElse: () => course.lessons.first,
-    );
+  int _count(DiscussionCourseGroup g) =>
+      g.lessons.fold(0, (sum, l) => sum + l.discussionCount);
+
+  /// Kunci urut waktu: pakai tanggal buat bila ada, jika belum dikirim backend
+  /// gunakan courseId (auto-increment) sebagai proksi urutan pembuatan.
+  int _recencyKey(DiscussionCourseGroup g) {
+    final dt = DateTime.tryParse(g.createdAt ?? '');
+    if (dt != null) return dt.millisecondsSinceEpoch;
+    return int.tryParse(g.courseId) ?? 0;
+  }
+
+  List<DiscussionCourseGroup> _sortGroups(List<DiscussionCourseGroup> list) {
+    final out = [...list];
+    switch (_sort) {
+      case _CourseSort.mostDiscussions:
+        out.sort((a, b) {
+          final byCount = _count(b).compareTo(_count(a));
+          return byCount != 0
+              ? byCount
+              : a.courseTitle.compareTo(b.courseTitle);
+        });
+      case _CourseSort.newest:
+        out.sort((a, b) => _recencyKey(b).compareTo(_recencyKey(a)));
+      case _CourseSort.oldest:
+        out.sort((a, b) => _recencyKey(a).compareTo(_recencyKey(b)));
+    }
+    return out;
   }
 
   @override
@@ -80,45 +114,53 @@ class _DiscussionHubScreenState extends State<DiscussionHubScreen> {
               onAction: () => _cubit.load(),
             );
           }
-
-          final course = _course(state.groups);
-          if (course == null) {
+          if (state.groups.isEmpty) {
             return const AppEmptyState(
               icon: Icons.forum_outlined,
               title: 'Belum ada kelas',
               message:
-                  'Diskusi dari kelas yang kamu ikuti akan muncul di sini setelah ada materinya.',
+                  'Forum diskusi dari kelas yang kamu ikuti akan muncul di sini.',
             );
           }
-          final lesson = _lesson(course);
+
+          final groups = _sortGroups(state.groups);
 
           return Column(
             children: [
-              _Selector(
-                groups: state.groups,
-                course: course,
-                lesson: lesson,
-                onCourseChanged: (id) => setState(() {
-                  _courseId = id;
-                  _contentId = null; // reset to first lesson of the new course
-                }),
-                onLessonChanged: (id) => setState(() => _contentId = id),
+              _SortBar(
+                current: _sort,
+                onChanged: (m) => setState(() => _sort = m),
               ),
-              Divider(height: 1, color: AppColors.borderSubtle),
               Expanded(
-                child: lesson == null
-                    ? const AppEmptyState(
-                        icon: Icons.menu_book_outlined,
-                        title: 'Kelas ini belum punya materi',
-                        message: 'Belum ada materi untuk didiskusikan.',
-                      )
-                    : BlocProvider<DiscussionCubit>(
-                        key: ValueKey(lesson.contentId),
-                        create: (_) => ServiceLocator()
-                            .locator<DiscussionCubit>(param1: lesson.contentId)
-                          ..load(),
-                        child: const DiscussionPanel(),
+                child: RefreshIndicator(
+                  color: AppColors.brandPrimary,
+                  onRefresh: () => _cubit.load(),
+                  child: ListView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Text(
+                          'Pilih kelas untuk membuka forum diskusinya',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
                       ),
+                      for (final g in groups)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: _CourseTile(
+                            group: g,
+                            discussionCount: _count(g),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ),
             ],
           );
@@ -128,85 +170,43 @@ class _DiscussionHubScreenState extends State<DiscussionHubScreen> {
   }
 }
 
-/// The course dropdown + horizontal lesson chip strip.
-class _Selector extends StatelessWidget {
-  final List<DiscussionCourseGroup> groups;
-  final DiscussionCourseGroup course;
-  final DiscussionLessonRef? lesson;
-  final ValueChanged<String> onCourseChanged;
-  final ValueChanged<String> onLessonChanged;
+/// Bar pemilih urutan yang menetap di atas daftar kelas.
+class _SortBar extends StatelessWidget {
+  final _CourseSort current;
+  final ValueChanged<_CourseSort> onChanged;
 
-  const _Selector({
-    required this.groups,
-    required this.course,
-    required this.lesson,
-    required this.onCourseChanged,
-    required this.onLessonChanged,
-  });
+  const _SortBar({required this.current, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: AppColors.surface,
-      padding: const EdgeInsets.only(top: 12, bottom: 10),
-      child: Column(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        border: Border(bottom: BorderSide(color: AppColors.borderSubtle)),
+      ),
+      child: Row(
         children: [
-          // Course dropdown
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              decoration: BoxDecoration(
-                color: AppColors.surfaceMuted,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.borderSubtle),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  isExpanded: true,
-                  value: course.courseId,
-                  borderRadius: BorderRadius.circular(12),
-                  icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
-                  items: [
-                    for (final g in groups)
-                      DropdownMenuItem(
-                        value: g.courseId,
-                        child: Text(
-                          g.courseTitle,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                  ],
-                  onChanged: (v) {
-                    if (v != null && v != course.courseId) onCourseChanged(v);
-                  },
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          // Lesson chips
-          SizedBox(
-            height: 36,
-            child: ListView.separated(
+          Icon(Icons.sort_rounded, size: 18, color: AppColors.textTertiary),
+          const SizedBox(width: 10),
+          Expanded(
+            child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: course.lessons.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 8),
-              itemBuilder: (context, i) {
-                final l = course.lessons[i];
-                return _LessonChip(
-                  lesson: l,
-                  active: l.contentId == lesson?.contentId,
-                  onTap: () => onLessonChanged(l.contentId),
-                );
-              },
+              child: Row(
+                children: [
+                  for (final mode in _CourseSort.values)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: _SortChip(
+                        label: mode.label,
+                        icon: mode.icon,
+                        selected: mode == current,
+                        onTap: () => onChanged(mode),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
         ],
@@ -215,71 +215,125 @@ class _Selector extends StatelessWidget {
   }
 }
 
-class _LessonChip extends StatelessWidget {
-  final DiscussionLessonRef lesson;
-  final bool active;
+class _SortChip extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool selected;
   final VoidCallback onTap;
 
-  const _LessonChip({
-    required this.lesson,
-    required this.active,
+  const _SortChip({
+    required this.label,
+    required this.icon,
+    required this.selected,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final fg = active ? Colors.white : AppColors.textSecondary;
+    return Material(
+      color: selected ? AppColors.brandPrimary : AppColors.surfaceMuted,
+      borderRadius: BorderRadius.circular(999),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(999),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+          child: Row(
+            children: [
+              Icon(
+                icon,
+                size: 14,
+                color: selected ? Colors.white : AppColors.textSecondary,
+              ),
+              const SizedBox(width: 5),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  color: selected ? Colors.white : AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Kartu kelas di pemilih — ketuk untuk membuka forum diskusi kelas itu.
+class _CourseTile extends StatelessWidget {
+  final DiscussionCourseGroup group;
+  final int discussionCount;
+
+  const _CourseTile({required this.group, required this.discussionCount});
+
+  @override
+  Widget build(BuildContext context) {
+    final hasDiscussion = discussionCount > 0;
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(999),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          alignment: Alignment.center,
+        onTap: () => context.push(AppRoutes.discussionCourse, extra: group),
+        borderRadius: BorderRadius.circular(16),
+        child: Ink(
+          padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: active ? AppColors.brandPrimary : AppColors.surface,
-            borderRadius: BorderRadius.circular(999),
-            border: Border.all(
-              color: active ? AppColors.brandPrimary : AppColors.borderDefault,
-            ),
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.borderSubtle),
+            boxShadow: AppShadows.xs,
           ),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
             children: [
-              Flexible(
-                child: Text(
-                  lesson.lessonTitle,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w700,
-                    color: fg,
-                  ),
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: AppColors.brandPrimary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.forum_rounded,
+                  color: AppColors.brandPrimary,
+                  size: 22,
                 ),
               ),
-              if (lesson.discussionCount > 0) ...[
-                const SizedBox(width: 6),
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                  decoration: BoxDecoration(
-                    color: active
-                        ? Colors.white.withValues(alpha: 0.25)
-                        : AppColors.brandPrimary.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                  child: Text(
-                    '${lesson.discussionCount}',
-                    style: TextStyle(
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w800,
-                      color: active ? Colors.white : AppColors.brandPrimary,
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      group.courseTitle,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary,
+                        height: 1.2,
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 5),
+                    Text(
+                      hasDiscussion
+                          ? '$discussionCount diskusi'
+                          : 'Belum ada diskusi',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        color: hasDiscussion
+                            ? AppColors.brandText
+                            : AppColors.textTertiary,
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
+              const SizedBox(width: 8),
+              Icon(Icons.chevron_right_rounded, color: AppColors.textTertiary),
             ],
           ),
         ),

@@ -38,12 +38,17 @@ class DiscussionLessonRef extends Equatable {
 class DiscussionCourseGroup extends Equatable {
   final String courseId;
   final String courseTitle;
+
+  /// ISO-8601 tanggal dibuatnya kelas — untuk urutkan Terbaru/Terlama. Bisa null
+  /// bila backend belum mengirimnya (fallback ke urutan courseId).
+  final String? createdAt;
   final List<DiscussionLessonRef> lessons;
 
   const DiscussionCourseGroup({
     required this.courseId,
     required this.courseTitle,
     required this.lessons,
+    this.createdAt,
   });
 
   factory DiscussionCourseGroup.fromJson(Map<String, dynamic> json) {
@@ -58,10 +63,11 @@ class DiscussionCourseGroup extends Equatable {
     return DiscussionCourseGroup(
       courseId: '${json['courseId'] ?? ''}',
       courseTitle: '${json['courseTitle'] ?? 'Kelas'}',
+      createdAt: json['createdAt']?.toString(),
       lessons: lessons,
     );
   }
 
   @override
-  List<Object?> get props => [courseId, courseTitle, lessons];
+  List<Object?> get props => [courseId, courseTitle, createdAt, lessons];
 }

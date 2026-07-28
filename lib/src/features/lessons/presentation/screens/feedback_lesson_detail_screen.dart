@@ -9,6 +9,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/feedback/f
 import 'package:lms_mobile_app/src/features/lessons/presentation/bloc/feedback/feedback_state.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/attendance/attendance_status_banner.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion/discussion_button.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
@@ -137,6 +138,10 @@ class _FeedbackLessonDetailScreenState extends State<FeedbackLessonDetailScreen>
         courseTitle: widget.course.title,
         subtitle: 'FEEDBACK',
         onBack: _backToCourse,
+        action: DiscussionIconButton(
+          lessonId: widget.lesson.id,
+          lessonTitle: widget.lesson.title,
+        ),
       ),
       bottomNavigationBar: BlocBuilder<FeedbackBloc, FeedbackState>(
         builder: (context, state) {

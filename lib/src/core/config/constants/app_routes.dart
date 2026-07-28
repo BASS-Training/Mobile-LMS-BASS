@@ -27,6 +27,7 @@ class AppRoutes {
   static const String joinClass = '/join-class';
   static const String notifications = '/notifications-center';
   static const String discussionHub = '/discussions';
+  static const String discussionCourse = '/discussions/course';
   static const String discussionThread = '/discussion-thread';
   static const String achievements = '/achievements';
   static const String agenda = '/agenda';

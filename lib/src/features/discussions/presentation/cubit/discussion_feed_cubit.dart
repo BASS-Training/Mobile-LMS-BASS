@@ -41,10 +41,10 @@ class DiscussionFeedCubit extends Cubit<DiscussionFeedState> {
   DiscussionFeedCubit({required this.repository})
     : super(const DiscussionFeedState());
 
-  Future<void> load() async {
+  Future<void> load({String? courseId}) async {
     emit(state.copyWith(status: DiscussionFeedStatus.loading, error: null));
     try {
-      final items = await repository.getFeed();
+      final items = await repository.getFeed(courseId: courseId);
       emit(state.copyWith(status: DiscussionFeedStatus.loaded, items: items));
     } catch (e) {
       emit(state.copyWith(status: DiscussionFeedStatus.error, error: _msg(e)));

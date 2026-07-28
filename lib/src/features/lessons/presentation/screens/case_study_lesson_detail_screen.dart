@@ -12,6 +12,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/screens/case_st
 import 'package:lms_mobile_app/src/features/lessons/presentation/utils/lesson_navigation_mixin.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/attendance/attendance_status_banner.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/case_study/case_study_table_widget.dart';
+import 'package:lms_mobile_app/src/features/lessons/presentation/widgets/discussion/discussion_button.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 import 'package:lms_mobile_app/src/shared/widgets/lesson_app_bar.dart';
@@ -178,6 +179,10 @@ class _CaseStudyLessonDetailScreenState
           courseTitle: widget.course.title,
           subtitle: 'STUDI KASUS',
           onBack: _backToCourse,
+          action: DiscussionIconButton(
+            lessonId: widget.lesson.id,
+            lessonTitle: widget.lesson.title,
+          ),
         ),
         // Setelah dikumpulkan (read-only), tampilkan navigasi antar-lesson
         // seperti lesson lain agar peserta bisa langsung lanjut/sebelumnya.
