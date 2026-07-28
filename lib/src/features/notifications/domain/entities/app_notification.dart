@@ -6,13 +6,19 @@ import 'package:equatable/equatable.dart';
 class AppNotification extends Equatable {
   final String id;
   final String source; // 'notification' | 'announcement'
-  final String category; // discussion_reply | grade | new_content | announcement
+  final String
+  category; // discussion_reply | grade | new_content | new_submission | announcement
   final String title;
   final String message;
   final String? courseTitle;
   final String? contentId;
   final String? lessonTitle;
   final String? discussionId;
+
+  /// Untuk kategori `new_submission` (instruktur): tujuan penilaian.
+  final String? submissionId;
+  final String? submissionType; // essay | case_study | document
+  final String? participantName;
   final bool isRead;
   final DateTime? createdAt;
 
@@ -26,6 +32,9 @@ class AppNotification extends Equatable {
     this.contentId,
     this.lessonTitle,
     this.discussionId,
+    this.submissionId,
+    this.submissionType,
+    this.participantName,
     this.isRead = false,
     this.createdAt,
   });
@@ -46,6 +55,9 @@ class AppNotification extends Equatable {
       contentId: json['contentId'] as String?,
       lessonTitle: json['lessonTitle'] as String?,
       discussionId: json['discussionId'] as String?,
+      submissionId: json['submissionId'] as String?,
+      submissionType: json['submissionType'] as String?,
+      participantName: json['participantName'] as String?,
       isRead: json['isRead'] == true,
       createdAt: parseDate(json['createdAt']),
     );
@@ -61,6 +73,9 @@ class AppNotification extends Equatable {
     contentId: contentId,
     lessonTitle: lessonTitle,
     discussionId: discussionId,
+    submissionId: submissionId,
+    submissionType: submissionType,
+    participantName: participantName,
     isRead: isRead ?? this.isRead,
     createdAt: createdAt,
   );

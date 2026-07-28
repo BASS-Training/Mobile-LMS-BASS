@@ -51,6 +51,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           );
           return;
         }
+      case 'new_submission':
+        if (_openGrading(item)) return;
       case 'grade':
       case 'new_content':
         if (contentId.isNotEmpty && _openContent(contentId)) return;
@@ -87,6 +89,34 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       }
     }
     return false;
+  }
+
+  /// Notifikasi "tugas baru" (instruktur) → langsung ke layar penilaian
+  /// submission itu. Return false bila data tak lengkap.
+  bool _openGrading(AppNotification item) {
+    final submissionId = item.submissionId ?? '';
+    if (submissionId.isEmpty) return false;
+    switch (item.submissionType) {
+      case 'essay':
+        context.push(AppRoutes.instructorEssayGrading, extra: submissionId);
+        return true;
+      case 'case_study':
+        context.push(AppRoutes.instructorCaseStudyGrading, extra: submissionId);
+        return true;
+      case 'document':
+        context.push(
+          AppRoutes.instructorDocumentGrading,
+          extra: {
+            'submissionId': submissionId,
+            'contentId': item.contentId ?? '',
+            'contentTitle': item.lessonTitle ?? '',
+            'participantName': item.participantName ?? '',
+          },
+        );
+        return true;
+      default:
+        return false;
+    }
   }
 
   void _showDetailSheet(AppNotification item) {
@@ -292,6 +322,8 @@ class _NotificationTile extends StatelessWidget {
       return (icon: Icons.forum_rounded, color: const Color(0xFF3B82F6));
     case 'grade':
       return (icon: Icons.workspace_premium_rounded, color: AppColors.success);
+    case 'new_submission':
+      return (icon: Icons.rate_review_rounded, color: AppColors.warning);
     case 'new_content':
       return (icon: Icons.menu_book_rounded, color: AppColors.brandText);
     case 'announcement':
