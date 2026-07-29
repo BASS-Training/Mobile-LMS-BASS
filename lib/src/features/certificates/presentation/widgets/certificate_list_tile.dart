@@ -1,24 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
-import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
+import 'package:lms_mobile_app/src/features/certificates/domain/entities/certificate_entity.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
 import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
-/// A single certificate entry: a premium-feeling card with a medal badge,
-/// the course title and a verified status row.
+/// Satu entri sertifikat yang SUDAH diterbitkan: kartu premium dengan medali,
+/// judul kursus, dan tanggal terbit asli. Ketuk → detail (unduh/verifikasi).
 class CertificateListTile extends StatelessWidget {
-  final CourseEntity course;
+  final CertificateEntity certificate;
 
-  const CertificateListTile({super.key, required this.course});
+  const CertificateListTile({super.key, required this.certificate});
+
+  static const _months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'Mei',
+    'Jun',
+    'Jul',
+    'Agu',
+    'Sep',
+    'Okt',
+    'Nov',
+    'Des',
+  ];
+
+  String get _issuedLabel {
+    final d = certificate.issuedAt;
+    if (d == null) return 'Terverifikasi';
+    return 'Terbit · ${d.day} ${_months[d.month - 1]} ${d.year}';
+  }
 
   @override
   Widget build(BuildContext context) {
     return PressScale(
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: () => context.push(AppRoutes.certificateDetail, extra: course),
+        onTap: () =>
+            context.push(AppRoutes.certificateDetail, extra: certificate),
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -53,7 +75,7 @@ class CertificateListTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      course.title,
+                      certificate.courseTitle,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -72,11 +94,15 @@ class CertificateListTile extends StatelessWidget {
                           color: AppColors.success,
                         ),
                         const SizedBox(width: 4),
-                        Text(
-                          'Terverifikasi · Selesai 100%',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppColors.textSecondary,
+                        Expanded(
+                          child: Text(
+                            _issuedLabel,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.textSecondary,
+                            ),
                           ),
                         ),
                       ],
@@ -84,10 +110,7 @@ class CertificateListTile extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: AppColors.textTertiary,
-              ),
+              Icon(Icons.chevron_right_rounded, color: AppColors.textTertiary),
             ],
           ),
         ),

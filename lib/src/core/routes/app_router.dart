@@ -43,6 +43,7 @@ import 'package:lms_mobile_app/src/features/lessons/presentation/screens/zoom_le
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/results_list_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/quiz_result_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/lessons/presentation/screens/essay_result_detail_screen.dart';
+import 'package:lms_mobile_app/src/features/certificates/domain/entities/certificate_entity.dart';
 import 'package:lms_mobile_app/src/features/certificates/presentation/screens/certificate_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/certificates/presentation/screens/certificate_list_screen.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/screens/join_class_screen.dart';
@@ -709,8 +710,8 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.certificateDetail,
         builder: (context, state) {
-          final course = state.extra as CourseEntity;
-          return CertificateDetailScreen(course: course);
+          final certificate = state.extra as CertificateEntity;
+          return CertificateDetailScreen(certificate: certificate);
         },
       ),
       GoRoute(

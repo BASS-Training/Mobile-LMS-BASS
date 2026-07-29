@@ -79,9 +79,9 @@ class ApiEndpoints {
   static const String createDiscussion = '/lessons/{contentId}/discussions';
   static const String createReply = '/discussions/{discussionId}/replies';
 
-  // Certificates
-  static const String getCertificates = '/certificates';
-  static const String getCertificateById = '/certificates/{id}';
+  // Certificates (aturan kelayakan & PDF sama persis dengan web)
+  static const String certificates = '/certificates';
+  static const String generateCertificate = '/certificates/{course}/generate';
 
   // Profile
   static const String getProfile = '/profile';
