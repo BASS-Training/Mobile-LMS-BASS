@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
+import 'package:lms_mobile_app/src/features/home/domain/entities/home_stats.entity.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_measures.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
@@ -16,10 +17,16 @@ class HomeQuickActions extends StatelessWidget {
   /// "Penugasan" mengarah ke antrian penilaian & "Sertifikat" diganti "Peserta".
   final bool canManage;
 
+  /// Statistik belajar nyata untuk pintasan "Pencapaian". Rute Pencapaian
+  /// membutuhkan [HomeStatsEntity]; jika null dipakai [HomeStatsEntity.empty]
+  /// agar layar tidak kosong/crash (mis. akun pengelola atau data belum termuat).
+  final HomeStatsEntity? stats;
+
   const HomeQuickActions({
     super.key,
     required this.onShowCourses,
     this.canManage = false,
+    this.stats,
   });
 
   @override
@@ -81,7 +88,10 @@ class HomeQuickActions extends StatelessWidget {
               icon: Icons.emoji_events_rounded,
               label: 'Pencapaian',
               color: const Color(0xFFF59E0B),
-              onTap: () => context.push(AppRoutes.achievements),
+              onTap: () => context.push(
+                AppRoutes.achievements,
+                extra: stats ?? HomeStatsEntity.empty,
+              ),
             ),
           ]
         : <_QuickAction>[
@@ -133,7 +143,10 @@ class HomeQuickActions extends StatelessWidget {
               icon: Icons.emoji_events_rounded,
               label: 'Pencapaian',
               color: const Color(0xFFF59E0B),
-              onTap: () => context.push(AppRoutes.achievements),
+              onTap: () => context.push(
+                AppRoutes.achievements,
+                extra: stats ?? HomeStatsEntity.empty,
+              ),
             ),
           ];
 

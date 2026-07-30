@@ -24,6 +24,21 @@ class HomeStatsEntity extends Equatable {
     required this.completedCourseList,
   });
 
+  /// Snapshot serba-nol yang aman dipakai saat data kursus belum tersedia,
+  /// mis. membuka Pencapaian sebelum stats termuat atau dari akun pengelola.
+  /// Mencegah crash cast null di rute Pencapaian.
+  static const HomeStatsEntity empty = HomeStatsEntity(
+    totalCourses: 0,
+    completedCourses: 0,
+    incompleteCourses: 0,
+    overallProgressPercentage: 0,
+    totalLessons: 0,
+    completedLessons: 0,
+    totalQuizzes: 0,
+    completedQuizzes: 0,
+    completedCourseList: [],
+  );
+
   /// Factory ini akan membersihkan SEMUA looping yang ada di UI Home Screen
   factory HomeStatsEntity.fromCourses(List<CourseEntity> courses) {
     final completedCoursesList = courses.where((c) => c.progressPercentage == 100).toList();

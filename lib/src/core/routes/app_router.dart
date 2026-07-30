@@ -236,8 +236,9 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.achievements,
-        builder: (context, state) =>
-            AchievementsScreen(stats: state.extra as HomeStatsEntity),
+        builder: (context, state) => AchievementsScreen(
+          stats: state.extra as HomeStatsEntity? ?? HomeStatsEntity.empty,
+        ),
       ),
       GoRoute(
         path: AppRoutes.agenda,

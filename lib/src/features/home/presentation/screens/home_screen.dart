@@ -313,6 +313,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: HomeQuickActions(
                 onShowCourses: _goToCourseList,
                 canManage: widget.canManage,
+                stats: stats,
               ),
             ),
             const SizedBox(height: 22),
