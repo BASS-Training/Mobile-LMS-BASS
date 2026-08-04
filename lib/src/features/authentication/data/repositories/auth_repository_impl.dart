@@ -108,6 +108,26 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<void> deleteAccount({required String password}) async {
+    final token = LocalStorage.getAuthToken();
+    if (token == null) {
+      throw Exception('Sesi berakhir. Silakan masuk kembali.');
+    }
+
+    try {
+      await _dio.delete(
+        ApiEndpoints.deleteAccount,
+        data: {'password': password},
+      );
+    } on DioException catch (error) {
+      throw Exception(friendlyDioMessage(error, 'Gagal menghapus akun.'));
+    }
+
+    // Akun sudah dihapus di server → bersihkan sesi lokal apa pun yang tersisa.
+    await LocalStorage.clearAuthSession();
+  }
+
+  @override
   Future<UserEntity?> getCurrentUser() async {
     final storedUser = LocalStorage.getAuthUser();
     final token = LocalStorage.getAuthToken();

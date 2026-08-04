@@ -133,6 +133,15 @@ class ProfileScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 24),
                         _LogoutButton(onTap: () => _confirmLogout(context)),
+                        // Hapus akun hanya untuk peserta (akun yang mendaftar
+                        // sendiri). Akun pengelola diprovisi lewat web & ditolak
+                        // backend, jadi tak perlu ditampilkan di sini.
+                        if (user.role == 'participant') ...[
+                          const SizedBox(height: 12),
+                          _DeleteAccountButton(
+                            onTap: () => context.push(AppRoutes.deleteAccount),
+                          ),
+                        ],
                         const SizedBox(height: 24),
                       ],
                     ),
@@ -912,6 +921,32 @@ class _LogoutButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
           ),
           textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+        ),
+      ),
+    );
+  }
+}
+
+/// Tautan halus menuju layar hapus akun. Sengaja low-emphasis (bukan tombol
+/// besar) agar tidak bersaing dengan aksi utama, tapi tetap ada demi kepatuhan
+/// App Store (aplikasi yang mengizinkan buat akun wajib menyediakan hapus akun).
+class _DeleteAccountButton extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _DeleteAccountButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 44,
+      child: TextButton.icon(
+        onPressed: onTap,
+        icon: const Icon(Icons.delete_outline_rounded, size: 18),
+        label: const Text('Hapus Akun'),
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.red,
+          textStyle: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w700),
         ),
       ),
     );

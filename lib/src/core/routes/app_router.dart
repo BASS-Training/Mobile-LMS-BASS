@@ -18,6 +18,7 @@ import 'package:lms_mobile_app/src/features/authentication/presentation/screens/
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/forgot_password_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/change_password_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/change_email_screen.dart';
+import 'package:lms_mobile_app/src/features/authentication/presentation/screens/delete_account_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/edit_profile/edit_profile_cubit.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/edit_profile_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/domain/entities/user_entity.dart';
@@ -177,6 +178,13 @@ class AppRouter {
         builder: (context, state) => BlocProvider<AuthActionCubit>(
           create: (_) => _sl<AuthActionCubit>(),
           child: const ChangeEmailScreen(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.deleteAccount,
+        builder: (context, state) => BlocProvider<AuthActionCubit>(
+          create: (_) => _sl<AuthActionCubit>(),
+          child: const DeleteAccountScreen(),
         ),
       ),
       GoRoute(

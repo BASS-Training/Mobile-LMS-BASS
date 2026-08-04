@@ -20,6 +20,11 @@ abstract class AuthRepository {
   Future<UserEntity?> getCurrentUser();
   Stream<UserEntity?> watchCurrentUser();
 
+  /// Hapus permanen akun user saat ini (butuh konfirmasi [password]). Setelah
+  /// server menghapus akun & seluruh data pribadinya, sesi lokal dibersihkan.
+  /// Dipakai fitur "Hapus Akun" — wajib untuk App Store.
+  Future<void> deleteAccount({required String password});
+
   /// Update the current user's profile (data dasar + optional avatar photo).
   /// Returns the updated user, with the local session refreshed.
   Future<UserEntity?> updateProfile({

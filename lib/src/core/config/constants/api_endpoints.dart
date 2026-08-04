@@ -8,6 +8,10 @@ class ApiEndpoints {
   static const String getCurrentUser = '/auth/me';
   static const String refreshToken = '/auth/refresh-token';
 
+  /// Hapus permanen akun peserta yang sedang login (DELETE, butuh konfirmasi
+  /// password). Wajib App Store Guideline 5.1.1(v).
+  static const String deleteAccount = '/auth/account';
+
   // Verifikasi email (OTP) — butuh login
   static const String sendEmailOtp = '/auth/email/send-otp';
   static const String verifyEmailOtp = '/auth/email/verify-otp';

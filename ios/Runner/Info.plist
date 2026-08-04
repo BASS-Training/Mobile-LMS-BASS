@@ -67,5 +67,10 @@
 		<string>Aplikasi memerlukan akses kamera untuk mengambil foto profil dan mengunggah tugas.</string>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>Aplikasi memerlukan akses galeri untuk memilih foto profil dan mengunggah tugas.</string>
+		<!-- App hanya memakai enkripsi standar (HTTPS/TLS) yang dikecualikan, jadi
+		     tidak perlu dokumen kepatuhan ekspor. Ini mencegah pertanyaan ekspor
+		     enkripsi muncul setiap kali unggah build ke App Store Connect. -->
+		<key>ITSAppUsesNonExemptEncryption</key>
+		<false/>
 	</dict>
 </plist>

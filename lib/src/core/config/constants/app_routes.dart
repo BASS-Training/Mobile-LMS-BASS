@@ -15,6 +15,7 @@ class AppRoutes {
   static const String forgotPassword = '/forgot-password';
   static const String changePassword = '/change-password';
   static const String changeEmail = '/change-email';
+  static const String deleteAccount = '/delete-account';
 
   // Main
   static const String main = '/main';

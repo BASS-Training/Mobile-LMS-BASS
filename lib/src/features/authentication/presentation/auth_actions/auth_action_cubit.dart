@@ -150,6 +150,23 @@ class AuthActionCubit extends Cubit<AuthActionState> {
     }
   }
 
+  /// Hapus permanen akun (butuh konfirmasi password). Pada sukses, layar
+  /// pemanggil sebaiknya memicu logout (AuthBloc) agar router kembali ke intro.
+  Future<void> deleteAccount(String password) async {
+    emit(state.copyWith(status: AuthActionStatus.loading));
+    try {
+      await _repository.deleteAccount(password: password);
+      emit(
+        state.copyWith(
+          status: AuthActionStatus.success,
+          message: 'Akun kamu telah dihapus permanen.',
+        ),
+      );
+    } catch (e) {
+      emit(state.copyWith(status: AuthActionStatus.failure, message: _clean(e)));
+    }
+  }
+
   Future<void> changePassword({
     required String currentPassword,
     required String newPassword,
