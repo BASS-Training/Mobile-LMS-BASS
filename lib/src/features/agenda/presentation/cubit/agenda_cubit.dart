@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lms_mobile_app/src/core/services/reminder_service.dart';
 import 'package:lms_mobile_app/src/features/agenda/data/agenda_repository.dart';
 import 'package:lms_mobile_app/src/features/agenda/data/holiday_repository.dart';
 import 'package:lms_mobile_app/src/features/agenda/data/personal_agenda_store.dart';
@@ -109,6 +112,7 @@ class AgendaCubit extends Cubit<AgendaState> {
         sessions: sessions,
         personal: personal,
       ));
+      _syncReminders();
       await _ensureHolidays(state.focusedMonth.year);
     } catch (e) {
       final msg = e.toString().replaceFirst('Exception: ', '');
@@ -154,10 +158,23 @@ class AgendaCubit extends Cubit<AgendaState> {
   Future<void> addPersonal(PersonalAgendaItem item) async {
     await personalStore.add(item);
     emit(state.copyWith(personal: await personalStore.getAll()));
+    _syncReminders();
   }
 
   Future<void> removePersonal(String id) async {
     await personalStore.remove(id);
     emit(state.copyWith(personal: await personalStore.getAll()));
+    _syncReminders();
+  }
+
+  /// Jadwalkan ulang pengingat lokal dari state terkini (fire-and-forget;
+  /// ReminderService menelan errornya sendiri agar tak mengganggu UI).
+  void _syncReminders() {
+    unawaited(
+      ReminderService.instance.sync(
+        sessions: state.sessions,
+        personal: state.personal,
+      ),
+    );
   }
 }

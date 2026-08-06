@@ -21,6 +21,9 @@ class LocalStorage {
   static const String _gameSoundMutedKey = 'game_sound_muted';
   static const String _themeModeKey = 'theme_mode';
   static const String _coursesCacheKey = 'courses_cache';
+  static const String _remindersEnabledKey = 'reminders_enabled';
+  static const String _reminderLeadKey = 'reminder_lead_minutes';
+  static const String _scheduledReminderIdsKey = 'scheduled_reminder_ids';
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -206,6 +209,37 @@ class LocalStorage {
 
   static Future<void> setThemeMode(String mode) async {
     await _box.put(_themeModeKey, mode);
+  }
+
+  // ===== Pengingat jadwal (notifikasi lokal) — preferensi tingkat perangkat =====
+  // Aktif secara default; pengguna bisa mematikan dari layar Jadwal.
+  static bool getRemindersEnabled() {
+    return _box.get(_remindersEnabledKey, defaultValue: true) == true;
+  }
+
+  static Future<void> setRemindersEnabled(bool enabled) async {
+    await _box.put(_remindersEnabledKey, enabled);
+  }
+
+  // Berapa menit sebelum acara notifikasi dimunculkan (default 30).
+  static int getReminderLeadMinutes() {
+    final v = _box.get(_reminderLeadKey, defaultValue: 30);
+    return v is int ? v : 30;
+  }
+
+  static Future<void> setReminderLeadMinutes(int minutes) async {
+    await _box.put(_reminderLeadKey, minutes);
+  }
+
+  // Id notifikasi yang sedang terjadwal, agar bisa dibatalkan tepat sasaran
+  // saat data agenda berubah / logout.
+  static List<int> getScheduledReminderIds() {
+    final raw = _box.get(_scheduledReminderIdsKey, defaultValue: <int>[]);
+    return raw is List ? raw.whereType<int>().toList() : <int>[];
+  }
+
+  static Future<void> setScheduledReminderIds(List<int> ids) async {
+    await _box.put(_scheduledReminderIdsKey, ids);
   }
 
   // Get progress statistics

@@ -11,6 +11,7 @@ import 'package:lms_mobile_app/src/shared/styles/app_theme.dart';
 import 'package:lms_mobile_app/src/shared/theme/theme_controller.dart';
 import 'package:lms_mobile_app/src/core/di/injector.dart';
 import 'package:lms_mobile_app/src/core/routes/app_router.dart';
+import 'package:lms_mobile_app/src/core/services/reminder_service.dart';
 
 // Domain Entities
 // BLoCs
@@ -108,6 +109,9 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         listener: (context, _) {
           context.read<CourseBloc>().add(const ResetCoursesEvent());
           QuizRepositoryImpl.clearStaticCache();
+          // Buang pengingat jadwal akun ini agar tak menyala di akun berikutnya
+          // pada perangkat yang sama.
+          ReminderService.instance.cancelAll();
         },
         child: ListenableBuilder(
           listenable: ThemeController.instance,

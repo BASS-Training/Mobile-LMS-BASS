@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lms_mobile_app/src/core/di/injector.dart';
+import 'package:lms_mobile_app/src/core/services/reminder_service.dart';
+import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 import 'package:lms_mobile_app/src/features/agenda/domain/entities/agenda_item.dart';
 import 'package:lms_mobile_app/src/features/agenda/domain/entities/personal_agenda_item.dart';
 import 'package:lms_mobile_app/src/features/agenda/presentation/cubit/agenda_cubit.dart';
@@ -68,6 +70,43 @@ class _AgendaScreenState extends State<AgendaScreen> {
     _cubit.selectDay(day);
   }
 
+  /// Aktifkan/matikan pengingat notifikasi lokal. Saat diaktifkan: minta izin
+  /// lalu jadwalkan dari data agenda saat ini; saat dimatikan: batalkan semua.
+  Future<void> _toggleReminders() async {
+    final enabled = !LocalStorage.getRemindersEnabled();
+    await LocalStorage.setRemindersEnabled(enabled);
+    var granted = true;
+    if (enabled) {
+      granted = await ReminderService.instance.requestPermissionIfNeeded();
+      await ReminderService.instance.sync(
+        sessions: _cubit.state.sessions,
+        personal: _cubit.state.personal,
+      );
+      // Notifikasi konfirmasi seketika sebagai bukti pipeline berfungsi (izin +
+      // channel + tampilan) tanpa harus menunggu waktu acara.
+      if (granted) {
+        await ReminderService.instance.showConfirmationNow();
+      }
+    } else {
+      await ReminderService.instance.cancelAll();
+    }
+    if (!mounted) return;
+    setState(() {});
+    final String message;
+    if (!enabled) {
+      message = 'Pengingat jadwal dimatikan';
+    } else if (granted) {
+      message = 'Pengingat jadwal diaktifkan';
+    } else {
+      message =
+          'Pengingat aktif, tapi izin notifikasi belum diberikan. '
+          'Aktifkan dari Setelan aplikasi.';
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,6 +114,18 @@ class _AgendaScreenState extends State<AgendaScreen> {
       appBar: BrandAppBar(
         title: 'Jadwal',
         actions: [
+          IconButton(
+            tooltip: LocalStorage.getRemindersEnabled()
+                ? 'Pengingat aktif — ketuk untuk mematikan'
+                : 'Pengingat mati — ketuk untuk mengaktifkan',
+            onPressed: _toggleReminders,
+            icon: Icon(
+              LocalStorage.getRemindersEnabled()
+                  ? Icons.notifications_active_rounded
+                  : Icons.notifications_off_rounded,
+              color: Colors.white,
+            ),
+          ),
           IconButton(
             tooltip: 'Hari ini',
             onPressed: _cubit.goToToday,

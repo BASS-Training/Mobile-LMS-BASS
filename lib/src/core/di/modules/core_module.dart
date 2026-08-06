@@ -2,6 +2,7 @@
 // Berisi: router, storage, config, logger
 import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:lms_mobile_app/src/core/config/flavor_config.dart';
+import 'package:lms_mobile_app/src/core/services/reminder_service.dart';
 import 'package:lms_mobile_app/src/core/utils/local_storage.dart';
 
 class CoreModule {
@@ -9,6 +10,11 @@ class CoreModule {
   static Future<void> register() async {
     // Initialize LocalStorage (Hive)
     await LocalStorage.init();
+
+    // Siapkan penjadwal notifikasi lokal (pengingat jadwal). Hanya menyiapkan
+    // plugin/zona waktu/channel — TIDAK meminta izin di sini (ditunda hingga
+    // pengguna membuka Jadwal / mengaktifkan pengingat).
+    await ReminderService.instance.init();
 
     // Fallback aman untuk FlavorConfig. Pada startup normal, main.dart SUDAH
     // meng-init FlavorConfig (kReleaseMode → production) sebelum ini berjalan,

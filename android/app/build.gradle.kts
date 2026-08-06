@@ -25,6 +25,9 @@ android {
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
+        // Wajib untuk flutter_local_notifications (memakai java.time backport)
+        // agar penjadwalan notifikasi lokal jalan di Android versi lama.
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -65,6 +68,12 @@ android {
             }
         }
     }
+}
+
+dependencies {
+    // Backport java.time dkk untuk minSdk lama — dibutuhkan
+    // flutter_local_notifications (penjadwalan zonedSchedule).
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }
 
 flutter {
