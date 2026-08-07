@@ -116,6 +116,7 @@ class _DiscussionHubScreenState extends State<DiscussionHubScreen> {
           }
           if (state.groups.isEmpty) {
             return const AppEmptyState(
+              illustration: 'assets/illustrations/empty_discussion.svg',
               icon: Icons.forum_outlined,
               title: 'Belum ada kelas',
               message:

@@ -179,6 +179,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 children: const [
                   SizedBox(height: 120),
                   AppEmptyState(
+                    illustration:
+                        'assets/illustrations/empty_notifications.svg',
                     icon: Icons.notifications_none_rounded,
                     title: 'Belum ada notifikasi',
                     message:

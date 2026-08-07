@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_strings.dart';
@@ -192,6 +193,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
           final courses = state.courses;
           if (courses.isEmpty) {
             return _centeredMessage(
+              illustration: 'assets/illustrations/empty_search.svg',
               icon: Icons.search_off_rounded,
               title: 'Kursus tidak ditemukan',
               message: 'Coba kata kunci lain atau kosongkan pencarian.',
@@ -317,20 +319,29 @@ class _CourseListScreenState extends State<CourseListScreen> {
     required IconData icon,
     required String title,
     String? message,
+    String? illustration,
   }) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            width: 92,
-            height: 92,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.brandPrimary.withValues(alpha: 0.1),
+          if (illustration != null)
+            SvgPicture.asset(
+              illustration,
+              height: 152,
+              fit: BoxFit.contain,
+              semanticsLabel: title,
+            )
+          else
+            Container(
+              width: 92,
+              height: 92,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.brandPrimary.withValues(alpha: 0.1),
+              ),
+              child: Icon(icon, size: 44, color: AppColors.brandText),
             ),
-            child: Icon(icon, size: 44, color: AppColors.brandText),
-          ),
           const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),

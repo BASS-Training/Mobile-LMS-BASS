@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 200" fill="none">
+  <circle cx="120" cy="98" r="72" fill="#dc0000" fill-opacity="0.08"/>
+  <circle cx="50" cy="54" r="5" fill="#dc0000" fill-opacity="0.25"/>
+  <circle cx="196" cy="62" r="7" fill="#9aa3b2" fill-opacity="0.45"/>
+  <circle cx="190" cy="146" r="5" fill="#dc0000" fill-opacity="0.20"/>
+  <circle cx="48" cy="140" r="6" fill="#9aa3b2" fill-opacity="0.35"/>
+  <!-- bell body -->
+  <path d="M84 132 Q84 70 120 70 Q156 70 156 132 Z" fill="#dc0000"/>
+  <!-- knob -->
+  <circle cx="120" cy="66" r="8" fill="#3f3d56"/>
+  <!-- rim -->
+  <rect x="74" y="128" width="92" height="14" rx="7" fill="#3f3d56"/>
+  <!-- clapper -->
+  <circle cx="120" cy="154" r="9" fill="#3f3d56"/>
+  <!-- highlight -->
+  <path d="M101 104 Q104 84 121 81" stroke="#ffffff" stroke-opacity="0.55" stroke-width="6" stroke-linecap="round"/>
+</svg>

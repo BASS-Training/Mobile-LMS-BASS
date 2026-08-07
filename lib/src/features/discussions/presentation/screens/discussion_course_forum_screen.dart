@@ -205,8 +205,10 @@ class _DiscussionCourseForumScreenState
                       ? ListView(
                           physics: const AlwaysScrollableScrollPhysics(),
                           children: const [
-                            SizedBox(height: 60),
-                            _Empty(
+                            SizedBox(height: 40),
+                            AppEmptyState(
+                              illustration:
+                                  'assets/illustrations/empty_discussion.svg',
                               icon: Icons.forum_outlined,
                               title: 'Belum ada diskusi',
                               message:

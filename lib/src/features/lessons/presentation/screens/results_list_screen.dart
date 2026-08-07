@@ -255,6 +255,7 @@ class ResultsListScreen extends StatelessWidget {
 
   Widget _buildEmptyState() {
     return const AppEmptyState(
+      illustration: 'assets/illustrations/empty_results.svg',
       icon: Icons.assessment_outlined,
       title: 'Belum ada nilai dan hasil',
       message:

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 200" fill="none">
+  <circle cx="120" cy="100" r="74" fill="#dc0000" fill-opacity="0.08"/>
+  <circle cx="52" cy="58" r="6" fill="#9aa3b2" fill-opacity="0.40"/>
+  <circle cx="192" cy="150" r="6" fill="#dc0000" fill-opacity="0.22"/>
+  <!-- faint content lines being searched -->
+  <rect x="66" y="66" width="56" height="9" rx="4.5" fill="#e9ecf2"/>
+  <rect x="66" y="84" width="40" height="9" rx="4.5" fill="#e9ecf2"/>
+  <rect x="66" y="102" width="48" height="9" rx="4.5" fill="#e9ecf2"/>
+  <!-- magnifier -->
+  <circle cx="142" cy="106" r="30" fill="#dc0000" fill-opacity="0.06"/>
+  <circle cx="142" cy="106" r="30" stroke="#dc0000" stroke-width="9"/>
+  <path d="M163 128 L185 150" stroke="#dc0000" stroke-width="13" stroke-linecap="round"/>
+  <!-- glass glare -->
+  <path d="M130 96 Q133 88 142 86" stroke="#ffffff" stroke-opacity="0.6" stroke-width="5" stroke-linecap="round"/>
+</svg>

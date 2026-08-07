@@ -77,6 +77,7 @@ class _AssignmentsScreenState extends State<AssignmentsScreen> {
 
           if (tasks.isEmpty) {
             return const AppEmptyState(
+              illustration: 'assets/illustrations/empty_tasks.svg',
               icon: Icons.task_alt_rounded,
               title: 'Belum ada tugas',
               message:
