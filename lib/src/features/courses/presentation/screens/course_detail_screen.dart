@@ -118,7 +118,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                 child: RefreshIndicator(
                   onRefresh: _onPullRefresh,
                   color: AppColors.brandPrimary,
-                  backgroundColor: Colors.white,
+                  backgroundColor: AppColors.surface,
                   strokeWidth: 2.5,
                   child: SingleChildScrollView(
                     // physics wajib agar RefreshIndicator bisa trigger

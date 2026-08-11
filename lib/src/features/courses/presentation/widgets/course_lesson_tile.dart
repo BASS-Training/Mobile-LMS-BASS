@@ -200,7 +200,7 @@ class CourseLessonTile extends StatelessWidget {
         ? AppColors.emerald
         : isUnlocked
         ? AppColors.brandPrimary.withValues(alpha: 0.10)
-        : const Color(0xFFEDEDED);
+        : AppColors.surfaceMuted;
 
     final Color numberColor = isCompleted
         ? Colors.white
