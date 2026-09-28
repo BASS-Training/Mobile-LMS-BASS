@@ -38,6 +38,9 @@ dev_dependencies:
   flutter_native_splash: ^2.4.7
   flutter_launcher_icons: ^0.14.1
 
+dependency_overrides:
+  html: 0.15.6
+
 flutter:
   uses-material-design: true
   assets:
