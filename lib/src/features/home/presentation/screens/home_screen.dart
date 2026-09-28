@@ -212,6 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
               FadeSlideIn(
                 delayMs: 100,
                 child: HomeQuickActions(
+                  accountRole: widget.accountRole,
                   onShowCourses: _goToCourseList,
                   canManage: true,
                 ),
@@ -311,6 +312,7 @@ class _HomeScreenState extends State<HomeScreen> {
             FadeSlideIn(
               delayMs: 100,
               child: HomeQuickActions(
+                accountRole: widget.accountRole,
                 onShowCourses: _goToCourseList,
                 canManage: widget.canManage,
                 stats: stats,

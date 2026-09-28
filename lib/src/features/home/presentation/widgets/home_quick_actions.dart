@@ -21,12 +21,14 @@ class HomeQuickActions extends StatelessWidget {
   /// membutuhkan [HomeStatsEntity]; jika null dipakai [HomeStatsEntity.empty]
   /// agar layar tidak kosong/crash (mis. akun pengelola atau data belum termuat).
   final HomeStatsEntity? stats;
+  final String accountRole;
 
   const HomeQuickActions({
     super.key,
     required this.onShowCourses,
     this.canManage = false,
     this.stats,
+    this.accountRole = 'participant',
   });
 
   @override
@@ -76,7 +78,27 @@ class HomeQuickActions extends StatelessWidget {
               icon: Icons.vpn_key_rounded,
               label: 'Gabung Kelas',
               color: AppColors.success,
-              onTap: () => context.push(AppRoutes.joinClass),
+              onTap: () {
+                if (accountRole == 'participant') {
+                  context.push(AppRoutes.joinClass);
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text('Akses ditolak'),
+                      content: const Text(
+                        'Hanya peserta yang dapat mengakses fitur ini.',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              },
             ),
             _QuickAction(
               icon: Icons.sports_esports_rounded,
