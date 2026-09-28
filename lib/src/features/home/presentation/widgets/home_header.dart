@@ -104,7 +104,13 @@ class HomeHeader extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 4),
-                Text(greeting.emoji, style: const TextStyle(fontSize: 16)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                  child: Text(
+                    greeting.emoji,
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 2),
@@ -144,7 +150,10 @@ class HomeHeader extends StatelessWidget {
                 right: 7,
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 4),
-                  constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                  constraints: const BoxConstraints(
+                    minWidth: 16,
+                    minHeight: 16,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.brandPrimary,
                     borderRadius: BorderRadius.circular(8),
