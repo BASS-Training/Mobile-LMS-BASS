@@ -28,7 +28,7 @@ class RegisterChoiceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final padding = compact
         ? const EdgeInsets.symmetric(horizontal: 14, vertical: 12)
-        : const EdgeInsets.all(14);
+        : const EdgeInsets.symmetric(horizontal: 14, vertical: 18);
 
     return Material(
       color: Colors.transparent,
@@ -55,66 +55,84 @@ class RegisterChoiceCard extends StatelessWidget {
                   ]
                 : null,
           ),
-          child: Row(
-            crossAxisAlignment: compact
-                ? CrossAxisAlignment.center
-                : CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: selected ? AppColors.brandPrimary : Colors.white,
-                  border: Border.all(
-                    color: selected
-                        ? AppColors.brandPrimary
-                        : AppColors.paperBorder,
-                    width: 1.2,
-                  ),
-                ),
-                child: Icon(
-                  icon,
-                  color: selected ? Colors.white : AppColors.inkSoft,
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: compact
-                      ? MainAxisAlignment.center
-                      : MainAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: compact ? 13 : 14,
-                        fontWeight: FontWeight.w800,
-                        color: selected
-                            ? AppColors.brandPrimary
-                            : AppColors.inkSoft,
-                      ),
-                    ),
-                    if (!compact && subtitle.isNotEmpty) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        subtitle,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.inkFaint,
-                          height: 1.3,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ],
-          ),
+          child: compact ? _buildCompactRow() : _buildVerticalStack(),
         ),
       ),
+    );
+  }
+
+  Widget _buildAvatar({required double size, required double iconSize}) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: selected ? AppColors.brandPrimary : Colors.white,
+        border: Border.all(
+          color: selected ? AppColors.brandPrimary : AppColors.paperBorder,
+          width: 1.2,
+        ),
+      ),
+      child: Icon(
+        icon,
+        color: selected ? Colors.white : AppColors.inkSoft,
+        size: iconSize,
+      ),
+    );
+  }
+
+  Widget _buildCompactRow() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        _buildAvatar(size: 40, iconSize: 20),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w800,
+              color: selected ? AppColors.brandPrimary : AppColors.inkSoft,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVerticalStack() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        _buildAvatar(size: 46, iconSize: 22),
+        const SizedBox(height: 10),
+        Text(
+          title,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w800,
+            height: 1.25,
+            color: selected ? AppColors.brandPrimary : AppColors.inkSoft,
+          ),
+        ),
+        if (subtitle.isNotEmpty) ...[
+          const SizedBox(height: 4),
+          Text(
+            subtitle,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 12,
+              color: AppColors.inkFaint,
+              height: 1.3,
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

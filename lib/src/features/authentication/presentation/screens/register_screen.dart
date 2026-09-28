@@ -66,30 +66,30 @@ class _RegisterView extends StatelessWidget {
     return Theme(
       data: AppTheme.lightLockedTheme,
       child: Scaffold(
-      body: BlocListener<AuthBloc, AuthState>(
-        listener: _onAuthState,
-        child: AuthScaffold(
-          maxWidth: 480,
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: const [
-            SizedBox(height: 4),
-            FadeSlideIn(
-              child: AuthHeader(
-                badge: RegisterStrings.badge,
-                title: RegisterStrings.title,
-                subtitle: RegisterStrings.subtitle,
+        body: BlocListener<AuthBloc, AuthState>(
+          listener: _onAuthState,
+          child: AuthScaffold(
+            maxWidth: 480,
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: const [
+              SizedBox(height: 4),
+              FadeSlideIn(
+                child: AuthHeader(
+                  badge: RegisterStrings.badge,
+                  title: RegisterStrings.title,
+                  subtitle: RegisterStrings.subtitle,
+                ),
               ),
-            ),
-            SizedBox(height: 22),
-            FadeSlideIn(delayMs: 80, child: _Progress()),
-            SizedBox(height: 20),
-            FadeSlideIn(delayMs: 140, child: _FormCard()),
-            SizedBox(height: 14),
-            _SignInLink(),
-          ],
+              SizedBox(height: 22),
+              FadeSlideIn(delayMs: 80, child: _Progress()),
+              SizedBox(height: 20),
+              FadeSlideIn(delayMs: 140, child: _FormCard()),
+              SizedBox(height: 14),
+              _SignInLink(),
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
@@ -168,17 +168,17 @@ class _Navigation extends StatelessWidget {
 
     final form = cubit.state;
     context.read<AuthBloc>().add(
-          AuthRegisterEvent(
-            name: form.name.value.trim(),
-            email: form.email.value.trim(),
-            password: form.password.value,
-            classInterest: form.classInterest.value,
-            dateOfBirth: form.dateOfBirthText,
-            gender: form.gender.value,
-            institutionName: form.institution.value.trim(),
-            occupation: form.occupation.value,
-          ),
-        );
+      AuthRegisterEvent(
+        name: form.name.value.trim(),
+        email: form.email.value.trim(),
+        password: form.password.value,
+        classInterest: form.classInterest.value,
+        dateOfBirth: form.dateOfBirthText,
+        gender: form.gender.value,
+        institutionName: form.institution.value.trim(),
+        occupation: form.occupation.value,
+      ),
+    );
   }
 
   @override
@@ -190,43 +190,63 @@ class _Navigation extends StatelessWidget {
 
     return Row(
       children: [
-        if (step > 1)
-          OutlinedButton.icon(
-            onPressed: isLoading ? null : cubit.previousStep,
-            icon: const Icon(Icons.arrow_back_outlined),
-            label: const Text(RegisterStrings.back),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.inkSoft,
-              side: BorderSide(color: AppColors.paperBorder),
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+        if (step > 1) ...[
+          Expanded(
+            flex: 2,
+            child: OutlinedButton.icon(
+              onPressed: isLoading ? null : cubit.previousStep,
+              icon: const Icon(Icons.arrow_back_outlined, size: 18),
+              label: const Text(
+                RegisterStrings.back,
+                overflow: TextOverflow.ellipsis,
+              ),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.inkSoft,
+                side: BorderSide(color: AppColors.paperBorder),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 14,
+                ),
+              ),
             ),
           ),
-        const Spacer(),
-        if (!isLastStep)
-          ElevatedButton.icon(
-            onPressed: isLoading ? null : cubit.nextStep,
-            icon: const Icon(Icons.arrow_forward_outlined),
-            label: const Text(RegisterStrings.next),
-            style: _primaryButtonStyle,
-          )
-        else
-          ElevatedButton.icon(
-            onPressed: isLoading ? null : () => _submit(context),
-            icon: isLoading
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                  )
-                : const Icon(Icons.check_circle_outline),
-            label: Text(
-              isLoading ? RegisterStrings.submitting : RegisterStrings.submit,
-            ),
-            style: _primaryButtonStyle,
-          ),
+          const SizedBox(width: 10),
+        ],
+        Expanded(
+          flex: 3,
+          child: isLastStep
+              ? ElevatedButton.icon(
+                  onPressed: isLoading ? null : () => _submit(context),
+                  icon: isLoading
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
+                        )
+                      : const Icon(Icons.check_circle_outline),
+                  label: Text(
+                    isLoading
+                        ? RegisterStrings.submitting
+                        : RegisterStrings.submit,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  style: _primaryButtonStyle,
+                )
+              : ElevatedButton.icon(
+                  onPressed: isLoading ? null : cubit.nextStep,
+                  icon: const Icon(Icons.arrow_forward_outlined, size: 18),
+                  label: const Text(
+                    RegisterStrings.next,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  style: _primaryButtonStyle,
+                ),
+        ),
       ],
     );
   }
@@ -234,7 +254,7 @@ class _Navigation extends StatelessWidget {
   static final ButtonStyle _primaryButtonStyle = ElevatedButton.styleFrom(
     backgroundColor: AppColors.brandPrimary,
     foregroundColor: Colors.white,
-    padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
   );
 }
