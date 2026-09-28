@@ -97,18 +97,21 @@ class GameCard extends StatelessWidget {
     if (!score.hasBeenPlayed) {
       return Row(
         children: [
+          const SizedBox(width: 5),
           Icon(
             Icons.fiber_new_rounded,
             size: 16,
             color: AppColors.textTertiary,
           ),
           const SizedBox(width: 5),
-          Text(
-            'Belum dimainkan',
-            style: TextStyle(
-              fontSize: 11.5,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textTertiary,
+          Expanded(
+            child: Text(
+              'Belum dimainkan',
+              style: TextStyle(
+                fontSize: 11.5,
+                fontWeight: FontWeight.w600,
+                color: AppColors.textTertiary,
+              ),
             ),
           ),
         ],

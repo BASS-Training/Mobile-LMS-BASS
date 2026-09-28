@@ -88,7 +88,7 @@ class _GamesHubScreenState extends State<GamesHubScreen> {
                         crossAxisCount: 2,
                         mainAxisSpacing: 14,
                         crossAxisSpacing: 14,
-                        childAspectRatio: 0.82,
+                        childAspectRatio: 0.8,
                       ),
                   itemBuilder: (context, index) {
                     final game = GameCatalog.games[index];
