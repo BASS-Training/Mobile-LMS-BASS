@@ -83,6 +83,11 @@ class ApiEndpoints {
   static const String certificates = '/certificates';
   static const String generateCertificate = '/certificates/{course}/generate';
 
+  // Catalog (daftar kursus publik/berbayar utk peserta)
+  static const String catalog = '/catalog';
+  static const String catalogDetail = '/catalog/{id}';
+  static const String catalogEnrollFree = '/catalog/{id}/daftar-gratis';
+
   // Profile
   static const String getProfile = '/profile';
   static const String updateProfile = '/profile';

@@ -1,0 +1,101 @@
+{
+  "catalog": [
+    {
+      "id": "catalog-001",
+      "title": "Bass Fundamental",
+      "description": "Bangun fondasi bermain bass mulai dari postur, teknik tangan, hingga memainkan groove pertama dengan stabil.",
+      "instructor": "Bass Training Academy",
+      "thumbnail_url": "",
+      "duration": "4 jam",
+      "lesson_count": 20,
+      "access_type": "free",
+      "external_url": null,
+      "sections": [
+        {"title": "Mengenal Instrumen Bass", "lesson_count": 4},
+        {"title": "Teknik Tangan Kanan", "lesson_count": 6},
+        {"title": "Teknik Tangan Kiri", "lesson_count": 5},
+        {"title": "Groove Pertama", "lesson_count": 5}
+      ]
+    },
+    {
+      "id": "catalog-002",
+      "title": "Groove & Timing Essentials",
+      "description": "Latih konsistensi tempo, subdivision, dan pocket agar permainan terasa lebih solid bersama band.",
+      "instructor": "Bass Training Academy",
+      "thumbnail_url": "",
+      "duration": "5 jam",
+      "lesson_count": 24,
+      "access_type": "external",
+      "external_url": "https://lms.basstrainingacademy.com",
+      "sections": [
+        {"title": "Fondasi Timing", "lesson_count": 6},
+        {"title": "Subdivision", "lesson_count": 8},
+        {"title": "Membangun Pocket", "lesson_count": 10}
+      ]
+    },
+    {
+      "id": "catalog-003",
+      "title": "Reading Rhythm for Bass",
+      "description": "Pelajari cara membaca notasi ritme secara bertahap dan menerapkannya langsung pada bass.",
+      "instructor": "Bintang Indrianto",
+      "thumbnail_url": "",
+      "duration": "3,5 jam",
+      "lesson_count": 18,
+      "access_type": "free",
+      "external_url": null,
+      "sections": [
+        {"title": "Nilai Not", "lesson_count": 5},
+        {"title": "Rest dan Tie", "lesson_count": 5},
+        {"title": "Latihan Sight Reading", "lesson_count": 8}
+      ]
+    },
+    {
+      "id": "catalog-004",
+      "title": "Walking Bass Blueprint",
+      "description": "Pahami chord tones, approach notes, dan voice leading untuk membangun walking bass yang musikal.",
+      "instructor": "Bass Training Academy",
+      "thumbnail_url": "",
+      "duration": "6 jam",
+      "lesson_count": 26,
+      "access_type": "external",
+      "external_url": "https://lms.basstrainingacademy.com",
+      "sections": [
+        {"title": "Chord Tones", "lesson_count": 7},
+        {"title": "Approach Notes", "lesson_count": 9},
+        {"title": "Menyusun Walking Line", "lesson_count": 10}
+      ]
+    },
+    {
+      "id": "catalog-005",
+      "title": "Slap Bass Starter",
+      "description": "Mulai teknik slap dengan gerakan yang efisien melalui latihan thumb, pop, dan kombinasi sederhana.",
+      "instructor": "Bass Training Academy",
+      "thumbnail_url": "",
+      "duration": "2,5 jam",
+      "lesson_count": 14,
+      "access_type": "free",
+      "external_url": null,
+      "sections": [
+        {"title": "Thumb Dasar", "lesson_count": 5},
+        {"title": "Pop Dasar", "lesson_count": 4},
+        {"title": "Kombinasi Slap", "lesson_count": 5}
+      ]
+    },
+    {
+      "id": "catalog-006",
+      "title": "Modern Bass Harmony",
+      "description": "Eksplorasi interval, chord extensions, dan pilihan nada untuk menciptakan bass line modern.",
+      "instructor": "Bintang Indrianto",
+      "thumbnail_url": "",
+      "duration": "7 jam",
+      "lesson_count": 30,
+      "access_type": "external",
+      "external_url": "https://lms.basstrainingacademy.com",
+      "sections": [
+        {"title": "Interval dan Triad", "lesson_count": 8},
+        {"title": "Seventh Chords", "lesson_count": 10},
+        {"title": "Extensions dan Substitusi", "lesson_count": 12}
+      ]
+    }
+  ]
+}

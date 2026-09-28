@@ -21,6 +21,7 @@ class LocalStorage {
   static const String _gameSoundMutedKey = 'game_sound_muted';
   static const String _themeModeKey = 'theme_mode';
   static const String _coursesCacheKey = 'courses_cache';
+  static const String _catalogEnrollmentsKey = 'catalog_enrollments';
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -179,6 +180,22 @@ class LocalStorage {
       }
     } catch (_) {}
     return null;
+  }
+
+  static List<String> getCatalogEnrollments() {
+    final value = _box.get(
+      _scoped(_catalogEnrollmentsKey),
+      defaultValue: <String>[],
+    );
+    return value is List ? value.map((id) => id.toString()).toList() : [];
+  }
+
+  static Future<void> enrollCatalogCourse(String catalogId) async {
+    final enrolledIds = getCatalogEnrollments();
+    if (enrolledIds.contains(catalogId)) return;
+
+    enrolledIds.add(catalogId);
+    await _box.put(_scoped(_catalogEnrollmentsKey), enrolledIds);
   }
 
   static bool hasSeenIntro() {

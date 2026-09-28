@@ -16,6 +16,7 @@ import 'modules/notification_module.dart';
 import 'modules/discussion_module.dart';
 import 'modules/achievement_module.dart';
 import 'modules/agenda_module.dart';
+import 'modules/catalog_module.dart';
 
 class ServiceLocator {
   static final ServiceLocator _instance = ServiceLocator._internal();
@@ -44,6 +45,7 @@ class ServiceLocator {
     AuthModule.register(_getIt);
     HomeModule.register(_getIt);
     CourseModule.register(_getIt);
+    CatalogModule.register(_getIt);
     LessonModule.register(_getIt);
     CertificateModule.register(_getIt);
     GameModule.register(_getIt);

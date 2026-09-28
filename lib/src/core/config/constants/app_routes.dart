@@ -19,6 +19,8 @@ class AppRoutes {
   // Main
   static const String main = '/main';
   static const String home = '/home';
+  static const String catalog = '/catalog';
+  static const String catalogDetailPath = '/catalog/:catalogId';
   static const String courses = '/courses';
   static const String savedCourses = '/saved-courses';
   static const String certificates = '/certificates';
@@ -31,6 +33,9 @@ class AppRoutes {
   static const String discussionThread = '/discussion-thread';
   static const String achievements = '/achievements';
   static const String agenda = '/agenda';
+
+  static String catalogDetail(String catalogId) =>
+      '/catalog/${Uri.encodeComponent(catalogId)}';
   // Penugasan peserta: agregasi tugas (essay/studi kasus/dokumen) yang perlu
   // dikerjakan / menunggu penilaian, lintas course yang sudah ter-unlock.
   static const String assignments = '/assignments';

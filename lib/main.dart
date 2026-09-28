@@ -16,6 +16,8 @@ import 'package:lms_mobile_app/src/core/routes/app_router.dart';
 // BLoCs
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_bloc.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_state.dart';
+import 'package:lms_mobile_app/src/features/catalog/presentation/bloc/catalog_bloc.dart';
+import 'package:lms_mobile_app/src/features/catalog/presentation/bloc/catalog_event.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/bloc/home_bloc.dart';
@@ -95,6 +97,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(create: (context) => sl<AuthBloc>()),
+        BlocProvider<CatalogBloc>(create: (context) => sl<CatalogBloc>()),
         BlocProvider<CourseBloc>(create: (context) => sl<CourseBloc>()),
         BlocProvider<HomeBloc>(create: (context) => sl<HomeBloc>()),
         BlocProvider<LessonBloc>(create: (context) => sl<LessonBloc>()),
@@ -107,6 +110,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         listenWhen: (prev, curr) => curr is AuthLoggedOut,
         listener: (context, _) {
           context.read<CourseBloc>().add(const ResetCoursesEvent());
+          context.read<CatalogBloc>().add(const ResetCatalogEvent());
           QuizRepositoryImpl.clearStaticCache();
         },
         child: ListenableBuilder(

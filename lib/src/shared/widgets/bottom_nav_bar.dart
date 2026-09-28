@@ -18,6 +18,7 @@ class CustomBottomNavBar extends StatelessWidget {
 
   static const List<_NavItem> _items = [
     _NavItem(Icons.home_rounded, Icons.home_outlined, 'Home'),
+    _NavItem(Icons.explore_rounded, Icons.explore_outlined, 'Catalog'),
     _NavItem(Icons.menu_book_rounded, Icons.menu_book_outlined, 'Courses'),
     _NavItem(Icons.bookmark_rounded, Icons.bookmark_outline_rounded, 'Saved'),
     _NavItem(Icons.person_rounded, Icons.person_outline_rounded, 'Profile'),
@@ -42,7 +43,7 @@ class CustomBottomNavBar extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: List.generate(_items.length, (index) {
@@ -87,7 +88,7 @@ class _NavPill extends StatelessWidget {
         duration: const Duration(milliseconds: 320),
         curve: Curves.easeOutCubic,
         padding: EdgeInsets.symmetric(
-          horizontal: selected ? 18 : 14,
+          horizontal: selected ? 10 : 9,
           vertical: 11,
         ),
         decoration: BoxDecoration(
@@ -117,12 +118,12 @@ class _NavPill extends StatelessWidget {
               curve: Curves.easeOutCubic,
               child: selected
                   ? Padding(
-                      padding: const EdgeInsets.only(left: 8),
+                      padding: const EdgeInsets.only(left: 5),
                       child: Text(
                         item.label,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 13,
+                          fontSize: 11,
                           fontWeight: FontWeight.w700,
                         ),
                       ),

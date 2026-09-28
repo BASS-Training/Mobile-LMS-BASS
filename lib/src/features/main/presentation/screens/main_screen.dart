@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/profile_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_bloc.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_state.dart';
+import 'package:lms_mobile_app/src/features/catalog/presentation/screens/catalog_screen.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/screens/course_list_screen.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/screens/saved_courses_screen.dart';
 import 'package:lms_mobile_app/src/features/home/presentation/screens/home_screen.dart';
@@ -36,10 +37,11 @@ class _MainScreenState extends State<MainScreen> {
         canManage: canManage,
         onShowCourses: () {
           setState(() {
-            _selectedIndex = 1;
+            _selectedIndex = 2;
           });
         },
       ),
+      const CatalogScreen(),
       const CourseListScreen(),
       const SavedCoursesScreen(),
       const ProfileScreen(),
