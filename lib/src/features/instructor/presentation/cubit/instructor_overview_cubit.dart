@@ -47,8 +47,10 @@ class ParticipantsCubit extends Cubit<ParticipantsState> {
     emit(state.copyWith(status: InstructorStatus.loading, error: null));
     try {
       final items = await repository.getParticipants(courseId);
+      if (isClosed) return;
       emit(state.copyWith(status: InstructorStatus.loaded, items: items));
     } catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: InstructorStatus.error, error: _msg(e)));
     }
   }
@@ -98,8 +100,10 @@ class GradingQueueCubit extends Cubit<GradingQueueState> {
       final items = isGlobal
           ? await repository.getGlobalGradingQueue()
           : await repository.getGradingQueue(courseId);
+      if (isClosed) return;
       emit(state.copyWith(status: InstructorStatus.loaded, items: items));
     } catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: InstructorStatus.error, error: _msg(e)));
     }
   }
@@ -146,8 +150,10 @@ class ParticipantDetailCubit extends Cubit<ParticipantDetailState> {
     emit(state.copyWith(status: InstructorStatus.loading, error: null));
     try {
       final data = await repository.getParticipantProgress(courseId, userId);
+      if (isClosed) return;
       emit(state.copyWith(status: InstructorStatus.loaded, data: data));
     } catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: InstructorStatus.error, error: _msg(e)));
     }
   }
@@ -189,8 +195,10 @@ class InstructorDashboardCubit extends Cubit<InstructorDashboardState> {
     emit(state.copyWith(status: InstructorStatus.loading, error: null));
     try {
       final data = await repository.getDashboard();
+      if (isClosed) return;
       emit(state.copyWith(status: InstructorStatus.loaded, data: data));
     } catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: InstructorStatus.error, error: _msg(e)));
     }
   }
