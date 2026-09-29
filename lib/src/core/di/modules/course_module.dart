@@ -15,8 +15,8 @@ import 'package:lms_mobile_app/src/features/courses/domain/usecases/get_saved_co
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/refresh_courses_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/search_courses_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/toggle_save_course_usecase.dart';
-import 'package:lms_mobile_app/src/features/courses/domain/usecases/watch_courses_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
+import 'package:lms_mobile_app/src/features/courses/presentation/cubit/saved_courses_cubit.dart';
 
 class CourseModule {
   /// Register semua course dependencies
@@ -44,7 +44,6 @@ class CourseModule {
     final toggleSaveCourseUseCase = ToggleSaveCourseUseCase(courseRepository);
     final getSavedCoursesUseCase = GetSavedCoursesUseCase(courseRepository);
     final refreshCoursesUseCase = RefreshCoursesUseCase(courseRepository);
-    final watchCoursesUseCase = WatchCoursesUseCase(courseRepository);
     final addCourseUseCase = AddCourseUseCase(courseRepository);
 
     // BLoC
@@ -54,11 +53,12 @@ class CourseModule {
         getCachedCoursesUseCase: getCachedCoursesUseCase,
         searchCoursesUseCase: searchCoursesUseCase,
         toggleSaveCourseUseCase: toggleSaveCourseUseCase,
-        getSavedCoursesUseCase: getSavedCoursesUseCase,
         refreshCoursesUseCase: refreshCoursesUseCase,
-        watchCoursesUseCase: watchCoursesUseCase,
         addCourseUseCase: addCourseUseCase,
       ),
+    );
+    getIt.registerFactory<SavedCoursesCubit>(
+      () => SavedCoursesCubit(getSavedCoursesUseCase: getSavedCoursesUseCase),
     );
   }
 }

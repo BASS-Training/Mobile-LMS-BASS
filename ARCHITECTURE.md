@@ -214,7 +214,8 @@ Telusuri ini di kode untuk memahami pola yang dipakai di **semua** fitur:
 
 Catatan pola nyata di `CourseBloc`:
 - **Optimistic update** pada `ToggleSaveCourseEvent` (UI berubah dulu, rollback bila API gagal).
-- **Stream** via `WatchCoursesEvent` + `emit.forEach` untuk sinkronisasi berkelanjutan.
+- **Cache-first** pada `GetCoursesEvent`; pemuatan hanya dimulai oleh event UI agar
+  tidak ada request REST otomatis yang menduplikasi request layar.
 
 ---
 

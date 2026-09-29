@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lms_mobile_app/src/core/config/constants/app_routes.dart';
+import 'package:lms_mobile_app/src/core/di/injector.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
-import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
-import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
-import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_state.dart';
+import 'package:lms_mobile_app/src/features/courses/presentation/cubit/saved_courses_cubit.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_accent.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_colors.dart';
 import 'package:lms_mobile_app/src/shared/styles/app_shadows.dart';
@@ -13,33 +12,44 @@ import 'package:lms_mobile_app/src/shared/widgets/app_empty_state.dart';
 import 'package:lms_mobile_app/src/shared/widgets/brand_app_bar.dart';
 import 'package:lms_mobile_app/src/shared/widgets/press_scale.dart';
 
-class SavedCoursesScreen extends StatefulWidget {
+class SavedCoursesScreen extends StatelessWidget {
   const SavedCoursesScreen({super.key});
 
   @override
-  State<SavedCoursesScreen> createState() => _SavedCoursesScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider<SavedCoursesCubit>(
+      create: (_) => ServiceLocator().locator<SavedCoursesCubit>()..load(),
+      child: const _SavedCoursesView(),
+    );
+  }
 }
 
-class _SavedCoursesScreenState extends State<SavedCoursesScreen> {
-  @override
-  void initState() {
-    super.initState();
-    context.read<CourseBloc>().add(const GetSavedCoursesEvent());
-  }
+class _SavedCoursesView extends StatelessWidget {
+  const _SavedCoursesView();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: const BrandAppBar(title: 'Kursus Tersimpan'),
-      body: BlocBuilder<CourseBloc, CourseState>(
+      body: BlocBuilder<SavedCoursesCubit, SavedCoursesState>(
         builder: (context, state) {
-          if (state is CourseLoading) {
+          if (state.status == SavedCoursesStatus.loading ||
+              state.status == SavedCoursesStatus.initial) {
             return const Center(
               child: CircularProgressIndicator(color: AppColors.brandPrimary),
             );
           }
-          if (state is SavedCoursesLoaded) {
+          if (state.status == SavedCoursesStatus.failure) {
+            return AppEmptyState(
+              icon: Icons.cloud_off_rounded,
+              title: 'Kursus tersimpan belum dapat dimuat',
+              message: state.errorMessage ?? 'Silakan coba beberapa saat lagi.',
+              actionLabel: 'Coba Lagi',
+              onAction: context.read<SavedCoursesCubit>().load,
+            );
+          }
+          if (state.status == SavedCoursesStatus.loaded) {
             final savedCourses = state.courses;
             if (savedCourses.isEmpty) {
               return AppEmptyState(
@@ -154,10 +164,7 @@ class _SavedCourseTile extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: AppColors.textTertiary,
-              ),
+              Icon(Icons.chevron_right_rounded, color: AppColors.textTertiary),
             ],
           ),
         ),
@@ -165,4 +172,3 @@ class _SavedCourseTile extends StatelessWidget {
     );
   }
 }
-

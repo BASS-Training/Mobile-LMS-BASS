@@ -68,34 +68,6 @@ class CourseRepositoryImpl implements CourseRepository {
   }
 
   @override
-  Stream<List<CourseEntity>> watchCourses() async* {
-    if (_isOfflineTestSession()) {
-      logDebug(
-        '[COURSE][WATCH] using local dummy watchCourses tester=${OfflineTestMode.describeContext()}',
-      );
-      final localCourses = await localDataSource.getCourses();
-      await _reconcileCompletionStatus(localCourses);
-      yield _mapCoursesToEntities(localCourses);
-      return;
-    }
-
-    // Cache-first: pancarkan cache disk lebih dulu (instan) bila ada, lalu
-    // lanjut dengan data segar dari jaringan.
-    final cached = await getCachedCourses();
-    if (cached.isNotEmpty) {
-      yield cached;
-    }
-
-    logDebug(
-      '[COURSE][WATCH] using remote API watchCourses tester=${OfflineTestMode.describeContext()}',
-    );
-    await for (final courses in remoteDataSource.watchCourses()) {
-      await _reconcileCompletionStatus(courses);
-      yield _mapCoursesToEntities(courses);
-    }
-  }
-
-  @override
   Future<CourseEntity?> getCourseById(String id) async {
     if (_isOfflineTestSession()) {
       logDebug(

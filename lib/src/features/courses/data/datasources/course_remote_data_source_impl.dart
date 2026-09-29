@@ -37,13 +37,6 @@ class CourseRemoteDataSourceImpl implements CourseRemoteDataSource {
   }
 
   @override
-  Stream<List<Course>> watchCourses() async* {
-    // REST API tidak punya Realtime Stream seperti Firestore.
-    // Jadi kita panggil getCourses() sekali untuk mengisi stream awal.
-    yield await getCourses();
-  }
-
-  @override
   Future<Course?> getCourseById(String id) async {
     // Nanti bisa dibuatkan API /courses/{id} di Laravel
     throw UnimplementedError('API getCourseById belum dibuat di Laravel');

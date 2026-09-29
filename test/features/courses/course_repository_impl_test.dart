@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -124,7 +123,4 @@ class _FakeCourseRemoteDataSource implements CourseRemoteDataSource {
 
   @override
   Future<void> toggleSaveCourse(String courseId) => throw UnimplementedError();
-
-  @override
-  Stream<List<Course>> watchCourses() => const Stream.empty();
 }

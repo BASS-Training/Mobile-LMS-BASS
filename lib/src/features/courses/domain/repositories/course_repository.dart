@@ -1,9 +1,7 @@
 import '../entities/course_entity.dart';
 
-/// Kontrak (Domain) untuk data kursus: ambil/cari/refresh, simpan-kursus, dan
-/// `watchCourses()` (stream untuk sinkronisasi berkelanjutan). Implementasi di
-/// lapisan Data memakai remote (dio) + cache. Contoh kontrak kanonik —
-/// lihat ARCHITECTURE.md §3 & §11.
+/// Kontrak (Domain) untuk data kursus: ambil/cari/refresh dan simpan-kursus.
+/// Implementasi di lapisan Data memakai remote (dio) + cache.
 abstract class CourseRepository {
   Future<List<CourseEntity>> getCourses();
 
@@ -12,7 +10,6 @@ abstract class CourseRepository {
   /// cache-first yang instan sebelum refresh dari jaringan.
   Future<List<CourseEntity>> getCachedCourses();
 
-  Stream<List<CourseEntity>> watchCourses();
   Future<void> addCourse(CourseEntity course);
   Future<CourseEntity?> getCourseById(String id);
   Future<List<CourseEntity>> searchCourses(String query);

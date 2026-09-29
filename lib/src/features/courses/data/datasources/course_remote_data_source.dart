@@ -6,9 +6,6 @@ abstract class CourseRemoteDataSource {
   /// Get semua courses dari remote API
   Future<List<Course>> getCourses();
 
-  /// Stream perubahan course untuk sync real-time
-  Stream<List<Course>> watchCourses();
-
   /// Get course berdasarkan ID dari remote
   Future<Course?> getCourseById(String id);
 

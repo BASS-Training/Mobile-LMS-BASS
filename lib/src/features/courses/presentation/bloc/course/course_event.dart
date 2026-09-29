@@ -14,13 +14,6 @@ class GetCoursesEvent extends CourseEvent {
   List<Object?> get props => [];
 }
 
-class WatchCoursesEvent extends CourseEvent {
-  const WatchCoursesEvent();
-
-  @override
-  List<Object?> get props => [];
-}
-
 class SearchCoursesEvent extends CourseEvent {
   final String query;
 
@@ -37,13 +30,6 @@ class ToggleSaveCourseEvent extends CourseEvent {
 
   @override
   List<Object?> get props => [courseId];
-}
-
-class GetSavedCoursesEvent extends CourseEvent {
-  const GetSavedCoursesEvent();
-
-  @override
-  List<Object?> get props => [];
 }
 
 class RefreshCoursesEvent extends CourseEvent {

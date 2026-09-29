@@ -23,10 +23,7 @@ class CourseLoaded extends CourseState {
   final List<CourseEntity> courses;
   final String searchQuery;
 
-  const CourseLoaded({
-    required this.courses,
-    this.searchQuery = '',
-  });
+  const CourseLoaded({required this.courses, this.searchQuery = ''});
 
   @override
   List<Object?> get props => [courses, searchQuery];
@@ -39,13 +36,4 @@ class CourseFailure extends CourseState {
 
   @override
   List<Object?> get props => [message];
-}
-
-class SavedCoursesLoaded extends CourseState {
-  final List<CourseEntity> courses;
-
-  const SavedCoursesLoaded({required this.courses});
-
-  @override
-  List<Object?> get props => [courses];
 }
