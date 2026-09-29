@@ -216,8 +216,8 @@ class CourseRepositoryImpl implements CourseRepository {
       );
       // Coba remote dulu untuk list terbaru
       final remoteSavedCourses = await remoteDataSource.getSavedCourses();
-      // Simpan ke cache
-      await localDataSource.saveCourses(remoteSavedCourses);
+      // Respons ini hanya subset course tersimpan. Jangan masukkan melalui
+      // saveCourses karena operasi tersebut mengganti seluruh cache course.
       await _reconcileCompletionStatus(remoteSavedCourses);
       return _mapCoursesToEntities(remoteSavedCourses);
     } catch (e) {
