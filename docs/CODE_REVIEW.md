@@ -3,7 +3,7 @@
 > Tanggal Review: 17 September 2026
 > Scope: 46 screen, 25 BLoC/Cubit, 74 widget
 
-> **Status audit terakhir: 30 September 2026** — seluruh 30 temuan diperiksa
+> **Status audit terakhir: 30 September 2026** — seluruh 32 temuan diperiksa
 > ulang terhadap kode saat ini.
 >
 > Legenda: ✅ selesai/diverifikasi · 🟡 sebagian · 🔴 masih terbuka
@@ -145,11 +145,12 @@
 - **Status (30 Sep 2026):** ✅ **Selesai (Batch C)** — tanpa dependensi baru:
   `bloc_concurrency` batal dipakai karena `pubspec.lock` repo tidak dapat
   dipenuhi SDK mesin ini (Dart 3.11.5 vs syarat `>=3.12.0`, `pub get` akan
-  menurunkan 21 paket). Diganti guard state `if (state is AuthLoading) return;`
-  di awal `_onLogin`/`_onRegister` — semantik droppable untuk double-tap.
-  Guard UI tetap ada (`login_screen.dart:225`). Test:
-  `test/features/authentication/auth_bloc_test.dart` ("login ganda saat
-  berjalan hanya memanggil repository sekali").
+  menurunkan 21 paket). Diganti flag `_credentialOpInFlight` yang di-reset di
+  `finally`, bukan guard state yang dapat dilewati saat event lain mengubah
+  state. Login dan register memakai semantik droppable yang sama; generation
+  auth juga membuang hasil restore/login lama. Guard UI tetap ada
+  (`login_screen.dart:225`). Test mencakup login/register ganda, silang
+  login-register, dan restore session yang selesai di tengah login.
 
 ### 13. 4 state class identik di `LessonBloc`
 
@@ -300,23 +301,58 @@
 
 ---
 
+## Temuan Audit Lanjutan — Batch C
+
+### 31. Race response auth terlambat menghidupkan sesi setelah logout
+
+- **Prioritas:** 🔴 High
+- **File:**
+  - `lib/src/features/authentication/data/repositories/auth_repository_impl.dart`
+  - `lib/src/features/authentication/presentation/bloc/auth/auth_bloc.dart`
+  - `lib/src/core/utils/local_storage.dart`
+- **Masalah:** Restore session/login/register/profile/OTP yang masih berjalan
+  dapat menyimpan user lama atau emit `AuthSuccess` setelah logout. Timeout
+  BLoC juga tidak membatalkan request Dio, sedangkan token dan user disimpan
+  pada dua key sehingga mutasi dapat terlihat setengah selesai.
+- **Status (30 Sep 2026):** ✅ **Selesai (Batch C)** — sesi disimpan atomik pada
+  satu key `auth_session` dengan fallback migrasi key legacy, tombstone logout,
+  dan revision untuk conditional save/clear. Repository memakai operation
+  epoch + `CancelToken`, logout lokal selesai lebih dulu dan revokasi server
+  berjalan best-effort dengan header token lama. AuthBloc memakai generation
+  bersama untuk restore/login/register/logout. Test mencakup response/error
+  terlambat, logout vs login, timeout cancellation, secondary auth mutation,
+  migrasi legacy, tombstone, dan revision lama.
+
+### 32. `BlocProvider(create:)` menutup singleton milik GetIt
+
+- **Prioritas:** 🟠 Medium
+- **File:** `lib/main.dart:99-107`
+- **Masalah:** `AuthBloc` dan `LessonBloc` didaftarkan sebagai lazy singleton,
+  tetapi `BlocProvider(create:)` menganggap instance miliknya dan menutupnya
+  saat provider dilepas. GetIt kemudian dapat mengembalikan BLoC yang sudah
+  ditutup; `AppRouter` juga memegang singleton `AuthBloc` yang sama.
+- **Status (30 Sep 2026):** ✅ **Selesai (Batch C)** — keduanya memakai
+  `BlocProvider.value`, sehingga lifecycle singleton tetap dimiliki GetIt/app.
+
+---
+
 ## Ringkasan Statistik
 
 | Kategori | Jumlah |
 |----------|--------|
-| Total temuan | 30 |
-| 🔴 High priority | 11 |
-| 🟠 Medium priority | 11 |
+| Total temuan | 32 |
+| 🔴 High priority | 12 |
+| 🟠 Medium priority | 12 |
 | 🔵 Low priority | 8 |
 | File unik terdampak | ~40 |
 | Widget mega (>300 baris) | 4 |
-| Bug fungsional | 6 |
+| Bug fungsional | 8 |
 
 ### Status Audit (30 Sep 2026)
 
 | Status | Jumlah | Temuan |
 |--------|--------|--------|
-| ✅ Selesai / tidak berlaku | 8 | #1, #2, #3, #4, #5, #6, #12, #27 |
+| ✅ Selesai / tidak berlaku | 10 | #1, #2, #3, #4, #5, #6, #12, #27, #31, #32 |
 | 🟡 Sebagian | 1 | #11 |
 | 🔴 Masih terbuka | 21 | sisanya |
 
@@ -334,7 +370,7 @@ bagian masing-masing.
 - [ ] Pecah mega-widgets (#7, #8, #9)
 - [ ] Konsistensi warna ke `AppColors` (#10)
 - [ ] Tambahkan aksesibilitas (#11) — sebagian: tooltip 11, `Semantics` 4
-- [x] Tambahkan droppable transformer (#12) — pakai guard `state is AuthLoading` (tanpa dependensi)
+- [x] Tambahkan semantik droppable (#12) — flag in-flight + generation, tanpa dependensi
 - [ ] Simplifikasi `LessonBloc` states (#13)
 - [ ] Refactor `EssayState` (#14)
 - [ ] Typing `attempt` field (#15)
