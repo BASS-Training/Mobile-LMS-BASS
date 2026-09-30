@@ -96,11 +96,15 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
 
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AuthBloc>(create: (context) => sl<AuthBloc>()),
+        // BlocProvider.value: instance ini lazySingleton di GetIt dan juga
+        // dipakai AppRouter (refreshListenable/redirect). create: akan menutup
+        // singleton itu saat provider dilepas, lalu siapa pun yang mengambilnya
+        // lagi dari GetIt mendapat bloc yang sudah mati.
+        BlocProvider<AuthBloc>.value(value: sl<AuthBloc>()),
         BlocProvider<CatalogBloc>(create: (context) => sl<CatalogBloc>()),
         BlocProvider<CourseBloc>(create: (context) => sl<CourseBloc>()),
         BlocProvider<HomeBloc>(create: (context) => sl<HomeBloc>()),
-        BlocProvider<LessonBloc>(create: (context) => sl<LessonBloc>()),
+        BlocProvider<LessonBloc>.value(value: sl<LessonBloc>()),
       ],
       // Saat logout, kosongkan state course di memori + cache quiz statis agar
       // data akun sebelumnya tidak terbawa ke akun berikutnya pada perangkat yang

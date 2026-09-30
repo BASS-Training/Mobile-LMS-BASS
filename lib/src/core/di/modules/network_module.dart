@@ -43,7 +43,12 @@ class AuthInterceptor extends Interceptor {
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     final token = LocalStorage.getAuthToken();
-    if (token != null && token.isNotEmpty) {
+    final hasAuthorization = options.headers.keys.any(
+      (key) => key.toLowerCase() == 'authorization',
+    );
+    if (!hasAuthorization &&
+        token != null &&
+        token.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $token';
     }
 

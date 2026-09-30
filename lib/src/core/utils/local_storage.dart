@@ -15,6 +15,7 @@ class LocalStorage {
   static const String _essaySubmittedPrefix = 'essay_submitted_';
   static const String _lessonAttemptPrefix = 'lesson_attempts_';
   static const String _recentCoursesKey = 'recent_courses';
+  static const String _authSessionKey = 'auth_session';
   static const String _authTokenKey = 'auth_token';
   static const String _authUserKey = 'auth_user';
   static const String _introSeenKey = 'intro_seen';
@@ -22,6 +23,12 @@ class LocalStorage {
   static const String _themeModeKey = 'theme_mode';
   static const String _coursesCacheKey = 'courses_cache';
   static const String _catalogEnrollmentsKey = 'catalog_enrollments';
+
+  static int _authSessionRevision = 0;
+
+  /// Identitas sesi dalam proses ini. Setiap save/clear menaikkan revision agar
+  /// response async hanya boleh memutasi sesi yang masih sama.
+  static int get authSessionRevision => _authSessionRevision;
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -126,16 +133,80 @@ class LocalStorage {
     required String token,
     required Map<String, dynamic> user,
   }) async {
-    await _box.put(_authTokenKey, token);
-    await _box.put(_authUserKey, jsonEncode(user));
+    _authSessionRevision++;
+    await _writeAuthSession(token: token, user: user);
+  }
+
+  /// Simpan hanya jika sesi belum berubah sejak [expectedRevision] diambil.
+  /// Digunakan response jaringan yang boleh datang setelah logout/login lain.
+  static Future<bool> saveAuthSessionIfUnchanged({
+    required int expectedRevision,
+    required String token,
+    required Map<String, dynamic> user,
+  }) async {
+    if (_authSessionRevision != expectedRevision) return false;
+
+    _authSessionRevision++;
+    await _writeAuthSession(token: token, user: user);
+    return true;
+  }
+
+  static Future<bool> clearAuthSessionIfUnchanged({
+    required int expectedRevision,
+  }) async {
+    if (_authSessionRevision != expectedRevision) return false;
+
+    _authSessionRevision++;
+    await _clearAuthSession();
+    return true;
+  }
+
+  static Future<void> _writeAuthSession({
+    required String token,
+    required Map<String, dynamic> user,
+  }) async {
+    // Token + user berada dalam satu value Hive sehingga pembaca tidak pernah
+    // melihat pasangan dari dua sesi berbeda.
+    await _box.put(
+      _authSessionKey,
+      jsonEncode(<String, dynamic>{'token': token, 'user': user}),
+    );
+    await _box.delete(_authTokenKey);
+    await _box.delete(_authUserKey);
+  }
+
+  static Map<String, dynamic>? _getAuthSession() {
+    final raw = _box.get(_authSessionKey);
+    if (raw is! String || raw.isEmpty) return null;
+
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is Map) {
+        return decoded.map((key, value) => MapEntry(key.toString(), value));
+      }
+    } catch (_) {}
+    return null;
   }
 
   static String? getAuthToken() {
+    if (_box.containsKey(_authSessionKey)) {
+      final token = _getAuthSession()?['token'];
+      return token is String && token.isNotEmpty ? token : null;
+    }
+
     final token = _box.get(_authTokenKey);
     return token is String && token.isNotEmpty ? token : null;
   }
 
   static Map<String, dynamic>? getAuthUser() {
+    if (_box.containsKey(_authSessionKey)) {
+      final user = _getAuthSession()?['user'];
+      if (user is Map) {
+        return user.map((key, value) => MapEntry(key.toString(), value));
+      }
+      return null;
+    }
+
     final raw = _box.get(_authUserKey);
     if (raw is! String || raw.isEmpty) {
       return null;
@@ -152,11 +223,19 @@ class LocalStorage {
   }
 
   static Future<void> clearAuthSession() async {
-    // Buang cache course (ter-scope ke user aktif) SEBELUM menghapus sesi,
-    // selagi id user masih bisa di-resolve, agar tidak bocor ke akun lain.
-    await _box.delete(_scoped(_coursesCacheKey));
+    _authSessionRevision++;
+    await _clearAuthSession();
+  }
+
+  static Future<void> _clearAuthSession() async {
+    // Resolve cache user sebelum tombstone mengganti sesi aktif.
+    final scopedCoursesCacheKey = _scoped(_coursesCacheKey);
+    // Tombstone atomik mencegah key legacy menghidupkan sesi lagi bila proses
+    // berhenti sebelum pembersihan key lama selesai.
+    await _box.put(_authSessionKey, jsonEncode(const {'logged_out': true}));
     await _box.delete(_authTokenKey);
     await _box.delete(_authUserKey);
+    await _box.delete(scopedCoursesCacheKey);
   }
 
   // ===== Cache daftar course (untuk tampilan cache-first yang instan) =====
