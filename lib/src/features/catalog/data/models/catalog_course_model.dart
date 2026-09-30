@@ -4,7 +4,7 @@ import '../../domain/entities/catalog_course_entity.dart';
 /// - Respons API (camelCase): `shortDescription`, `lessonsCount`, `thumbnailUrl`,
 ///   `isFree`, `isPaid`, `price`, `priceLabel`, `isEnrolled`.
 /// - Asset fallback lokal (snake_case): `description`, `lesson_count`,
-///   `thumbnail_url`, `access_type`, `external_url`.
+///   `thumbnail_url`, `access_type`.
 ///
 /// Field yang tidak dikenal (mis. `duration` lama, `meta`) diabaikan agar
 /// penambahan field di server tidak merusak parsing.
@@ -14,7 +14,6 @@ class CatalogCourseModel {
   final String description;
   final String instructor;
   final String? thumbnailUrl;
-  final String? externalUrl;
   final int lessonCount;
   final bool isFree;
   final bool isPaid;
@@ -34,7 +33,6 @@ class CatalogCourseModel {
     required this.isPaid,
     required this.priceLabel,
     this.thumbnailUrl,
-    this.externalUrl,
     this.price,
     this.sections = const [],
     this.totalContents,
@@ -61,11 +59,6 @@ class CatalogCourseModel {
       json['thumbnailUrl'],
       json['thumbnail_url'],
     ]);
-    // API tidak mengirim URL website; asset fallback memakai `external_url`.
-    final externalUrl = _firstNonEmpty([
-      json['externalUrl'],
-      json['external_url'],
-    ]);
 
     return CatalogCourseModel(
       id: json['id']?.toString() ?? '',
@@ -73,7 +66,6 @@ class CatalogCourseModel {
       description: description,
       instructor: json['instructor']?.toString() ?? '',
       thumbnailUrl: thumbnail.isEmpty ? null : thumbnail,
-      externalUrl: externalUrl.isEmpty ? null : externalUrl,
       lessonCount: _asInt(json['lessonsCount'] ?? json['lesson_count']),
       isFree: isFree,
       isPaid: isPaid,
@@ -98,7 +90,6 @@ class CatalogCourseModel {
       description: description,
       instructor: instructor,
       thumbnailUrl: thumbnailUrl,
-      externalUrl: externalUrl,
       lessonCount: lessonCount,
       isFree: isFree,
       isPaid: isPaid,
@@ -119,7 +110,6 @@ class CatalogCourseModel {
       description: description,
       instructor: instructor,
       thumbnailUrl: thumbnailUrl,
-      externalUrl: externalUrl,
       lessonCount: lessonCount,
       isFree: isFree,
       isPaid: isPaid,

@@ -18,4 +18,7 @@ abstract class CatalogRemoteDataSource {
 
   /// `POST /catalog/{id}/daftar-gratis` — pendaftaran course gratis tanpa body.
   Future<void> enrollFree(String courseId);
+
+  /// `POST /web-session` — URL browser sekali pakai untuk detail course.
+  Future<String> createWebSession(String courseId);
 }

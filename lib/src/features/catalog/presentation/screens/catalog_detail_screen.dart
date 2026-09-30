@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../core/config/flavor_config.dart';
 import '../../../../shared/styles/app_colors.dart';
 import '../../../../shared/styles/app_shadows.dart';
 import '../../../../shared/widgets/app_empty_state.dart';
@@ -50,31 +49,10 @@ class _CatalogDetailScreenState extends State<CatalogDetailScreen> {
       );
   }
 
-  /// Validasi ketat untuk URL dari data remote/dummy: hanya https dengan host.
-  static Uri? _validWebsiteUri(String? value) {
-    final uri = value == null ? null : Uri.tryParse(value.trim());
-    if (uri == null || uri.scheme != 'https' || uri.host.isEmpty) return null;
-    return uri;
-  }
-
-  /// URL website course. API tidak mengirim field ini, jadi bila `externalUrl`
-  /// kosong (semua data API live) pakai domain situs dari config yang sudah
-  /// disesuaikan flavor (mis. `https://lms.basstrainingacademy.com`).
-  static Uri? _websiteUri(String? externalUrl) {
-    final raw = externalUrl?.trim() ?? '';
-    if (raw.isNotEmpty) return _validWebsiteUri(raw);
-    if (!FlavorConfig.isInitialized) return null;
-
-    final api = Uri.tryParse(FlavorConfig.instance.apiBaseUrl);
-    if (api == null || api.host.isEmpty) return null;
-    final root = api.replace(path: '', query: null, fragment: null);
-    final isHttp = root.scheme == 'http' || root.scheme == 'https';
-    return isHttp ? root : null;
-  }
-
-  Future<void> _openWebsite(String? externalUrl) async {
-    final uri = _websiteUri(externalUrl);
-    if (uri == null) {
+  Future<void> _openWebsite(String url) async {
+    final uri = Uri.tryParse(url.trim());
+    final validScheme = uri?.scheme == 'http' || uri?.scheme == 'https';
+    if (uri == null || !validScheme || uri.host.isEmpty) {
       _showMessage('Tautan website tidak tersedia.');
       return;
     }
@@ -93,12 +71,25 @@ class _CatalogDetailScreenState extends State<CatalogDetailScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<CatalogBloc, CatalogState>(
       listenWhen: (previous, current) {
-        return (current.errorMessage != null &&
+        return (current.websiteUrl != null &&
+                previous.websiteUrl != current.websiteUrl) ||
+            (current.websiteErrorMessage != null &&
+                previous.websiteErrorMessage != current.websiteErrorMessage) ||
+            (current.errorMessage != null &&
                 previous.errorMessage != current.errorMessage) ||
             (!_isEnrolled(previous) && _isEnrolled(current));
       },
-      listener: (context, state) {
-        if (state.errorMessage != null) {
+      listener: (context, state) async {
+        final websiteUrl = state.websiteUrl;
+        if (websiteUrl != null) {
+          // URL handoff sekali pakai: keluarkan dari state sebelum browser
+          // dibuka agar tidak dapat dipakai ulang oleh rebuild berikutnya.
+          context.read<CatalogBloc>().add(const ClearCatalogWebsiteEvent());
+          await _openWebsite(websiteUrl);
+        } else if (state.websiteErrorMessage != null) {
+          _showMessage(state.websiteErrorMessage!);
+          context.read<CatalogBloc>().add(const ClearCatalogWebsiteEvent());
+        } else if (state.errorMessage != null) {
           _showMessage(state.errorMessage!);
         } else {
           _showMessage('Course berhasil diikuti.');
@@ -138,10 +129,13 @@ class _CatalogDetailScreenState extends State<CatalogDetailScreen> {
         return _CatalogDetailContent(
           course: course,
           isEnrolling: state.enrollingId == course.id,
+          isOpeningWebsite: state.openingWebsiteId == course.id,
           onEnroll: () => context.read<CatalogBloc>().add(
             EnrollCatalogCourseEvent(course.id),
           ),
-          onOpenWebsite: () => _openWebsite(course.externalUrl),
+          onOpenWebsite: () => context.read<CatalogBloc>().add(
+            RequestCatalogWebsiteEvent(course.id),
+          ),
         );
       },
     );
@@ -151,12 +145,14 @@ class _CatalogDetailScreenState extends State<CatalogDetailScreen> {
 class _CatalogDetailContent extends StatelessWidget {
   final CatalogCourseEntity course;
   final bool isEnrolling;
+  final bool isOpeningWebsite;
   final VoidCallback onEnroll;
   final VoidCallback onOpenWebsite;
 
   const _CatalogDetailContent({
     required this.course,
     required this.isEnrolling,
+    required this.isOpeningWebsite,
     required this.onEnroll,
     required this.onOpenWebsite,
   });
@@ -168,6 +164,7 @@ class _CatalogDetailContent extends StatelessWidget {
       bottomNavigationBar: _CatalogActionBar(
         course: course,
         isEnrolling: isEnrolling,
+        isOpeningWebsite: isOpeningWebsite,
         onEnroll: onEnroll,
         onOpenWebsite: onOpenWebsite,
       ),
@@ -489,12 +486,14 @@ class _StatusBadge extends StatelessWidget {
 class _CatalogActionBar extends StatelessWidget {
   final CatalogCourseEntity course;
   final bool isEnrolling;
+  final bool isOpeningWebsite;
   final VoidCallback onEnroll;
   final VoidCallback onOpenWebsite;
 
   const _CatalogActionBar({
     required this.course,
     required this.isEnrolling,
+    required this.isOpeningWebsite,
     required this.onEnroll,
     required this.onOpenWebsite,
   });
@@ -503,30 +502,6 @@ class _CatalogActionBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final free = course.isFree;
     final isEnrolled = free && course.isEnrolled;
-    final isProcessing = free && isEnrolling;
-
-    final VoidCallback? onPressed;
-    final IconData icon;
-    final String label;
-
-    if (free) {
-      final canEnroll = !isProcessing && !isEnrolled;
-      onPressed = canEnroll ? onEnroll : null;
-      icon = isEnrolled
-          ? Icons.check_circle_rounded
-          : Icons.add_circle_outline_rounded;
-      label = isProcessing
-          ? 'Memproses...'
-          : isEnrolled
-          ? 'Sudah Diikuti'
-          : 'Ikuti Gratis';
-    } else {
-      // Course berbayar tidak dapat diikuti dari aplikasi (lihat
-      // API_CATALOG.md), jadi aksinya adalah membuka website course.
-      onPressed = onOpenWebsite;
-      icon = Icons.open_in_new_rounded;
-      label = 'Lihat di Website';
-    }
 
     return SafeArea(
       top: false,
@@ -538,35 +513,99 @@ class _CatalogActionBar extends StatelessWidget {
         ),
         child: SizedBox(
           height: 52,
-          child: ElevatedButton.icon(
-            onPressed: onPressed,
-            icon: isProcessing
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
-                  )
-                : Icon(icon),
-            label: Text(label),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.brandPrimary,
-              foregroundColor: Colors.white,
-              disabledBackgroundColor: AppColors.successSurface,
-              disabledForegroundColor: AppColors.successText,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              textStyle: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ),
+          child: free
+              ? Row(
+                  children: [
+                    Expanded(child: _websiteButton(outlined: true)),
+                    const SizedBox(width: 10),
+                    Expanded(child: _enrollButton(isEnrolled)),
+                  ],
+                )
+              : _websiteButton(),
         ),
+      ),
+    );
+  }
+
+  Widget _websiteButton({bool outlined = false}) {
+    final icon = isOpeningWebsite
+        ? SizedBox(
+            width: 18,
+            height: 18,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: outlined ? AppColors.brandPrimary : Colors.white,
+            ),
+          )
+        : const Icon(Icons.open_in_new_rounded);
+    final label = Text(isOpeningWebsite ? 'Membuka...' : 'Website');
+    final onPressed = isOpeningWebsite ? null : onOpenWebsite;
+    final shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(16),
+    );
+    const textStyle = TextStyle(fontSize: 14, fontWeight: FontWeight.w800);
+
+    if (outlined) {
+      return OutlinedButton.icon(
+        onPressed: onPressed,
+        icon: icon,
+        label: label,
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.brandText,
+          side: BorderSide(color: AppColors.brandPrimary),
+          shape: shape,
+          textStyle: textStyle,
+        ),
+      );
+    }
+
+    return ElevatedButton.icon(
+      onPressed: onPressed,
+      icon: icon,
+      label: label,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.brandPrimary,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        shape: shape,
+        textStyle: textStyle,
+      ),
+    );
+  }
+
+  Widget _enrollButton(bool isEnrolled) {
+    final canEnroll = !isEnrolling && !isEnrolled;
+    return ElevatedButton.icon(
+      onPressed: canEnroll ? onEnroll : null,
+      icon: isEnrolling
+          ? const SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.white,
+              ),
+            )
+          : Icon(
+              isEnrolled
+                  ? Icons.check_circle_rounded
+                  : Icons.add_circle_outline_rounded,
+            ),
+      label: Text(
+        isEnrolling
+            ? 'Memproses...'
+            : isEnrolled
+            ? 'Sudah Diikuti'
+            : 'Ikuti Gratis',
+      ),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.brandPrimary,
+        foregroundColor: Colors.white,
+        disabledBackgroundColor: AppColors.successSurface,
+        disabledForegroundColor: AppColors.successText,
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
       ),
     );
   }

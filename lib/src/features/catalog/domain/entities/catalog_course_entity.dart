@@ -16,7 +16,6 @@ class CatalogCourseEntity extends Equatable {
   final String description;
   final String instructor;
   final String? thumbnailUrl;
-  final String? externalUrl;
   final int lessonCount;
   final bool isFree;
   final bool isPaid;
@@ -36,7 +35,6 @@ class CatalogCourseEntity extends Equatable {
     required this.isPaid,
     required this.priceLabel,
     this.thumbnailUrl,
-    this.externalUrl,
     this.price,
     this.sections = const [],
     this.totalContents,
@@ -46,7 +44,6 @@ class CatalogCourseEntity extends Equatable {
   CatalogCourseEntity copyWith({
     String? description,
     String? thumbnailUrl,
-    String? externalUrl,
     int? lessonCount,
     bool? isFree,
     bool? isPaid,
@@ -62,7 +59,6 @@ class CatalogCourseEntity extends Equatable {
       description: description ?? this.description,
       instructor: instructor,
       thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
-      externalUrl: externalUrl ?? this.externalUrl,
       lessonCount: lessonCount ?? this.lessonCount,
       isFree: isFree ?? this.isFree,
       isPaid: isPaid ?? this.isPaid,
@@ -81,7 +77,6 @@ class CatalogCourseEntity extends Equatable {
     description,
     instructor,
     thumbnailUrl,
-    externalUrl,
     lessonCount,
     isFree,
     isPaid,

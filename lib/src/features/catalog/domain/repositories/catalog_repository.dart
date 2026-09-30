@@ -20,4 +20,7 @@ abstract class CatalogRepository {
 
   /// Daftar ke course gratis. Melempar error bila gagal.
   Future<void> enroll(String catalogId);
+
+  /// Buat URL handoff sekali pakai untuk membuka detail course di website.
+  Future<String> createWebSession(String catalogId);
 }

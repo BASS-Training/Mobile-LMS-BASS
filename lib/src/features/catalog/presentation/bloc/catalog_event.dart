@@ -53,6 +53,19 @@ class EnrollCatalogCourseEvent extends CatalogEvent {
   List<Object?> get props => [catalogId];
 }
 
+class RequestCatalogWebsiteEvent extends CatalogEvent {
+  final String catalogId;
+
+  const RequestCatalogWebsiteEvent(this.catalogId);
+
+  @override
+  List<Object?> get props => [catalogId];
+}
+
+class ClearCatalogWebsiteEvent extends CatalogEvent {
+  const ClearCatalogWebsiteEvent();
+}
+
 class ResetCatalogEvent extends CatalogEvent {
   const ResetCatalogEvent();
 }

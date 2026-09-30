@@ -74,27 +74,7 @@ void main() {
       expect(entity.isPaid, isTrue);
       expect(entity.priceLabel, 'Berbayar');
       expect(entity.price, isNull);
-      expect(entity.externalUrl, 'https://lms.basstrainingacademy.com');
       expect(entity.sections.single.lessonCount, 6);
-    });
-
-    test('externalUrl kosong atau tidak ada menjadi null', () {
-      final fromDummy = CatalogCourseModel.fromJson({
-        'id': 'catalog-3',
-        'title': 'Gratis Course',
-        'access_type': 'free',
-        'external_url': null,
-      }).toEntity();
-      final fromApi = CatalogCourseModel.fromJson({
-        'id': 'catalog-4',
-        'title': 'Paid Course',
-        'externalUrl': '',
-        'isFree': false,
-        'isPaid': true,
-      }).toEntity();
-
-      expect(fromDummy.externalUrl, isNull);
-      expect(fromApi.externalUrl, isNull);
     });
 
     test('priceLabel default mengikuti status gratis/berbayar', () {
