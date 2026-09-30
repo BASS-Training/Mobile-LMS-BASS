@@ -36,7 +36,7 @@ class DocumentSubmissionState extends Equatable {
       busy: busy ?? this.busy,
       error: error,
       message: message,
-      submitted: submitted ?? false,
+      submitted: submitted ?? this.submitted,
     );
   }
 
@@ -91,7 +91,9 @@ class DocumentSubmissionCubit extends Cubit<DocumentSubmissionState> {
 
   Future<void> submit() async {
     if (state.busy) return;
-    emit(state.copyWith(busy: true, error: null));
+    // Reset flag secara eksplisit di awal submit agar setiap pengumpulan
+    // menghasilkan tepi false→true yang baru bagi listener UI.
+    emit(state.copyWith(busy: true, error: null, submitted: false));
     try {
       final data = await repository.submit(lessonId);
       emit(

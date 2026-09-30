@@ -19,11 +19,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) async {
     emit(HomeJoinClassLoading());
-    final result = await joinClassUseCase(event.token);
-
-    result.fold(
-      (failure) => emit(HomeJoinClassFailure(failure.message)),
-      (_) => emit(HomeJoinClassSuccess()),
-    );
+    try {
+      final result = await joinClassUseCase(event.token);
+      if (isClosed) return;
+      result.fold(
+        (failure) => emit(HomeJoinClassFailure(failure.message)),
+        (_) => emit(HomeJoinClassSuccess()),
+      );
+    } catch (_) {
+      if (isClosed) return;
+      emit(const HomeJoinClassFailure('Gagal bergabung ke kelas. Coba lagi.'));
+    }
   }
 }

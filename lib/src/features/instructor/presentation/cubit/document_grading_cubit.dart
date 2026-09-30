@@ -35,7 +35,7 @@ class DocumentGradingState extends Equatable {
       scoringEnabled: scoringEnabled ?? this.scoringEnabled,
       participant: participant ?? this.participant,
       submitting: submitting ?? this.submitting,
-      saved: saved ?? false,
+      saved: saved ?? this.saved,
       error: error,
     );
   }
