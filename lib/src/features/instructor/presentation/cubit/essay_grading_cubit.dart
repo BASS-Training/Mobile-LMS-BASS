@@ -9,14 +9,12 @@ class EssayGradingState extends Equatable {
   final EssayGradingStatus status;
   final EssaySubmissionDetail? detail;
   final bool submitting;
-  final bool saved;
   final String? error;
 
   const EssayGradingState({
     this.status = EssayGradingStatus.loading,
     this.detail,
     this.submitting = false,
-    this.saved = false,
     this.error,
   });
 
@@ -24,18 +22,16 @@ class EssayGradingState extends Equatable {
     EssayGradingStatus? status,
     EssaySubmissionDetail? detail,
     bool? submitting,
-    bool? saved,
     String? error,
   }) => EssayGradingState(
     status: status ?? this.status,
     detail: detail ?? this.detail,
     submitting: submitting ?? this.submitting,
-    saved: saved ?? this.saved,
     error: error,
   );
 
   @override
-  List<Object?> get props => [status, detail, submitting, saved, error];
+  List<Object?> get props => [status, detail, submitting, error];
 }
 
 class EssayGradingCubit extends Cubit<EssayGradingState> {
@@ -73,7 +69,7 @@ class EssayGradingCubit extends Cubit<EssayGradingState> {
     emit(state.copyWith(submitting: true, error: null));
     try {
       await action();
-      emit(state.copyWith(submitting: false, saved: true));
+      emit(state.copyWith(submitting: false));
       await load();
       return true;
     } catch (e) {

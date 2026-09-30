@@ -141,7 +141,8 @@ class _EssayGradingViewState extends State<_EssayGradingView> {
           if (state.error != null) _toast(state.error!);
         },
         builder: (context, state) {
-          if (state.status == EssayGradingStatus.loading) {
+          if (state.status == EssayGradingStatus.loading &&
+              state.detail == null) {
             return const Center(
               child: CircularProgressIndicator(color: AppColors.brandPrimary),
             );

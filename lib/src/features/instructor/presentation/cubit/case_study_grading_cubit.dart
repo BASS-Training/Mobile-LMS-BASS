@@ -8,14 +8,12 @@ class CaseStudyGradingState extends Equatable {
   final CaseGradingStatus status;
   final CaseStudyReview? review;
   final bool submitting;
-  final bool saved;
   final String? error;
 
   const CaseStudyGradingState({
     this.status = CaseGradingStatus.loading,
     this.review,
     this.submitting = false,
-    this.saved = false,
     this.error,
   });
 
@@ -23,18 +21,16 @@ class CaseStudyGradingState extends Equatable {
     CaseGradingStatus? status,
     CaseStudyReview? review,
     bool? submitting,
-    bool? saved,
     String? error,
   }) => CaseStudyGradingState(
     status: status ?? this.status,
     review: review ?? this.review,
     submitting: submitting ?? this.submitting,
-    saved: saved ?? this.saved,
     error: error,
   );
 
   @override
-  List<Object?> get props => [status, review, submitting, saved, error];
+  List<Object?> get props => [status, review, submitting, error];
 }
 
 class CaseStudyGradingCubit extends Cubit<CaseStudyGradingState> {
@@ -64,7 +60,7 @@ class CaseStudyGradingCubit extends Cubit<CaseStudyGradingState> {
         score: score,
         feedback: feedback,
       );
-      emit(state.copyWith(submitting: false, saved: true));
+      emit(state.copyWith(submitting: false));
       await load();
       return true;
     } catch (e) {

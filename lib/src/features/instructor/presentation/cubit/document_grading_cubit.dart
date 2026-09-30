@@ -10,7 +10,6 @@ class DocumentGradingState extends Equatable {
   final bool scoringEnabled;
   final DocumentSubmissionParticipant? participant;
   final bool submitting;
-  final bool saved;
   final String? error;
 
   const DocumentGradingState({
@@ -18,7 +17,6 @@ class DocumentGradingState extends Equatable {
     this.scoringEnabled = true,
     this.participant,
     this.submitting = false,
-    this.saved = false,
     this.error,
   });
 
@@ -27,7 +25,6 @@ class DocumentGradingState extends Equatable {
     bool? scoringEnabled,
     DocumentSubmissionParticipant? participant,
     bool? submitting,
-    bool? saved,
     String? error,
   }) {
     return DocumentGradingState(
@@ -35,7 +32,6 @@ class DocumentGradingState extends Equatable {
       scoringEnabled: scoringEnabled ?? this.scoringEnabled,
       participant: participant ?? this.participant,
       submitting: submitting ?? this.submitting,
-      saved: saved ?? this.saved,
       error: error,
     );
   }
@@ -46,7 +42,6 @@ class DocumentGradingState extends Equatable {
     scoringEnabled,
     participant,
     submitting,
-    saved,
     error,
   ];
 }
@@ -117,7 +112,7 @@ class DocumentGradingCubit extends Cubit<DocumentGradingState> {
         score: score,
         feedback: feedback,
       );
-      emit(state.copyWith(submitting: false, saved: true));
+      emit(state.copyWith(submitting: false));
       await load();
       return true;
     } catch (e) {

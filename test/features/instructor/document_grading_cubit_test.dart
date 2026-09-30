@@ -4,24 +4,7 @@ import 'package:lms_mobile_app/src/features/lessons/domain/entities/document_sub
 import 'package:lms_mobile_app/src/features/lessons/domain/repositories/document_submission_repository.dart';
 
 void main() {
-  test('copyWith tanpa saved mempertahankan flag saved', () {
-    const state = DocumentGradingState(saved: true, submitting: true);
-
-    final next = state.copyWith(submitting: false, error: null);
-
-    expect(next.saved, isTrue);
-    expect(next.submitting, isFalse);
-  });
-
-  test('copyWith dapat mereset saved secara eksplisit', () {
-    const state = DocumentGradingState(saved: true);
-
-    final next = state.copyWith(saved: false);
-
-    expect(next.saved, isFalse);
-  });
-
-  test('saved bertahan setelah load memperbarui participant', () async {
+  test('load mengisi participant dan menyetel status loaded', () async {
     final cubit = DocumentGradingCubit(
       repository: _FakeDocumentRepository(),
       contentId: 'content-1',
@@ -29,23 +12,87 @@ void main() {
     );
     addTearDown(cubit.close);
 
-    final graded = await cubit.grade(
-      gradeSubmissionId: 'sub-1',
-      result: 'passed',
-      score: 100,
-    );
-
-    expect(graded, isTrue);
-    expect(cubit.state.saved, isTrue);
-
     await cubit.load();
 
     expect(cubit.state.status, DocGradingStatus.loaded);
-    expect(cubit.state.saved, isTrue);
+    expect(cubit.state.participant, isNotNull);
+    expect(cubit.state.error, isNull);
+    expect(cubit.state.submitting, isFalse);
+  });
+
+  test('load gagal menyetel status error beserta pesan', () async {
+    final cubit = DocumentGradingCubit(
+      repository: _FakeDocumentRepository()..failLoad = true,
+      contentId: 'content-1',
+      submissionId: 'sub-1',
+    );
+    addTearDown(cubit.close);
+
+    await cubit.load();
+
+    expect(cubit.state.status, DocGradingStatus.error);
+    expect(cubit.state.error, 'server error');
+  });
+
+  test(
+    'grade sukses mengembalikan true dan memuat ulang participant',
+    () async {
+      final repository = _FakeDocumentRepository();
+      final cubit = DocumentGradingCubit(
+        repository: repository,
+        contentId: 'content-1',
+        submissionId: 'sub-1',
+      );
+      addTearDown(cubit.close);
+      await cubit.load();
+
+      final ok = await cubit.grade(
+        gradeSubmissionId: 'sub-1',
+        result: 'passed',
+        score: 100,
+      );
+
+      expect(ok, isTrue);
+      expect(repository.gradeCalls, 1);
+      expect(repository.manageCalls, 2);
+      expect(cubit.state.status, DocGradingStatus.loaded);
+      expect(cubit.state.participant, isNotNull);
+      expect(cubit.state.submitting, isFalse);
+      expect(cubit.state.error, isNull);
+    },
+  );
+
+  test('grade gagal mengembalikan false beserta pesan error', () async {
+    final repository = _FakeDocumentRepository()..failGrade = true;
+    final cubit = DocumentGradingCubit(
+      repository: repository,
+      contentId: 'content-1',
+      submissionId: 'sub-1',
+    );
+    addTearDown(cubit.close);
+    await cubit.load();
+
+    final ok = await cubit.grade(
+      gradeSubmissionId: 'sub-1',
+      result: 'failed',
+      score: 0,
+    );
+
+    expect(ok, isFalse);
+    expect(repository.gradeCalls, 1);
+    expect(repository.manageCalls, 1);
+    expect(cubit.state.submitting, isFalse);
+    expect(cubit.state.error, 'server error');
+    expect(cubit.state.status, DocGradingStatus.loaded);
   });
 }
 
 class _FakeDocumentRepository implements DocumentSubmissionRepository {
+  bool failLoad = false;
+  bool failGrade = false;
+  int manageCalls = 0;
+  int gradeCalls = 0;
+
   static const DocumentSubmissionManage manageData = DocumentSubmissionManage(
     contentId: 'content-1',
     title: 'Tugas Dokumen',
@@ -68,7 +115,11 @@ class _FakeDocumentRepository implements DocumentSubmissionRepository {
   );
 
   @override
-  Future<DocumentSubmissionManage> manage(String contentId) async => manageData;
+  Future<DocumentSubmissionManage> manage(String contentId) async {
+    manageCalls++;
+    if (failLoad) throw Exception('server error');
+    return manageData;
+  }
 
   @override
   Future<void> grade(
@@ -76,7 +127,10 @@ class _FakeDocumentRepository implements DocumentSubmissionRepository {
     required String result,
     int? score,
     String? feedback,
-  }) async {}
+  }) async {
+    gradeCalls++;
+    if (failGrade) throw Exception('server error');
+  }
 
   @override
   Future<DocumentSubmissionData> getByLesson(String lessonId) =>

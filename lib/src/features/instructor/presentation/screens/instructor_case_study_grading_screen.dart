@@ -94,7 +94,8 @@ class _CaseStudyGradingViewState extends State<_CaseStudyGradingView> {
           if (state.error != null) _toast(state.error!);
         },
         builder: (context, state) {
-          if (state.status == CaseGradingStatus.loading) {
+          if (state.status == CaseGradingStatus.loading &&
+              state.review == null) {
             return const Center(
               child: CircularProgressIndicator(color: AppColors.brandPrimary),
             );
