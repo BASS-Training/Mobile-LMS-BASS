@@ -43,22 +43,6 @@ class CourseRemoteDataSourceImpl implements CourseRemoteDataSource {
   }
 
   @override
-  Future<List<Course>> searchCourses(String query) async {
-    // Nanti bisa dibuatkan API search di Laravel
-    // Sementara kita filter manual dari semua data
-    final courses = await getCourses();
-    final normalized = query.toLowerCase();
-
-    return courses
-        .where(
-          (course) =>
-              course.title.toLowerCase().contains(normalized) ||
-              course.description.toLowerCase().contains(normalized),
-        )
-        .toList();
-  }
-
-  @override
   Future<void> toggleSaveCourse(String courseId) async {
     try {
       await dio.post(

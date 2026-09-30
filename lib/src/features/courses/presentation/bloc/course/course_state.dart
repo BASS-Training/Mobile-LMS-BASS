@@ -20,13 +20,21 @@ class CourseLoading extends CourseState {
 }
 
 class CourseLoaded extends CourseState {
+  /// Daftar yang sedang ditampilkan pada Course List (dapat terfilter).
   final List<CourseEntity> courses;
+
+  /// Sumber data lengkap yang tidak boleh diganti oleh hasil pencarian.
+  final List<CourseEntity> allCourses;
   final String searchQuery;
 
-  const CourseLoaded({required this.courses, this.searchQuery = ''});
+  const CourseLoaded({
+    required this.courses,
+    List<CourseEntity>? allCourses,
+    this.searchQuery = '',
+  }) : allCourses = allCourses ?? courses;
 
   @override
-  List<Object?> get props => [courses, searchQuery];
+  List<Object?> get props => [courses, allCourses, searchQuery];
 }
 
 class CourseFailure extends CourseState {

@@ -4,29 +4,27 @@ import 'package:lms_mobile_app/src/features/courses/domain/usecases/add_course_u
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/get_courses_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/get_cached_courses_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/refresh_courses_usecase.dart';
-import 'package:lms_mobile_app/src/features/courses/domain/usecases/search_courses_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/toggle_save_course_usecase.dart';
 import 'course_event.dart';
 import 'course_state.dart';
 
-/// Bloc utama daftar kursus. Contoh kanonik alur Presentation→Domain:
-/// memetakan event (get/search/refresh/toggle-save/add) ke usecase, lalu emit
-/// state. `ToggleSaveCourseEvent` memakai optimistic update.
+/// Bloc utama daftar kursus. Get/refresh/mutasi diteruskan ke usecase, sedangkan
+/// search memfilter canonical list di memori. Toggle-save memakai optimistic
+/// update.
 class CourseBloc extends Bloc<CourseEvent, CourseState> {
   final GetCoursesUseCase getCoursesUseCase;
   final GetCachedCoursesUseCase getCachedCoursesUseCase;
-  final SearchCoursesUseCase searchCoursesUseCase;
   final ToggleSaveCourseUseCase toggleSaveCourseUseCase;
   final RefreshCoursesUseCase refreshCoursesUseCase;
   final AddCourseUseCase addCourseUseCase;
 
   Future<List<CourseEntity>>? _coursesRequest;
   int _stateRequestId = 0;
+  String _searchQuery = '';
 
   CourseBloc({
     required this.getCoursesUseCase,
     required this.getCachedCoursesUseCase,
-    required this.searchCoursesUseCase,
     required this.toggleSaveCourseUseCase,
     required this.refreshCoursesUseCase,
     required this.addCourseUseCase,
@@ -41,6 +39,7 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
 
   void _onResetCourses(ResetCoursesEvent event, Emitter<CourseState> emit) {
     _stateRequestId++;
+    _searchQuery = '';
     emit(const CourseInitial());
   }
 
@@ -49,6 +48,8 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
     Emitter<CourseState> emit,
   ) async {
     final requestId = ++_stateRequestId;
+    final current = state;
+    final previous = current is CourseLoaded ? current : null;
 
     // Cache-first: tampilkan data cache (disk) secara INSTAN tanpa skeleton bila
     // ada, lalu refresh diam-diam dari jaringan. Hanya tampilkan skeleton bila
@@ -57,44 +58,32 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
     if (!_isLatestRequest(requestId)) return;
 
     if (cached.isNotEmpty) {
-      emit(CourseLoaded(courses: cached));
-    } else {
+      emit(_loadedState(cached));
+    } else if (previous == null) {
       emit(const CourseLoading());
     }
 
     try {
       final courses = await _getCoursesDeduplicated();
       if (!_isLatestRequest(requestId)) return;
-      emit(CourseLoaded(courses: courses));
+      emit(_loadedState(courses));
     } catch (e) {
       if (!_isLatestRequest(requestId)) return;
       // Bila ada cache, biarkan cache tetap tampil (refresh gagal diam-diam).
-      if (cached.isEmpty) {
+      if (cached.isEmpty && previous == null) {
         emit(CourseFailure(message: 'Failed to load courses'));
       }
     }
   }
 
-  Future<void> _onSearchCourses(
-    SearchCoursesEvent event,
-    Emitter<CourseState> emit,
-  ) async {
-    final requestId = ++_stateRequestId;
-    emit(const CourseLoading());
+  void _onSearchCourses(SearchCoursesEvent event, Emitter<CourseState> emit) {
+    final query = event.query.trim().toLowerCase();
+    if (query == _searchQuery) return;
 
-    try {
-      if (event.query.isEmpty) {
-        final courses = await _getCoursesDeduplicated();
-        if (!_isLatestRequest(requestId)) return;
-        emit(CourseLoaded(courses: courses, searchQuery: ''));
-      } else {
-        final courses = await searchCoursesUseCase(event.query);
-        if (!_isLatestRequest(requestId)) return;
-        emit(CourseLoaded(courses: courses, searchQuery: event.query));
-      }
-    } catch (e) {
-      if (!_isLatestRequest(requestId)) return;
-      emit(CourseFailure(message: 'Search failed'));
+    _searchQuery = query;
+    final current = state;
+    if (current is CourseLoaded) {
+      emit(_loadedState(current.allCourses));
     }
   }
 
@@ -106,12 +95,21 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
 
     // 1) Update optimistik agar ikon bookmark langsung berubah.
     if (previous is CourseLoaded) {
-      final updated = previous.courses
-          .map(
-            (c) => c.id == event.courseId ? c.copyWith(isSaved: !c.isSaved) : c,
-          )
-          .toList();
-      emit(CourseLoaded(courses: updated, searchQuery: previous.searchQuery));
+      CourseEntity toggleSaved(CourseEntity course) {
+        return course.id == event.courseId
+            ? course.copyWith(isSaved: !course.isSaved)
+            : course;
+      }
+
+      final updatedCourses = previous.courses.map(toggleSaved).toList();
+      final updatedAllCourses = previous.allCourses.map(toggleSaved).toList();
+      emit(
+        CourseLoaded(
+          courses: updatedCourses,
+          allCourses: updatedAllCourses,
+          searchQuery: previous.searchQuery,
+        ),
+      );
     }
 
     // 2) Persist ke backend. Jika gagal, kembalikan state semula.
@@ -137,7 +135,7 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
       // and reconciles completion status — no need to call refresh separately.
       final courses = await _getCoursesDeduplicated();
       if (!_isLatestRequest(requestId)) return;
-      emit(CourseLoaded(courses: courses));
+      emit(_loadedState(courses));
     } catch (e) {
       if (!_isLatestRequest(requestId)) return;
       // Jika belum ada data tampil, baru tampilkan error; selain itu diam.
@@ -178,6 +176,24 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
     } finally {
       _coursesRequest = null;
     }
+  }
+
+  CourseLoaded _loadedState(List<CourseEntity> allCourses) {
+    final visibleCourses = _searchQuery.isEmpty
+        ? allCourses
+        : allCourses
+              .where(
+                (course) =>
+                    course.title.toLowerCase().contains(_searchQuery) ||
+                    course.description.toLowerCase().contains(_searchQuery),
+              )
+              .toList();
+
+    return CourseLoaded(
+      courses: visibleCourses,
+      allCourses: allCourses,
+      searchQuery: _searchQuery,
+    );
   }
 
   bool _isLatestRequest(int requestId) => requestId == _stateRequestId;

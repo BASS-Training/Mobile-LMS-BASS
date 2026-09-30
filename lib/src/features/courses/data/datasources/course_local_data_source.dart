@@ -9,9 +9,6 @@ abstract class CourseLocalDataSource {
   /// Get course berdasarkan ID
   Future<Course?> getCourseById(String id);
 
-  /// Search courses
-  Future<List<Course>> searchCourses(String query);
-
   /// Save course ke local
   Future<void> saveCourse(Course course);
 

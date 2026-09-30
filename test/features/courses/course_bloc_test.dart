@@ -7,7 +7,6 @@ import 'package:lms_mobile_app/src/features/courses/domain/usecases/add_course_u
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/get_cached_courses_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/get_courses_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/refresh_courses_usecase.dart';
-import 'package:lms_mobile_app/src/features/courses/domain/usecases/search_courses_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/toggle_save_course_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_event.dart';
@@ -30,6 +29,17 @@ void main() {
     expect(repository.getCachedCoursesCalls, 1);
     await bloc.close();
   });
+
+  test(
+    'CourseLoaded memakai daftar tampil sebagai canonical secara default',
+    () {
+      final courses = [_course('course-1'), _course('course-2')];
+
+      final state = CourseLoaded(courses: courses);
+
+      expect(state.allCourses, same(courses));
+    },
+  );
 
   test('get dan refresh berbagi request course yang sedang berjalan', () async {
     final request = Completer<List<CourseEntity>>();
@@ -80,57 +90,172 @@ void main() {
     },
   );
 
-  test('respons get lama tidak menimpa hasil pencarian terbaru', () async {
-    final getRequest = Completer<List<CourseEntity>>();
-    final searchRequest = Completer<List<CourseEntity>>();
+  test('reload mempertahankan hasil lama tanpa CourseLoading', () async {
+    final repository = _FakeCourseRepository(courses: [_course('existing')]);
+    final bloc = _courseBloc(repository);
+
+    bloc.add(const GetCoursesEvent());
+    await bloc.stream.firstWhere((state) => state is CourseLoaded);
+
+    final reloadRequest = Completer<List<CourseEntity>>();
+    repository.getCoursesRequest = reloadRequest;
+    final emittedStates = <CourseState>[];
+    final subscription = bloc.stream.listen(emittedStates.add);
+    bloc.add(const GetCoursesEvent());
+    await _waitUntil(() => repository.getCoursesCalls == 2);
+
+    expect(bloc.state, isA<CourseLoaded>());
+    expect(emittedStates.whereType<CourseLoading>(), isEmpty);
+
+    reloadRequest.complete([_course('updated')]);
+    final updated =
+        await bloc.stream.firstWhere(
+              (state) =>
+                  state is CourseLoaded &&
+                  state.allCourses.single.id == 'updated',
+            )
+            as CourseLoaded;
+
+    expect(updated.courses.single.id, 'updated');
+    await subscription.cancel();
+    await bloc.close();
+  });
+
+  test('search memfilter hasil tanpa CourseLoading', () async {
     final repository = _FakeCourseRepository(
-      getCoursesRequest: getRequest,
-      searchRequests: {'latest': searchRequest},
+      courses: [_course('bass'), _course('groove')],
     );
+    final bloc = _courseBloc(repository);
+
+    bloc.add(const GetCoursesEvent());
+    await bloc.stream.firstWhere((state) => state is CourseLoaded);
+
+    final emittedStates = <CourseState>[];
+    final subscription = bloc.stream.listen(emittedStates.add);
+    bloc.add(const SearchCoursesEvent(query: 'bass'));
+    await bloc.stream.firstWhere(
+      (state) => state is CourseLoaded && state.searchQuery == 'bass',
+    );
+
+    expect(emittedStates.whereType<CourseLoading>(), isEmpty);
+    await subscription.cancel();
+    await bloc.close();
+  });
+
+  test('query saat initial load diterapkan setelah course tersedia', () async {
+    final getRequest = Completer<List<CourseEntity>>();
+    final repository = _FakeCourseRepository(getCoursesRequest: getRequest);
     final bloc = _courseBloc(repository);
 
     bloc.add(const GetCoursesEvent());
     await bloc.stream.firstWhere((state) => state is CourseLoading);
 
     bloc.add(const SearchCoursesEvent(query: 'latest'));
-    await _waitUntil(() => repository.searchCoursesCalls == 1);
-    searchRequest.complete([_course('latest-course')]);
-    await bloc.stream.firstWhere(
-      (state) => state is CourseLoaded && state.searchQuery == 'latest',
-    );
+    getRequest.complete([_course('latest-course'), _course('other-course')]);
+    final state =
+        await bloc.stream.firstWhere(
+              (state) => state is CourseLoaded && state.searchQuery == 'latest',
+            )
+            as CourseLoaded;
 
-    getRequest.complete([_course('stale-course')]);
-    await Future<void>.delayed(Duration.zero);
-
-    final state = bloc.state as CourseLoaded;
-    expect(state.searchQuery, 'latest');
     expect(state.courses.single.id, 'latest-course');
+    expect(state.allCourses, hasLength(2));
+    expect(repository.getCoursesCalls, 1);
     await bloc.close();
   });
 
-  test('respons pencarian lama tidak menimpa query terbaru', () async {
-    final oldSearch = Completer<List<CourseEntity>>();
-    final latestSearch = Completer<List<CourseEntity>>();
+  test('pencarian berulang hanya memfilter canonical list', () async {
     final repository = _FakeCourseRepository(
-      searchRequests: {'old': oldSearch, 'latest': latestSearch},
+      courses: [_course('old-course'), _course('latest-course')],
     );
     final bloc = _courseBloc(repository);
 
+    bloc.add(const GetCoursesEvent());
+    await bloc.stream.firstWhere((state) => state is CourseLoaded);
     bloc.add(const SearchCoursesEvent(query: 'old'));
-    await _waitUntil(() => repository.searchCoursesCalls == 1);
-    bloc.add(const SearchCoursesEvent(query: 'latest'));
-    await _waitUntil(() => repository.searchCoursesCalls == 2);
-
-    latestSearch.complete([_course('latest-course')]);
     await bloc.stream.firstWhere(
-      (state) => state is CourseLoaded && state.searchQuery == 'latest',
+      (state) => state is CourseLoaded && state.searchQuery == 'old',
     );
-    oldSearch.complete([_course('stale-course')]);
+    bloc.add(const SearchCoursesEvent(query: 'latest'));
+    final state =
+        await bloc.stream.firstWhere(
+              (state) => state is CourseLoaded && state.searchQuery == 'latest',
+            )
+            as CourseLoaded;
+
+    expect(state.courses.single.id, 'latest-course');
+    expect(repository.getCoursesCalls, 1);
+    await bloc.close();
+  });
+
+  test('query dinormalisasi dan query identik tidak emit ulang', () async {
+    final repository = _FakeCourseRepository(
+      courses: [_course('bass'), _course('groove')],
+    );
+    final bloc = _courseBloc(repository);
+
+    bloc.add(const GetCoursesEvent());
+    await bloc.stream.firstWhere((state) => state is CourseLoaded);
+
+    final emittedStates = <CourseState>[];
+    final subscription = bloc.stream.listen(emittedStates.add);
+    bloc.add(const SearchCoursesEvent(query: '  BaSs  '));
+    final searched =
+        await bloc.stream.firstWhere(
+              (state) => state is CourseLoaded && state.searchQuery == 'bass',
+            )
+            as CourseLoaded;
+    final emissionCount = emittedStates.length;
+
+    bloc.add(const SearchCoursesEvent(query: 'BASS'));
     await Future<void>.delayed(Duration.zero);
 
-    final state = bloc.state as CourseLoaded;
-    expect(state.searchQuery, 'latest');
-    expect(state.courses.single.id, 'latest-course');
+    expect(searched.courses.single.id, 'bass');
+    expect(emittedStates, hasLength(emissionCount));
+    expect(repository.getCoursesCalls, 1);
+    await subscription.cancel();
+    await bloc.close();
+  });
+
+  test('hasil pencarian tidak mengganti canonical course', () async {
+    final allCourses = [_course('bass'), _course('groove')];
+    final repository = _FakeCourseRepository(courses: allCourses);
+    final bloc = _courseBloc(repository);
+
+    bloc.add(const GetCoursesEvent());
+    await bloc.stream.firstWhere(
+      (state) => state is CourseLoaded && state.allCourses.length == 2,
+    );
+
+    bloc.add(const SearchCoursesEvent(query: 'bass'));
+    final searched =
+        await bloc.stream.firstWhere(
+              (state) => state is CourseLoaded && state.searchQuery == 'bass',
+            )
+            as CourseLoaded;
+
+    expect(searched.courses.map((course) => course.id), ['bass']);
+    expect(searched.allCourses.map((course) => course.id), ['bass', 'groove']);
+    await bloc.close();
+  });
+
+  test('toggle save memperbarui daftar tampil dan canonical', () async {
+    final repository = _FakeCourseRepository(courses: [_course('bass')]);
+    final bloc = _courseBloc(repository);
+
+    bloc.add(const GetCoursesEvent());
+    await bloc.stream.firstWhere((state) => state is CourseLoaded);
+    bloc.add(const ToggleSaveCourseEvent(courseId: 'bass'));
+    final toggled =
+        await bloc.stream.firstWhere(
+              (state) =>
+                  state is CourseLoaded &&
+                  state.allCourses.single.isSaved == true,
+            )
+            as CourseLoaded;
+
+    expect(toggled.courses.single.isSaved, isTrue);
+    expect(toggled.allCourses.single.isSaved, isTrue);
     await bloc.close();
   });
 }
@@ -154,7 +279,6 @@ CourseBloc _courseBloc(CourseRepository repository) {
   return CourseBloc(
     getCoursesUseCase: GetCoursesUseCase(repository),
     getCachedCoursesUseCase: GetCachedCoursesUseCase(repository),
-    searchCoursesUseCase: SearchCoursesUseCase(repository),
     toggleSaveCourseUseCase: ToggleSaveCourseUseCase(repository),
     refreshCoursesUseCase: RefreshCoursesUseCase(repository),
     addCourseUseCase: AddCourseUseCase(repository),
@@ -172,20 +296,16 @@ Future<void> _waitUntil(bool Function() condition) async {
 class _FakeCourseRepository implements CourseRepository {
   int getCoursesCalls = 0;
   int getCachedCoursesCalls = 0;
-  int searchCoursesCalls = 0;
 
   Completer<List<CourseEntity>>? getCoursesRequest;
-  final Map<String, Completer<List<CourseEntity>>> searchRequests;
+  final List<CourseEntity> courses;
 
-  _FakeCourseRepository({
-    this.getCoursesRequest,
-    this.searchRequests = const {},
-  });
+  _FakeCourseRepository({this.getCoursesRequest, this.courses = const []});
 
   @override
   Future<List<CourseEntity>> getCourses() {
     getCoursesCalls++;
-    return getCoursesRequest?.future ?? Future.value(const []);
+    return getCoursesRequest?.future ?? Future.value(courses);
   }
 
   @override
@@ -198,7 +318,12 @@ class _FakeCourseRepository implements CourseRepository {
   Future<void> addCourse(CourseEntity course) => throw UnimplementedError();
 
   @override
-  Future<CourseEntity?> getCourseById(String id) => throw UnimplementedError();
+  Future<CourseEntity?> getCourseById(String id) async {
+    for (final course in courses) {
+      if (course.id == id) return course;
+    }
+    return null;
+  }
 
   @override
   Future<List<CourseEntity>> getSavedCourses() => throw UnimplementedError();
@@ -207,13 +332,5 @@ class _FakeCourseRepository implements CourseRepository {
   Future<void> refreshCourses() => throw UnimplementedError();
 
   @override
-  Future<List<CourseEntity>> searchCourses(String query) {
-    searchCoursesCalls++;
-    final request = searchRequests[query];
-    if (request == null) throw StateError('No search request for $query');
-    return request.future;
-  }
-
-  @override
-  Future<void> toggleSaveCourse(String courseId) => throw UnimplementedError();
+  Future<void> toggleSaveCourse(String courseId) async {}
 }

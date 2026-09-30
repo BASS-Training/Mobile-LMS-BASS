@@ -94,9 +94,6 @@ class _FakeCourseLocalDataSource implements CourseLocalDataSource {
   }
 
   @override
-  Future<List<Course>> searchCourses(String query) async => courses;
-
-  @override
   Future<void> toggleSaveCourse(String courseId) async {}
 }
 
@@ -116,10 +113,6 @@ class _FakeCourseRemoteDataSource implements CourseRemoteDataSource {
 
   @override
   Future<List<Course>> getSavedCourses() async => savedCourses;
-
-  @override
-  Future<List<Course>> searchCourses(String query) =>
-      throw UnimplementedError();
 
   @override
   Future<void> toggleSaveCourse(String courseId) => throw UnimplementedError();

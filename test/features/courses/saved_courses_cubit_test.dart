@@ -89,9 +89,5 @@ class _FakeCourseRepository implements CourseRepository {
   Future<void> refreshCourses() => throw UnimplementedError();
 
   @override
-  Future<List<CourseEntity>> searchCourses(String query) =>
-      throw UnimplementedError();
-
-  @override
   Future<void> toggleSaveCourse(String courseId) => throw UnimplementedError();
 }

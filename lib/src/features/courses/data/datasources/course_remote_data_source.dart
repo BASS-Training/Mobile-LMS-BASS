@@ -9,9 +9,6 @@ abstract class CourseRemoteDataSource {
   /// Get course berdasarkan ID dari remote
   Future<Course?> getCourseById(String id);
 
-  /// Search courses dari remote
-  Future<List<Course>> searchCourses(String query);
-
   /// Toggle save course di remote
   Future<void> toggleSaveCourse(String courseId);
 

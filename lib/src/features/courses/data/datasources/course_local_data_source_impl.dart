@@ -31,22 +31,6 @@ class CourseLocalDataSourceImpl implements CourseLocalDataSource {
   }
 
   @override
-  Future<List<Course>> searchCourses(String query) async {
-    // Pastikan cache ada
-    if (_cachedCourses.isEmpty) {
-      await getCourses();
-    }
-
-    return _cachedCourses
-        .where(
-          (course) =>
-              course.title.toLowerCase().contains(query.toLowerCase()) ||
-              course.description.toLowerCase().contains(query.toLowerCase()),
-        )
-        .toList();
-  }
-
-  @override
   Future<void> saveCourse(Course course) async {
     // Cek apakah course sudah ada
     final index = _cachedCourses.indexWhere((c) => c.id == course.id);

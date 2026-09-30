@@ -13,7 +13,6 @@ import 'package:lms_mobile_app/src/features/courses/domain/usecases/get_courses_
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/get_cached_courses_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/get_saved_courses_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/refresh_courses_usecase.dart';
-import 'package:lms_mobile_app/src/features/courses/domain/usecases/search_courses_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/usecases/toggle_save_course_usecase.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/bloc/course/course_bloc.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/cubit/saved_courses_cubit.dart';
@@ -40,7 +39,6 @@ class CourseModule {
     // Use Cases
     final getCoursesUseCase = GetCoursesUseCase(courseRepository);
     final getCachedCoursesUseCase = GetCachedCoursesUseCase(courseRepository);
-    final searchCoursesUseCase = SearchCoursesUseCase(courseRepository);
     final toggleSaveCourseUseCase = ToggleSaveCourseUseCase(courseRepository);
     final getSavedCoursesUseCase = GetSavedCoursesUseCase(courseRepository);
     final refreshCoursesUseCase = RefreshCoursesUseCase(courseRepository);
@@ -51,7 +49,6 @@ class CourseModule {
       () => CourseBloc(
         getCoursesUseCase: getCoursesUseCase,
         getCachedCoursesUseCase: getCachedCoursesUseCase,
-        searchCoursesUseCase: searchCoursesUseCase,
         toggleSaveCourseUseCase: toggleSaveCourseUseCase,
         refreshCoursesUseCase: refreshCoursesUseCase,
         addCourseUseCase: addCourseUseCase,

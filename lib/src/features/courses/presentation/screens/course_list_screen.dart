@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -27,18 +29,60 @@ class CourseListScreen extends StatefulWidget {
 }
 
 class _CourseListScreenState extends State<CourseListScreen> {
+  static const _searchDebounce = Duration(milliseconds: 400);
+
   final _searchController = TextEditingController();
+  Timer? _searchTimer;
+  String _lastDispatchedQuery = '';
 
   @override
   void initState() {
     super.initState();
+    final courseState = context.read<CourseBloc>().state;
+    if (courseState is CourseLoaded && courseState.searchQuery.isNotEmpty) {
+      _searchController.text = courseState.searchQuery;
+      _lastDispatchedQuery = courseState.searchQuery;
+    }
     context.read<CourseBloc>().add(const GetCoursesEvent());
   }
 
   @override
   void dispose() {
+    _searchTimer?.cancel();
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _onSearchChanged(String value) {
+    _searchTimer?.cancel();
+    _searchTimer = null;
+    final query = value.trim().toLowerCase();
+
+    if (query == _lastDispatchedQuery) return;
+
+    if (query.isEmpty) {
+      _dispatchSearch(query);
+      return;
+    }
+
+    _searchTimer = Timer(_searchDebounce, () {
+      _searchTimer = null;
+      if (!mounted) return;
+      _dispatchSearch(query);
+    });
+  }
+
+  void _dispatchSearch(String query) {
+    if (query == _lastDispatchedQuery) return;
+    _lastDispatchedQuery = query;
+    context.read<CourseBloc>().add(SearchCoursesEvent(query: query));
+  }
+
+  void _clearSearch() {
+    _searchTimer?.cancel();
+    _searchTimer = null;
+    _searchController.clear();
+    _dispatchSearch('');
   }
 
   @override
@@ -139,9 +183,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
         builder: (context, value, _) {
           return TextField(
             controller: _searchController,
-            onChanged: (value) {
-              context.read<CourseBloc>().add(SearchCoursesEvent(query: value));
-            },
+            onChanged: _onSearchChanged,
             decoration: InputDecoration(
               hintText: AppStrings.searchCourses,
               hintStyle: TextStyle(color: AppColors.textTertiary),
@@ -151,12 +193,7 @@ class _CourseListScreenState extends State<CourseListScreen> {
               ),
               suffixIcon: value.text.isNotEmpty
                   ? IconButton(
-                      onPressed: () {
-                        _searchController.clear();
-                        context.read<CourseBloc>().add(
-                          const SearchCoursesEvent(query: ''),
-                        );
-                      },
+                      onPressed: _clearSearch,
                       icon: Icon(
                         Icons.close_rounded,
                         color: AppColors.textTertiary,

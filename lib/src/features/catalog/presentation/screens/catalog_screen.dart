@@ -58,13 +58,16 @@ class _CatalogScreenState extends State<CatalogScreen> {
     _debounce?.cancel();
     final trimmed = value.trim();
 
-    if (trimmed.isEmpty) {
-      context.read<CatalogBloc>().add(const SearchCatalogEvent(''));
+    // Parameter `q` divalidasi server minimal 2 karakter, jadi tunggu sampai
+    // pengguna mengetik cukup panjang sebelum memicu request. Jika sebelumnya
+    // ada query aktif, kembalikan daftar penuh agar hasil lama tidak tertinggal.
+    if (trimmed.length < 2) {
+      final bloc = context.read<CatalogBloc>();
+      if (bloc.state.query.isNotEmpty) {
+        bloc.add(const SearchCatalogEvent(''));
+      }
       return;
     }
-    // Parameter `q` divalidasi server minimal 2 karakter, jadi tunggu sampai
-    // pengguna mengetik cukup panjang sebelum memicu request.
-    if (trimmed.length < 2) return;
 
     _debounce = Timer(_searchDebounce, () {
       if (!mounted) return;
@@ -75,7 +78,10 @@ class _CatalogScreenState extends State<CatalogScreen> {
   void _clearSearch() {
     _debounce?.cancel();
     _searchController.clear();
-    context.read<CatalogBloc>().add(const SearchCatalogEvent(''));
+    final bloc = context.read<CatalogBloc>();
+    if (bloc.state.query.isNotEmpty) {
+      bloc.add(const SearchCatalogEvent(''));
+    }
   }
 
   Future<void> _refresh() async {

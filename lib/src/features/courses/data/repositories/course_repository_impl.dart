@@ -108,35 +108,6 @@ class CourseRepositoryImpl implements CourseRepository {
   }
 
   @override
-  Future<List<CourseEntity>> searchCourses(String query) async {
-    if (_isOfflineTestSession()) {
-      logDebug(
-        '[COURSE][SEARCH] using local dummy searchCourses query=$query tester=${OfflineTestMode.describeContext()}',
-      );
-      final localCourses = await localDataSource.searchCourses(query);
-      await _reconcileCompletionStatus(localCourses);
-      return _mapCoursesToEntities(localCourses);
-    }
-
-    try {
-      logDebug(
-        '[COURSE][SEARCH] using remote API searchCourses query=$query tester=${OfflineTestMode.describeContext()}',
-      );
-      // Coba remote dulu
-      final remoteCourses = await remoteDataSource.searchCourses(query);
-      // Simpan ke cache
-      await localDataSource.saveCourses(remoteCourses);
-      await _reconcileCompletionStatus(remoteCourses);
-      return _mapCoursesToEntities(remoteCourses);
-    } catch (e) {
-      // Fallback ke local cache
-      final localCourses = await localDataSource.searchCourses(query);
-      await _reconcileCompletionStatus(localCourses);
-      return _mapCoursesToEntities(localCourses);
-    }
-  }
-
-  @override
   Future<void> toggleSaveCourse(String courseId) async {
     // Sesi tester offline: cukup simpan di cache lokal.
     if (_isOfflineTestSession()) {

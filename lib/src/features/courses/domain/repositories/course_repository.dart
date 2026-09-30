@@ -1,6 +1,6 @@
 import '../entities/course_entity.dart';
 
-/// Kontrak (Domain) untuk data kursus: ambil/cari/refresh dan simpan-kursus.
+/// Kontrak (Domain) untuk data kursus: ambil/refresh dan simpan-kursus.
 /// Implementasi di lapisan Data memakai remote (dio) + cache.
 abstract class CourseRepository {
   Future<List<CourseEntity>> getCourses();
@@ -12,7 +12,6 @@ abstract class CourseRepository {
 
   Future<void> addCourse(CourseEntity course);
   Future<CourseEntity?> getCourseById(String id);
-  Future<List<CourseEntity>> searchCourses(String query);
   Future<void> toggleSaveCourse(String courseId);
   Future<List<CourseEntity>> getSavedCourses();
   Future<void> refreshCourses();
