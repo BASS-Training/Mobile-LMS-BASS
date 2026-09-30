@@ -72,7 +72,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   bool _openContent(String contentId) {
     final state = context.read<CourseBloc>().state;
     if (state is! CourseLoaded) return false;
-    for (final course in state.courses) {
+    for (final course in state.allCourses) {
       final lessons = course.allLessons;
       for (var i = 0; i < lessons.length; i++) {
         if (lessons[i].id == contentId) {

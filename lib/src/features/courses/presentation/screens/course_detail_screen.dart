@@ -79,7 +79,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
         // jika BLoC belum punya data atau course tidak ditemukan.
         CourseEntity currentCourse = widget.course;
         if (state is CourseLoaded) {
-          currentCourse = state.courses.firstWhere(
+          currentCourse = state.allCourses.firstWhere(
             (c) => c.id == widget.course.id,
             orElse: () => widget.course,
           );

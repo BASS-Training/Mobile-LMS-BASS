@@ -251,7 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         }
         if (state is! CourseLoaded) return const SizedBox(height: 8);
-        if (state.courses.isEmpty) {
+        if (state.allCourses.isEmpty) {
           return Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: AppMeasures.paddingLarge,
@@ -263,7 +263,7 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         }
         return HomeRecommendedCourses(
-          courses: state.courses,
+          courses: state.allCourses,
           onNavigateToCourseList: _goToCourseList,
         );
       },
@@ -291,7 +291,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
         if (state is! CourseLoaded) return const SizedBox.shrink();
 
-        final ownedCourses = state.courses.where((c) => c.isOwned).toList();
+        final ownedCourses = state.allCourses.where((c) => c.isOwned).toList();
         final stats = HomeStatsEntity.fromCourses(ownedCourses);
         _maybeCelebrate(stats);
 

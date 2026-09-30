@@ -72,7 +72,7 @@ class _AssignmentsScreenState extends State<AssignmentsScreen> {
           }
           if (state is! CourseLoaded) return const SizedBox.shrink();
 
-          final owned = state.courses.where((c) => c.isOwned).toList();
+          final owned = state.allCourses.where((c) => c.isOwned).toList();
           final tasks = AssignmentBuilder.fromCourses(owned);
 
           if (tasks.isEmpty) {
