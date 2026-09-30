@@ -28,10 +28,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthClearErrorEvent>(_onClearError);
     on<AuthUserUpdatedEvent>(_onUserUpdated);
 
-    Future.microtask(() => add(const AuthSessionRequestedEvent()));
+    Future.microtask(() {
+      if (isClosed) return;
+      try {
+        add(const AuthSessionRequestedEvent());
+      } on StateError {
+        // Bloc.close() menutup event controller lebih dulu dari state
+        // controller, sehingga guard di atas bisa terlambat. Event awal
+        // aplikasi ini aman dilepas.
+      }
+    });
   }
 
   Future<void> _onLogin(AuthLoginEvent event, Emitter<AuthState> emit) async {
+    // Semantik droppable: abaikan tap kedua selama login masih berjalan,
+    // supaya tidak ada dua request paralel yang saling menimpa state.
+    if (state is AuthLoading) return;
+
     emit(const AuthLoading());
 
     try {
@@ -40,6 +53,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         event.password,
       ).timeout(const Duration(seconds: 15));
 
+      if (isClosed) return;
       if (user != null) {
         emit(AuthSuccess(user: user));
       } else {
@@ -50,6 +64,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         );
       }
     } on TimeoutException {
+      if (isClosed) return;
       emit(
         const AuthFailure(
           message:
@@ -57,6 +72,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ),
       );
     } catch (error) {
+      if (isClosed) return;
       emit(
         AuthFailure(message: _readableError(error, 'Login gagal. Coba lagi.')),
       );
@@ -67,6 +83,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthRegisterEvent event,
     Emitter<AuthState> emit,
   ) async {
+    // Sama dengan login: satu pendaftaran dalam satu waktu.
+    if (state is AuthLoading) return;
+
     emit(const AuthLoading());
 
     try {
@@ -81,6 +100,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         occupation: event.occupation,
       ).timeout(const Duration(seconds: 15));
 
+      if (isClosed) return;
       if (user != null) {
         // Tetap login setelah daftar → router otomatis mengarahkan ke layar
         // verifikasi OTP (karena akun baru must_verify_email = true).
@@ -93,12 +113,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         );
       }
     } on TimeoutException {
+      if (isClosed) return;
       emit(
         const AuthFailure(
           message: 'Register terlalu lama. Periksa koneksi dan API Laravel.',
         ),
       );
     } catch (error) {
+      if (isClosed) return;
       emit(
         AuthFailure(
           message: _readableError(error, 'Register gagal. Coba lagi.'),
@@ -115,6 +137,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final user = await getCurrentUserUseCase().timeout(
         const Duration(seconds: 10),
       );
+      if (isClosed) return;
       if (user != null) {
         emit(AuthSuccess(user: user));
       }
@@ -126,8 +149,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> _onLogout(AuthLogoutEvent event, Emitter<AuthState> emit) async {
     try {
       await logoutUseCase();
+      if (isClosed) return;
       emit(const AuthLoggedOut());
     } catch (error) {
+      if (isClosed) return;
       emit(AuthFailure(message: 'Logout error: $error'));
     }
   }
