@@ -3,6 +3,11 @@
 > Tanggal Review: 17 September 2026
 > Scope: 46 screen, 25 BLoC/Cubit, 74 widget
 
+> **Status audit terakhir: 30 September 2026** — seluruh 30 temuan diperiksa
+> ulang terhadap kode saat ini.
+>
+> Legenda: ✅ selesai/diverifikasi · 🟡 sebagian · 🔴 masih terbuka
+
 ---
 
 ## 🔴 HIGH PRIORITY — Bug Fungsional
@@ -12,36 +17,59 @@
 - **File:** `lib/src/features/lessons/presentation/bloc/document_submission/document_submission_cubit.dart:39`
 - **Masalah:** Setiap panggilan `copyWith` tanpa parameter `submitted` akan mereset flag ke `false`. Jika user submit dokumen, state `submitted: true` akan hilang saat `copyWith` dipanggil untuk field lain.
 - **Fix:** Gunakan nullable sentinel pattern: `this.submitted` tanpa default `false`.
+- **Status (30 Sep 2026):** ✅ **Selesai** — `submitted ?? this.submitted`, plus
+  reset eksplisit `submitted: false` di awal `submit()` agar tepi false→true tetap
+  ada untuk pengumpulan berikutnya. Commit `d2ffa44`; test:
+  `test/features/lessons/document_submission_cubit_test.dart`.
 
 ### 2. `copyWith` reset flag `saved` ke `false`
 
 - **File:** `lib/src/features/instructor/presentation/cubit/document_grading_cubit.dart:38`
 - **Masalah:** Sama seperti #1 — flag `saved` di-reset ke `false` setiap `copyWith` dipanggil.
 - **Fix:** Sama — gunakan nullable sentinel.
+- **Status (30 Sep 2026):** ✅ **Selesai** — `saved ?? this.saved`, selaras dengan
+  `EssayGradingState`/`CaseStudyGradingState` yang sudah benar. Commit `d2ffa44`;
+  test: `test/features/instructor/document_grading_cubit_test.dart`.
 
 ### 3. `submit()` overwrite `saved: true` dengan `load()`
 
 - **File:** `lib/src/features/instructor/presentation/cubit/essay_grading_cubit.dart:71-83`
 - **Masalah:** `submit()` emit `saved: true` lalu langsung panggil `load()`. State berubah ke loading sebelum UI sempat menampilkan status tersimpan.
 - **Fix:** Tambahkan delay kecil ataupisahkan state `saved` dari `loading`.
+- **Status (30 Sep 2026):** ✅ **Selesai (Batch B)** — flag `saved` dihapus dari
+  ketiga state: audit membuktikan tidak ada UI yang membacanya (feedback
+  "tersimpan" sudah datang dari `bool` return `submit()` + SnackBar). Flash
+  spinner diatasi dengan guard `status == loading && detail == null` agar konten
+  tetap tampil selama penyegaran. Test: `essay_grading_cubit_test.dart`,
+  `instructor_essay_grading_screen_test.dart`.
 
 ### 4. Pattern `saved` overwrite di `CaseStudyGradingCubit`
 
 - **File:** `lib/src/features/instructor/presentation/cubit/case_study_grading_cubit.dart:58-74`
 - **Masalah:** Sama — `submit()` panggil `load()` setelah emit `saved: true`.
 - **Fix:** Sama — pisahkan state `saved` dari `loading`.
+- **Status (30 Sep 2026):** ✅ **Selesai (Batch B)** — sama dengan #3; guard
+  `status == loading && review == null` di layar studi kasus. Test:
+  `case_study_grading_cubit_test.dart`.
 
 ### 5. Optimistic toggle save ter-deduplicate oleh Equatable
 
 - **File:** `lib/src/features/courses/presentation/bloc/course/course_bloc.dart:113-145`
 - **Masalah:** Setelah optimistic update, state revert ke `previous`. Jika `previous` adalah `CourseLoaded` dengan list yang sama, Equatable deduplication akan suppress emit revert — UI menampilkan state stale.
 - **Fix:** Force-emit atau gunakan state instance berbeda untuk revert.
+- **Status (30 Sep 2026):** ✅ **Tidak berlaku** — `previous` sudah di-capture
+  sebelum emit optimis sejak commit `8cf0722` (3 Jun 2026). Karena itu revert
+  selalu dibandingkan terhadap state optimis yang berbeda, jadi tidak pernah
+  dideduplikasi oleh Equatable.
 
 ### 6. No try/catch di `joinClassUseCase`
 
 - **File:** `lib/src/features/home/presentation/bloc/home_bloc.dart:17-28`
 - **Masalah:** `result.fold` diasumsikan selalu mengembalikan `Either`, tapi jika use case throw synchronous, BLoC crash.
 - **Fix:** Bungkus dalam try/catch.
+- **Status (30 Sep 2026):** ✅ **Selesai** — `try/catch` + guard `isClosed`;
+  exception kini menjadi `HomeJoinClassFailure` alih-alih meninggalkan state di
+  `loading`. Commit `d2ffa44`; test: `test/features/home/home_bloc_test.dart`.
 
 ---
 
@@ -99,6 +127,11 @@
   - `ProgressRing` (label: "Progress: X%")
   - `AchievementMedal` (label: locked/unlocked)
 - **Fix:** Tambahkan `Semantics` wrapper dan `tooltip` parameter.
+- **Status (30 Sep 2026):** 🟡 **Sebagian** — jumlah `tooltip` naik dari 3 menjadi
+  11; `Semantics` naik dari 1 menjadi 4
+  (`intro_screen.dart:359`, `home_recommended_courses.dart:200`,
+  `question_navigator_widget.dart:106`, `app_empty_state.dart:51`), tetapi masih
+  jauh dari kebutuhan (46 screen / 74 widget).
 
 ---
 
@@ -109,6 +142,9 @@
 - **File:** `lib/src/features/authentication/presentation/bloc/auth/auth_bloc.dart:34-63`
 - **Masalah:** Double-tap login bisa trigger 2x request parallel.
 - **Fix:** Tambahkan `on<AuthLoginEvent>(transformer: droppable())`.
+- **Status (30 Sep 2026):** 🟡 **Sebagian** — UI sudah menonaktifkan tombol saat
+  `AuthLoading` (`authentication/presentation/screens/login_screen.dart:225`),
+  tetapi transformer level Bloc belum ditambahkan.
 
 ### 13. 4 state class identik di `LessonBloc`
 
@@ -231,6 +267,9 @@
   - `course_bloc.dart:47`
 - **Masalah:** Event bisa fire setelah BLoC di-dispose.
 - **Fix:** Guard dengan `if (!isClosed)` atau pindah ke `on<AppStarted>`.
+- **Status (30 Sep 2026):** 🟡 **Sebagian** — CourseBloc sudah bersih (ada test
+  "tidak mengambil course otomatis saat CourseBloc dibuat"), tetapi AuthBloc
+  masih memakai `Future.microtask` tanpa guard (`auth_bloc.dart:31`).
 
 ### 28. Status enum mulai `loading` tanpa `initial`
 
@@ -265,18 +304,29 @@
 | Widget mega (>300 baris) | 4 |
 | Bug fungsional | 6 |
 
+### Status Audit (30 Sep 2026)
+
+| Status | Jumlah | Temuan |
+|--------|--------|--------|
+| ✅ Selesai / tidak berlaku | 6 | #1, #2, #3, #4, #5, #6 |
+| 🟡 Sebagian | 3 | #11, #12, #27 |
+| 🔴 Masih terbuka | 21 | sisanya |
+
+Detail status tiap temuan ditulis pada baris `Status (30 Sep 2026)` di bawah
+bagian masing-masing.
+
 ---
 
 ## Checklist Pengembangan
 
-- [ ] Fix bug `copyWith` reset flags (#1, #2)
-- [ ] Fix `saved` overwrite pattern (#3, #4)
-- [ ] Fix optimistic toggle state (#5)
-- [ ] Add try/catch di home BLoC (#6)
+- [x] Fix bug `copyWith` reset flags (#1, #2)
+- [x] Fix `saved` overwrite pattern (#3, #4) — flag `saved` dihapus + guard spinner
+- [x] Fix optimistic toggle state (#5) — tidak berlaku, kode sudah benar
+- [x] Add try/catch di home BLoC (#6)
 - [ ] Pecah mega-widgets (#7, #8, #9)
 - [ ] Konsistensi warna ke `AppColors` (#10)
-- [ ] Tambahkan aksesibilitas (#11)
-- [ ] Tambahkan droppable transformer (#12)
+- [ ] Tambahkan aksesibilitas (#11) — sebagian: tooltip 11, `Semantics` 4
+- [ ] Tambahkan droppable transformer (#12) — sebagian: guard di UI saja
 - [ ] Simplifikasi `LessonBloc` states (#13)
 - [ ] Refactor `EssayState` (#14)
 - [ ] Typing `attempt` field (#15)
