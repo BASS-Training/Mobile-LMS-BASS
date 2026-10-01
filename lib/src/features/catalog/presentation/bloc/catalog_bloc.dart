@@ -22,8 +22,6 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
     on<ChangeCatalogFilterEvent>(_onChangeFilter);
     on<LoadCatalogDetailEvent>(_onLoadDetail);
     on<EnrollCatalogCourseEvent>(_onEnroll);
-    on<RequestCatalogWebsiteEvent>(_onRequestWebsite);
-    on<ClearCatalogWebsiteEvent>(_onClearWebsite);
     on<ResetCatalogEvent>((event, emit) => emit(const CatalogState()));
   }
 
@@ -198,58 +196,6 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
         ),
       );
     }
-  }
-
-  Future<void> _onRequestWebsite(
-    RequestCatalogWebsiteEvent event,
-    Emitter<CatalogState> emit,
-  ) async {
-    if (state.openingWebsiteId != null || state.websiteUrl != null) return;
-
-    emit(
-      state.copyWith(
-        openingWebsiteId: event.catalogId,
-        websiteUrl: null,
-        websiteErrorMessage: null,
-      ),
-    );
-
-    try {
-      final url = await repository.createWebSession(event.catalogId);
-      if (isClosed) return;
-      emit(
-        state.copyWith(
-          openingWebsiteId: null,
-          websiteUrl: url,
-          websiteErrorMessage: null,
-        ),
-      );
-    } catch (error) {
-      if (isClosed) return;
-      emit(
-        state.copyWith(
-          openingWebsiteId: null,
-          websiteUrl: null,
-          websiteErrorMessage: _messageOf(
-            error,
-            'Website belum dapat dibuka. Silakan coba lagi.',
-          ),
-        ),
-      );
-    }
-  }
-
-  void _onClearWebsite(
-    ClearCatalogWebsiteEvent event,
-    Emitter<CatalogState> emit,
-  ) {
-    emit(
-      state.copyWith(
-        openingWebsiteId: null,
-        websiteUrl: null,
-        websiteErrorMessage: null,
-      ),
-    );
   }
 
   String _messageOf(Object error, String fallback) {

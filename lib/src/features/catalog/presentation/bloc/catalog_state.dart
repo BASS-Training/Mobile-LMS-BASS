@@ -23,9 +23,6 @@ class CatalogState extends Equatable {
   final CatalogDetailStatus detailStatus;
   final CatalogCourseEntity? detailCourse;
   final String? detailErrorMessage;
-  final String? openingWebsiteId;
-  final String? websiteUrl;
-  final String? websiteErrorMessage;
 
   const CatalogState({
     this.status = CatalogStatus.initial,
@@ -41,9 +38,6 @@ class CatalogState extends Equatable {
     this.detailStatus = CatalogDetailStatus.initial,
     this.detailCourse,
     this.detailErrorMessage,
-    this.openingWebsiteId,
-    this.websiteUrl,
-    this.websiteErrorMessage,
   });
 
   /// Data sudah difilter/dipaging oleh repository (remote maupun lokal),
@@ -73,9 +67,6 @@ class CatalogState extends Equatable {
     CatalogDetailStatus? detailStatus,
     Object? detailCourse = _keep,
     Object? detailErrorMessage = _keep,
-    Object? openingWebsiteId = _keep,
-    Object? websiteUrl = _keep,
-    Object? websiteErrorMessage = _keep,
   }) {
     return CatalogState(
       status: status ?? this.status,
@@ -99,15 +90,6 @@ class CatalogState extends Equatable {
       detailErrorMessage: identical(detailErrorMessage, _keep)
           ? this.detailErrorMessage
           : detailErrorMessage as String?,
-      openingWebsiteId: identical(openingWebsiteId, _keep)
-          ? this.openingWebsiteId
-          : openingWebsiteId as String?,
-      websiteUrl: identical(websiteUrl, _keep)
-          ? this.websiteUrl
-          : websiteUrl as String?,
-      websiteErrorMessage: identical(websiteErrorMessage, _keep)
-          ? this.websiteErrorMessage
-          : websiteErrorMessage as String?,
     );
   }
 
@@ -150,8 +132,5 @@ class CatalogState extends Equatable {
     detailStatus,
     detailCourse,
     detailErrorMessage,
-    openingWebsiteId,
-    websiteUrl,
-    websiteErrorMessage,
   ];
 }

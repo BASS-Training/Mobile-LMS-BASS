@@ -87,7 +87,6 @@ class ApiEndpoints {
   static const String catalog = '/catalog';
   static const String catalogDetail = '/catalog/{id}';
   static const String catalogEnrollFree = '/catalog/{id}/daftar-gratis';
-  static const String catalogWebSession = '/web-session';
 
   // Profile
   static const String getProfile = '/profile';

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lms_mobile_app/src/core/error/app_exception.dart';
 import 'package:lms_mobile_app/src/features/catalog/domain/entities/catalog_course_entity.dart';
@@ -124,59 +122,6 @@ void main() {
     expect(failed.detailErrorMessage, 'Course sudah tidak tersedia.');
   });
 
-  test(
-    'website handoff loading, cegah request ganda, lalu hasil dibersihkan',
-    () async {
-      final completer = Completer<String>();
-      repository.webSessionCompleter = completer;
-
-      bloc.add(const RequestCatalogWebsiteEvent('paid-course'));
-      final loading = await bloc.stream.firstWhere(
-        (state) => state.openingWebsiteId == 'paid-course',
-      );
-
-      expect(loading.websiteUrl, isNull);
-      bloc.add(const RequestCatalogWebsiteEvent('paid-course'));
-      await Future<void>.delayed(Duration.zero);
-      expect(repository.webSessionCalls, 1);
-
-      completer.complete('https://example.com/auth/handoff/sekali-pakai');
-      final success = await bloc.stream.firstWhere(
-        (state) => state.websiteUrl != null,
-      );
-
-      expect(success.openingWebsiteId, isNull);
-      expect(
-        success.websiteUrl,
-        'https://example.com/auth/handoff/sekali-pakai',
-      );
-
-      bloc.add(const ClearCatalogWebsiteEvent());
-      final cleared = await bloc.stream.firstWhere(
-        (state) =>
-            state.openingWebsiteId == null &&
-            state.websiteUrl == null &&
-            state.websiteErrorMessage == null,
-      );
-      expect(cleared.websiteUrl, isNull);
-    },
-  );
-
-  test('gagal membuat website handoff menampilkan pesan server', () async {
-    repository.webSessionError = ValidationException(
-      message: 'Kursus tidak ditemukan.',
-    );
-
-    bloc.add(const RequestCatalogWebsiteEvent('missing-course'));
-    final failed = await bloc.stream.firstWhere(
-      (state) => state.websiteErrorMessage != null,
-    );
-
-    expect(failed.openingWebsiteId, isNull);
-    expect(failed.websiteUrl, isNull);
-    expect(failed.websiteErrorMessage, 'Kursus tidak ditemukan.');
-  });
-
   test('enrollment gratis memperbarui status katalog', () async {
     await loadCatalog();
 
@@ -224,10 +169,6 @@ class _FakeCatalogRepository implements CatalogRepository {
   String? lastHarga;
   int lastPage = 0;
   int lastPerPage = 0;
-  int webSessionCalls = 0;
-  Completer<String>? webSessionCompleter;
-  Object? webSessionError;
-
   final List<CatalogCourseEntity> _all;
 
   _FakeCatalogRepository()
@@ -337,16 +278,6 @@ class _FakeCatalogRepository implements CatalogRepository {
       }
     }
     return null;
-  }
-
-  @override
-  Future<String> createWebSession(String catalogId) async {
-    webSessionCalls++;
-    final error = webSessionError;
-    if (error != null) throw error;
-    final completer = webSessionCompleter;
-    if (completer != null) return completer.future;
-    return 'https://example.com/auth/handoff/$catalogId';
   }
 
   @override

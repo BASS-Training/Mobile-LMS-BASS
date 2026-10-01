@@ -92,39 +92,6 @@ class CatalogRemoteDataSourceImpl implements CatalogRemoteDataSource {
     }
   }
 
-  @override
-  Future<String> createWebSession(String courseId) async {
-    final numericCourseId = int.tryParse(courseId.trim());
-    if (numericCourseId == null) {
-      throw ValidationException(message: 'ID course tidak valid.');
-    }
-
-    try {
-      final response = await dio.post(
-        ApiEndpoints.catalogWebSession,
-        data: {'course_id': numericCourseId},
-      );
-      final envelope = _parseEnvelope(response.data);
-      final rawData = envelope['data'];
-      final data = rawData is Map
-          ? Map<String, dynamic>.from(rawData)
-          : const <String, dynamic>{};
-      final url = _nonEmpty(data['url']);
-      if (url == null) {
-        throw const FormatException('URL handoff tidak tersedia.');
-      }
-      return url;
-    } on DioException catch (error) {
-      throw _mapDioError(error, fallback: 'Gagal membuat tautan website');
-    } on FormatException {
-      throw UnknownException(message: 'Respons tautan website tidak valid.');
-    } on AppException {
-      rethrow;
-    } catch (_) {
-      throw UnknownException(message: 'Gagal membuat tautan website');
-    }
-  }
-
   /// Terjemahkan [DioException] ke exception aplikasi agar lapisan repository
   /// bisa membedakan mana yang boleh difallback ke data lokal (jaringan/server)
   /// dan mana yang harus diteruskan ke UI (auth/validasi).

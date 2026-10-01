@@ -49,13 +49,8 @@ class _CatalogDetailScreenState extends State<CatalogDetailScreen> {
       );
   }
 
-  Future<void> _openWebsite(String url) async {
-    final uri = Uri.tryParse(url.trim());
-    final validScheme = uri?.scheme == 'http' || uri?.scheme == 'https';
-    if (uri == null || !validScheme || uri.host.isEmpty) {
-      _showMessage('Tautan website tidak tersedia.');
-      return;
-    }
+  Future<void> _openWebsite(String courseId) async {
+    final uri = Uri.https('lms.basstrainingacademy.com', '/katalog/$courseId');
 
     try {
       final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -71,25 +66,12 @@ class _CatalogDetailScreenState extends State<CatalogDetailScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<CatalogBloc, CatalogState>(
       listenWhen: (previous, current) {
-        return (current.websiteUrl != null &&
-                previous.websiteUrl != current.websiteUrl) ||
-            (current.websiteErrorMessage != null &&
-                previous.websiteErrorMessage != current.websiteErrorMessage) ||
-            (current.errorMessage != null &&
+        return (current.errorMessage != null &&
                 previous.errorMessage != current.errorMessage) ||
             (!_isEnrolled(previous) && _isEnrolled(current));
       },
-      listener: (context, state) async {
-        final websiteUrl = state.websiteUrl;
-        if (websiteUrl != null) {
-          // URL handoff sekali pakai: keluarkan dari state sebelum browser
-          // dibuka agar tidak dapat dipakai ulang oleh rebuild berikutnya.
-          context.read<CatalogBloc>().add(const ClearCatalogWebsiteEvent());
-          await _openWebsite(websiteUrl);
-        } else if (state.websiteErrorMessage != null) {
-          _showMessage(state.websiteErrorMessage!);
-          context.read<CatalogBloc>().add(const ClearCatalogWebsiteEvent());
-        } else if (state.errorMessage != null) {
+      listener: (context, state) {
+        if (state.errorMessage != null) {
           _showMessage(state.errorMessage!);
         } else {
           _showMessage('Course berhasil diikuti.');
@@ -129,13 +111,10 @@ class _CatalogDetailScreenState extends State<CatalogDetailScreen> {
         return _CatalogDetailContent(
           course: course,
           isEnrolling: state.enrollingId == course.id,
-          isOpeningWebsite: state.openingWebsiteId == course.id,
           onEnroll: () => context.read<CatalogBloc>().add(
             EnrollCatalogCourseEvent(course.id),
           ),
-          onOpenWebsite: () => context.read<CatalogBloc>().add(
-            RequestCatalogWebsiteEvent(course.id),
-          ),
+          onOpenWebsite: () => _openWebsite(course.id),
         );
       },
     );
@@ -145,14 +124,12 @@ class _CatalogDetailScreenState extends State<CatalogDetailScreen> {
 class _CatalogDetailContent extends StatelessWidget {
   final CatalogCourseEntity course;
   final bool isEnrolling;
-  final bool isOpeningWebsite;
   final VoidCallback onEnroll;
   final VoidCallback onOpenWebsite;
 
   const _CatalogDetailContent({
     required this.course,
     required this.isEnrolling,
-    required this.isOpeningWebsite,
     required this.onEnroll,
     required this.onOpenWebsite,
   });
@@ -164,7 +141,6 @@ class _CatalogDetailContent extends StatelessWidget {
       bottomNavigationBar: _CatalogActionBar(
         course: course,
         isEnrolling: isEnrolling,
-        isOpeningWebsite: isOpeningWebsite,
         onEnroll: onEnroll,
         onOpenWebsite: onOpenWebsite,
       ),
@@ -486,14 +462,12 @@ class _StatusBadge extends StatelessWidget {
 class _CatalogActionBar extends StatelessWidget {
   final CatalogCourseEntity course;
   final bool isEnrolling;
-  final bool isOpeningWebsite;
   final VoidCallback onEnroll;
   final VoidCallback onOpenWebsite;
 
   const _CatalogActionBar({
     required this.course,
     required this.isEnrolling,
-    required this.isOpeningWebsite,
     required this.onEnroll,
     required this.onOpenWebsite,
   });
@@ -528,18 +502,6 @@ class _CatalogActionBar extends StatelessWidget {
   }
 
   Widget _websiteButton({bool outlined = false}) {
-    final icon = isOpeningWebsite
-        ? SizedBox(
-            width: 18,
-            height: 18,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              color: outlined ? AppColors.brandPrimary : Colors.white,
-            ),
-          )
-        : const Icon(Icons.open_in_new_rounded);
-    final label = Text(isOpeningWebsite ? 'Membuka...' : 'Website');
-    final onPressed = isOpeningWebsite ? null : onOpenWebsite;
     final shape = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(16),
     );
@@ -547,9 +509,9 @@ class _CatalogActionBar extends StatelessWidget {
 
     if (outlined) {
       return OutlinedButton.icon(
-        onPressed: onPressed,
-        icon: icon,
-        label: label,
+        onPressed: onOpenWebsite,
+        icon: const Icon(Icons.open_in_new_rounded),
+        label: const Text('Website'),
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.brandText,
           side: BorderSide(color: AppColors.brandPrimary),
@@ -560,9 +522,9 @@ class _CatalogActionBar extends StatelessWidget {
     }
 
     return ElevatedButton.icon(
-      onPressed: onPressed,
-      icon: icon,
-      label: label,
+      onPressed: onOpenWebsite,
+      icon: const Icon(Icons.open_in_new_rounded),
+      label: const Text('Website'),
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.brandPrimary,
         foregroundColor: Colors.white,

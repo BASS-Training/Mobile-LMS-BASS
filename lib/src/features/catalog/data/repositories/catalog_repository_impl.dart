@@ -107,18 +107,6 @@ class CatalogRepositoryImpl implements CatalogRepository {
     await localDataSource.enroll(catalogId);
   }
 
-  @override
-  Future<String> createWebSession(String catalogId) async {
-    if (_isOfflineTestSession()) {
-      throw NetworkException(
-        message: 'Website tidak tersedia saat mode offline.',
-      );
-    }
-
-    logDebug('[CATALOG][WEB] creating handoff session id=$catalogId');
-    return remoteDataSource.createWebSession(catalogId);
-  }
-
   /// Baca asset dummy, terapkan filter/pencarian/pagination di memori, dan
   /// tandai keanggotaan dari penyimpanan lokal. Dipakai untuk sesi offline dan
   /// saat remote tidak terjangkau.
