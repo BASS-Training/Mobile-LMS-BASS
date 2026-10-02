@@ -15,7 +15,9 @@ import '../bloc/catalog_state.dart';
 import '../widgets/catalog_course_card.dart';
 
 class CatalogScreen extends StatefulWidget {
-  const CatalogScreen({super.key});
+  final bool guestMode;
+
+  const CatalogScreen({super.key, this.guestMode = false});
 
   @override
   State<CatalogScreen> createState() => _CatalogScreenState();
@@ -95,7 +97,25 @@ class _CatalogScreenState extends State<CatalogScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const BrandAppBar(title: 'Catalog'),
+      appBar: BrandAppBar(
+        title: 'Katalog',
+        actions: widget.guestMode
+            ? [
+                TextButton.icon(
+                  onPressed: () => context.go(AppRoutes.login),
+                  icon: const Icon(Icons.login_rounded, color: Colors.white),
+                  label: const Text(
+                    'Masuk',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+              ]
+            : null,
+      ),
       body: BlocBuilder<CatalogBloc, CatalogState>(
         builder: (context, state) {
           return Column(

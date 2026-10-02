@@ -20,7 +20,6 @@ class _IntroScreenState extends State<IntroScreen>
   final PageController _pageController = PageController();
   late final AnimationController _floatController;
   int _pageIndex = 0;
-  double _page = 0;
 
   // One continuous warm gradient spans all pages. Swiping slides a window
   // across it, so transitions are always a smooth gradasi (no hard seam) while
@@ -59,9 +58,6 @@ class _IntroScreenState extends State<IntroScreen>
       vsync: this,
       duration: const Duration(seconds: 3),
     )..repeat(reverse: true);
-    _pageController.addListener(() {
-      setState(() => _page = _pageController.page ?? 0);
-    });
   }
 
   @override
@@ -71,32 +67,21 @@ class _IntroScreenState extends State<IntroScreen>
     super.dispose();
   }
 
-  void _finishIntro() {
+  void _startLearning() {
     if (!mounted) return;
     context.go(AppRoutes.login);
   }
 
-  void _next() {
-    if (_pageIndex < _slides.length - 1) {
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 420),
-        curve: Curves.easeOutCubic,
-      );
-    } else {
-      _finishIntro();
-    }
+  void _browseCatalog() {
+    if (!mounted) return;
+    context.go(AppRoutes.catalog);
   }
-
-  bool get _isLast => _pageIndex == _slides.length - 1;
 
   @override
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
     final w = media.size.width;
     final headerH = media.size.height * 0.42;
-    final maxIndex = _slides.length - 1;
-    // 0..1 scroll fraction → how far the gradient window has travelled.
-    final frac = maxIndex > 0 ? (_page / maxIndex).clamp(0.0, 1.0) : 0.0;
 
     // Onboarding dikunci ke tampilan light/brand (best practice layar pra-login)
     // walau device dalam dark mode — header pastel + kanvas putih + tinta gelap.
@@ -106,37 +91,50 @@ class _IntroScreenState extends State<IntroScreen>
         children: [
           // Continuous gradient header, windowed + translated by scroll so the
           // colour flows as one smooth gradasi while moving with the swipe.
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: ClipPath(
-              clipper: _HeroCurveClipper(),
-              child: SizedBox(
-                height: headerH,
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Positioned(
-                      top: 0,
-                      left: -frac * 2 * w,
-                      width: 3 * w,
-                      height: headerH,
-                      child: const DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                            colors: _washColors,
-                            stops: [0.0, 0.5, 1.0],
+          AnimatedBuilder(
+            animation: _pageController,
+            builder: (context, _) {
+              final maxIndex = _slides.length - 1;
+              final page = _pageController.hasClients
+                  ? (_pageController.page ?? _pageIndex.toDouble())
+                  : _pageIndex.toDouble();
+              final frac = maxIndex > 0
+                  ? (page / maxIndex).clamp(0.0, 1.0)
+                  : 0.0;
+
+              return Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                child: ClipPath(
+                  clipper: _HeroCurveClipper(),
+                  child: SizedBox(
+                    height: headerH,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Positioned(
+                          top: 0,
+                          left: -frac * 2 * w,
+                          width: 3 * w,
+                          height: headerH,
+                          child: const DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                                colors: _washColors,
+                                stops: [0.0, 0.5, 1.0],
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
           // Pages: illustration + copy only (transparent, so the header shows).
           PageView.builder(
@@ -200,39 +198,29 @@ class _IntroScreenState extends State<IntroScreen>
             ],
           ),
           const Spacer(),
-          AnimatedOpacity(
-            opacity: _isLast ? 0 : 1,
-            duration: const Duration(milliseconds: 200),
-            child: TextButton(
-              onPressed: _isLast ? null : _finishIntro,
-              child: Text(
-                'Lewati',
-                style: TextStyle(
-                  fontFamily: _kFont,
-                  color: AppColors.inkSoft,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
   }
 
   Widget _buildBottomControls() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(30, 8, 30, 28),
-      child: Row(
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+      decoration: BoxDecoration(
+        color: AppColors.paper,
+        border: Border(top: BorderSide(color: AppColors.paperBorder)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Page dots, left-aligned for an airy, reference-clean footer.
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(_slides.length, (i) {
               final active = _pageIndex == i;
               return AnimatedContainer(
                 duration: const Duration(milliseconds: 260),
                 curve: Curves.easeOutCubic,
-                margin: const EdgeInsets.only(right: 6),
+                margin: EdgeInsets.only(right: i == _slides.length - 1 ? 0 : 6),
                 width: active ? 22 : 8,
                 height: 8,
                 decoration: BoxDecoration(
@@ -244,60 +232,61 @@ class _IntroScreenState extends State<IntroScreen>
               );
             }),
           ),
-          const Spacer(),
-          // A small circular "next" that morphs into a wide CTA on the last slide.
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 300),
-            transitionBuilder: (child, anim) =>
-                FadeTransition(opacity: anim, child: child),
-            child: _isLast
-                ? SizedBox(
-                    key: const ValueKey('cta'),
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: _next,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.brandPrimary,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(horizontal: 26),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18),
-                        ),
+          const SizedBox(height: 14),
+          SizedBox(
+            height: 54,
+            child: Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    key: const ValueKey('browse-catalog-button'),
+                    onPressed: _browseCatalog,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.brandPrimary,
+                      side: BorderSide(
+                        color: AppColors.brandPrimary,
+                        width: 1.5,
                       ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            'Mulai Belajar',
-                            style: TextStyle(
-                              fontFamily: _kFont,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          SizedBox(width: 8),
-                          Icon(Icons.rocket_launch_rounded, size: 19),
-                        ],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(17),
                       ),
                     ),
-                  )
-                : SizedBox(
-                    key: const ValueKey('next'),
-                    width: 56,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: _next,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.brandPrimary,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        padding: EdgeInsets.zero,
-                        shape: const CircleBorder(),
+                    child: const Text(
+                      'Telusuri',
+                      style: TextStyle(
+                        fontFamily: _kFont,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
                       ),
-                      child: const Icon(Icons.arrow_forward_rounded, size: 22),
                     ),
                   ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    key: const ValueKey('start-learning-button'),
+                    onPressed: _startLearning,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.brandPrimary,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(17),
+                      ),
+                    ),
+                    child: const Text(
+                      'Mulai Belajar',
+                      maxLines: 1,
+                      style: TextStyle(
+                        fontFamily: _kFont,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -331,44 +320,57 @@ class _IntroPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final media = MediaQuery.of(context);
     final topInset = media.padding.top;
-    final illoH = media.size.height * 0.31;
-    // Spacers (5:4) bias the block slightly low to fill the bottom space, while
-    // the fixed 32px gap guarantees the illustration and copy never collide.
-    return Padding(
-      padding: EdgeInsets.only(top: topInset + 40, bottom: 112),
-      child: Column(
-        children: [
-          const Spacer(flex: 5),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 36),
-            child: SizedBox(
-              height: illoH,
-              width: double.infinity,
-              child: AnimatedBuilder(
-                animation: floatAnimation,
-                builder: (context, child) {
-                  final bob = (floatAnimation.value - 0.5) * 14;
-                  return Transform.translate(
-                    offset: Offset(0, bob),
-                    child: child,
-                  );
-                },
-                child: SvgPicture.asset(
-                  slide.asset,
-                  fit: BoxFit.contain,
-                  semanticsLabel: slide.title,
-                ),
-              ),
+    final compact = media.size.height < 700;
+    final illoH = media.size.height * (compact ? 0.24 : 0.31);
+    final artwork = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 36),
+      child: SizedBox(
+        height: illoH,
+        width: double.infinity,
+        child: AnimatedBuilder(
+          animation: floatAnimation,
+          builder: (context, child) {
+            final bob = (floatAnimation.value - 0.5) * 14;
+            return Transform.translate(offset: Offset(0, bob), child: child);
+          },
+          child: RepaintBoundary(
+            child: SvgPicture.asset(
+              slide.asset,
+              fit: BoxFit.contain,
+              semanticsLabel: slide.title,
             ),
           ),
-          const SizedBox(height: 32),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            child: _IntroText(slide: slide),
-          ),
-          const Spacer(flex: 4),
-        ],
+        ),
       ),
+    );
+    final copy = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 30),
+      child: _IntroText(slide: slide),
+    );
+
+    return Padding(
+      padding: EdgeInsets.only(top: topInset + 40, bottom: compact ? 128 : 142),
+      child: compact
+          ? SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 8),
+                  artwork,
+                  const SizedBox(height: 20),
+                  copy,
+                  const SizedBox(height: 16),
+                ],
+              ),
+            )
+          : Column(
+              children: [
+                const Spacer(flex: 5),
+                artwork,
+                const SizedBox(height: 32),
+                copy,
+                const Spacer(flex: 4),
+              ],
+            ),
     );
   }
 }

@@ -12,15 +12,17 @@ pendaftaran course gratis dari catalog.
 | `GET` | `/api/mobile/catalog/{courseId}` | Mengambil preview course catalog |
 | `POST` | `/api/mobile/catalog/{courseId}/daftar-gratis` | Mendaftar ke course gratis |
 
-Semua endpoint memerlukan bearer token:
+Endpoint daftar dan preview dapat diakses tanpa login. Bearer token bersifat
+opsional pada kedua endpoint tersebut untuk mengisi status `isEnrolled` dan
+menentukan akses ke program khusus:
 
 ```http
 Authorization: Bearer <token>
 Accept: application/json
 ```
 
-Token diperoleh melalui proses autentikasi mobile. Detail autentikasi berada di
-luar scope dokumen ini.
+Jika header `Authorization` dikirim, token harus valid. Endpoint pendaftaran
+course gratis tetap memerlukan bearer token dari proses autentikasi mobile.
 
 ## 1. Daftar Catalog
 
@@ -41,9 +43,10 @@ Contoh:
 
 ```http
 GET /api/mobile/catalog?q=bass&harga=free&page=1&perPage=20
-Authorization: Bearer <token>
 Accept: application/json
 ```
+
+Tambahkan `Authorization: Bearer <token>` jika pengguna sudah login.
 
 ### Respons Berhasil
 
@@ -106,7 +109,6 @@ Accept: application/json
 
 ```http
 GET /api/mobile/catalog/{courseId}
-Authorization: Bearer <token>
 Accept: application/json
 ```
 
@@ -227,7 +229,7 @@ Jangan panggil endpoint pendaftaran gratis jika `isPaid` bernilai `true`.
 
 ## Penanganan Error
 
-### Token Tidak Valid atau Tidak Ada
+### Autentikasi Tidak Valid
 
 ```json
 {
@@ -236,8 +238,9 @@ Jangan panggil endpoint pendaftaran gratis jika `isPaid` bernilai `true`.
 }
 ```
 
-HTTP status: `401 Unauthorized`. Mobile harus mengarahkan pengguna ke proses
-autentikasi ulang.
+HTTP status: `401 Unauthorized`. Respons ini terjadi jika token yang dikirim
+tidak valid atau endpoint pendaftaran dipanggil tanpa token. Request daftar dan
+preview tanpa header `Authorization` tetap dilayani sebagai tamu.
 
 ### Parameter Daftar Tidak Valid
 
@@ -274,7 +277,8 @@ dan tidak perlu membedakan penyebabnya.
    panjangnya mencapai 2 karakter.
 4. Muat halaman berikutnya berdasarkan `meta.pagination.hasMorePages`.
 5. Ketika kartu dipilih, request preview detail menggunakan ID course.
-6. Jika course gratis dan belum terdaftar, tampilkan aksi daftar gratis.
+6. Jika course gratis dan belum terdaftar, arahkan tamu ke login atau tampilkan
+   aksi daftar gratis untuk pengguna yang sudah login.
 7. Setelah pendaftaran berhasil, ubah status lokal menjadi terdaftar atau refresh
    halaman catalog.
 

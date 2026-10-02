@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/config/constants/app_routes.dart';
 import '../../../../shared/styles/app_colors.dart';
 import '../../../../shared/styles/app_shadows.dart';
 import '../../../../shared/widgets/app_empty_state.dart';
 import '../../../../shared/widgets/html_content.dart';
 import '../../../courses/presentation/widgets/course_illustration_cover.dart';
+import '../../../authentication/presentation/bloc/auth/auth_bloc.dart';
+import '../../../authentication/presentation/bloc/auth/auth_state.dart';
 import '../../domain/entities/catalog_course_entity.dart';
 import '../bloc/catalog_bloc.dart';
 import '../bloc/catalog_event.dart';
@@ -79,6 +83,9 @@ class _CatalogDetailScreenState extends State<CatalogDetailScreen> {
       },
       builder: (context, state) {
         final course = _courseOf(state);
+        final isAuthenticated = context.select<AuthBloc, bool>(
+          (bloc) => bloc.state is AuthSuccess,
+        );
         final waiting =
             state.detailStatus == CatalogDetailStatus.initial ||
             state.detailStatus == CatalogDetailStatus.loading;
@@ -110,11 +117,13 @@ class _CatalogDetailScreenState extends State<CatalogDetailScreen> {
 
         return _CatalogDetailContent(
           course: course,
+          isAuthenticated: isAuthenticated,
           isEnrolling: state.enrollingId == course.id,
           onEnroll: () => context.read<CatalogBloc>().add(
             EnrollCatalogCourseEvent(course.id),
           ),
           onOpenWebsite: () => _openWebsite(course.id),
+          onLogin: () => context.go(AppRoutes.login),
         );
       },
     );
@@ -123,27 +132,35 @@ class _CatalogDetailScreenState extends State<CatalogDetailScreen> {
 
 class _CatalogDetailContent extends StatelessWidget {
   final CatalogCourseEntity course;
+  final bool isAuthenticated;
   final bool isEnrolling;
   final VoidCallback onEnroll;
   final VoidCallback onOpenWebsite;
+  final VoidCallback onLogin;
 
   const _CatalogDetailContent({
     required this.course,
+    required this.isAuthenticated,
     required this.isEnrolling,
     required this.onEnroll,
     required this.onOpenWebsite,
+    required this.onLogin,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      bottomNavigationBar: _CatalogActionBar(
-        course: course,
-        isEnrolling: isEnrolling,
-        onEnroll: onEnroll,
-        onOpenWebsite: onOpenWebsite,
-      ),
+      bottomNavigationBar: course.isPaid
+          ? null
+          : _CatalogActionBar(
+              course: course,
+              isAuthenticated: isAuthenticated,
+              isEnrolling: isEnrolling,
+              onEnroll: onEnroll,
+              onOpenWebsite: onOpenWebsite,
+              onLogin: onLogin,
+            ),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -461,21 +478,24 @@ class _StatusBadge extends StatelessWidget {
 
 class _CatalogActionBar extends StatelessWidget {
   final CatalogCourseEntity course;
+  final bool isAuthenticated;
   final bool isEnrolling;
   final VoidCallback onEnroll;
   final VoidCallback onOpenWebsite;
+  final VoidCallback onLogin;
 
   const _CatalogActionBar({
     required this.course,
+    required this.isAuthenticated,
     required this.isEnrolling,
     required this.onEnroll,
     required this.onOpenWebsite,
+    required this.onLogin,
   });
 
   @override
   Widget build(BuildContext context) {
-    final free = course.isFree;
-    final isEnrolled = free && course.isEnrolled;
+    final isEnrolled = course.isEnrolled;
 
     return SafeArea(
       top: false,
@@ -487,15 +507,31 @@ class _CatalogActionBar extends StatelessWidget {
         ),
         child: SizedBox(
           height: 52,
-          child: free
-              ? Row(
+          child: !isAuthenticated
+              ? ElevatedButton.icon(
+                  onPressed: onLogin,
+                  icon: const Icon(Icons.login_rounded),
+                  label: const Text('Masuk untuk Mengikuti'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.brandPrimary,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    textStyle: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                )
+              : Row(
                   children: [
                     Expanded(child: _websiteButton(outlined: true)),
                     const SizedBox(width: 10),
                     Expanded(child: _enrollButton(isEnrolled)),
                   ],
-                )
-              : _websiteButton(),
+                ),
         ),
       ),
     );

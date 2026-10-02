@@ -106,16 +106,23 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         BlocProvider<HomeBloc>(create: (context) => sl<HomeBloc>()),
         BlocProvider<LessonBloc>.value(value: sl<LessonBloc>()),
       ],
-      // Saat logout, kosongkan state course di memori + cache quiz statis agar
-      // data akun sebelumnya tidak terbawa ke akun berikutnya pada perangkat yang
-      // sama (mencegah perayaan achievement palsu, kebocoran course, dan status
-      // lulus quiz lintas akun).
+      // Reset data yang bergantung pada akun saat sesi masuk/keluar. Ini juga
+      // memaksa katalog yang semula dimuat sebagai tamu mengambil ulang status
+      // enrollment dan akses program memakai token akun yang baru masuk.
       child: BlocListener<AuthBloc, AuthState>(
-        listenWhen: (prev, curr) => curr is AuthLoggedOut,
-        listener: (context, _) {
+        listenWhen: (prev, curr) {
+          if (curr is AuthLoggedOut) return true;
+          if (curr is! AuthSuccess) return false;
+          return prev is! AuthSuccess || prev.user.id != curr.user.id;
+        },
+        listener: (context, state) {
           context.read<CourseBloc>().add(const ResetCoursesEvent());
           context.read<CatalogBloc>().add(const ResetCatalogEvent());
-          QuizRepositoryImpl.clearStaticCache();
+          if (state is AuthLoggedOut) {
+            // Cache quiz statis hanya perlu dibuang saat sesi berakhir agar
+            // status lulus tidak terbawa ke akun berikutnya.
+            QuizRepositoryImpl.clearStaticCache();
+          }
         },
         child: ListenableBuilder(
           listenable: ThemeController.instance,

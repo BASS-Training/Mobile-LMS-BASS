@@ -22,6 +22,7 @@ import 'package:lms_mobile_app/src/features/authentication/presentation/edit_pro
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/edit_profile_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/domain/entities/user_entity.dart';
 import 'package:lms_mobile_app/src/features/main/presentation/screens/main_screen.dart';
+import 'package:lms_mobile_app/src/features/catalog/presentation/screens/catalog_screen.dart';
 import 'package:lms_mobile_app/src/features/catalog/presentation/screens/catalog_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/screens/course_detail_screen.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/screens/saved_courses_screen.dart';
@@ -107,10 +108,13 @@ class AppRouter {
           loc == AppRoutes.register ||
           loc == AppRoutes.forgotPassword;
       final isOnVerify = loc == AppRoutes.verifyEmail;
+      final isPublicCatalog =
+          loc == AppRoutes.catalog || loc.startsWith('${AppRoutes.catalog}/');
 
-      // Belum login: hanya boleh di layar auth/lupa-password.
+      // Tamu boleh melihat daftar dan preview katalog. Aksi pendaftaran course
+      // tetap dijaga oleh UI dan endpoint POST yang membutuhkan bearer token.
       if (!isAuthenticated) {
-        return isOnAuthRoute ? null : AppRoutes.intro;
+        return isOnAuthRoute || isPublicCatalog ? null : AppRoutes.intro;
       }
 
       // Login tapi WAJIB verifikasi email (akun baru): paksa ke layar OTP.
@@ -196,7 +200,9 @@ class AppRouter {
       ),
       GoRoute(
         path: AppRoutes.catalog,
-        builder: (context, state) => const MainScreen(initialTab: 1),
+        builder: (context, state) => _authBloc.state is AuthSuccess
+            ? const MainScreen(initialTab: 1)
+            : const CatalogScreen(guestMode: true),
       ),
       GoRoute(
         path: AppRoutes.courses,
@@ -714,7 +720,8 @@ class AppRouter {
           return InstructorDocumentGradingScreen(
             submissionId: args['submissionId'] as String,
             contentId: args['contentId'] as String,
-            contentTitle: (args['contentTitle'] as String?) ?? 'Pengumpulan Dokumen',
+            contentTitle:
+                (args['contentTitle'] as String?) ?? 'Pengumpulan Dokumen',
             participantName: (args['participantName'] as String?) ?? 'Peserta',
           );
         },
