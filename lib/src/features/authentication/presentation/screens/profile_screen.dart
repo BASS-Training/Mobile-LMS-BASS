@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -45,100 +46,101 @@ class ProfileScreen extends StatelessWidget {
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
-              children: [
-                _ProfileHeader(user: user, roleLabel: _roleLabel(user.role)),
-                Transform.translate(
-                  offset: const Offset(0, -28),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _SectionCard(
-                          children: [
-                            _NavRow(
-                              icon: Icons.edit_rounded,
-                              accent: AppColors.brandPrimary,
-                              title: 'Edit Profil',
-                              subtitle: 'Ubah foto & data diri',
-                              onTap: () => context.push(
-                                AppRoutes.editProfile,
-                                extra: user,
+                children: [
+                  _ProfileHeader(user: user, roleLabel: _roleLabel(user.role)),
+                  Transform.translate(
+                    offset: const Offset(0, -28),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _SectionCard(
+                            children: [
+                              _NavRow(
+                                icon: Icons.edit_rounded,
+                                accent: AppColors.brandPrimary,
+                                title: 'Edit Profil',
+                                subtitle: 'Ubah foto & data diri',
+                                onTap: () => context.push(
+                                  AppRoutes.editProfile,
+                                  extra: user,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                        _buildSecuritySection(context, user),
-                        _buildPersonalSection(user),
-                        _buildAccountSection(user),
-                        // _sectionLabel('Pembelajaran'),
-                        // _SectionCard(
-                        //   children: [
-                        //     _NavRow(
-                        //       icon: Icons.workspace_premium_rounded,
-                        //       accent: AppColors.warning,
-                        //       title: 'Sertifikat Saya',
-                        //       subtitle: 'Lihat sertifikat yang sudah diraih',
-                        //       onTap: () =>
-                        //           context.push(AppRoutes.certificateList),
-                        //     ),
-                        //     _NavRow(
-                        //       icon: Icons.bookmark_rounded,
-                        //       accent: AppColors.brandPrimary,
-                        //       title: 'Kursus Tersimpan',
-                        //       subtitle: 'Koleksi kursus yang kamu simpan',
-                        //       onTap: () => context.push(AppRoutes.savedCourses),
-                        //     ),
-                        //   ],
-                        // ),
-                        _sectionLabel('Pengaturan Aplikasi'),
-                        _SectionCard(
-                          children: [
-                            _NavRow(
-                              icon: Icons.dark_mode_outlined,
-                              accent: AppColors.violet,
-                              title: 'Mode Tampilan',
-                              subtitle: _themeLabel(
-                                ThemeController.instance.mode,
+                            ],
+                          ),
+                          _buildSecuritySection(context, user),
+                          _buildPersonalSection(user),
+                          _buildAccountSection(user),
+                          // _sectionLabel('Pembelajaran'),
+                          // _SectionCard(
+                          //   children: [
+                          //     _NavRow(
+                          //       icon: Icons.workspace_premium_rounded,
+                          //       accent: AppColors.warning,
+                          //       title: 'Sertifikat Saya',
+                          //       subtitle: 'Lihat sertifikat yang sudah diraih',
+                          //       onTap: () =>
+                          //           context.push(AppRoutes.certificateList),
+                          //     ),
+                          //     _NavRow(
+                          //       icon: Icons.bookmark_rounded,
+                          //       accent: AppColors.brandPrimary,
+                          //       title: 'Kursus Tersimpan',
+                          //       subtitle: 'Koleksi kursus yang kamu simpan',
+                          //       onTap: () => context.push(AppRoutes.savedCourses),
+                          //     ),
+                          //   ],
+                          // ),
+                          _sectionLabel('Pengaturan Aplikasi'),
+                          _SectionCard(
+                            children: [
+                              _NavRow(
+                                icon: Icons.dark_mode_outlined,
+                                accent: AppColors.violet,
+                                title: 'Mode Tampilan',
+                                subtitle: _themeLabel(
+                                  ThemeController.instance.mode,
+                                ),
+                                onTap: () => _showThemeSelector(context),
                               ),
-                              onTap: () => _showThemeSelector(context),
-                            ),
-                          ],
-                        ),
-                        _sectionLabel('Dukungan'),
-                        _SectionCard(
-                          children: [
-                            _NavRow(
-                              icon: Icons.help_outline_rounded,
-                              accent: AppColors.success,
-                              title: 'Pusat Bantuan',
-                              subtitle: 'FAQ & kontak dukungan',
-                              onTap: () => _showHelp(context),
-                            ),
-                            _NavRow(
-                              icon: Icons.privacy_tip_outlined,
-                              accent: AppColors.info,
-                              title: 'Kebijakan Privasi',
-                              subtitle: 'Bagaimana data kamu digunakan',
-                              onTap: () => _showPrivacy(context),
-                            ),
-                            _NavRow(
-                              icon: Icons.info_outline_rounded,
-                              accent: AppColors.violet,
-                              title: 'Tentang Aplikasi',
-                              subtitle: 'BASS — Bintang Anugrah Surya Semesta',
-                              onTap: () => _showAbout(context),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
-                        _LogoutButton(onTap: () => _confirmLogout(context)),
-                        const SizedBox(height: 24),
-                      ],
+                            ],
+                          ),
+                          _sectionLabel('Dukungan'),
+                          _SectionCard(
+                            children: [
+                              _NavRow(
+                                icon: Icons.help_outline_rounded,
+                                accent: AppColors.success,
+                                title: 'Pusat Bantuan',
+                                subtitle: 'FAQ & kontak dukungan',
+                                onTap: () => _showHelp(context),
+                              ),
+                              _NavRow(
+                                icon: Icons.privacy_tip_outlined,
+                                accent: AppColors.info,
+                                title: 'Kebijakan Privasi',
+                                subtitle: 'Bagaimana data kamu digunakan',
+                                onTap: () => _showPrivacy(context),
+                              ),
+                              _NavRow(
+                                icon: Icons.info_outline_rounded,
+                                accent: AppColors.violet,
+                                title: 'Tentang Aplikasi',
+                                subtitle:
+                                    'BASS — Bintang Anugrah Surya Semesta',
+                                onTap: () => _showAbout(context),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 24),
+                          _LogoutButton(onTap: () => _confirmLogout(context)),
+                          const SizedBox(height: 24),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
               ),
             ),
           ),
@@ -671,12 +673,15 @@ class _ProfileHeader extends StatelessWidget {
               ),
               child: ClipOval(
                 child: (user.avatarUrl != null && user.avatarUrl!.isNotEmpty)
-                    ? Image.network(
-                        user.avatarUrl!,
+                    ? CachedNetworkImage(
+                        imageUrl: user.avatarUrl!,
                         width: 96,
                         height: 96,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => _avatarInitial(initial),
+                        memCacheWidth: 288,
+                        memCacheHeight: 288,
+                        placeholder: (_, _) => _avatarInitial(initial),
+                        errorWidget: (_, _, _) => _avatarInitial(initial),
                       )
                     : _avatarInitial(initial),
               ),

@@ -48,16 +48,22 @@ class CertificateState extends Equatable {
 /// dan menerbitkan sertifikat lewat aturan yang sama dengan web.
 class CertificateCubit extends Cubit<CertificateState> {
   final CertificateRepository repository;
+  int _overviewRequestId = 0;
 
   CertificateCubit({required this.repository})
     : super(const CertificateState());
 
   Future<void> load() async {
+    final requestId = ++_overviewRequestId;
     emit(state.copyWith(status: CertificateStatus.loading, error: null));
     try {
       final overview = await repository.getOverview();
-      emit(state.copyWith(status: CertificateStatus.loaded, overview: overview));
+      if (isClosed || requestId != _overviewRequestId) return;
+      emit(
+        state.copyWith(status: CertificateStatus.loaded, overview: overview),
+      );
     } catch (e) {
+      if (isClosed || requestId != _overviewRequestId) return;
       emit(state.copyWith(status: CertificateStatus.error, error: _msg(e)));
     }
   }
@@ -69,7 +75,15 @@ class CertificateCubit extends Cubit<CertificateState> {
     emit(state.copyWith(generatingCourseId: courseId, error: null));
     try {
       final cert = await repository.generate(courseId);
+      final requestId = ++_overviewRequestId;
       final overview = await repository.getOverview();
+      if (isClosed) return cert;
+      if (requestId != _overviewRequestId) {
+        if (state.generatingCourseId == courseId) {
+          emit(state.copyWith(clearGenerating: true));
+        }
+        return cert;
+      }
       emit(
         state.copyWith(
           status: CertificateStatus.loaded,
@@ -79,8 +93,16 @@ class CertificateCubit extends Cubit<CertificateState> {
       );
       return cert;
     } catch (e) {
-      emit(state.copyWith(clearGenerating: true));
+      if (!isClosed && state.generatingCourseId == courseId) {
+        emit(state.copyWith(clearGenerating: true));
+      }
       rethrow;
     }
+  }
+
+  @override
+  Future<void> close() {
+    _overviewRequestId++;
+    return super.close();
   }
 }

@@ -54,7 +54,9 @@ class AgendaState extends Equatable {
   String? holidayFor(DateTime day) => holidays[dateKey(day)];
 
   List<AgendaItem> sessionsOn(DateTime day) => sessions
-      .where((s) => s.scheduledStart != null && isSameDay(s.scheduledStart!, day))
+      .where(
+        (s) => s.scheduledStart != null && isSameDay(s.scheduledStart!, day),
+      )
       .toList();
 
   List<PersonalAgendaItem> personalOn(DateTime day) =>
@@ -83,34 +85,42 @@ class AgendaCubit extends Cubit<AgendaState> {
   final PersonalAgendaStore personalStore;
 
   final Set<int> _loadedYears = {};
+  int _loadRequestId = 0;
 
   AgendaCubit({
     required this.repository,
     required this.holidayRepository,
     required this.personalStore,
-  }) : super(AgendaState(
-          focusedMonth: _firstOfMonth(DateTime.now()),
-          selectedDay: DateTime.now(),
-        ));
+  }) : super(
+         AgendaState(
+           focusedMonth: _firstOfMonth(DateTime.now()),
+           selectedDay: DateTime.now(),
+         ),
+       );
 
   static DateTime _firstOfMonth(DateTime d) => DateTime(d.year, d.month);
 
   Future<void> load() async {
+    final requestId = ++_loadRequestId;
     emit(state.copyWith(status: AgendaStatus.loading, error: null));
     try {
       final results = await Future.wait([
         repository.getAgenda(),
         personalStore.getAll(),
       ]);
+      if (isClosed || requestId != _loadRequestId) return;
       final sessions = results[0] as List<AgendaItem>;
       final personal = results[1] as List<PersonalAgendaItem>;
-      emit(state.copyWith(
-        status: AgendaStatus.loaded,
-        sessions: sessions,
-        personal: personal,
-      ));
+      emit(
+        state.copyWith(
+          status: AgendaStatus.loaded,
+          sessions: sessions,
+          personal: personal,
+        ),
+      );
       await _ensureHolidays(state.focusedMonth.year);
     } catch (e) {
+      if (isClosed || requestId != _loadRequestId) return;
       final msg = e.toString().replaceFirst('Exception: ', '');
       emit(state.copyWith(status: AgendaStatus.error, error: msg));
     }
@@ -121,6 +131,7 @@ class AgendaCubit extends Cubit<AgendaState> {
     if (_loadedYears.contains(year)) return;
     try {
       final map = await holidayRepository.getHolidays(year);
+      if (isClosed) return;
       _loadedYears.add(year);
       emit(state.copyWith(holidays: {...state.holidays, ...map}));
     } catch (_) {
@@ -136,28 +147,35 @@ class AgendaCubit extends Cubit<AgendaState> {
     _ensureHolidays(m.year);
   }
 
-  void nextMonth() =>
-      goToMonth(DateTime(state.focusedMonth.year, state.focusedMonth.month + 1));
+  void nextMonth() => goToMonth(
+    DateTime(state.focusedMonth.year, state.focusedMonth.month + 1),
+  );
 
-  void prevMonth() =>
-      goToMonth(DateTime(state.focusedMonth.year, state.focusedMonth.month - 1));
+  void prevMonth() => goToMonth(
+    DateTime(state.focusedMonth.year, state.focusedMonth.month - 1),
+  );
 
   void goToToday() {
     final now = DateTime.now();
-    emit(state.copyWith(
-      focusedMonth: _firstOfMonth(now),
-      selectedDay: now,
-    ));
+    emit(state.copyWith(focusedMonth: _firstOfMonth(now), selectedDay: now));
     _ensureHolidays(now.year);
   }
 
   Future<void> addPersonal(PersonalAgendaItem item) async {
     await personalStore.add(item);
-    emit(state.copyWith(personal: await personalStore.getAll()));
+    final personal = await personalStore.getAll();
+    if (!isClosed) emit(state.copyWith(personal: personal));
   }
 
   Future<void> removePersonal(String id) async {
     await personalStore.remove(id);
-    emit(state.copyWith(personal: await personalStore.getAll()));
+    final personal = await personalStore.getAll();
+    if (!isClosed) emit(state.copyWith(personal: personal));
+  }
+
+  @override
+  Future<void> close() {
+    _loadRequestId++;
+    return super.close();
   }
 }

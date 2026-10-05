@@ -14,13 +14,17 @@ class DiscussionFeedRepository {
 
   /// [courseId] non-null → forum satu kelas (semua diskusinya). Null → feed
   /// global (dibatasi server ke 60 aktivitas terbaru).
-  Future<List<DiscussionFeedItem>> getFeed({String? courseId}) async {
+  Future<List<DiscussionFeedItem>> getFeed({
+    String? courseId,
+    CancelToken? cancelToken,
+  }) async {
     try {
       final res = await _dio.get(
         ApiEndpoints.discussionsFeed,
         queryParameters: (courseId != null && courseId.isNotEmpty)
             ? {'course': courseId}
             : null,
+        cancelToken: cancelToken,
       );
       final data = res.data;
       final list = (data is Map && data['data'] is List)
@@ -37,16 +41,23 @@ class DiscussionFeedRepository {
 
   /// Course → lesson structure (with per-lesson discussion counts) for the hub's
   /// context selector.
-  Future<List<DiscussionCourseGroup>> getStructure() async {
+  Future<List<DiscussionCourseGroup>> getStructure({
+    CancelToken? cancelToken,
+  }) async {
     try {
-      final res = await _dio.get(ApiEndpoints.discussionsStructure);
+      final res = await _dio.get(
+        ApiEndpoints.discussionsStructure,
+        cancelToken: cancelToken,
+      );
       final data = res.data;
       final list = (data is Map && data['data'] is List)
           ? data['data'] as List
           : const [];
       return list
           .whereType<Map>()
-          .map((e) => DiscussionCourseGroup.fromJson(Map<String, dynamic>.from(e)))
+          .map(
+            (e) => DiscussionCourseGroup.fromJson(Map<String, dynamic>.from(e)),
+          )
           .toList();
     } on DioException catch (e) {
       throw Exception(dioErrorMessage(e, 'Gagal memuat daftar kelas'));

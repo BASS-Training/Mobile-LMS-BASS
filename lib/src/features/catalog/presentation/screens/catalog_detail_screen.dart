@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -53,8 +54,8 @@ class _CatalogDetailScreenState extends State<CatalogDetailScreen> {
       );
   }
 
-  Future<void> _openWebsite(String courseId) async {
-    final uri = Uri.https('lms.basstrainingacademy.com', '/katalog/$courseId');
+  Future<void> _openWebsite() async {
+    final uri = Uri.https('lms.basstrainingacademy.com', '/');
 
     try {
       final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -122,7 +123,7 @@ class _CatalogDetailScreenState extends State<CatalogDetailScreen> {
           onEnroll: () => context.read<CatalogBloc>().add(
             EnrollCatalogCourseEvent(course.id),
           ),
-          onOpenWebsite: () => _openWebsite(course.id),
+          onOpenWebsite: _openWebsite,
           onLogin: () => context.go(AppRoutes.login),
         );
       },
@@ -151,16 +152,14 @@ class _CatalogDetailContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      bottomNavigationBar: course.isPaid
-          ? null
-          : _CatalogActionBar(
-              course: course,
-              isAuthenticated: isAuthenticated,
-              isEnrolling: isEnrolling,
-              onEnroll: onEnroll,
-              onOpenWebsite: onOpenWebsite,
-              onLogin: onLogin,
-            ),
+      bottomNavigationBar: _CatalogActionBar(
+        course: course,
+        isAuthenticated: isAuthenticated,
+        isEnrolling: isEnrolling,
+        onEnroll: onEnroll,
+        onOpenWebsite: onOpenWebsite,
+        onLogin: onLogin,
+      ),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -176,17 +175,17 @@ class _CatalogDetailContent extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: _StatusBadge(
-                    enrolled: course.isEnrolled,
-                    highlight: course.isFree,
-                    label: course.isEnrolled
-                        ? 'Sudah diikuti'
-                        : course.priceLabel,
+                if (course.isEnrolled) ...[
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: _StatusBadge(
+                      enrolled: true,
+                      highlight: true,
+                      label: 'Sudah diikuti',
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
+                  const SizedBox(height: 12),
+                ],
                 Text(
                   course.title,
                   style: TextStyle(
@@ -218,24 +217,10 @@ class _CatalogDetailContent extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _InfoTile(
-                        icon: Icons.play_lesson_outlined,
-                        value: '${course.lessonCount}',
-                        label: 'Materi',
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _InfoTile(
-                        icon: Icons.payments_outlined,
-                        value: course.priceLabel,
-                        label: 'Harga',
-                      ),
-                    ),
-                  ],
+                _InfoTile(
+                  icon: Icons.play_lesson_outlined,
+                  value: '${course.lessonCount}',
+                  label: 'Materi',
                 ),
                 const SizedBox(height: 28),
                 _SectionTitle(title: 'Tentang course'),
@@ -285,12 +270,13 @@ class _CatalogHero extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(74, 72, 74, 30),
       );
     }
-    return Image.network(
-      thumbnail,
+    return CachedNetworkImage(
+      imageUrl: thumbnail,
       fit: BoxFit.cover,
-      loadingBuilder: (_, child, progress) =>
-          progress == null ? child : CourseIllustrationCover(seed: course.id),
-      errorBuilder: (_, _, _) => CourseIllustrationCover(seed: course.id),
+      memCacheWidth: 1200,
+      memCacheHeight: 900,
+      placeholder: (_, _) => CourseIllustrationCover(seed: course.id),
+      errorWidget: (_, _, _) => CourseIllustrationCover(seed: course.id),
     );
   }
 }
@@ -507,7 +493,9 @@ class _CatalogActionBar extends StatelessWidget {
         ),
         child: SizedBox(
           height: 52,
-          child: !isAuthenticated
+          child: course.isPaid
+              ? _websiteButton()
+              : !isAuthenticated
               ? ElevatedButton.icon(
                   onPressed: onLogin,
                   icon: const Icon(Icons.login_rounded),

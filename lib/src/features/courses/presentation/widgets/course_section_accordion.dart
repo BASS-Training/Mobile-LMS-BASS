@@ -8,6 +8,8 @@ import 'course_lesson_tile.dart';
 class CourseSectionAccordion extends StatelessWidget {
   final CourseSectionEntity section;
   final CourseEntity course;
+  final int firstLessonIndex;
+  final bool initiallyExpanded;
 
   /// When true (instructor/admin), every lesson tile is openable.
   final bool unlockAll;
@@ -16,6 +18,8 @@ class CourseSectionAccordion extends StatelessWidget {
     super.key,
     required this.section,
     required this.course,
+    required this.firstLessonIndex,
+    this.initiallyExpanded = false,
     this.unlockAll = false,
   });
 
@@ -127,24 +131,54 @@ class CourseSectionAccordion extends StatelessWidget {
               ],
             ),
           ),
-          initiallyExpanded: true,
+          initiallyExpanded: initiallyExpanded,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                children: sectionLessons.asMap().entries.map((entry) {
-                  return CourseLessonTile(
-                    lesson: entry.value,
-                    course: course,
-                    lessonIndexInSection: entry.key,
-                    overallLessonIndex: course.allLessons.indexOf(entry.value),
-                    unlockAll: unlockAll,
-                  );
-                }).toList(),
-              ),
+            _CourseSectionLessons(
+              section: section,
+              course: course,
+              firstLessonIndex: firstLessonIndex,
+              unlockAll: unlockAll,
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _CourseSectionLessons extends StatelessWidget {
+  final CourseSectionEntity section;
+  final CourseEntity course;
+  final int firstLessonIndex;
+  final bool unlockAll;
+
+  const _CourseSectionLessons({
+    required this.section,
+    required this.course,
+    required this.firstLessonIndex,
+    required this.unlockAll,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final prerequisiteMet = course.isSectionPrerequisiteMet(section);
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        children: section.lessons.asMap().entries.map((entry) {
+          final overallIndex = firstLessonIndex + entry.key;
+          return CourseLessonTile(
+            lesson: entry.value,
+            course: course,
+            lessonIndexInSection: entry.key,
+            overallLessonIndex: overallIndex,
+            isUnlocked: course.isLessonUnlockedAt(
+              overallIndex,
+              sectionPrerequisiteMet: prerequisiteMet,
+            ),
+            unlockAll: unlockAll,
+          );
+        }).toList(),
       ),
     );
   }

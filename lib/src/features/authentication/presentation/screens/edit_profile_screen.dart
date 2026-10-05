@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -25,8 +26,18 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   static const _months = [
-    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember',
   ];
 
   final _formKey = GlobalKey<FormState>();
@@ -62,8 +73,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       '${d.month.toString().padLeft(2, '0')}-'
       '${d.day.toString().padLeft(2, '0')}';
 
-  String get _dobLabel =>
-      _dob == null ? 'Pilih tanggal' : '${_dob!.day} ${_months[_dob!.month - 1]} ${_dob!.year}';
+  String get _dobLabel => _dob == null
+      ? 'Pilih tanggal'
+      : '${_dob!.day} ${_months[_dob!.month - 1]} ${_dob!.year}';
 
   Future<void> _pickDate() async {
     final now = DateTime.now();
@@ -90,12 +102,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           children: [
             const SizedBox(height: 8),
             ListTile(
-              leading: Icon(Icons.photo_library_rounded, color: AppColors.brandText),
+              leading: Icon(
+                Icons.photo_library_rounded,
+                color: AppColors.brandText,
+              ),
               title: const Text('Pilih dari galeri'),
               onTap: () => Navigator.pop(ctx, ImageSource.gallery),
             ),
             ListTile(
-              leading: Icon(Icons.photo_camera_rounded, color: AppColors.brandText),
+              leading: Icon(
+                Icons.photo_camera_rounded,
+                color: AppColors.brandText,
+              ),
               title: const Text('Ambil foto'),
               onTap: () => Navigator.pop(ctx, ImageSource.camera),
             ),
@@ -133,13 +151,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       return;
     }
     context.read<EditProfileCubit>().submit(
-          name: _nameC.text,
-          dateOfBirth: _ymd(_dob!),
-          gender: _gender!,
-          institutionName: _institutionC.text,
-          occupation: _occupationC.text,
-          avatarFilePath: _pickedImagePath,
-        );
+      name: _nameC.text,
+      dateOfBirth: _ymd(_dob!),
+      gender: _gender!,
+      institutionName: _institutionC.text,
+      occupation: _occupationC.text,
+      avatarFilePath: _pickedImagePath,
+    );
   }
 
   void _toast(String message) {
@@ -157,7 +175,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         listener: (context, state) {
           if (state.status == EditProfileStatus.success &&
               state.updatedUser != null) {
-            context.read<AuthBloc>().add(AuthUserUpdatedEvent(state.updatedUser!));
+            context.read<AuthBloc>().add(
+              AuthUserUpdatedEvent(state.updatedUser!),
+            );
             _toast('Profil berhasil diperbarui.');
             context.pop();
           } else if (state.status == EditProfileStatus.failure) {
@@ -180,7 +200,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     TextFormField(
                       controller: _nameC,
                       textCapitalization: TextCapitalization.words,
-                      decoration: _dec('Nama lengkap', Icons.person_outline_rounded),
+                      decoration: _dec(
+                        'Nama lengkap',
+                        Icons.person_outline_rounded,
+                      ),
                       validator: (v) => (v == null || v.trim().isEmpty)
                           ? 'Nama tidak boleh kosong'
                           : null,
@@ -201,7 +224,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     TextFormField(
                       controller: _institutionC,
                       textCapitalization: TextCapitalization.words,
-                      decoration: _dec('Nama institusi', Icons.apartment_rounded),
+                      decoration: _dec(
+                        'Nama institusi',
+                        Icons.apartment_rounded,
+                      ),
                       validator: (v) => (v == null || v.trim().isEmpty)
                           ? 'Institusi tidak boleh kosong'
                           : null,
@@ -235,8 +261,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 height: 22,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor:
-                                      AlwaysStoppedAnimation<Color>(Colors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
                                 ),
                               )
                             : const Text(
@@ -269,10 +296,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (_pickedImagePath != null) {
       avatarChild = Image.file(File(_pickedImagePath!), fit: BoxFit.cover);
     } else if (remoteUrl != null && remoteUrl.isNotEmpty) {
-      avatarChild = Image.network(
-        remoteUrl,
+      avatarChild = CachedNetworkImage(
+        imageUrl: remoteUrl,
         fit: BoxFit.cover,
-        errorBuilder: (_, _, _) => _initialAvatar(initial),
+        memCacheWidth: 336,
+        memCacheHeight: 336,
+        placeholder: (_, _) => _initialAvatar(initial),
+        errorWidget: (_, _, _) => _initialAvatar(initial),
       );
     } else {
       avatarChild = _initialAvatar(initial);
@@ -334,9 +364,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget _genderSelector() {
     return Row(
       children: [
-        Expanded(
-          child: _genderChip('male', 'Laki-laki', Icons.male_rounded),
-        ),
+        Expanded(child: _genderChip('male', 'Laki-laki', Icons.male_rounded)),
         const SizedBox(width: 12),
         Expanded(
           child: _genderChip('female', 'Perempuan', Icons.female_rounded),
@@ -449,8 +477,11 @@ class _PickerField extends StatelessWidget {
                 ),
               ),
             ),
-            Icon(Icons.calendar_today_rounded,
-                size: 18, color: AppColors.textTertiary),
+            Icon(
+              Icons.calendar_today_rounded,
+              size: 18,
+              color: AppColors.textTertiary,
+            ),
           ],
         ),
       ),

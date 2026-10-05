@@ -20,11 +20,35 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   late int _selectedIndex;
+  final Set<int> _visitedTabs = {};
+
+  static const int _tabCount = 5;
+
+  int _normalizedTab(int index) => index >= 0 && index < _tabCount ? index : 0;
 
   @override
   void initState() {
     super.initState();
-    _selectedIndex = widget.initialTab;
+    _selectedIndex = _normalizedTab(widget.initialTab);
+    _visitedTabs.add(_selectedIndex);
+  }
+
+  @override
+  void didUpdateWidget(covariant MainScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialTab == widget.initialTab) return;
+    final nextIndex = _normalizedTab(widget.initialTab);
+    _selectedIndex = nextIndex;
+    _visitedTabs.add(nextIndex);
+  }
+
+  void _selectTab(int index) {
+    final nextIndex = _normalizedTab(index);
+    if (nextIndex == _selectedIndex) return;
+    setState(() {
+      _selectedIndex = nextIndex;
+      _visitedTabs.add(nextIndex);
+    });
   }
 
   List<Widget> _buildScreens(String role, {required bool canManage}) {
@@ -35,11 +59,7 @@ class _MainScreenState extends State<MainScreen> {
       HomeScreen(
         accountRole: role,
         canManage: canManage,
-        onShowCourses: () {
-          setState(() {
-            _selectedIndex = 2;
-          });
-        },
+        onShowCourses: () => _selectTab(2),
       ),
       const CatalogScreen(),
       const CourseListScreen(),
@@ -61,14 +81,18 @@ class _MainScreenState extends State<MainScreen> {
         final screens = _buildScreens(role, canManage: canManage);
 
         return Scaffold(
-          body: screens[_selectedIndex],
+          body: IndexedStack(
+            index: _selectedIndex,
+            children: List.generate(
+              screens.length,
+              (index) => _visitedTabs.contains(index)
+                  ? KeyedSubtree(key: ValueKey(index), child: screens[index])
+                  : const SizedBox.shrink(),
+            ),
+          ),
           bottomNavigationBar: CustomBottomNavBar(
             currentIndex: _selectedIndex,
-            onItemSelected: (index) {
-              setState(() {
-                _selectedIndex = index;
-              });
-            },
+            onItemSelected: _selectTab,
           ),
         );
       },

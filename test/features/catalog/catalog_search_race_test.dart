@@ -34,7 +34,52 @@ void main() {
     expect(bloc.state.query, 'new');
     expect(bloc.state.courses.single.id, 'new');
   });
+
+  test('respons detail lama tidak menimpa detail terbaru', () async {
+    final repository = _ControlledCatalogRepository();
+    final bloc = CatalogBloc(repository: repository);
+    addTearDown(bloc.close);
+
+    bloc.add(const LoadCatalogDetailEvent('old'));
+    await _waitUntil(() => repository.detailRequests.containsKey('old'));
+    bloc.add(const LoadCatalogDetailEvent('new'));
+    await _waitUntil(() => repository.detailRequests.containsKey('new'));
+
+    repository.detailRequests['new']!.complete(_course('new'));
+    await bloc.stream.firstWhere(
+      (state) =>
+          state.detailStatus == CatalogDetailStatus.loaded &&
+          state.detailCourse?.id == 'new',
+    );
+
+    repository.detailRequests['old']!.complete(_course('old'));
+    await Future<void>.delayed(Duration.zero);
+
+    expect(bloc.state.detailCourse?.id, 'new');
+  });
 }
+
+Future<void> _waitUntil(bool Function() predicate) async {
+  final deadline = DateTime.now().add(const Duration(seconds: 2));
+  while (!predicate()) {
+    if (DateTime.now().isAfter(deadline)) {
+      fail('Condition was not met before timeout.');
+    }
+    await Future<void>.delayed(Duration.zero);
+  }
+}
+
+CatalogCourseEntity _course(String id) => CatalogCourseEntity(
+  id: id,
+  title: '$id detail',
+  description: '',
+  instructor: '',
+  lessonCount: 1,
+  isFree: true,
+  isPaid: false,
+  priceLabel: 'Gratis',
+  sections: const [],
+);
 
 CatalogPageEntity _page(String id) {
   return CatalogPageEntity(
@@ -64,6 +109,7 @@ class _ControlledCatalogRepository implements CatalogRepository {
     'old': Completer<CatalogPageEntity>(),
     'new': Completer<CatalogPageEntity>(),
   };
+  final Map<String, Completer<CatalogCourseEntity?>> detailRequests = {};
 
   @override
   Future<CatalogPageEntity> getCatalog({
@@ -73,6 +119,12 @@ class _ControlledCatalogRepository implements CatalogRepository {
     int perPage = 20,
   }) {
     return requests[query]!.future;
+  }
+
+  @override
+  Future<CatalogCourseEntity?> getDetail(String catalogId) {
+    return (detailRequests[catalogId] = Completer<CatalogCourseEntity?>())
+        .future;
   }
 
   @override

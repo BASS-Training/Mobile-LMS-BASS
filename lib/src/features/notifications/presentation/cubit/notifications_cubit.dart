@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lms_mobile_app/src/features/notifications/data/notification_repository.dart';
 import 'package:lms_mobile_app/src/features/notifications/domain/entities/app_notification.dart';
@@ -43,15 +44,24 @@ class NotificationsState extends Equatable {
 /// Registered as a lazy singleton so the badge updates when items are read.
 class NotificationsCubit extends Cubit<NotificationsState> {
   final NotificationRepository repository;
+  int _loadRequestId = 0;
+  int _unreadRequestId = 0;
+  CancelToken? _loadCancelToken;
+  CancelToken? _unreadCancelToken;
 
   NotificationsCubit({required this.repository})
     : super(const NotificationsState());
 
   /// Full list load (used by the notification screen).
   Future<void> load() async {
+    final requestId = ++_loadRequestId;
+    _loadCancelToken?.cancel('Replaced by a newer notification load.');
+    final cancelToken = CancelToken();
+    _loadCancelToken = cancelToken;
     emit(state.copyWith(status: NotificationsStatus.loading, error: null));
     try {
-      final items = await repository.getNotifications();
+      final items = await repository.getNotifications(cancelToken: cancelToken);
+      if (isClosed || requestId != _loadRequestId) return;
       emit(
         state.copyWith(
           status: NotificationsStatus.loaded,
@@ -60,17 +70,31 @@ class NotificationsCubit extends Cubit<NotificationsState> {
         ),
       );
     } catch (e) {
+      if (isClosed || requestId != _loadRequestId || cancelToken.isCancelled) {
+        return;
+      }
       emit(state.copyWith(status: NotificationsStatus.error, error: _msg(e)));
+    } finally {
+      if (identical(_loadCancelToken, cancelToken)) _loadCancelToken = null;
     }
   }
 
   /// Lightweight count refresh (used by the bell on home/dashboard).
   Future<void> refreshUnreadCount() async {
+    final requestId = ++_unreadRequestId;
+    _unreadCancelToken?.cancel('Replaced by a newer unread-count request.');
+    final cancelToken = CancelToken();
+    _unreadCancelToken = cancelToken;
     try {
-      final count = await repository.getUnreadCount();
+      final count = await repository.getUnreadCount(cancelToken: cancelToken);
+      if (isClosed || requestId != _unreadRequestId) return;
       emit(state.copyWith(unreadCount: count));
     } catch (_) {
       // Silent — the badge simply keeps its previous value.
+    } finally {
+      if (identical(_unreadCancelToken, cancelToken)) {
+        _unreadCancelToken = null;
+      }
     }
   }
 
@@ -78,7 +102,11 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     if (n.isRead) return;
     // Optimistic update.
     final items = state.items
-        .map((i) => i.id == n.id && i.source == n.source ? i.copyWith(isRead: true) : i)
+        .map(
+          (i) => i.id == n.id && i.source == n.source
+              ? i.copyWith(isRead: true)
+              : i,
+        )
         .toList();
     emit(
       state.copyWith(
@@ -103,5 +131,14 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     } catch (_) {
       await load();
     }
+  }
+
+  @override
+  Future<void> close() {
+    _loadRequestId++;
+    _unreadRequestId++;
+    _loadCancelToken?.cancel('Notifications cubit closed.');
+    _unreadCancelToken?.cancel('Notifications cubit closed.');
+    return super.close();
   }
 }

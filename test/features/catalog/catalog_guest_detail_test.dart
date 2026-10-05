@@ -48,12 +48,57 @@ void main() {
     expect(find.text('Ikuti Gratis'), findsNothing);
     expect(catalogRepository.enrollCalls, 0);
   });
+
+  testWidgets('detail course berbayar tidak menampilkan informasi harga', (
+    tester,
+  ) async {
+    final authRepository = _GuestAuthRepository();
+    final authBloc = AuthBloc(
+      loginUseCase: LoginUseCase(authRepository),
+      registerUseCase: RegisterUseCase(authRepository),
+      logoutUseCase: LogoutUseCase(authRepository),
+      getCurrentUserUseCase: GetCurrentUserUseCase(authRepository),
+    );
+    final catalogRepository = _CatalogRepository(
+      course: _CatalogRepository.paidCourse,
+    );
+    final catalogBloc = CatalogBloc(repository: catalogRepository);
+    addTearDown(authBloc.close);
+    addTearDown(catalogBloc.close);
+
+    await tester.pumpWidget(
+      MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: authBloc),
+          BlocProvider.value(value: catalogBloc),
+        ],
+        child: const MaterialApp(
+          home: CatalogDetailScreen(catalogId: 'paid-course'),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text('Kursus Eksternal'), findsOneWidget);
+    expect(find.text('Berbayar'), findsNothing);
+    expect(find.text('Rp 99.000'), findsNothing);
+    expect(find.text('Harga'), findsNothing);
+    expect(find.byIcon(Icons.payments_outlined), findsNothing);
+    expect(find.text('Website'), findsOneWidget);
+    expect(find.byIcon(Icons.open_in_new_rounded), findsOneWidget);
+    expect(find.text('Masuk untuk Mengikuti'), findsNothing);
+  });
 }
 
 class _CatalogRepository implements CatalogRepository {
   int enrollCalls = 0;
 
-  static const course = CatalogCourseEntity(
+  final CatalogCourseEntity course;
+
+  _CatalogRepository({this.course = freeCourse});
+
+  static const freeCourse = CatalogCourseEntity(
     id: 'free-course',
     title: 'Bass Dasar',
     description: 'Pelajari teknik dasar bass.',
@@ -62,6 +107,18 @@ class _CatalogRepository implements CatalogRepository {
     isFree: true,
     isPaid: false,
     priceLabel: 'Gratis',
+  );
+
+  static const paidCourse = CatalogCourseEntity(
+    id: 'paid-course',
+    title: 'Kursus Eksternal',
+    description: 'Pelajari materi lanjutan.',
+    instructor: 'Bass Training Academy',
+    lessonCount: 5,
+    isFree: false,
+    isPaid: true,
+    price: 99000,
+    priceLabel: 'Rp 99.000',
   );
 
   @override

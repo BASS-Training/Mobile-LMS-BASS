@@ -38,9 +38,6 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
   void initState() {
     super.initState();
     LocalStorage.recordRecentCourse(widget.course.id);
-
-    // Fetch data segar langsung saat screen pertama kali dibuat.
-    WidgetsBinding.instance.addPostFrameCallback((_) => _triggerRefresh());
   }
 
   /// Memicu refresh dan mematikan indikator saat proses BENAR-BENAR selesai
@@ -65,6 +62,31 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
 
   /// Callback untuk RefreshIndicator (pull-to-refresh).
   Future<void> _onPullRefresh() => _triggerRefresh();
+
+  List<Widget> _buildCourseSections(
+    CourseEntity course, {
+    required bool unlockAll,
+  }) {
+    final accordions = <Widget>[];
+    var firstLessonIndex = 0;
+
+    for (var index = 0; index < course.sections.length; index++) {
+      final section = course.sections[index];
+      accordions.add(
+        CourseSectionAccordion(
+          key: ValueKey(section.id),
+          section: section,
+          course: course,
+          firstLessonIndex: firstLessonIndex,
+          initiallyExpanded: index == 0,
+          unlockAll: unlockAll,
+        ),
+      );
+      firstLessonIndex += section.lessons.length;
+    }
+
+    return accordions;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -166,13 +188,10 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                     title: 'Materi Kursus',
                                   ),
                                   const SizedBox(height: 12),
-                                  ...currentCourse.sections.map((section) {
-                                    return CourseSectionAccordion(
-                                      section: section,
-                                      course: currentCourse,
-                                      unlockAll: true,
-                                    );
-                                  }),
+                                  ..._buildCourseSections(
+                                    currentCourse,
+                                    unlockAll: true,
+                                  ),
                                   const SizedBox(height: 24),
                                 ] else ...[
                                   CourseProgressIndicator(
@@ -189,7 +208,9 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                         AppRoutes.courseResults,
                                         extra: currentCourse,
                                       ),
-                                      icon: const Icon(Icons.assessment_rounded),
+                                      icon: const Icon(
+                                        Icons.assessment_rounded,
+                                      ),
                                       label: const Text('Nilai & Hasil'),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: AppColors.brandPrimary,
@@ -210,12 +231,10 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                         '${currentCourse.completedLessons}/${currentCourse.totalLessons}',
                                   ),
                                   const SizedBox(height: 12),
-                                  ...currentCourse.sections.map((section) {
-                                    return CourseSectionAccordion(
-                                      section: section,
-                                      course: currentCourse,
-                                    );
-                                  }),
+                                  ..._buildCourseSections(
+                                    currentCourse,
+                                    unlockAll: false,
+                                  ),
                                   const SizedBox(height: 24),
                                 ],
                               ] else ...[
@@ -357,7 +376,9 @@ class _ActionButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(14),
             border: filled
                 ? null
-                : Border.all(color: AppColors.brandPrimary.withValues(alpha: 0.4)),
+                : Border.all(
+                    color: AppColors.brandPrimary.withValues(alpha: 0.4),
+                  ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

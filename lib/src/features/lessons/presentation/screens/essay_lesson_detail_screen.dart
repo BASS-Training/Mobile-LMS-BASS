@@ -382,12 +382,12 @@ class _EssayLessonDetailScreenState extends State<EssayLessonDetailScreen>
     }
 
     void handleSaveAndNext() {
-      context.read<EssayBloc>().add(SaveDraftClicked());
-      if (state.currentQuestionIndex < state.totalQuestions - 1) {
-        context.read<EssayBloc>().add(
-          ChangeQuestion(state.currentQuestionIndex + 1),
-        );
-      }
+      final nextIndex = state.currentQuestionIndex < state.totalQuestions - 1
+          ? state.currentQuestionIndex + 1
+          : null;
+      context.read<EssayBloc>().add(
+        SaveDraftClicked(nextQuestionIndex: nextIndex),
+      );
     }
 
     void handleContinueAfterSubmit() {

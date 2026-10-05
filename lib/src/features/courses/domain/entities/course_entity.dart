@@ -44,16 +44,17 @@ class CourseEntity extends Equatable {
     this.isOwned = true,
   });
 
-  List<LessonEntity> get allLessons => sections.isNotEmpty
-      ? sections.expand((section) => section.lessons).toList()
-      : lessons;
+  List<LessonEntity> get allLessons => lessons.isNotEmpty || sections.isEmpty
+      ? lessons
+      : sections.expand((section) => section.lessons).toList();
 
   /// Get progress value object (source of truth untuk progress calculation)
   Progress get progress {
-    final completedCount = allLessons
+    final courseLessons = allLessons;
+    final completedCount = courseLessons
         .where((lesson) => lesson.isCompleted)
         .length;
-    final totalCount = allLessons.length;
+    final totalCount = courseLessons.length;
     return Progress.create(
       completedCount: completedCount,
       totalCount: totalCount,
@@ -79,40 +80,53 @@ class CourseEntity extends Equatable {
   /// (mis. lesson 5 wajib lesson 2, bukan 4) diabaikan dan tidak konsisten
   /// dengan web. Sekarang keduanya ditegakkan.
   bool isLessonUnlocked(LessonEntity lesson) {
-    final lessonIndex = allLessons.indexOf(lesson);
+    final courseLessons = allLessons;
+    final lessonIndex = courseLessons.indexOf(lesson);
 
-    // Materi pertama di seluruh course selalu terbuka (samakan dengan web yang
-    // selalu membuka indeks 0 — mencegah seluruh course terkunci).
-    if (lessonIndex <= 0) return true;
-
-    // Gerbang 1 — berurutan: materi sebelumnya harus selesai.
-    final previousLesson = allLessons[lessonIndex - 1];
-    if (!previousLesson.isCompleted) return false;
-
-    // Gerbang 2 — prasyarat antar-section.
-    return _isSectionPrerequisiteMet(lesson);
-  }
-
-  /// Apakah prasyarat section pemilik [lesson] sudah terpenuhi.
-  ///
-  /// Mengembalikan `true` (tidak mengunci) bila: section tak punya prasyarat,
-  /// section prasyaratnya tak ditemukan (data tak lengkap — jangan mengunci
-  /// karena data), atau prasyaratnya ditandai opsional. Selain itu, terpenuhi
-  /// hanya bila seluruh materi di section prasyarat sudah selesai.
-  bool _isSectionPrerequisiteMet(LessonEntity lesson) {
-    // Struktur flat lama (tanpa sections) tidak mengenal prasyarat.
-    if (sections.isEmpty) return true;
-
-    // Cari section pemilik lesson ini.
     CourseSectionEntity? owner;
     for (final section in sections) {
-      if (section.lessons.any((l) => l.id == lesson.id)) {
+      if (section.lessons.any((item) => item.id == lesson.id)) {
         owner = section;
         break;
       }
     }
 
-    final prerequisiteId = owner?.prerequisiteId;
+    return isLessonUnlockedAt(
+      lessonIndex,
+      sectionPrerequisiteMet: owner == null || isSectionPrerequisiteMet(owner),
+    );
+  }
+
+  bool isLessonUnlockedAt(
+    int lessonIndex, {
+    required bool sectionPrerequisiteMet,
+  }) {
+    final courseLessons = allLessons;
+
+    // Materi pertama di seluruh course selalu terbuka (samakan dengan web yang
+    // selalu membuka indeks 0 — mencegah seluruh course terkunci).
+    if (lessonIndex <= 0) return true;
+    if (lessonIndex >= courseLessons.length) return false;
+
+    // Gerbang 1 — berurutan: materi sebelumnya harus selesai.
+    final previousLesson = courseLessons[lessonIndex - 1];
+    if (!previousLesson.isCompleted) return false;
+
+    // Gerbang 2 — prasyarat antar-section.
+    return sectionPrerequisiteMet;
+  }
+
+  /// Apakah prasyarat [owner] sudah terpenuhi.
+  ///
+  /// Mengembalikan `true` (tidak mengunci) bila: section tak punya prasyarat,
+  /// section prasyaratnya tak ditemukan (data tak lengkap — jangan mengunci
+  /// karena data), atau prasyaratnya ditandai opsional. Selain itu, terpenuhi
+  /// hanya bila seluruh materi di section prasyarat sudah selesai.
+  bool isSectionPrerequisiteMet(CourseSectionEntity owner) {
+    // Struktur flat lama (tanpa sections) tidak mengenal prasyarat.
+    if (sections.isEmpty) return true;
+
+    final prerequisiteId = owner.prerequisiteId;
     if (prerequisiteId == null) return true;
 
     // Temukan section prasyaratnya.

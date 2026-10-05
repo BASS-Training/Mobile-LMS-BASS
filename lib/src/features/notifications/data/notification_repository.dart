@@ -11,9 +11,14 @@ class NotificationRepository {
 
   NotificationRepository({required Dio dio}) : _dio = dio;
 
-  Future<List<AppNotification>> getNotifications() async {
+  Future<List<AppNotification>> getNotifications({
+    CancelToken? cancelToken,
+  }) async {
     try {
-      final res = await _dio.get(ApiEndpoints.notifications);
+      final res = await _dio.get(
+        ApiEndpoints.notifications,
+        cancelToken: cancelToken,
+      );
       final data = res.data;
       final list = (data is Map && data['data'] is List)
           ? data['data'] as List
@@ -27,9 +32,12 @@ class NotificationRepository {
     }
   }
 
-  Future<int> getUnreadCount() async {
+  Future<int> getUnreadCount({CancelToken? cancelToken}) async {
     try {
-      final res = await _dio.get(ApiEndpoints.notificationsUnreadCount);
+      final res = await _dio.get(
+        ApiEndpoints.notificationsUnreadCount,
+        cancelToken: cancelToken,
+      );
       final data = res.data;
       final count = (data is Map && data['data'] is Map)
           ? data['data']['unreadCount']

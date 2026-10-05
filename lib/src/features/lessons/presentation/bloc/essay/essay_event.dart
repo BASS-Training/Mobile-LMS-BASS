@@ -32,10 +32,11 @@ class LoadEssay extends EssayEvent {
 }
 
 class AnswerChanged extends EssayEvent {
+  final int questionIndex;
   final String answer;
-  const AnswerChanged(this.answer);
+  const AnswerChanged(this.questionIndex, this.answer);
   @override
-  List<Object?> get props => [answer];
+  List<Object?> get props => [questionIndex, answer];
 }
 
 class ChangeQuestion extends EssayEvent {
@@ -45,7 +46,14 @@ class ChangeQuestion extends EssayEvent {
   List<Object?> get props => [index];
 }
 
-class SaveDraftClicked extends EssayEvent {}
+class SaveDraftClicked extends EssayEvent {
+  final int? nextQuestionIndex;
+
+  const SaveDraftClicked({this.nextQuestionIndex});
+
+  @override
+  List<Object?> get props => [nextQuestionIndex];
+}
 
 class SubmitEssayClicked extends EssayEvent {}
 

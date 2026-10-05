@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:lms_mobile_app/src/features/courses/domain/entities/course_entity.dart';
 import 'package:lms_mobile_app/src/features/courses/presentation/widgets/course_accent.dart';
@@ -66,14 +67,15 @@ class CourseCard extends StatelessWidget {
           // Base: the uploaded thumbnail when available, otherwise a default
           // illustration cover.
           if (hasThumb)
-            Image.network(
-              thumb,
+            CachedNetworkImage(
+              imageUrl: thumb,
               fit: BoxFit.cover,
+              memCacheWidth: 600,
+              memCacheHeight: 360,
               // While loading or on error, fall back to the illustration cover
               // so the card never shows a broken-image box.
-              loadingBuilder: (context, child, progress) =>
-                  progress == null ? child : _defaultCover(),
-              errorBuilder: (_, _, _) => _defaultCover(),
+              placeholder: (_, _) => _defaultCover(),
+              errorWidget: (_, _, _) => _defaultCover(),
             )
           else
             _defaultCover(),

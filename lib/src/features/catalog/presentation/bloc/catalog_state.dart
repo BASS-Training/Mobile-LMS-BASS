@@ -7,7 +7,7 @@ enum CatalogStatus { initial, loading, loaded, failure }
 
 enum CatalogDetailStatus { initial, loading, loaded, failure }
 
-enum CatalogFilter { all, free, paid }
+enum CatalogFilter { all, free }
 
 class CatalogState extends Equatable {
   final CatalogStatus status;

@@ -368,7 +368,6 @@ class _CatalogFilters extends StatelessWidget {
         final label = switch (filter) {
           CatalogFilter.all => 'Semua',
           CatalogFilter.free => 'Gratis',
-          CatalogFilter.paid => 'Berbayar',
         };
         return Expanded(
           child: Padding(

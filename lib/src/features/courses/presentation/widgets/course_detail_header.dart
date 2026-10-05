@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -79,13 +80,14 @@ class _CourseDetailHeaderState extends State<CourseDetailHeader> {
           // matches this course's default illustration.
           Positioned.fill(
             child: hasThumb
-                ? Image.network(
-                    thumb,
+                ? CachedNetworkImage(
+                    imageUrl: thumb,
                     fit: BoxFit.cover,
-                    loadingBuilder: (context, child, progress) => progress == null
-                        ? child
-                        : CourseIllustrationCover(seed: course.id),
-                    errorBuilder: (_, _, _) =>
+                    memCacheWidth: 1200,
+                    memCacheHeight: 720,
+                    placeholder: (_, _) =>
+                        CourseIllustrationCover(seed: course.id),
+                    errorWidget: (_, _, _) =>
                         CourseIllustrationCover(seed: course.id),
                   )
                 : DecoratedBox(
@@ -120,7 +122,11 @@ class _CourseDetailHeaderState extends State<CourseDetailHeader> {
     );
   }
 
-  Widget _buildContent(BuildContext context, CourseEntity course, bool hasThumb) {
+  Widget _buildContent(
+    BuildContext context,
+    CourseEntity course,
+    bool hasThumb,
+  ) {
     // On the light illustration cover, use dark text + white solid actions; on a
     // (dark-scrimmed) photo, keep the original white-on-image treatment.
     final onLight = !hasThumb;

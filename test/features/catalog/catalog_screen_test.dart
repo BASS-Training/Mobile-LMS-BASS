@@ -8,6 +8,29 @@ import 'package:lms_mobile_app/src/features/catalog/presentation/bloc/catalog_bl
 import 'package:lms_mobile_app/src/features/catalog/presentation/screens/catalog_screen.dart';
 
 void main() {
+  testWidgets('katalog tidak menampilkan filter atau indikator pembayaran', (
+    tester,
+  ) async {
+    final repository = _FakeCatalogRepository();
+    final bloc = CatalogBloc(repository: repository);
+    addTearDown(bloc.close);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: BlocProvider.value(value: bloc, child: const CatalogScreen()),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text('Kursus Eksternal'), findsOneWidget);
+    expect(find.text('Semua'), findsOneWidget);
+    expect(find.text('Gratis'), findsOneWidget);
+    expect(find.text('Berbayar'), findsNothing);
+    expect(find.text('Rp 99.000'), findsNothing);
+    expect(find.byIcon(Icons.payments_outlined), findsNothing);
+  });
+
   testWidgets('search menunggu debounce dan hanya mengirim query terbaru', (
     tester,
   ) async {
@@ -70,6 +93,18 @@ void main() {
 class _FakeCatalogRepository implements CatalogRepository {
   final List<String?> queries = [];
 
+  static const paidCourse = CatalogCourseEntity(
+    id: 'paid-course',
+    title: 'Kursus Eksternal',
+    description: 'Deskripsi kursus',
+    instructor: 'Bass Training Academy',
+    lessonCount: 4,
+    isFree: false,
+    isPaid: true,
+    price: 99000,
+    priceLabel: 'Rp 99.000',
+  );
+
   @override
   Future<CatalogPageEntity> getCatalog({
     String? query,
@@ -78,7 +113,14 @@ class _FakeCatalogRepository implements CatalogRepository {
     int perPage = 20,
   }) async {
     queries.add(query);
-    return const CatalogPageEntity.empty();
+    return const CatalogPageEntity(
+      courses: [paidCourse],
+      currentPage: 1,
+      lastPage: 1,
+      total: 1,
+      hasMorePages: false,
+      showPrice: true,
+    );
   }
 
   @override

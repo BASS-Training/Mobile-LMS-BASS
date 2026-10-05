@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import '../../../courses/presentation/widgets/course_illustration_cover.dart';
@@ -49,13 +50,13 @@ class CatalogCourseCard extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           if (thumbnail != null && thumbnail.isNotEmpty)
-            Image.network(
-              thumbnail,
+            CachedNetworkImage(
+              imageUrl: thumbnail,
               fit: BoxFit.cover,
-              loadingBuilder: (_, child, progress) => progress == null
-                  ? child
-                  : CourseIllustrationCover(seed: course.id),
-              errorBuilder: (_, _, _) =>
+              memCacheWidth: 600,
+              memCacheHeight: 360,
+              placeholder: (_, _) => CourseIllustrationCover(seed: course.id),
+              errorWidget: (_, _, _) =>
                   CourseIllustrationCover(seed: course.id),
             )
           else
@@ -69,18 +70,14 @@ class CatalogCourseCard extends StatelessWidget {
               backgroundColor: Colors.white,
             ),
           ),
-          if (course.isFree || course.isEnrolled)
+          if (course.isEnrolled)
             Positioned(
               right: 10,
               bottom: 10,
               child: _Badge(
-                label: course.isEnrolled ? 'Sudah diikuti' : course.priceLabel,
-                color: course.isEnrolled
-                    ? AppColors.successText
-                    : AppColors.brandText,
-                backgroundColor: course.isEnrolled
-                    ? AppColors.successSurface
-                    : AppColors.brandSurface,
+                label: 'Sudah diikuti',
+                color: AppColors.successText,
+                backgroundColor: AppColors.successSurface,
               ),
             ),
         ],
@@ -113,35 +110,13 @@ class CatalogCourseCard extends StatelessWidget {
             style: TextStyle(color: AppColors.textSecondary, fontSize: 11.5),
           ),
           const Spacer(),
-          Row(
-            children: [
-              Icon(
-                Icons.payments_outlined,
-                size: 14,
-                color: course.isFree
-                    ? AppColors.brandText
-                    : AppColors.textTertiary,
-              ),
-              const SizedBox(width: 5),
-              Expanded(
-                child: Text(
-                  course.priceLabel,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: course.isFree
-                        ? AppColors.brandText
-                        : AppColors.textSecondary,
-                    fontSize: 11.5,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              Icon(
-                Icons.arrow_forward_rounded,
-                size: 16,
-                color: AppColors.brandText,
-              ),
-            ],
+          Align(
+            alignment: Alignment.centerRight,
+            child: Icon(
+              Icons.arrow_forward_rounded,
+              size: 16,
+              color: AppColors.brandText,
+            ),
           ),
         ],
       ),

@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lms_mobile_app/src/features/discussions/data/discussion_feed_repository.dart';
@@ -37,17 +38,39 @@ class DiscussionFeedState extends Equatable {
 
 class DiscussionFeedCubit extends Cubit<DiscussionFeedState> {
   final DiscussionFeedRepository repository;
+  int _requestId = 0;
+  CancelToken? _cancelToken;
 
   DiscussionFeedCubit({required this.repository})
     : super(const DiscussionFeedState());
 
   Future<void> load({String? courseId}) async {
+    final requestId = ++_requestId;
+    _cancelToken?.cancel('Replaced by a newer discussion feed request.');
+    final cancelToken = CancelToken();
+    _cancelToken = cancelToken;
     emit(state.copyWith(status: DiscussionFeedStatus.loading, error: null));
     try {
-      final items = await repository.getFeed(courseId: courseId);
+      final items = await repository.getFeed(
+        courseId: courseId,
+        cancelToken: cancelToken,
+      );
+      if (isClosed || requestId != _requestId) return;
       emit(state.copyWith(status: DiscussionFeedStatus.loaded, items: items));
     } catch (e) {
+      if (isClosed || requestId != _requestId || cancelToken.isCancelled) {
+        return;
+      }
       emit(state.copyWith(status: DiscussionFeedStatus.error, error: _msg(e)));
+    } finally {
+      if (identical(_cancelToken, cancelToken)) _cancelToken = null;
     }
+  }
+
+  @override
+  Future<void> close() {
+    _requestId++;
+    _cancelToken?.cancel('Discussion feed cubit closed.');
+    return super.close();
   }
 }

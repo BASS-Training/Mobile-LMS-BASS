@@ -10,6 +10,7 @@ class CourseLessonTile extends StatelessWidget {
   final CourseEntity course;
   final int lessonIndexInSection;
   final int overallLessonIndex;
+  final bool isUnlocked;
 
   /// Instructors/admins may open any lesson regardless of completion order.
   final bool unlockAll;
@@ -20,6 +21,7 @@ class CourseLessonTile extends StatelessWidget {
     required this.course,
     required this.lessonIndexInSection,
     required this.overallLessonIndex,
+    required this.isUnlocked,
     this.unlockAll = false,
   });
 
@@ -71,9 +73,9 @@ class CourseLessonTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isUnlocked = unlockAll || course.isLessonUnlocked(lesson);
+    final lessonIsUnlocked = unlockAll || isUnlocked;
     final bool isCompleted = lesson.isCompleted;
-    final Color typeColor = isUnlocked
+    final Color typeColor = lessonIsUnlocked
         ? _getLessonTypeColor(lesson.type)
         : Colors.grey;
 
@@ -91,7 +93,7 @@ class CourseLessonTile extends StatelessWidget {
               ? AppColors.emerald.withValues(alpha: 0.45)
               : AppColors.borderDefault,
         ),
-        boxShadow: isUnlocked
+        boxShadow: lessonIsUnlocked
             ? [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.04),
@@ -104,7 +106,7 @@ class CourseLessonTile extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: isUnlocked
+          onTap: lessonIsUnlocked
               ? () {
                   final safeLessonIndex = overallLessonIndex >= 0
                       ? overallLessonIndex
@@ -127,7 +129,10 @@ class CourseLessonTile extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
             child: Row(
               children: [
-                _buildLeading(isUnlocked: isUnlocked, isCompleted: isCompleted),
+                _buildLeading(
+                  isUnlocked: lessonIsUnlocked,
+                  isCompleted: isCompleted,
+                ),
                 const SizedBox(width: 12),
                 // Judul dan Detail
                 Expanded(
@@ -142,7 +147,7 @@ class CourseLessonTile extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 13.5,
                           fontWeight: FontWeight.w700,
-                          color: !isUnlocked
+                          color: !lessonIsUnlocked
                               ? Colors.grey
                               : (isCompleted
                                     ? AppColors.slate
@@ -161,7 +166,7 @@ class CourseLessonTile extends StatelessWidget {
                               label: 'Selesai',
                               color: AppColors.emerald,
                             ),
-                          ] else if (!isUnlocked) ...[
+                          ] else if (!lessonIsUnlocked) ...[
                             const SizedBox(width: 6),
                             _buildStatusPill(
                               icon: Icons.lock_rounded,
@@ -177,11 +182,11 @@ class CourseLessonTile extends StatelessWidget {
                 const SizedBox(width: 8),
                 // Afordans: panah saat bisa dibuka, gembok saat terkunci
                 Icon(
-                  isUnlocked
+                  lessonIsUnlocked
                       ? Icons.chevron_right_rounded
                       : Icons.lock_outline_rounded,
-                  size: isUnlocked ? 22 : 18,
-                  color: isUnlocked
+                  size: lessonIsUnlocked ? 22 : 18,
+                  color: lessonIsUnlocked
                       ? AppColors.slate.withValues(alpha: 0.7)
                       : Colors.grey,
                 ),

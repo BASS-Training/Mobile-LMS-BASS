@@ -181,12 +181,13 @@ class EssayPanelWidget extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           TextField(
-            enabled: !state.isSubmitted,
+            enabled: !state.isSubmitted && !state.isSubmitting,
             controller: _answerController,
             minLines: 10,
             maxLines: 14,
-            onChanged: (value) =>
-                context.read<EssayBloc>().add(AnswerChanged(value)),
+            onChanged: (value) => context.read<EssayBloc>().add(
+              AnswerChanged(state.currentQuestionIndex, value),
+            ),
             decoration: InputDecoration(
               hintText: 'Tulis jawaban essay Anda di sini...',
               alignLabelWithHint: true,

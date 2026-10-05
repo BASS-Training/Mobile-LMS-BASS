@@ -14,6 +14,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
   /// terbaru (misal pencarian datang saat load-more masih berjalan) dibuang
   /// agar daftar tidak tercampur data basi.
   int _requestSeq = 0;
+  int _detailRequestSeq = 0;
 
   CatalogBloc({required this.repository}) : super(const CatalogState()) {
     on<LoadCatalogEvent>(_onLoad);
@@ -22,12 +23,15 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
     on<ChangeCatalogFilterEvent>(_onChangeFilter);
     on<LoadCatalogDetailEvent>(_onLoadDetail);
     on<EnrollCatalogCourseEvent>(_onEnroll);
-    on<ResetCatalogEvent>((event, emit) => emit(const CatalogState()));
+    on<ResetCatalogEvent>((event, emit) {
+      _requestSeq++;
+      _detailRequestSeq++;
+      emit(const CatalogState());
+    });
   }
 
   String get _harga => switch (state.filter) {
     CatalogFilter.free => 'free',
-    CatalogFilter.paid => 'paid',
     CatalogFilter.all => '',
   };
 
@@ -111,6 +115,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
     LoadCatalogDetailEvent event,
     Emitter<CatalogState> emit,
   ) async {
+    final requestId = ++_detailRequestSeq;
     emit(
       state.copyWith(
         detailStatus: CatalogDetailStatus.loading,
@@ -121,7 +126,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
 
     try {
       final detail = await repository.getDetail(event.catalogId);
-      if (isClosed) return;
+      if (isClosed || requestId != _detailRequestSeq) return;
       if (detail == null) {
         emit(
           state.copyWith(
@@ -139,7 +144,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
         ),
       );
     } catch (error) {
-      if (isClosed) return;
+      if (isClosed || requestId != _detailRequestSeq) return;
       emit(
         state.copyWith(
           detailStatus: CatalogDetailStatus.failure,
