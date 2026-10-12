@@ -101,32 +101,36 @@ class QuizIntroWidget extends StatelessWidget {
           const SizedBox(height: 24),
 
           // Quiz Info Cards
-          Row(
-            children: [
-              Expanded(
-                child: InfoCardWidget(
-                  icon: Icons.list,
-                  label: 'Pertanyaan',
-                  value: '${quiz.totalQuestions}',
+          // Quiz Info Cards
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: InfoCardWidget(
+                    icon: Icons.list,
+                    label: 'Pertanyaan',
+                    value: '${quiz.totalQuestions}',
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: InfoCardWidget(
-                  icon: Icons.timer,
-                  label: 'Waktu',
-                  value: '${quiz.timeLimit} min',
+                const SizedBox(width: 12),
+                Expanded(
+                  child: InfoCardWidget(
+                    icon: Icons.timer,
+                    label: 'Waktu',
+                    value: '${quiz.timeLimit} min',
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: InfoCardWidget(
-                  icon: Icons.grade,
-                  label: 'Nilai Lulus',
-                  value: '${quiz.passingScore}%',
+                const SizedBox(width: 12),
+                Expanded(
+                  child: InfoCardWidget(
+                    icon: Icons.grade,
+                    label: 'Nilai Lulus',
+                    value: '${quiz.passingScore}%',
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           const SizedBox(height: 32),
 

@@ -39,7 +39,7 @@ class HomeSummaryCard extends StatelessWidget {
                     value: stats.overallProgressPercentage,
                     formatter: (v) => '$v%',
                     style: TextStyle(
-                      fontSize: 17,
+                      fontSize: 15,
                       fontWeight: FontWeight.w800,
                       color: AppColors.textPrimary,
                       height: 1.0,
@@ -129,10 +129,7 @@ class _MetricRow extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: TextStyle(
-              fontSize: 12.5,
-              color: AppColors.textSecondary,
-            ),
+            style: TextStyle(fontSize: 12.5, color: AppColors.textSecondary),
           ),
         ),
         // Animated numerator counting up; denominator stays fixed.

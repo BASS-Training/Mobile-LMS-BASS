@@ -23,18 +23,21 @@ class DiscussionCubit extends Cubit<DiscussionState> {
   }) : super(const DiscussionState());
 
   Future<void> load() async {
+    if (isClosed) return;
     emit(state.copyWith(status: DiscussionStatus.loading, error: null));
     try {
       final list = await getDiscussions(lessonId);
+      if (isClosed) return;
       emit(state.copyWith(status: DiscussionStatus.loaded, discussions: list));
     } catch (e) {
+      if (isClosed) return;
       emit(state.copyWith(status: DiscussionStatus.error, error: _message(e)));
     }
   }
 
   /// Post a new topic. Returns true on success.
   Future<bool> postTopic({required String title, required String body}) async {
-    if (state.submitting) return false;
+    if (isClosed || state.submitting) return false;
     emit(state.copyWith(submitting: true, error: null));
     try {
       final created = await createDiscussion(
@@ -42,6 +45,7 @@ class DiscussionCubit extends Cubit<DiscussionState> {
         title: title,
         body: body,
       );
+      if (isClosed) return false;
       emit(
         state.copyWith(
           status: DiscussionStatus.loaded,
@@ -51,6 +55,7 @@ class DiscussionCubit extends Cubit<DiscussionState> {
       );
       return true;
     } catch (e) {
+      if (isClosed) return false;
       emit(state.copyWith(submitting: false, error: _message(e)));
       return false;
     }
@@ -58,10 +63,11 @@ class DiscussionCubit extends Cubit<DiscussionState> {
 
   /// Post a reply to [discussionId]. Returns true on success.
   Future<bool> postReply(String discussionId, String body) async {
-    if (state.replyingIds.contains(discussionId)) return false;
+    if (isClosed || state.replyingIds.contains(discussionId)) return false;
     emit(state.copyWith(replyingIds: {...state.replyingIds, discussionId}));
     try {
       final reply = await createReply(discussionId, body: body);
+      if (isClosed) return false;
       final updated = state.discussions.map((d) {
         if (d.id != discussionId) return d;
         return d.copyWith(replies: [...d.replies, reply]);
@@ -74,6 +80,7 @@ class DiscussionCubit extends Cubit<DiscussionState> {
       );
       return true;
     } catch (e) {
+      if (isClosed) return false;
       emit(
         state.copyWith(
           replyingIds: {...state.replyingIds}..remove(discussionId),
