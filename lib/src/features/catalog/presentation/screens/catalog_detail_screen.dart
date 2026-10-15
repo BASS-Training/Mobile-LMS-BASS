@@ -10,12 +10,16 @@ import '../../../../shared/styles/app_shadows.dart';
 import '../../../../shared/widgets/app_empty_state.dart';
 import '../../../../shared/widgets/html_content.dart';
 import '../../../courses/presentation/widgets/course_illustration_cover.dart';
+import '../../../courses/presentation/bloc/course/course_bloc.dart';
+import '../../../courses/presentation/bloc/course/course_event.dart';
 import '../../../authentication/presentation/bloc/auth/auth_bloc.dart';
+import '../../../authentication/presentation/bloc/auth/auth_event.dart';
 import '../../../authentication/presentation/bloc/auth/auth_state.dart';
 import '../../domain/entities/catalog_course_entity.dart';
 import '../bloc/catalog_bloc.dart';
 import '../bloc/catalog_event.dart';
 import '../bloc/catalog_state.dart';
+import '../widgets/course_sales_profile_section.dart';
 
 class CatalogDetailScreen extends StatefulWidget {
   final String catalogId;
@@ -41,7 +45,18 @@ class _CatalogDetailScreenState extends State<CatalogDetailScreen> {
   CatalogCourseEntity? _courseOf(CatalogState state) {
     final detail = state.detailCourse;
     if (detail != null && detail.id == widget.catalogId) return detail;
-    return state.courseById(widget.catalogId);
+    return null;
+  }
+
+  Future<void> _refreshDetail() async {
+    final bloc = context.read<CatalogBloc>();
+    final done = bloc.stream.firstWhere(
+      (state) =>
+          state.detailStatus == CatalogDetailStatus.loaded ||
+          state.detailStatus == CatalogDetailStatus.failure,
+    );
+    bloc.add(LoadCatalogDetailEvent(widget.catalogId));
+    await done;
   }
 
   bool _isEnrolled(CatalogState state) => _courseOf(state)?.isEnrolled ?? false;
@@ -71,15 +86,31 @@ class _CatalogDetailScreenState extends State<CatalogDetailScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<CatalogBloc, CatalogState>(
       listenWhen: (previous, current) {
-        return (current.errorMessage != null &&
+        return (current.detailRequiresLogin && !previous.detailRequiresLogin) ||
+            (current.errorMessage != null &&
                 previous.errorMessage != current.errorMessage) ||
-            (!_isEnrolled(previous) && _isEnrolled(current));
+            (previous.enrollingId != null &&
+                current.enrollingId == null &&
+                !_isEnrolled(previous) &&
+                _isEnrolled(current));
       },
-      listener: (context, state) {
-        if (state.errorMessage != null) {
+      listener: (context, state) async {
+        if (state.detailRequiresLogin) {
+          final authBloc = context.read<AuthBloc>();
+          final loggedOut = authBloc.stream.firstWhere(
+            (authState) => authState is AuthLoggedOut,
+          );
+          authBloc.add(const AuthLogoutEvent());
+          await loggedOut;
+          if (context.mounted) context.go(AppRoutes.login);
+        } else if (state.errorMessage != null) {
           _showMessage(state.errorMessage!);
         } else {
           _showMessage('Course berhasil diikuti.');
+          context.read<CourseBloc>().add(const RefreshCoursesEvent());
+          context.read<CatalogBloc>().add(
+            LoadCatalogDetailEvent(widget.catalogId),
+          );
         }
       },
       builder: (context, state) {
@@ -91,7 +122,7 @@ class _CatalogDetailScreenState extends State<CatalogDetailScreen> {
             state.detailStatus == CatalogDetailStatus.initial ||
             state.detailStatus == CatalogDetailStatus.loading;
 
-        if (course == null && waiting) {
+        if (waiting) {
           return const Scaffold(
             body: Center(
               child: CircularProgressIndicator(color: AppColors.brandPrimary),
@@ -125,6 +156,8 @@ class _CatalogDetailScreenState extends State<CatalogDetailScreen> {
           ),
           onOpenWebsite: _openWebsite,
           onLogin: () => context.go(AppRoutes.login),
+          onCourseList: () => context.go(AppRoutes.courses),
+          onRefresh: _refreshDetail,
         );
       },
     );
@@ -138,6 +171,8 @@ class _CatalogDetailContent extends StatelessWidget {
   final VoidCallback onEnroll;
   final VoidCallback onOpenWebsite;
   final VoidCallback onLogin;
+  final VoidCallback onCourseList;
+  final Future<void> Function() onRefresh;
 
   const _CatalogDetailContent({
     required this.course,
@@ -146,6 +181,8 @@ class _CatalogDetailContent extends StatelessWidget {
     required this.onEnroll,
     required this.onOpenWebsite,
     required this.onLogin,
+    required this.onCourseList,
+    required this.onRefresh,
   });
 
   @override
@@ -159,98 +196,172 @@ class _CatalogDetailContent extends StatelessWidget {
         onEnroll: onEnroll,
         onOpenWebsite: onOpenWebsite,
         onLogin: onLogin,
+        onCourseList: onCourseList,
       ),
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 292,
-            pinned: true,
-            backgroundColor: AppColors.surface,
-            foregroundColor: AppColors.textPrimary,
-            flexibleSpace: FlexibleSpaceBar(
-              background: _CatalogHero(course: course),
+      body: RefreshIndicator(
+        onRefresh: onRefresh,
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 292,
+              pinned: true,
+              backgroundColor: AppColors.surface,
+              foregroundColor: AppColors.textPrimary,
+              flexibleSpace: FlexibleSpaceBar(
+                background: _CatalogHero(course: course),
+              ),
             ),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                if (course.isEnrolled) ...[
-                  const Align(
-                    alignment: Alignment.centerLeft,
-                    child: _StatusBadge(
-                      enrolled: true,
-                      highlight: true,
-                      label: 'Sudah diikuti',
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  if (course.isEnrolled) ...[
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: _StatusBadge(
+                        enrolled: true,
+                        highlight: true,
+                        label: 'Sudah diikuti',
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                  Text(
+                    course.title,
+                    style: TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 25,
+                      height: 1.2,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
-                  const SizedBox(height: 12),
-                ],
-                Text(
-                  course.title,
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 25,
-                    height: 1.2,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 9),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.person_outline_rounded,
-                      size: 18,
-                      color: AppColors.brandText,
+                  const SizedBox(height: 9),
+                  if ((course.salesProfile?.headline?.trim().isNotEmpty ??
+                          false) ||
+                      course.shortDescription.trim().isNotEmpty) ...[
+                    Text(
+                      (course.salesProfile?.headline?.trim().isNotEmpty ??
+                              false)
+                          ? course.salesProfile!.headline!.trim()
+                          : course.shortDescription.trim(),
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 15,
+                      ),
                     ),
-                    const SizedBox(width: 7),
-                    Expanded(
-                      child: Text(
-                        course.instructor,
-                        style: TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
+                    const SizedBox(height: 12),
+                  ],
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.person_outline_rounded,
+                        size: 18,
+                        color: AppColors.brandText,
+                      ),
+                      const SizedBox(width: 7),
+                      Expanded(
+                        child: Text(
+                          course.instructors.isNotEmpty
+                              ? course.instructors
+                                    .map((item) => item.name)
+                                    .join(', ')
+                              : course.instructor,
+                          style: TextStyle(
+                            color: AppColors.textSecondary,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  _InfoTile(
+                    icon: Icons.play_lesson_outlined,
+                    value: '${course.lessonCount}',
+                    label: 'Materi',
+                  ),
+                  if (course.showPrice && course.isPaid) ...[
+                    const SizedBox(height: 10),
+                    _InfoTile(
+                      icon: Icons.payments_outlined,
+                      value: course.priceLabel,
+                      label: 'Harga',
+                    ),
+                  ],
+                  const SizedBox(height: 28),
+                  CourseSalesProfileSection(profile: course.salesProfile),
+                  _SectionTitle(title: 'Tentang course'),
+                  const SizedBox(height: 10),
+                  if (course.description.trim().isEmpty)
+                    Text(
+                      'Belum ada deskripsi untuk course ini.',
+                      style: TextStyle(
+                        color: AppColors.textTertiary,
+                        fontSize: 14,
+                        height: 1.65,
+                      ),
+                    )
+                  else
+                    HtmlContent(html: course.description),
+                  if (course.instructors.isNotEmpty) ...[
+                    const SizedBox(height: 24),
+                    const _SectionTitle(title: 'Pengajar'),
+                    const SizedBox(height: 12),
+                    for (final instructor in course.instructors)
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(14),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  CircleAvatar(
+                                    foregroundImage:
+                                        instructor.avatarUrl == null
+                                        ? null
+                                        : NetworkImage(instructor.avatarUrl!),
+                                    child: const Icon(Icons.person_outline),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      instructor.name,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              if (instructor.bioHtml?.trim().isNotEmpty ??
+                                  false) ...[
+                                const SizedBox(height: 10),
+                                HtmlContent(html: instructor.bioHtml!),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                  if (course.sections.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    _SectionTitle(title: 'Yang akan dipelajari'),
+                    const SizedBox(height: 12),
+                    ...course.sections.asMap().entries.map(
+                      (entry) => _SyllabusTile(
+                        number: entry.key + 1,
+                        section: entry.value,
                       ),
                     ),
                   ],
-                ),
-                const SizedBox(height: 20),
-                _InfoTile(
-                  icon: Icons.play_lesson_outlined,
-                  value: '${course.lessonCount}',
-                  label: 'Materi',
-                ),
-                const SizedBox(height: 28),
-                _SectionTitle(title: 'Tentang course'),
-                const SizedBox(height: 10),
-                if (course.description.trim().isEmpty)
-                  Text(
-                    'Belum ada deskripsi untuk course ini.',
-                    style: TextStyle(
-                      color: AppColors.textTertiary,
-                      fontSize: 14,
-                      height: 1.65,
-                    ),
-                  )
-                else
-                  HtmlContent(html: course.description),
-                if (course.sections.isNotEmpty) ...[
-                  const SizedBox(height: 16),
-                  _SectionTitle(title: 'Yang akan dipelajari'),
-                  const SizedBox(height: 12),
-                  ...course.sections.asMap().entries.map(
-                    (entry) => _SyllabusTile(
-                      number: entry.key + 1,
-                      section: entry.value,
-                    ),
-                  ),
-                ],
-              ]),
+                ]),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -469,6 +580,7 @@ class _CatalogActionBar extends StatelessWidget {
   final VoidCallback onEnroll;
   final VoidCallback onOpenWebsite;
   final VoidCallback onLogin;
+  final VoidCallback onCourseList;
 
   const _CatalogActionBar({
     required this.course,
@@ -477,6 +589,7 @@ class _CatalogActionBar extends StatelessWidget {
     required this.onEnroll,
     required this.onOpenWebsite,
     required this.onLogin,
+    required this.onCourseList,
   });
 
   @override
@@ -493,7 +606,13 @@ class _CatalogActionBar extends StatelessWidget {
         ),
         child: SizedBox(
           height: 52,
-          child: course.isPaid
+          child: isEnrolled
+              ? ElevatedButton.icon(
+                  onPressed: onCourseList,
+                  icon: const Icon(Icons.play_arrow_rounded),
+                  label: const Text('Lanjutkan Belajar'),
+                )
+              : course.isPaid
               ? _websiteButton()
               : !isAuthenticated
               ? ElevatedButton.icon(

@@ -91,6 +91,9 @@ class ApiEndpoints {
   // Profile
   static const String getProfile = '/profile';
   static const String updateProfile = '/profile';
+  static const String deleteProfile = '/profile';
+  static const String customerService = '/customer-service';
+  static const String privacyPolicy = '/privacy-policy';
 
   // Agenda (sesi terjadwal/Zoom mendatang lintas course)
   static const String agenda = '/agenda';
@@ -115,7 +118,8 @@ class ApiEndpoints {
 
   // Instructor / admin (mobile): peserta, progres, dan penilaian.
   static const String instructorDashboard = '/instructor/dashboard';
-  static const String instructorGlobalGradingQueue = '/instructor/grading-queue';
+  static const String instructorGlobalGradingQueue =
+      '/instructor/grading-queue';
   static const String courseParticipants = '/courses/{id}/participants';
   static const String participantProgress =
       '/courses/{courseId}/participants/{userId}/progress';

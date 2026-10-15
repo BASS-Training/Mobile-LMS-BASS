@@ -10,11 +10,80 @@ import 'package:lms_mobile_app/src/features/authentication/domain/usecases/regis
 import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/auth/auth_bloc.dart';
 import 'package:lms_mobile_app/src/features/catalog/domain/entities/catalog_course_entity.dart';
 import 'package:lms_mobile_app/src/features/catalog/domain/entities/catalog_page_entity.dart';
+import 'package:lms_mobile_app/src/features/catalog/domain/entities/course_sales_profile.dart';
 import 'package:lms_mobile_app/src/features/catalog/domain/repositories/catalog_repository.dart';
 import 'package:lms_mobile_app/src/features/catalog/presentation/bloc/catalog_bloc.dart';
 import 'package:lms_mobile_app/src/features/catalog/presentation/screens/catalog_detail_screen.dart';
 
 void main() {
+  testWidgets('detail katalog menampilkan profil penjualan dan FAQ', (
+    tester,
+  ) async {
+    final authRepository = _GuestAuthRepository();
+    final authBloc = AuthBloc(
+      loginUseCase: LoginUseCase(authRepository),
+      registerUseCase: RegisterUseCase(authRepository),
+      logoutUseCase: LogoutUseCase(authRepository),
+      getCurrentUserUseCase: GetCurrentUserUseCase(authRepository),
+    );
+    final catalogBloc = CatalogBloc(
+      repository: _CatalogRepository(
+        course: const CatalogCourseEntity(
+          id: 'free-course',
+          title: 'Bass Dasar',
+          description: '<p>Isi course</p>',
+          instructor: 'Pengajar lama',
+          lessonCount: 3,
+          isFree: true,
+          isPaid: false,
+          priceLabel: 'Gratis',
+          shortDescription: 'Headline sama',
+          salesProfile: CourseSalesProfile(
+            headline: 'Headline sama',
+            learningBenefits: 'Bisa bermain bass',
+            targetAudience: 'Pemula',
+            requirements: 'Punya bass',
+            level: 'beginner',
+            estimatedDurationMinutes: 45,
+            faq: [CourseSalesFaq(question: 'Cocok?', answer: 'Ya')],
+          ),
+          instructors: [
+            CatalogInstructor(
+              id: '7',
+              name: 'Guru Bass',
+              bioHtml: '<p>Berpengalaman</p>',
+            ),
+          ],
+        ),
+      ),
+    );
+    addTearDown(authBloc.close);
+    addTearDown(catalogBloc.close);
+    await tester.pumpWidget(
+      MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: authBloc),
+          BlocProvider.value(value: catalogBloc),
+        ],
+        child: MaterialApp(
+          theme: ThemeData(splashFactory: NoSplash.splashFactory),
+          home: const CatalogDetailScreen(catalogId: 'free-course'),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text('Headline sama'), findsOneWidget);
+    expect(find.text('45 menit'), findsOneWidget);
+    expect(find.text('Guru Bass'), findsWidgets);
+    expect(find.text('Bisa bermain bass'), findsOneWidget);
+    await tester.drag(find.byType(CustomScrollView), const Offset(0, -500));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cocok?'));
+    await tester.pumpAndSettle();
+    expect(find.text('Ya'), findsOneWidget);
+  });
   testWidgets('tamu diminta login dan tidak ditawari enrollment langsung', (
     tester,
   ) async {

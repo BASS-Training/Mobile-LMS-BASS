@@ -1,4 +1,5 @@
 import '../../domain/entities/catalog_course_entity.dart';
+import '../../domain/entities/course_sales_profile.dart';
 
 /// Model katalog yang mentolerir dua bentuk JSON:
 /// - Respons API (camelCase): `shortDescription`, `lessonsCount`, `thumbnailUrl`,
@@ -12,6 +13,7 @@ class CatalogCourseModel {
   final String id;
   final String title;
   final String description;
+  final String shortDescription;
   final String instructor;
   final String? thumbnailUrl;
   final int lessonCount;
@@ -22,11 +24,15 @@ class CatalogCourseModel {
   final List<CatalogSectionEntity> sections;
   final int? totalContents;
   final bool isEnrolled;
+  final CourseSalesProfile? salesProfile;
+  final List<CatalogInstructor> instructors;
+  final bool showPrice;
 
   const CatalogCourseModel({
     required this.id,
     required this.title,
     required this.description,
+    this.shortDescription = '',
     required this.instructor,
     required this.lessonCount,
     required this.isFree,
@@ -37,6 +43,9 @@ class CatalogCourseModel {
     this.sections = const [],
     this.totalContents,
     this.isEnrolled = false,
+    this.salesProfile,
+    this.instructors = const [],
+    this.showPrice = false,
   });
 
   factory CatalogCourseModel.fromJson(Map<String, dynamic> json) {
@@ -64,6 +73,7 @@ class CatalogCourseModel {
       id: json['id']?.toString() ?? '',
       title: json['title']?.toString() ?? '',
       description: description,
+      shortDescription: _firstNonEmpty([json['shortDescription']]),
       instructor: json['instructor']?.toString() ?? '',
       thumbnailUrl: thumbnail.isEmpty ? null : thumbnail,
       lessonCount: _asInt(json['lessonsCount'] ?? json['lesson_count']),
@@ -80,6 +90,9 @@ class CatalogCourseModel {
       isEnrolled: json['isEnrolled'] is bool
           ? json['isEnrolled'] as bool
           : false,
+      salesProfile: _parseSalesProfile(json['salesProfile']),
+      instructors: _parseInstructors(json['instructors']),
+      showPrice: json['showPrice'] == true,
     );
   }
 
@@ -88,6 +101,7 @@ class CatalogCourseModel {
       id: id,
       title: title,
       description: description,
+      shortDescription: shortDescription,
       instructor: instructor,
       thumbnailUrl: thumbnailUrl,
       lessonCount: lessonCount,
@@ -98,6 +112,9 @@ class CatalogCourseModel {
       sections: sections,
       totalContents: totalContents,
       isEnrolled: isEnrolled,
+      salesProfile: salesProfile,
+      instructors: instructors,
+      showPrice: showPrice,
     );
   }
 
@@ -108,6 +125,7 @@ class CatalogCourseModel {
       id: id,
       title: title,
       description: description,
+      shortDescription: shortDescription,
       instructor: instructor,
       thumbnailUrl: thumbnailUrl,
       lessonCount: lessonCount,
@@ -118,7 +136,62 @@ class CatalogCourseModel {
       sections: sections,
       totalContents: totalContents,
       isEnrolled: value,
+      salesProfile: salesProfile,
+      instructors: instructors,
+      showPrice: showPrice,
     );
+  }
+
+  static CourseSalesProfile? _parseSalesProfile(dynamic raw) {
+    if (raw is! Map) return null;
+    final faq = raw['faq'];
+    return CourseSalesProfile(
+      headline: _nullableText(raw['headline']),
+      targetAudience: _nullableText(raw['targetAudience']),
+      learningBenefits: _nullableText(raw['learningBenefits']),
+      requirements: _nullableText(raw['requirements']),
+      level: _nullableText(raw['level']),
+      estimatedDurationMinutes: raw['estimatedDurationMinutes'] == null
+          ? null
+          : _asInt(raw['estimatedDurationMinutes']),
+      language: _nullableText(raw['language']),
+      promoVideoUrl: _nullableText(raw['promoVideoUrl']),
+      faq: faq is List
+          ? faq
+                .whereType<Map>()
+                .map(
+                  (item) => CourseSalesFaq(
+                    question: _firstNonEmpty([item['question']]),
+                    answer: _firstNonEmpty([item['answer']]),
+                  ),
+                )
+                .where(
+                  (item) => item.question.isNotEmpty && item.answer.isNotEmpty,
+                )
+                .toList()
+          : const [],
+    );
+  }
+
+  static List<CatalogInstructor> _parseInstructors(dynamic raw) {
+    if (raw is! List) return const [];
+    return raw
+        .whereType<Map>()
+        .map(
+          (item) => CatalogInstructor(
+            id: item['id']?.toString() ?? '',
+            name: _firstNonEmpty([item['name']]),
+            avatarUrl: _nullableText(item['avatarUrl']),
+            bioHtml: _nullableText(item['bioHtml']),
+          ),
+        )
+        .where((item) => item.name.isNotEmpty)
+        .toList();
+  }
+
+  static String? _nullableText(dynamic value) {
+    final text = value?.toString().trim();
+    return text == null || text.isEmpty ? null : text;
   }
 
   static List<CatalogSectionEntity> _parseSections(dynamic rawSections) {

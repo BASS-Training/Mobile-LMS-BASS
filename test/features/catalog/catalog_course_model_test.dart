@@ -4,6 +4,63 @@ import 'package:lms_mobile_app/src/features/catalog/data/models/catalog_page_mod
 
 void main() {
   group('CatalogCourseModel', () {
+    test(
+      'detail parses sales profile and instructor without duplicating headline',
+      () {
+        final entity = CatalogCourseModel.fromJson({
+          'id': '12',
+          'title': 'Bass Dasar',
+          'shortDescription': 'Kuasai bass',
+          'description': '<p>Materi bass.</p>',
+          'salesProfile': {
+            'headline': 'Kuasai bass',
+            'level': 'beginner',
+            'estimatedDurationMinutes': 510,
+            'learningBenefits': 'Ritme\nLagu pertama',
+            'faq': [
+              {'question': 'Untuk pemula?', 'answer': 'Ya.'},
+              {'question': ' ', 'answer': 'kosong'},
+            ],
+          },
+          'instructors': [
+            {'id': 7, 'name': 'Guru', 'bioHtml': '<p>Pengajar bass</p>'},
+          ],
+          'showPrice': true,
+        }).toEntity();
+
+        expect(entity.shortDescription, 'Kuasai bass');
+        expect(entity.description, '<p>Materi bass.</p>');
+        expect(entity.salesProfile?.headline, 'Kuasai bass');
+        expect(entity.salesProfile?.levelLabel, 'Pemula');
+        expect(entity.salesProfile?.durationLabel, '8 jam 30 menit');
+        expect(entity.salesProfile?.faq, hasLength(1));
+        expect(entity.instructors.single.name, 'Guru');
+        expect(entity.showPrice, isTrue);
+      },
+    );
+
+    test('nullable sales profile and duration labels stay safe', () {
+      final entity = CatalogCourseModel.fromJson({
+        'id': '13',
+        'title': 'Tanpa profil',
+        'salesProfile': null,
+      }).toEntity();
+      expect(entity.salesProfile, isNull);
+      expect(entity.instructors, isEmpty);
+      expect(entity.showPrice, isFalse);
+
+      for (final pair in [
+        (45, '45 menit'),
+        (480, '8 jam'),
+        (510, '8 jam 30 menit'),
+      ]) {
+        final profile = CatalogCourseModel.fromJson({
+          'id': '14',
+          'salesProfile': {'estimatedDurationMinutes': pair.$1},
+        }).toEntity().salesProfile!;
+        expect(profile.durationLabel, pair.$2);
+      }
+    });
     test('memetakan item API (camelCase) menjadi entitas katalog', () {
       final model = CatalogCourseModel.fromJson({
         'id': 'catalog-1',

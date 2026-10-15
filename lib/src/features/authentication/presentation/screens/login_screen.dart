@@ -96,6 +96,27 @@ class _LoginScreenState extends State<LoginScreen> {
                   onLogin: () => _handleLogin(context),
                 ),
               ),
+              const SizedBox(height: 18),
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 12,
+                children: [
+                  TextButton(
+                    onPressed: () => context.push(AppRoutes.customerService),
+                    child: const Text(
+                      'Pusat Bantuan',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => context.push(AppRoutes.privacyPolicy),
+                    child: const Text(
+                      'Kebijakan Privasi',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),

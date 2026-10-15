@@ -38,6 +38,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthRegisterEvent>(_onRegister);
     on<AuthSessionRequestedEvent>(_onSessionRequested);
     on<AuthLogoutEvent>(_onLogout);
+    on<AuthAccountDeletedEvent>((event, emit) {
+      _authGeneration++;
+      emit(const AuthLoggedOut());
+    });
     on<AuthClearErrorEvent>(_onClearError);
     on<AuthUserUpdatedEvent>(_onUserUpdated);
 

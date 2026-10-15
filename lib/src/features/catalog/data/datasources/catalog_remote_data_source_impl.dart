@@ -50,14 +50,20 @@ class CatalogRemoteDataSourceImpl implements CatalogRemoteDataSource {
   Future<CatalogCourseModel> getDetail(String courseId) async {
     try {
       final response = await dio.get(
-        ApiEndpoints.catalogDetail.replaceFirst('{id}', courseId),
+        ApiEndpoints.catalogDetail.replaceFirst(
+          '{id}',
+          Uri.encodeComponent(courseId),
+        ),
       );
       final data = _parseEnvelope(response.data);
       final rawData = data['data'];
       if (rawData is! Map) {
         throw const FormatException('Respons detail katalog tidak valid.');
       }
-      return CatalogCourseModel.fromJson(Map<String, dynamic>.from(rawData));
+      final detail = Map<String, dynamic>.from(rawData);
+      final meta = data['meta'];
+      if (meta is Map) detail['showPrice'] = meta['showPrice'] == true;
+      return CatalogCourseModel.fromJson(detail);
     } on DioException catch (error) {
       throw _mapDioError(error, fallback: 'Gagal memuat detail kursus');
     } on FormatException {
@@ -112,8 +118,12 @@ class CatalogRemoteDataSourceImpl implements CatalogRemoteDataSource {
       final retryAfter = data is Map
           ? int.tryParse(data['retry_after']?.toString() ?? '')
           : null;
-      final rateLimitMessage = retryAfter != null && retryAfter > 0
-          ? '$message Coba lagi dalam $retryAfter detik.'
+      final headerRetryAfter = int.tryParse(
+        error.response?.headers.value('retry-after') ?? '',
+      );
+      final seconds = retryAfter ?? headerRetryAfter;
+      final rateLimitMessage = seconds != null && seconds > 0
+          ? '$message Coba lagi dalam $seconds detik.'
           : message;
       return ServerException(message: rateLimitMessage, statusCode: statusCode);
     }

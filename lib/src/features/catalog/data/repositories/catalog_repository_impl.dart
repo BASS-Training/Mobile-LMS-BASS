@@ -9,9 +9,9 @@ import '../datasources/catalog_remote_data_source.dart';
 import '../models/catalog_course_model.dart';
 import '../models/catalog_page_model.dart';
 
-/// Sumber kebenaran: API remote (`/catalog`). Asset lokal dipakai sebagai
-/// fallback bila remote gagal dan untuk sesi uji offline
-/// ([OfflineTestMode.isActive]).
+/// Sumber kebenaran: API remote (`/catalog`). Daftar dapat memakai asset lokal
+/// saat jaringan gagal; detail hanya memakai asset pada sesi uji offline agar
+/// course yang dihapus di server tidak terlihat sebagai detail terbaru.
 class CatalogRepositoryImpl implements CatalogRepository {
   final CatalogLocalDataSource localDataSource;
   final CatalogRemoteDataSource remoteDataSource;
@@ -82,11 +82,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
         logDebug('[CATALOG][DETAIL] tidak ditemukan (404) id=$catalogId');
         return null;
       }
-      logDebug('[CATALOG][DETAIL] remote gagal, fallback lokal: $error');
-      return _localDetail(catalogId);
-    } catch (error) {
-      logDebug('[CATALOG][DETAIL] remote gagal, fallback lokal: $error');
-      return _localDetail(catalogId);
+      rethrow;
     }
   }
 

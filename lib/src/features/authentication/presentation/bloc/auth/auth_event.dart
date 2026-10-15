@@ -75,6 +75,14 @@ class AuthLogoutEvent extends AuthEvent {
   List<Object?> get props => [];
 }
 
+/// Server confirmed account deletion and local account data was removed.
+class AuthAccountDeletedEvent extends AuthEvent {
+  const AuthAccountDeletedEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
 class AuthClearErrorEvent extends AuthEvent {
   const AuthClearErrorEvent();
 

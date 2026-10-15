@@ -94,7 +94,10 @@ class LocalStorage {
 
   // Get all completed lessons
   static List<String> getCompletedLessons() {
-    final list = _box.get(_scoped(_completedLessonsKey), defaultValue: <String>[]);
+    final list = _box.get(
+      _scoped(_completedLessonsKey),
+      defaultValue: <String>[],
+    );
     return List<String>.from(list);
   }
 
@@ -225,6 +228,29 @@ class LocalStorage {
   static Future<void> clearAuthSession() async {
     _authSessionRevision++;
     await _clearAuthSession();
+  }
+
+  /// Called only after the server confirms deletion. Remove every key scoped to
+  /// this account, including drafts and caches in lazily opened feature boxes.
+  static Future<void> clearDeletedAccount() async {
+    final suffix = userScopeSuffix();
+    _authSessionRevision++;
+    await _clearAuthSession();
+    for (final name in [
+      _boxName,
+      'bass_calendar_box',
+      'bass_games_box',
+      'bass_achievements_box',
+    ]) {
+      final box = Hive.isBoxOpen(name)
+          ? Hive.box(name)
+          : await Hive.openBox(name);
+      final keys = box.keys
+          .whereType<String>()
+          .where((key) => key.endsWith(suffix))
+          .toList();
+      await box.deleteAll(keys);
+    }
   }
 
   static Future<void> _clearAuthSession() async {

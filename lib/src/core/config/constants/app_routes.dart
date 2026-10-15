@@ -10,6 +10,9 @@ class AppRoutes {
   // Auth
   static const String authHub = '/auth-hub';
   static const String login = '/login';
+  static const String customerService = '/customer-service';
+  static const String privacyPolicy = '/privacy-policy';
+  static const String deleteAccount = '/delete-account';
   static const String register = '/register';
   static const String verifyEmail = '/verify-email-otp';
   static const String forgotPassword = '/forgot-password';
@@ -74,7 +77,8 @@ class AppRoutes {
       '/instructor/participant-detail';
   static const String instructorGradingQueue = '/instructor/grading-queue';
   static const String instructorEssayGrading = '/instructor/grade-essay';
-  static const String instructorCaseStudyGrading = '/instructor/grade-case-study';
+  static const String instructorCaseStudyGrading =
+      '/instructor/grade-case-study';
   static const String instructorDocumentGrading = '/instructor/grade-document';
 
   // Games

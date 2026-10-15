@@ -114,14 +114,16 @@ class ProfileScreen extends StatelessWidget {
                                 accent: AppColors.success,
                                 title: 'Pusat Bantuan',
                                 subtitle: 'FAQ & kontak dukungan',
-                                onTap: () => _showHelp(context),
+                                onTap: () =>
+                                    context.push(AppRoutes.customerService),
                               ),
                               _NavRow(
                                 icon: Icons.privacy_tip_outlined,
                                 accent: AppColors.info,
                                 title: 'Kebijakan Privasi',
                                 subtitle: 'Bagaimana data kamu digunakan',
-                                onTap: () => _showPrivacy(context),
+                                onTap: () =>
+                                    context.push(AppRoutes.privacyPolicy),
                               ),
                               _NavRow(
                                 icon: Icons.info_outline_rounded,
@@ -134,6 +136,18 @@ class ProfileScreen extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 24),
+                          _SectionCard(
+                            children: [
+                              _NavRow(
+                                icon: Icons.delete_forever_outlined,
+                                accent: Colors.red,
+                                title: 'Hapus Akun',
+                                subtitle: 'Hapus akun dan data secara permanen',
+                                onTap: () =>
+                                    context.push(AppRoutes.deleteAccount),
+                              ),
+                            ],
+                          ),
                           _LogoutButton(onTap: () => _confirmLogout(context)),
                           const SizedBox(height: 24),
                         ],
@@ -504,83 +518,6 @@ class ProfileScreen extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-
-  void _showHelp(BuildContext context) {
-    _infoDialog(
-      context,
-      icon: Icons.help_outline_rounded,
-      title: 'Pusat Bantuan',
-      body:
-          'Butuh bantuan dalam menggunakan aplikasi?\n\n'
-          '• Mulai belajar: buka tab Kursus, pilih kelas, lalu ketuk materi.\n'
-          '• Gabung kelas: gunakan token dari instruktur di menu "Gabung Kelas".\n'
-          '• Sertifikat: terbit otomatis setelah kursus tuntas 100%.\n\n'
-          'Masih ada kendala? Hubungi instruktur atau admin akademi BASS.',
-    );
-  }
-
-  void _showPrivacy(BuildContext context) {
-    _infoDialog(
-      context,
-      icon: Icons.privacy_tip_outlined,
-      title: 'Kebijakan Privasi',
-      body:
-          'Aplikasi BASS hanya mengumpulkan data yang diperlukan untuk '
-          'pembelajaran (identitas, progres belajar, nilai). Data kamu '
-          'digunakan untuk menampilkan progres dan sertifikat, serta tidak '
-          'dibagikan ke pihak ketiga tanpa izin. Dengan menggunakan aplikasi '
-          'ini kamu menyetujui pengelolaan data sebagaimana mestinya oleh '
-          'akademi BASS.',
-    );
-  }
-
-  void _infoDialog(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required String body,
-  }) {
-    showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
-        title: Row(
-          children: [
-            Icon(icon, color: AppColors.brandText, size: 22),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ),
-          ],
-        ),
-        content: SingleChildScrollView(
-          child: Text(
-            body,
-            style: TextStyle(
-              fontSize: 13.5,
-              height: 1.55,
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.brandPrimary,
-            ),
-            child: const Text('Tutup'),
-          ),
-        ],
-      ),
     );
   }
 

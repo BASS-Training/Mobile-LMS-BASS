@@ -119,8 +119,9 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
     emit(
       state.copyWith(
         detailStatus: CatalogDetailStatus.loading,
-        detailCourse: state.courseById(event.catalogId),
+        detailCourse: null,
         detailErrorMessage: null,
+        detailRequiresLogin: false,
       ),
     );
 
@@ -131,7 +132,9 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
         emit(
           state.copyWith(
             detailStatus: CatalogDetailStatus.failure,
+            detailCourse: null,
             detailErrorMessage: 'Course sudah tidak tersedia.',
+            detailRequiresLogin: false,
           ),
         );
         return;
@@ -141,6 +144,7 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
           detailStatus: CatalogDetailStatus.loaded,
           detailCourse: detail,
           detailErrorMessage: null,
+          detailRequiresLogin: false,
         ),
       );
     } catch (error) {
@@ -148,10 +152,12 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
       emit(
         state.copyWith(
           detailStatus: CatalogDetailStatus.failure,
+          detailCourse: null,
           detailErrorMessage: _messageOf(
             error,
             'Detail course belum dapat dimuat. Silakan coba lagi.',
           ),
+          detailRequiresLogin: error is UnauthorizedException,
         ),
       );
     }
@@ -164,7 +170,12 @@ class CatalogBloc extends Bloc<CatalogEvent, CatalogState> {
     final course =
         state.courseById(event.catalogId) ??
         (state.detailCourse?.id == event.catalogId ? state.detailCourse : null);
-    if (course == null || !course.isFree || course.isEnrolled) return;
+    if (course == null ||
+        !course.isFree ||
+        course.isEnrolled ||
+        state.enrollingId == event.catalogId) {
+      return;
+    }
 
     emit(state.copyWith(enrollingId: event.catalogId, errorMessage: null));
 

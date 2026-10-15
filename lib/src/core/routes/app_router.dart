@@ -12,6 +12,8 @@ import 'package:lms_mobile_app/src/features/authentication/presentation/bloc/aut
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/splash_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/intro_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/login_screen.dart';
+import 'package:lms_mobile_app/src/features/authentication/presentation/screens/support_screen.dart';
+import 'package:lms_mobile_app/src/features/authentication/presentation/screens/delete_account_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/register_screen.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/auth_actions/auth_action_cubit.dart';
 import 'package:lms_mobile_app/src/features/authentication/presentation/screens/verify_email_screen.dart';
@@ -110,11 +112,16 @@ class AppRouter {
       final isOnVerify = loc == AppRoutes.verifyEmail;
       final isPublicCatalog =
           loc == AppRoutes.catalog || loc.startsWith('${AppRoutes.catalog}/');
+      final isPublicSupport =
+          loc == AppRoutes.customerService || loc == AppRoutes.privacyPolicy;
 
       // Tamu boleh melihat daftar dan preview katalog. Aksi pendaftaran course
       // tetap dijaga oleh UI dan endpoint POST yang membutuhkan bearer token.
       if (!isAuthenticated) {
-        return isOnAuthRoute || isPublicCatalog ? null : AppRoutes.intro;
+        if (loc == AppRoutes.deleteAccount) return AppRoutes.login;
+        return isOnAuthRoute || isPublicCatalog || isPublicSupport
+            ? null
+            : AppRoutes.intro;
       }
 
       // Login tapi WAJIB verifikasi email (akun baru): paksa ke layar OTP.
@@ -123,7 +130,11 @@ class AppRouter {
       if (mustVerify) {
         final allowedWhileVerifying =
             isOnVerify || loc == AppRoutes.changeEmail;
-        return allowedWhileVerifying ? null : AppRoutes.verifyEmail;
+        return allowedWhileVerifying ||
+                isPublicSupport ||
+                loc == AppRoutes.deleteAccount
+            ? null
+            : AppRoutes.verifyEmail;
       }
 
       // Login: jauhkan dari layar auth.
@@ -151,6 +162,18 @@ class AppRouter {
       GoRoute(
         path: AppRoutes.login,
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.customerService,
+        builder: (context, state) => const SupportScreen(privacy: false),
+      ),
+      GoRoute(
+        path: AppRoutes.privacyPolicy,
+        builder: (context, state) => const SupportScreen(privacy: true),
+      ),
+      GoRoute(
+        path: AppRoutes.deleteAccount,
+        builder: (context, state) => const DeleteAccountScreen(),
       ),
       GoRoute(
         path: AppRoutes.register,

@@ -23,6 +23,7 @@ class CatalogState extends Equatable {
   final CatalogDetailStatus detailStatus;
   final CatalogCourseEntity? detailCourse;
   final String? detailErrorMessage;
+  final bool detailRequiresLogin;
 
   const CatalogState({
     this.status = CatalogStatus.initial,
@@ -38,6 +39,7 @@ class CatalogState extends Equatable {
     this.detailStatus = CatalogDetailStatus.initial,
     this.detailCourse,
     this.detailErrorMessage,
+    this.detailRequiresLogin = false,
   });
 
   /// Data sudah difilter/dipaging oleh repository (remote maupun lokal),
@@ -67,6 +69,7 @@ class CatalogState extends Equatable {
     CatalogDetailStatus? detailStatus,
     Object? detailCourse = _keep,
     Object? detailErrorMessage = _keep,
+    bool? detailRequiresLogin,
   }) {
     return CatalogState(
       status: status ?? this.status,
@@ -90,6 +93,7 @@ class CatalogState extends Equatable {
       detailErrorMessage: identical(detailErrorMessage, _keep)
           ? this.detailErrorMessage
           : detailErrorMessage as String?,
+      detailRequiresLogin: detailRequiresLogin ?? this.detailRequiresLogin,
     );
   }
 
@@ -132,5 +136,6 @@ class CatalogState extends Equatable {
     detailStatus,
     detailCourse,
     detailErrorMessage,
+    detailRequiresLogin,
   ];
 }

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'course_sales_profile.dart';
 
 class CatalogSectionEntity extends Equatable {
   final String title;
@@ -14,6 +15,7 @@ class CatalogCourseEntity extends Equatable {
   final String id;
   final String title;
   final String description;
+  final String shortDescription;
   final String instructor;
   final String? thumbnailUrl;
   final int lessonCount;
@@ -24,11 +26,15 @@ class CatalogCourseEntity extends Equatable {
   final List<CatalogSectionEntity> sections;
   final int? totalContents;
   final bool isEnrolled;
+  final CourseSalesProfile? salesProfile;
+  final List<CatalogInstructor> instructors;
+  final bool showPrice;
 
   const CatalogCourseEntity({
     required this.id,
     required this.title,
     required this.description,
+    this.shortDescription = '',
     required this.instructor,
     required this.lessonCount,
     required this.isFree,
@@ -39,6 +45,9 @@ class CatalogCourseEntity extends Equatable {
     this.sections = const [],
     this.totalContents,
     this.isEnrolled = false,
+    this.salesProfile,
+    this.instructors = const [],
+    this.showPrice = false,
   });
 
   CatalogCourseEntity copyWith({
@@ -57,6 +66,7 @@ class CatalogCourseEntity extends Equatable {
       id: id,
       title: title,
       description: description ?? this.description,
+      shortDescription: shortDescription,
       instructor: instructor,
       thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
       lessonCount: lessonCount ?? this.lessonCount,
@@ -67,6 +77,9 @@ class CatalogCourseEntity extends Equatable {
       sections: sections ?? this.sections,
       totalContents: totalContents ?? this.totalContents,
       isEnrolled: isEnrolled ?? this.isEnrolled,
+      salesProfile: salesProfile,
+      instructors: instructors,
+      showPrice: showPrice,
     );
   }
 
@@ -75,6 +88,7 @@ class CatalogCourseEntity extends Equatable {
     id,
     title,
     description,
+    shortDescription,
     instructor,
     thumbnailUrl,
     lessonCount,
@@ -85,5 +99,8 @@ class CatalogCourseEntity extends Equatable {
     sections,
     totalContents,
     isEnrolled,
+    salesProfile,
+    instructors,
+    showPrice,
   ];
 }

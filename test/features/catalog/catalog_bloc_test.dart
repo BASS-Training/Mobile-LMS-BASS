@@ -122,6 +122,30 @@ void main() {
     expect(failed.detailErrorMessage, 'Course sudah tidak tersedia.');
   });
 
+  test(
+    'detail lama dibersihkan saat course berikutnya tidak tersedia',
+    () async {
+      bloc.add(const LoadCatalogDetailEvent('paid-course'));
+      await bloc.stream.firstWhere(
+        (state) => state.detailStatus == CatalogDetailStatus.loaded,
+      );
+      bloc.add(const LoadCatalogDetailEvent('missing-course'));
+      final failed = await bloc.stream.firstWhere(
+        (state) => state.detailStatus == CatalogDetailStatus.failure,
+      );
+      expect(failed.detailCourse, isNull);
+    },
+  );
+
+  test('401 detail menandai sesi harus diakhiri', () async {
+    bloc.add(const LoadCatalogDetailEvent('expired'));
+    final failed = await bloc.stream.firstWhere(
+      (state) => state.detailStatus == CatalogDetailStatus.failure,
+    );
+    expect(failed.detailCourse, isNull);
+    expect(failed.detailRequiresLogin, isTrue);
+  });
+
   test('enrollment gratis memperbarui status katalog', () async {
     await loadCatalog();
 
@@ -272,6 +296,11 @@ class _FakeCatalogRepository implements CatalogRepository {
 
   @override
   Future<CatalogCourseEntity?> getDetail(String catalogId) async {
+    if (catalogId == 'expired') {
+      throw UnauthorizedException(
+        message: 'Sesi berakhir. Silakan masuk kembali.',
+      );
+    }
     for (final course in _all) {
       if (course.id == catalogId) {
         return course.copyWith(isEnrolled: enrolledIds.contains(catalogId));
