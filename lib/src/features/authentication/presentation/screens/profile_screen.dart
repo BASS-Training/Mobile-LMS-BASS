@@ -110,14 +110,6 @@ class ProfileScreen extends StatelessWidget {
                           _SectionCard(
                             children: [
                               _NavRow(
-                                icon: Icons.help_outline_rounded,
-                                accent: AppColors.success,
-                                title: 'Pusat Bantuan',
-                                subtitle: 'FAQ & kontak dukungan',
-                                onTap: () =>
-                                    context.push(AppRoutes.customerService),
-                              ),
-                              _NavRow(
                                 icon: Icons.privacy_tip_outlined,
                                 accent: AppColors.info,
                                 title: 'Kebijakan Privasi',

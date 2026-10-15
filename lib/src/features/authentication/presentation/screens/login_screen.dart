@@ -102,13 +102,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 spacing: 12,
                 children: [
                   TextButton(
-                    onPressed: () => context.push(AppRoutes.customerService),
-                    child: const Text(
-                      'Pusat Bantuan',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  TextButton(
                     onPressed: () => context.push(AppRoutes.privacyPolicy),
                     child: const Text(
                       'Kebijakan Privasi',
